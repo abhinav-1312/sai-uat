@@ -23,6 +23,7 @@ const IssueNote = () => {
   const [searchValue, setSearchValue] = useState('');
   const [selectedItems, setSelectedItems] = useState([]); // State to hold selected item data
   const [formSubmitted, setFormSubmitted] = useState(false)
+  const [tableOpen, setTableOpen] = useState(true)
 
 
   const [formData, setFormData] = useState({
@@ -141,8 +142,9 @@ const IssueNote = () => {
     setFilteredData(filtered);
   };
 
-  const handleSelectItem = (record) => {
-
+  const handleSelectItem = (record) => {  
+    console.log("Selected clicked")
+    setTableOpen(false)
     // Check if the item is already selected
     const index = selectedItems.findIndex(item => item.id === record.id);
     if (index === -1) {
@@ -161,9 +163,7 @@ const IssueNote = () => {
           budgetHeadProcurement: "",
           locatorId: record.locatorId
         }
-        
         const updatedItems = [...prevData.items || [], newItem]
-        console.log("set form data")
         return {
           ...prevData,
           items: updatedItems
@@ -476,14 +476,14 @@ const IssueNote = () => {
         {/* Item Details */}
         <h2>ITEM DETAILS</h2>
         <div style={{ width: '300px' }}>
-          <Popover
+          <Popover onClick={()=>setTableOpen(true)}
             content={
               <Table
                 dataSource={filteredData}
                 columns={columns}
                 pagination={true}
                 scroll={{ x: "max-content" }}
-                style={{ width: '800px' }}
+                style={{ width: '800px', display: tableOpen?'block':'none' }}
               />
             }
             title="Filtered Item Data"
