@@ -18,7 +18,7 @@ const RetunNote = () => {
     genDate: '',
     genName: '',
     issueDate: '',
-    issueName: '',
+    // issueName: '',
     approvedDate: '',
     approvedName: '',
     returnNoteNo: '',
@@ -51,6 +51,8 @@ const RetunNote = () => {
     ],
     userId: ''
   });
+
+  console.log("Form data: ", formData)
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -141,12 +143,11 @@ const RetunNote = () => {
       const { processData, itemList } = responseData;
       console.log('API Response:', response.data);
       const issueNoteDtMilliseconds = processData?.issueNoteDt;
-      console.log("issueNoteDtMilliseconds:", issueNoteDtMilliseconds);
-
 
       if (issueNoteDtMilliseconds) {
-        const formattedDate = dayjs(issueNoteDtMilliseconds * 1000).format('YYYY/MM/DD');
-        console.log(formattedDate); // This will log the date in 'YYYY/MM/DD' format
+        // const formattedDate = dayjs(issueNoteDtMilliseconds * 1000).format('YYYY/MM/DD');
+        const formattedDate = dayjs(issueNoteDtMilliseconds).format('YYYY/MM/DD');
+        console.log("Issue note date formatted: ", formattedDate); // This will log the date in 'YYYY/MM/DD' format
       } else {
         console.log("issueNoteDt is not available");
       }
@@ -154,7 +155,7 @@ const RetunNote = () => {
         ...prevFormData,
 
         processId: processData?.processId,
-        issueNoteDt: processData?.issueNoteDt,
+        issueNoteDt: dayjs(processData?.issueDate).format('YYYY/MM/DD'),
         consumerName: processData?.consumerName,
         contactNo: processData?.contactNo,
 
@@ -181,13 +182,14 @@ const RetunNote = () => {
   const onFinish = async (values) => {
     try {
       const formDataCopy = { ...formData };
+      console.log("Form data return: ", formDataCopy)
 
       // Ensure all fields are present
       const allFields = [
         "genDate",
         "genName",
         "issueDate",
-        "issueName",
+        // "issueName",
         "approvedDate",
         "approvedName",
         "returnNoteNo",
@@ -231,6 +233,7 @@ const RetunNote = () => {
       } else {
         // Display a generic success message if specific data is not available
         message.error('Failed to Return Note. Please try again later.');
+        console.log(response.data)
       }
 
     } catch (error) {
@@ -244,6 +247,12 @@ const RetunNote = () => {
   const handleValuesChange = (_, allValues) => {
     setType(allValues.type);
   };
+
+  const handleIssueNoteDtChange = (value) => {
+    console.log("Changed")
+  }
+
+
 
   return (
 
@@ -298,13 +307,15 @@ const RetunNote = () => {
 
           <Col span={8}>
             <Form.Item label="CONSUMER NAME :" name="consumerName" initialValue={formData.consumerName}>
-              <Input value={formData.consumerName} onChange={(e) => handleChange("consumerName", e.target.value)} />
+              <Input value={formData.consumerName} onChange={(e) => handleChange("consumerName", e.target.value)} readOnly/>
               <div style={{ display: 'none' }}>
                 {formData.regionalCenterCd}
               </div>
             </Form.Item>
+            {/* <Form.Item label="CONTACT NO. :" name="contactNo" initialValue={formData.contactNo}> */}
             <Form.Item label="CONTACT NO. :" name="contactNo" initialValue={formData.contactNo}>
-              <Input value={formData.contactNo} onChange={(e) => handleChange("contactNo", e.target.value)} />
+              <Input value={formData.contactNo} onChange={(e) => handleChange("contactNo", e.target.value)} readOnly />
+
               <div style={{ display: 'none' }}>
                 {formData.zipcode}
               </div>
@@ -318,10 +329,18 @@ const RetunNote = () => {
             <Form.Item label="ISSUE NOTE NO. :" name="issueNoteNo">
               <Input onChange={(e) => handleIssueNoteNoChange(e.target.value)} />
             </Form.Item>
-            <Form.Item label="ISSUE DATE :" name="issueNoteDt ">
+            {/* <Form.Item label="ISSUE DA :" name="issueNoteDt">
+              <Input value={12233} onChange={(e)=>handleIssueNoteDtChange(e.target.value)}/>
+              {/* <DatePicker value={formData.issueNoteDt} format={dateFormat} style={{ width: '100%' }} onChange={(date, dateString) => handleChange("issueNoteDt", dateString)} /> */}
 
-              <DatePicker format={dateFormat} style={{ width: '100%' }} onChange={(date, dateString) => handleChange("issueNoteDt", dateString)} />
+            {/* </Form.Item> */} 
 
+            <Form.Item label="ISSUE DATE :" name="issueNoteDt">
+              <Input value={formData.issueNoteDt} readOnly />
+
+              <div style={{ display: 'none' }}>
+                {formData.zipcode}
+              </div>
             </Form.Item>
           </Col>
         </Row>
@@ -333,9 +352,9 @@ const RetunNote = () => {
           {(fields, { add, remove }) => (
             <>
               <Form.Item style={{ textAlign: 'right' }}>
-                <Button type="dashed" onClick={() => add()} style={{ marginBottom: 8 }} icon={<PlusOutlined />}>
+                {/* <Button type="dashed" onClick={() => add()} style={{ marginBottom: 8 }} icon={<PlusOutlined />}>
                   ADD ITEM
-                </Button>
+                </Button> */}
               </Form.Item>
               {fields.map(({ key, name, ...restField }, index) => (
                 <div key={key} style={{ marginBottom: 16, border: '1px solid #d9d9d9', padding: 16, borderRadius: 4 }}>
@@ -343,76 +362,61 @@ const RetunNote = () => {
                     <Col span={6}>
 
                       <Form.Item {...restField} label="S.NO." name={[name, 'srNo']}  >
-                        <Input value={formData.items?.[index]?.srNo} onChange={(e) => e.target && itemHandleChange(`srNo`, e.target.value, index)} />
+                        <Input value={formData.items?.[index]?.srNo} onChange={(e) => e.target && itemHandleChange(`srNo`, e.target.value, index)} readOnly />
                         <span style={{ display: 'none' }}>{index + 1}</span>
                       </Form.Item>
                     </Col>
                     <Col span={6}>
                       <Form.Item {...restField} label="ITEM CODE" name={[name, 'itemCode']} initialValue={formData.items?.[index]?.itemCode}>
-                        <AutoComplete
+                        <Input
                           style={{ width: '100%' }}
-                          options={itemData.map(item => ({ value: item.itemMasterCd }))}
-                          placeholder="Enter item code"
-                          filterOption={(inputValue, option) =>
-                            option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-                          }
                           value={formData.items?.[index]?.itemCode}
-                          onChange={(value) => itemHandleChange(`itemCode`, value, index)}
+                          readOnly
                         />
                         <span style={{ display: 'none' }}>{index + 1}</span>
                       </Form.Item>
                     </Col>
                     <Col span={6}>
-                      <Form.Item {...restField} label="ITEM DESCRIPTION" name={[name, 'itemDesc']}>
-                        <AutoComplete
+                      <Form.Item label="ITEM DESCRIPTION" name={[name, 'itemDesc']}>
+                        <Input
                           style={{ width: '100%' }}
-                          options={itemData.map(item => ({ value: item.itemMasterDesc }))}
-                          placeholder="Enter item description"
-                          filterOption={(inputValue, option) =>
-                            option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-                          }
-                          onChange={(value) => itemHandleChange(`itemDesc`, value, index)}
                           value={formData.items?.[index]?.itemDesc}
+                          readOnly
 
                         />
                         <span style={{ display: 'none' }}>{index + 1}</span>
                       </Form.Item>
                     </Col>
                     <Col span={5}>
-                      <Form.Item {...restField} label="UOM" name={[name, 'uom']}>
-                        <AutoComplete
+                      <Form.Item label="UOM" name={[name, 'uom']}>
+                        <Input
                           style={{ width: '100%' }}
-                          options={itemData.map(item => ({ value: item.uom }))}
-                          placeholder="Enter UOM"
-                          filterOption={(inputValue, option) =>
-                            option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-                          }
                           onChange={(value) => itemHandleChange(`uom`, value, index)}
-
-
+                          value={formData.items?.[index]?.uom}
+                          readOnly
                         />
                       </Form.Item>
                     </Col>
                     <Col span={6}>
-                      <Form.Item {...restField} label="RETURN QUANTITY" name={[name, 'quantity']}>
+                      <Form.Item label="RETURN QUANTITY" name={[name, 'quantity']}>
                         <Input value={formData.items?.[index]?.quantity} onChange={(e) => itemHandleChange(`quantity`, e.target.value, index)} />
                         <span style={{ display: 'none' }}>{index + 1}</span>
                       </Form.Item>
                     </Col>
                     <Col span={6}>
-                      <Form.Item {...restField} label="RETURNED AFTER NO. OF DAYS" name={[name, 'noOfDays']}>
-                        <Input value={formData.items?.[index]?.noOfDays} onChange={(e) => itemHandleChange(`noOfDays`, e.target.value, index)} />
+                      <Form.Item label="RETURNED AFTER NO. OF DAYS" name={[name, 'noOfDays']}>
+                        <Input value={formData.items?.[index]?.noOfDays} onChange={(e) => itemHandleChange(`noOfDays`, e.target.value, index)} readOnly />
                         <span style={{ display: 'none' }}>{index + 1}</span>
                       </Form.Item>
                     </Col>
                     <Col span={6}>
-                      <Form.Item {...restField} label="CONDITION OF GOODS" name={[name, 'conditionOfgoods']}>
-                        <Input onChange={(e) => itemHandleChange(`conditionOfgoods`, e.target.value, index)} />
+                      <Form.Item label="CONDITION OF GOODS" name={[name, 'conditionOfgoods']}>
+                        <Input value={formData.items?.[index]?.conditionOfGoods} readOnly/>
                       </Form.Item>
                     </Col>
                     <Col span={5}>
-                      <Form.Item {...restField} label="REMARK" name={[name, 'remarks']}>
-                        <Input value={formData.items?.[index]?.remarks} onChange={(e) => itemHandleChange(`remarks`, e.target.value, index)} />
+                      <Form.Item label="REMARK" name={[name, 'remarks']}>
+                        <Input value={formData.items?.[index]?.remarks} readOnly/>
                         <span style={{ display: 'none' }}>{index + 1}</span>
                       </Form.Item>
                     </Col>

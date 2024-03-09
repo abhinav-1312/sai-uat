@@ -241,7 +241,7 @@ const ItemsPage = () => {
             usageCategory: item.usageCategory
               ? usageCategories[item.usageCategory]
               : "Default",
-            reOrderPoint: 1,
+            reOrderPoint: item.reOrderPoint? item.reOrderPoint : "null",
             minStockLevel: item.minStockLevel,
             maxStockLevel: item.maxStockLevel,
             status: item.status === "A" ? "Active" : "InActive",
@@ -322,7 +322,6 @@ const ItemsPage = () => {
     if (!tempItem.itemMasterCd) {
       delete tempItem.itemMasterCd;
     }
-    delete tempItem.reOrderPoint;
 
     if (editingItem) {
       if (selectedId) {

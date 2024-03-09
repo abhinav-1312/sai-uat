@@ -65,7 +65,7 @@ const ItemsTable = ({ items, onEdit, onDelete }) => {
     },
     { title: "RE ORDER POINT", dataIndex: "reOrderPoint", key: "reOrderPoint" },
     { title: "STATUS", dataIndex: "status", key: "status" },
-    { title: "END DATE", dataIndex: "endDate", key: "endDate" },
+    { title: "CREATE DATE", dataIndex: "endDate", key: "endDate" },
     {
       title: "Actions",
       key: "actions",

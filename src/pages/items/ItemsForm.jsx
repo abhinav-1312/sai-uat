@@ -348,7 +348,7 @@ const ItemsForm = ({
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item name="endDate" label="End Date">
+          <Form.Item name="endDate" label="Create Date" rules={[{ required: true, message: "Please select Create date" }]}>
             <DatePicker />
           </Form.Item>
         </Col>

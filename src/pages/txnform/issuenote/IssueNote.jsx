@@ -159,7 +159,6 @@ const IssueNote = () => {
   };
 
   const handleSelectItem = (record) => {
-    console.log("Selected clicked");
     setTableOpen(false);
     // Check if the item is already selected
     const index = selectedItems.findIndex((item) => item.id === record.id);
@@ -276,7 +275,7 @@ const IssueNote = () => {
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster";
       const response = await axios.get(apiUrl);
       const { responseData } = response.data;
-      console.log(responseData);
+      console.log(response.data)
       setItemData(responseData);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -296,7 +295,6 @@ const IssueNote = () => {
       const { userDetails } = responseData;
       // Get current date
       const currentDate = dayjs();
-      console.log("Fetched data:", organizationDetails);
       // Update form data with fetched values
       setFormData({
         crRegionalCenterCd: "20",
@@ -321,6 +319,7 @@ const IssueNote = () => {
   const onFinish = async () => {
     try {
       const formDataCopy = { ...formData };
+      console.log("FOrm datacopy: ", formDataCopy)
 
       // Ensure all fields are present
       const allFields = [
@@ -360,6 +359,7 @@ const IssueNote = () => {
 
       const apiUrl =
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/saveIssueNote";
+        console.log("Form data copy: ", formDataCopy)
       const response = await axios.post(apiUrl, formDataCopy);
       if (
         response.status === 200 &&
@@ -373,6 +373,7 @@ const IssueNote = () => {
         setFormData({
           issueNoteNo: processId,
         });
+        console.log("Response: ", response)
         setSuccessMessage(
           `Issue note saved successfully! Issue Note No : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
@@ -411,8 +412,6 @@ const IssueNote = () => {
       }
     })
   }
-
-  console.log("Form daa items: ", formData.items)
 
   return (
     <div className="goods-receive-note-form-container">
