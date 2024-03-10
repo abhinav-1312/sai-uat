@@ -90,7 +90,6 @@ const RetunNote = () => {
     fetchUserDetails()
   }, []);
 
-  console.log("Form data: ", formData)
 
   const fetchItemData = async () => {
     try {
@@ -114,7 +113,6 @@ const RetunNote = () => {
       const { organizationDetails } = responseData;
       const { userDetails } = responseData;
       const currentDate = dayjs();
-      console.log('Fetched data:', organizationDetails);
       // Update form data with fetched values
       setFormData({
         regionalCenterCd: "20",
@@ -235,17 +233,28 @@ const RetunNote = () => {
     }
   };
 
-
-
   const handleValuesChange = (_, allValues) => {
     setType(allValues.type);
   };
 
-  const handleIssueNoteDtChange = (value) => {
-    console.log("Changed")
+  const daysDifference = (issueDate) => {
+    const parts = issueDate.split("/");
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const year = parseInt(parts[2], 10);
+    const givenDate = new Date(year, month - 1, day); // JavaScript months are 0-indexed
+
+    // constGet the current date
+    const currentDate = new Date();
+
+    // constCalculate the difference in milliseconds
+    const differenceMs = Math.abs(currentDate.getTime() - givenDate.getTime());
+
+    // constConvert the difference to days
+    const differenceDays = Math.floor(differenceMs / (1000 * 60 * 60 * 24));
+    // const difference_days = 1
+    return differenceDays ;
   }
-
-
 
   return (
 
@@ -398,7 +407,7 @@ const RetunNote = () => {
                     </Col>
                     <Col span={6}>
                       <Form.Item label="RETURNED AFTER NO. OF DAYS" name={[name, 'noOfDays']}>
-                        <Input value={formData.items?.[index]?.noOfDays || 1345} onChange={(e) => itemHandleChange(`noOfDays`, e.target.value, index)} readOnly />
+                        <Input value={formData.issueNoteDt !== undefined ? daysDifference(formData.issueNoteDt) : ""} onChange={(e) => itemHandleChange(`noOfDays`, e.target.value, index)} readOnly />
                         <span style={{ display: 'none' }}>{index + 1}</span>
                       </Form.Item>
                     </Col>
