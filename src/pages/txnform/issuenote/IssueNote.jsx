@@ -21,7 +21,7 @@ import dayjs from "dayjs";
 import axios from "axios";
 import ItemSearchFilter from "../../../components/ItemSearchFilter";
 import moment from "moment";
-const dateFormat = "YYYY/MM/DD";
+const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
 const { Search } = Input;
@@ -319,8 +319,7 @@ const IssueNote = () => {
   const onFinish = async () => {
     try {
       const formDataCopy = { ...formData };
-      console.log("FOrm datacopy: ", formDataCopy)
-
+      
       // Ensure all fields are present
       const allFields = [
         "genDate",
@@ -359,7 +358,6 @@ const IssueNote = () => {
 
       const apiUrl =
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/saveIssueNote";
-        console.log("Form data copy: ", formDataCopy)
       const response = await axios.post(apiUrl, formDataCopy);
       if (
         response.status === 200 &&
@@ -763,7 +761,7 @@ const IssueNote = () => {
                         </Form.Item>
 
                         <Form.Item label="REQUIRED QUANTITY">
-                          <Input value={item.quantity}></Input>
+                          <Input value={item.quantity} onChange={(e)=>itemHandleChange("quantity", e.target.value, key)}></Input>
                         </Form.Item>
 
                         <Form.Item label="REQUIRED FOR NO. OF DAYS">

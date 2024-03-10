@@ -36,6 +36,8 @@ const ItemsForm = ({
     onSubmit(values);
     form.resetFields();
   };
+
+  console.log("Vendores: ", vendors)
   return (
     <Form
       form={form}

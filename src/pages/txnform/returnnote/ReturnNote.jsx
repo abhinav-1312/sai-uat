@@ -4,7 +4,7 @@ import { Form, Input, Select, DatePicker, Button, Row, Col, AutoComplete, Modal,
 import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import axios from 'axios';
-const dateFormat = 'YYYY/MM/DD';
+const dateFormat = 'DD/MM/YYYY';
 
 
 const { Option } = Select;
@@ -18,7 +18,7 @@ const RetunNote = () => {
     genDate: '',
     genName: '',
     issueDate: '',
-    // issueName: '',
+    issueName: '',
     approvedDate: '',
     approvedName: '',
     returnNoteNo: '',
@@ -52,7 +52,6 @@ const RetunNote = () => {
     userId: ''
   });
 
-  console.log("Form data: ", formData)
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -90,6 +89,8 @@ const RetunNote = () => {
     fetchItemData()
     fetchUserDetails()
   }, []);
+
+  console.log("Form data: ", formData)
 
   const fetchItemData = async () => {
     try {
@@ -140,22 +141,15 @@ const RetunNote = () => {
         processStage: "ISN",
       });
       const responseData = response.data.responseData;
+      console.log("Changed response: ", responseData)
       const { processData, itemList } = responseData;
-      console.log('API Response:', response.data);
-      const issueNoteDtMilliseconds = processData?.issueNoteDt;
-
-      if (issueNoteDtMilliseconds) {
-        // const formattedDate = dayjs(issueNoteDtMilliseconds * 1000).format('YYYY/MM/DD');
-        const formattedDate = dayjs(issueNoteDtMilliseconds).format('YYYY/MM/DD');
-        console.log("Issue note date formatted: ", formattedDate); // This will log the date in 'YYYY/MM/DD' format
-      } else {
-        console.log("issueNoteDt is not available");
-      }
+      // console.log('API Response:', response.data);
+      const issueNoteDt = processData?.issueNoteDt;
       setFormData(prevFormData => ({
         ...prevFormData,
 
         processId: processData?.processId,
-        issueNoteDt: dayjs(processData?.issueDate).format('YYYY/MM/DD'),
+        issueNoteDt: issueNoteDt,
         consumerName: processData?.consumerName,
         contactNo: processData?.contactNo,
 
@@ -182,7 +176,6 @@ const RetunNote = () => {
   const onFinish = async (values) => {
     try {
       const formDataCopy = { ...formData };
-      console.log("Form data return: ", formDataCopy)
 
       // Ensure all fields are present
       const allFields = [
@@ -405,7 +398,7 @@ const RetunNote = () => {
                     </Col>
                     <Col span={6}>
                       <Form.Item label="RETURNED AFTER NO. OF DAYS" name={[name, 'noOfDays']}>
-                        <Input value={formData.items?.[index]?.noOfDays} onChange={(e) => itemHandleChange(`noOfDays`, e.target.value, index)} readOnly />
+                        <Input value={formData.items?.[index]?.noOfDays || 1345} onChange={(e) => itemHandleChange(`noOfDays`, e.target.value, index)} readOnly />
                         <span style={{ display: 'none' }}>{index + 1}</span>
                       </Form.Item>
                     </Col>

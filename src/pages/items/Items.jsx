@@ -174,7 +174,8 @@ const ItemsPage = () => {
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster"
       );
 
-      const { responseData } = await response.json();
+      const {responseData}  = await response.json();
+      console.log("Response data: ", responseData)
 
       const itemList = await Promise.all(
         responseData.map(async (item) => {
@@ -209,10 +210,12 @@ const ItemsPage = () => {
             "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getVendorMasterById",
             "POST",
             {
-              id: item.vendorId + 1,
+              id: item.vendorId,
               userId: "string",
             }
           );
+
+          console.log("Vendor resposne: ", vendorResponse)
 
           return {
             key: item.id,
@@ -224,7 +227,7 @@ const ItemsPage = () => {
             uom: uomResponse?.uomName || "default UOM",
             quantityOnHand: item.quantity,
             location: locationResponse?.locationName,
-            locatorCode: locatorResponse?.location,
+            locatorCode: locatorResponse?.locatorCd,
             price: item.price,
             vendorDetail: vendorResponse?.vendorName,
             category: item.category ? categories[item.category] : "Default",
@@ -264,6 +267,7 @@ const ItemsPage = () => {
   };
 
   useEffect(() => {
+    console.log("USe effect called")
     init();
   }, []);
 
@@ -297,7 +301,7 @@ const ItemsPage = () => {
 
   const handleDelete = async (itemId) => {
     // Implement delete logic here
-    await apiRequest(
+      await apiRequest(
       "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/deleteItemMaster",
       "POST",
       {
@@ -319,6 +323,8 @@ const ItemsPage = () => {
       itemName: values.itemMasterDesc,
     };
 
+    console.log("Temptiems: ", tempItem)
+
     if (!tempItem.itemMasterCd) {
       delete tempItem.itemMasterCd;
     }
@@ -328,18 +334,20 @@ const ItemsPage = () => {
         tempItem["itemMasterId"] = selectedId;
       }
       // Implement update logic here
-      await apiRequest(
+      const data = await apiRequest(
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/updateItemMaster",
         "POST",
         tempItem
       );
+      console.log("Dataa: ", data)
     } else {
       // Implement create logic here
-      await apiRequest(
+      const data = await apiRequest(
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/saveItemMaster",
         "POST",
         tempItem
       );
+      console.log("Dataaaa: ", data)
     }
     getItems();
     setVisible(false);

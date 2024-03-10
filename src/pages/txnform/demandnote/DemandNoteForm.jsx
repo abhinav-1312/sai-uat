@@ -6,7 +6,7 @@ import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import moment from 'moment';
 const { TextArea } = Input;
-const dateFormat = 'YYYY/MM/DD';
+const dateFormat = 'DD/MM/YYYY';
 const { Option } = Select;
 
 const DemandNoteForm = () => {

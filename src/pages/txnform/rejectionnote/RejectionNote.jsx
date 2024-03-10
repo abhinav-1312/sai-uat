@@ -4,7 +4,7 @@ import { Form, Input, Select, DatePicker, Button, Row, Col, Typography, AutoComp
 import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import axios from 'axios';
-const dateFormat = 'YYYY/MM/DD';
+const dateFormat = 'DD/MM/YYYY';
 const { Option } = Select;
 const { Title } = Typography;
 

@@ -5,7 +5,7 @@ import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import './GoodsReceiveNoteForm.css';
 import dayjs from 'dayjs';
 import axios from 'axios';
-const dateFormat = 'YYYY/MM/DD';
+const dateFormat = 'DD/MM/YYYY';
 const { Option } = Select;
 const { Title } = Typography;
 

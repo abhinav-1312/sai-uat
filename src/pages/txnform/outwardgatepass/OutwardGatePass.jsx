@@ -5,7 +5,7 @@ import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import axios from 'axios';
 import moment from 'moment';
-const dateFormat = 'YYYY/MM/DD';
+const dateFormat = 'DD/MM/YYYY';
 const { Option } = Select;
 const { Text, Title } = Typography;
 

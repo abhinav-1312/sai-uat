@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import axios from 'axios';
 import moment from 'moment';
 import ItemSearchFilter from '../../../components/ItemSearchFilter';
-const dateFormat = 'YYYY/MM/DD';
+const dateFormat = 'DD/MM/YYYY';
 const { Option } = Select;
 const { Text, Title } = Typography;
 
