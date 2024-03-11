@@ -215,8 +215,6 @@ const ItemsPage = () => {
             }
           );
 
-          console.log("Vendor resposne: ", vendorResponse)
-
           return {
             key: item.id,
             id: item.id,
@@ -228,6 +226,7 @@ const ItemsPage = () => {
             quantityOnHand: item.quantity,
             location: locationResponse?.locationName,
             locatorCode: locatorResponse?.locatorCd,
+            locatorDesc: locatorResponse?.locatorDesc,
             price: item.price,
             vendorDetail: vendorResponse?.vendorName,
             category: item.category ? categories[item.category] : "Default",
@@ -267,7 +266,6 @@ const ItemsPage = () => {
   };
 
   useEffect(() => {
-    console.log("USe effect called")
     init();
   }, []);
 
@@ -323,8 +321,6 @@ const ItemsPage = () => {
       itemName: values.itemMasterDesc,
     };
 
-    console.log("Temptiems: ", tempItem)
-
     if (!tempItem.itemMasterCd) {
       delete tempItem.itemMasterCd;
     }
@@ -339,7 +335,6 @@ const ItemsPage = () => {
         "POST",
         tempItem
       );
-      console.log("Dataa: ", data)
     } else {
       // Implement create logic here
       const data = await apiRequest(
@@ -347,7 +342,6 @@ const ItemsPage = () => {
         "POST",
         tempItem
       );
-      console.log("Dataaaa: ", data)
     }
     getItems();
     setVisible(false);

@@ -98,15 +98,10 @@ const IssueNote = () => {
 
   const itemHandleChange = (fieldName, value, index) => {
     setFormData((prevValues) => {
-      const updatedItems = [...(prevValues.items || [])];
+      const updatedItems = [...(prevValues.items) || []];
       updatedItems[index] = {
         ...updatedItems[index],
         [fieldName]: value === "" ? null : value,
-        srNo: 1,
-        uom: "string",
-        conditionOfGoods: "string", // Hard-coded data
-        budgetHeadProcurement: "string", // Hard-coded data
-        locatorId: "string", // Hard-coded data
       };
       return {
         ...prevValues,
@@ -115,17 +110,31 @@ const IssueNote = () => {
     });
   };
 
+  const populateItemData = async() => {
+    const itemMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster"
+    const locatorMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster"
+    try{
+      const itemMaster = await axios.get(itemMasterUrl)
+      const locatorMaster = await axios.get(locatorMasterUrl)
+      
+      const {responseData : itemMasterData} = itemMaster.data
+      const {responseData : locatorMasterData} = locatorMaster.data
+      
+      const updatedItems = itemMasterData.map(item => {
+        const itemLocation = locatorMasterData.find(obj => obj.id === item.locatorId)
+        return {...item, locatorDesc: itemLocation?.locatorDesc || "Undefined"}
+      })
+
+      setData([...updatedItems])
+
+    }catch(error){
+      console.log("Populate item data error: ", error)
+    }
+  }
+
   useEffect(() => {
     // Fetch data from the API
-    fetch(
-      "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster"
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setData(data.responseData);
-        setFilteredData(data.responseData); // Initially set filtered data to all data
-      })
-      .catch((error) => console.error("Error fetching data:", error));
+    populateItemData()
   }, []);
 
   const handleOnSearch = (value) => {
@@ -167,7 +176,7 @@ const IssueNote = () => {
       // add data to formData hook
       setFormData((prevData) => {
         const newItem = {
-          srNo: prevData.items?.length || 0,
+          srNo: prevData.items ? prevData.items.length + 1 : 1,
           itemCode: record.itemMasterCd,
           itemDesc: record.itemMasterDesc,
           uom: record.uomId,
@@ -177,6 +186,7 @@ const IssueNote = () => {
           conditionOfGoods: "",
           budgetHeadProcurement: "",
           locatorId: record.locatorId,
+          locatorDesc: record.locatorDesc
         };
         const updatedItems = [...(prevData.items || []), newItem];
         return {
@@ -216,6 +226,7 @@ const IssueNote = () => {
       dataIndex: "locatorId",
       key: "locatorCode",
     },
+    {title: "LOCATOR DESCRIPTION", dataIndex: "locatorDesc", key: "locatorDesc"},
     { title: "PRICE", dataIndex: "price", key: "price" },
     { title: "VENDOR DETAIL", dataIndex: "vendorId", key: "vendorDetail" },
     { title: "CATEGORY", dataIndex: "category", key: "category" },
@@ -275,7 +286,6 @@ const IssueNote = () => {
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster";
       const response = await axios.get(apiUrl);
       const { responseData } = response.data;
-      console.log(response.data)
       setItemData(responseData);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -371,7 +381,6 @@ const IssueNote = () => {
         setFormData({
           issueNoteNo: processId,
         });
-        console.log("Response: ", response)
         setSuccessMessage(
           `Issue note saved successfully! Issue Note No : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
@@ -383,7 +392,6 @@ const IssueNote = () => {
       } else {
         // Display a generic success message if specific data is not available
         message.error("Failed to save issue note. Please try again later.");
-        console.log(response);
       }
     } catch (error) {
       console.error("Error saving issue note:", error);
@@ -608,7 +616,7 @@ const IssueNote = () => {
         </Row>
 
         {/* Item Details */}
-        <h2>ITEM DETAILS</h2>
+        <h2>ADD ITEMS</h2>
         <div style={{ width: "300px" }}>
           <Popover
             onClick={() => setTableOpen(true)}
@@ -733,43 +741,41 @@ const IssueNote = () => {
 
               {formData.items?.length > 0 &&
                 formData.items.map((item, key) => {
-                  console.log("item: ", item);
-                  console.log("key: ", key);
                   return (
                     // <div className="xyz" style={{font:"150px", zIndex: "100"}}>xyz</div>
 
                     <div key={key} style={{ marginBottom: 16, border: '1px solid #d9d9d9', padding: 16, borderRadius: 4, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',gap:'20px' }}>
                       
                         <Form.Item label="Serial No.">
-                          <Input value={item.srNo} readOnly></Input>
+                          <Input value={item.srNo} readOnly />
                         </Form.Item>
                       
                         <Form.Item label="ITEM CODE">
-                          <Input value={item.itemCode} readOnly></Input>
+                          <Input value={item.itemCode} readOnly />
                         </Form.Item>
                         
                         <Form.Item label="ITEM DESCRIPTION">
-                          <Input value={item.itemDesc} readOnly></Input>
+                          <Input value={item.itemDesc} readOnly />
                         </Form.Item>
 
                         <Form.Item label="UOM">
-                          <Input value={item.uom}></Input>
+                          <Input value={item.uom} />
                         </Form.Item>
 
-                        <Form.Item label="LOCATOR ID">
-                          <Input value={item.locatorId} readOnly></Input>
+                        <Form.Item label="LOCATOR DESCRIPITON">
+                          <Input value={item.locatorDesc} readOnly />
                         </Form.Item>
 
                         <Form.Item label="REQUIRED QUANTITY">
-                          <Input value={item.quantity} onChange={(e)=>itemHandleChange("quantity", e.target.value, key)}></Input>
+                          <Input value={item.quantity} onChange={(e)=>itemHandleChange("quantity", e.target.value, key)} />
                         </Form.Item>
 
                         <Form.Item label="REQUIRED FOR NO. OF DAYS">
-                          <Input value={item.noOfDays}></Input>
+                          <Input value={item.noOfDays} onChange={(e)=>itemHandleChange("noOfDays", e.target.value, key)} />
                         </Form.Item>
 
                         <Form.Item label="REMARK">
-                          <Input value={item.remarks}></Input>
+                          <Input value={item.remarks} onChange={(e)=>itemHandleChange("remarks", e.target.value, key)} />
                         </Form.Item>
 
                         <Col span={1}>
