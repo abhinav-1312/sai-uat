@@ -1,56 +1,66 @@
 // RetunNote.js
-import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, DatePicker, Button, Row, Col, AutoComplete, Modal, message } from 'antd';
-import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
-import dayjs from 'dayjs';
-import axios from 'axios';
-const dateFormat = 'DD/MM/YYYY';
-
+import React, { useState, useEffect } from "react";
+import {
+  Form,
+  Input,
+  Select,
+  DatePicker,
+  Button,
+  Row,
+  Col,
+  AutoComplete,
+  Modal,
+  message,
+} from "antd";
+import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
+import axios from "axios";
+const dateFormat = "DD/MM/YYYY";
 
 const { Option } = Select;
 const RetunNote = () => {
-  const [Type, setType] = useState('1');
+  const [Type, setType] = useState("1");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [itemData, setItemData] = useState([]);
-  const [uomMaster, setUomMaster] = useState([])
+  const [uomMaster, setUomMaster] = useState([]);
   const [formData, setFormData] = useState({
-    genDate: '',
-    genName: '',
-    issueDate: '',
-    issueName: '',
-    approvedDate: '',
-    approvedName: '',
-    returnNoteNo: '',
-    returnNoteDt: '',
-    processId: '',
-    issueNoteNo: '',
-    issueNoteDt: '',
-    type: '',
-    regionalCenterCd: '',
-    regionalCenterName: '',
-    address: '',
-    zipcode: '',
-    consumerName: '',
-    contactNo: '',
-    termsCondition: '',
-    note: '',
+    genDate: "",
+    genName: "",
+    issueDate: "",
+    issueName: "",
+    approvedDate: "",
+    approvedName: "",
+    returnNoteNo: "",
+    returnNoteDt: "",
+    processId: "",
+    issueNoteNo: "",
+    issueNoteDt: "",
+    type: "",
+    regionalCenterCd: "",
+    regionalCenterName: "",
+    address: "",
+    zipcode: "",
+    consumerName: "",
+    contactNo: "",
+    termsCondition: "",
+    note: "",
     items: [
       {
         srNo: 0,
-        itemCode: '',
-        itemDesc: '',
-        uom: '',
+        itemCode: "",
+        itemDesc: "",
+        uom: "",
         quantity: 0,
         noOfDays: 0,
-        remarks: '',
-        conditionOfGoods: '',
-        budgetHeadProcurement: '',
-        locatorId: ''
-      }
+        remarks: "",
+        conditionOfGoods: "",
+        budgetHeadProcurement: "",
+        locatorId: "",
+      },
     ],
-    userId: ''
+    userId: "",
   });
 
   const showModal = () => {
@@ -62,14 +72,14 @@ const RetunNote = () => {
   };
 
   const handleChange = (fieldName, value) => {
-    setFormData(prevValues => ({
+    setFormData((prevValues) => ({
       ...prevValues,
-      [fieldName]: value === "" ? null : value
+      [fieldName]: value === "" ? null : value,
     }));
   };
 
   const itemHandleChange = (fieldName, value, index) => {
-    setFormData(prevValues => {
+    setFormData((prevValues) => {
       const updatedItems = [...(prevValues.items || [])];
       updatedItems[index] = {
         ...updatedItems[index],
@@ -81,46 +91,46 @@ const RetunNote = () => {
       };
       return {
         ...prevValues,
-        items: updatedItems
+        items: updatedItems,
       };
     });
   };
   useEffect(() => {
-
-    fetchItemData()
-    fetchUserDetails()
-    fetchUomMaster()
+    fetchItemData();
+    fetchUserDetails();
+    fetchUomMaster();
   }, []);
 
   const fetchUomMaster = async () => {
-    try{
-      const uomMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster"
-      const uomMaster = await axios.get(uomMasterUrl)
-      const {responseData : uomMasterData} = uomMaster.data
-      setUomMaster([...uomMasterData])
+    try {
+      const uomMasterUrl =
+        "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster";
+      const uomMaster = await axios.get(uomMasterUrl);
+      const { responseData: uomMasterData } = uomMaster.data;
+      setUomMaster([...uomMasterData]);
+    } catch (error) {
+      console.log("Error fetching Uom master details.", error);
     }
-    catch(error){
-      console.log("Error fetching Uom master details.", error)
-    }
-  }
-
+  };
 
   const fetchItemData = async () => {
     try {
-      const apiUrl = 'https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster';
+      const apiUrl =
+        "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster";
       const response = await axios.get(apiUrl);
       const { responseData } = response.data;
       setItemData(responseData);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
   };
   const fetchUserDetails = async () => {
     try {
-      const apiUrl = 'https://sai-services.azurewebsites.net/sai-inv-mgmt/login/authenticate';
+      const apiUrl =
+        "https://sai-services.azurewebsites.net/sai-inv-mgmt/login/authenticate";
       const response = await axios.post(apiUrl, {
         userCd: "dkg",
-        password: "string"
+        password: "string",
       });
 
       const { responseData } = response.data;
@@ -142,22 +152,23 @@ const RetunNote = () => {
         returnNoteNo: "string",
       });
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
   };
   const handleIssueNoteNoChange = async (value) => {
     try {
-      const apiUrl = 'https://sai-services.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls';
+      const apiUrl =
+        "https://sai-services.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
       const response = await axios.post(apiUrl, {
         processId: value,
         processStage: "ISN",
       });
       const responseData = response.data.responseData;
-      console.log("Changed response: ", responseData)
+      console.log("Changed response: ", responseData);
       const { processData, itemList } = responseData;
       // console.log('API Response:', response.data);
       const issueNoteDt = processData?.issueNoteDt;
-      setFormData(prevFormData => ({
+      setFormData((prevFormData) => ({
         ...prevFormData,
 
         processId: processData?.processId,
@@ -165,7 +176,7 @@ const RetunNote = () => {
         consumerName: processData?.consumerName,
         contactNo: processData?.contactNo,
 
-        items: itemList.map(item => ({
+        items: itemList.map((item) => ({
           srNo: item?.sNo,
           id: item?.id || "Null",
           itemCode: item?.itemCode,
@@ -176,12 +187,12 @@ const RetunNote = () => {
           remarks: item?.remarks,
           conditionOfGoods: item?.conditionOfGoods,
           budgetHeadProcurement: item?.budgetHeadProcurement,
-          locatorId: item?.locatorId
-        }))
+          locatorId: item?.locatorId,
+        })),
       }));
       // Handle response data as needed
     } catch (error) {
-      console.error('Error fetching sub process details:', error);
+      console.error("Error fetching sub process details:", error);
       // Handle error
     }
   };
@@ -213,40 +224,49 @@ const RetunNote = () => {
         "termsCondition",
         "note",
         "items",
-        "userId"
+        "userId",
       ];
 
-      allFields.forEach(field => {
+      allFields.forEach((field) => {
         if (!(field in formDataCopy)) {
           formDataCopy[field] = "";
         }
       });
 
-      const apiUrl = 'https://sai-services.azurewebsites.net/sai-inv-mgmt/saveReturnNote';
+      const apiUrl =
+        "https://sai-services.azurewebsites.net/sai-inv-mgmt/saveReturnNote";
       const response = await axios.post(apiUrl, formDataCopy);
-      console.log('API Response:', response.data);
+      console.log("API Response:", response.data);
       // Handle success response here
-      if (response.status === 200 && response.data && response.data.responseStatus && response.data.responseStatus.message === 'Success') {
+      if (
+        response.status === 200 &&
+        response.data &&
+        response.data.responseStatus &&
+        response.data.responseStatus.message === "Success"
+      ) {
         // Access the specific success message data if available
-        const { processId, processType, subProcessId } = response.data.responseData;
-        setFormData(prevValues => {
+        const { processId, processType, subProcessId } =
+          response.data.responseData;
+        setFormData((prevValues) => {
           return {
             ...prevValues,
             returnNoteNo: processId,
-          }
+          };
         });
-        setSuccessMessage(`Return Note successfully! Return Note : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`);
+        setSuccessMessage(
+          `Return Note successfully! Return Note : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
+        );
         showModal();
-        message.success(`Return Note successfully! Process ID: ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`);
-
+        message.success(
+          `Return Note successfully! Process ID: ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
+        );
       } else {
         // Display a generic success message if specific data is not available
-        message.error('Failed to Return Note. Please try again later.');
-        console.log(response.data)
+        message.error("Failed to Return Note. Please try again later.");
+        console.log(response.data);
       }
-
     } catch (error) {
-      console.error('Error saving Return Note:', error);
+      console.error("Error saving Return Note:", error);
       // Handle error response here
     }
   };
@@ -271,132 +291,143 @@ const RetunNote = () => {
     // constConvert the difference to days
     const differenceDays = Math.floor(differenceMs / (1000 * 60 * 60 * 24));
     // const difference_days = 1
-    return differenceDays ;
-  }
+    return differenceDays;
+  };
 
-  const findUomName = (uomId) => {
-    const foundObj = uomMaster.find(obj => uomId === obj.id)
-    return foundObj ? foundObj.uomName : "Undefined"
-  }
+  // const findUomName = (uomId) => {
+  //   const foundObj = uomMaster.find((obj) => uomId === obj.id);
+  //   return foundObj ? foundObj.uomName : "Undefined";
+  // };
 
   const findColumnValue = (id, dataSource, sourceName) => {
-    const foundObject = dataSource.find(obj => obj.id === id);
+    const foundObject = dataSource.find((obj) => obj.id === id);
 
-    if(sourceName === "locationMaster")
-      return foundObject ? foundObject['locationName'] : 'Undefined';
-    if(sourceName === "locatorMaster")
-      return foundObject ? foundObject['locatorDesc'] : 'Undefined';
-    if(sourceName === "vendorMaster")
-      return foundObject ? foundObject['vendorName'] : 'Undefined';
-    if(sourceName === 'uomMaster')
-      return foundObject ? foundObject['uomName'] : 'Undefined';
-  }
+    if (sourceName === "locationMaster")
+      return foundObject ? foundObject["locationName"] : "Undefined";
+    if (sourceName === "locatorMaster")
+      return foundObject ? foundObject["locatorDesc"] : "Undefined";
+    if (sourceName === "vendorMaster")
+      return foundObject ? foundObject["vendorName"] : "Undefined";
+    if (sourceName === "uomMaster")
+      return foundObject ? foundObject["uomName"] : "Undefined";
+  };
 
   const removeItem = (index) => {
-    setFormData(prevValues=>{
-      const updatedItems = prevValues.items
-      updatedItems.splice(index, 1)
-      
-      const updatedItems1 = updatedItems.map((item, key)=>{
-        return {...item, srNo: key}
-      })
+    setFormData((prevValues) => {
+      const updatedItems = prevValues.items;
+      updatedItems.splice(index, 1);
+
+      const updatedItems1 = updatedItems.map((item, key) => {
+        return { ...item, srNo: key };
+      });
 
       return {
         ...prevValues,
-        items: updatedItems1
-      }
-    })
-  }
-
-
+        items: updatedItems1,
+      };
+    });
+  };
 
   return (
-
     <div className="goods-receive-note-form-container">
       <h1>Sports Authority of India - Return Note</h1>
 
-      <Form onFinish={onFinish} className="goods-receive-note-form" onValuesChange={handleValuesChange} layout="vertical">
+      <Form
+        onFinish={onFinish}
+        className="goods-receive-note-form"
+        onValuesChange={handleValuesChange}
+        layout="vertical"
+      >
         <Row>
           <Col span={6} offset={18}>
             <Form.Item label="DATE" name="returnNoteDt">
-              <DatePicker defaultValue={dayjs()} format={dateFormat} style={{ width: '100%' }} name="returnNoteDt" onChange={(date, dateString) => handleChange("returnNoteDt", dateString)} />
+              <DatePicker
+                defaultValue={dayjs()}
+                format={dateFormat}
+                style={{ width: "100%" }}
+                name="returnNoteDt"
+                onChange={(date, dateString) =>
+                  handleChange("returnNoteDt", dateString)
+                }
+              />
             </Form.Item>
           </Col>
-          <Col span={6}>
-
-          </Col>
+          <Col span={6}></Col>
           <Col span={6} offset={12}>
             <Form.Item label="RETURN NOTE NO." name="returnNoteNo">
-              <Input disabled onChange={(e) => handleChange("returnNoteNo", e.target.value)} />
+              <Input
+                disabled
+                onChange={(e) => handleChange("returnNoteNo", e.target.value)}
+              />
             </Form.Item>
           </Col>
         </Row>
 
         <Row gutter={24}>
           <Col span={8}>
-
             <Form.Item label="REGIONAL CENTER CODE" name="regionalCenterCd">
               <Input value={formData.regionalCenterCd} />
-              <div style={{ display: 'none' }}>
-                {formData.regionalCenterCd}
-              </div>
+              <div style={{ display: "none" }}>{formData.regionalCenterCd}</div>
             </Form.Item>
             <Form.Item label="REGIONAL CENTER NAME " name="regionalCenterName">
               <Input value={formData.regionalCenterName} />
-              <div style={{ display: 'none' }}>
-                {formData.regionalCenterCd}
-              </div>
+              <div style={{ display: "none" }}>{formData.regionalCenterCd}</div>
             </Form.Item>
             <Form.Item label="ADDRESS :" name="address">
               <Input value={formData.address} />
-              <div style={{ display: 'none' }}>
-                {formData.regionalCenterCd}
-              </div>
+              <div style={{ display: "none" }}>{formData.regionalCenterCd}</div>
             </Form.Item>
             <Form.Item label="ZIP CODE :" name="zipcode">
               <Input value={formData.zipcode} />
-              <div style={{ display: 'none' }}>
-                {formData.regionalCenterCd}
-              </div>
+              <div style={{ display: "none" }}>{formData.regionalCenterCd}</div>
             </Form.Item>
           </Col>
 
           <Col span={8}>
-            <Form.Item label="CONSUMER NAME :" name="consumerName" initialValue={formData.consumerName}>
-              <Input value={formData.consumerName} onChange={(e) => handleChange("consumerName", e.target.value)} readOnly/>
-              <div style={{ display: 'none' }}>
-                {formData.regionalCenterCd}
-              </div>
+            <Form.Item
+              label="CONSUMER NAME :"
+              name="consumerName"
+              initialValue={formData.consumerName}
+            >
+              <Input
+                value={formData.consumerName}
+                onChange={(e) => handleChange("consumerName", e.target.value)}
+                readOnly
+              />
+              <div style={{ display: "none" }}>{formData.regionalCenterCd}</div>
             </Form.Item>
             {/* <Form.Item label="CONTACT NO. :" name="contactNo" initialValue={formData.contactNo}> */}
-            <Form.Item label="CONTACT NO. :" name="contactNo" initialValue={formData.contactNo}>
-              <Input value={formData.contactNo} onChange={(e) => handleChange("contactNo", e.target.value)} readOnly />
+            <Form.Item
+              label="CONTACT NO. :"
+              name="contactNo"
+              initialValue={formData.contactNo}
+            >
+              <Input
+                value={formData.contactNo}
+                onChange={(e) => handleChange("contactNo", e.target.value)}
+                readOnly
+              />
 
-              <div style={{ display: 'none' }}>
-                {formData.zipcode}
-              </div>
+              <div style={{ display: "none" }}>{formData.zipcode}</div>
             </Form.Item>
           </Col>
-
-
-
 
           <Col span={8}>
             <Form.Item label="ISSUE NOTE NO. :" name="issueNoteNo">
-              <Input onChange={(e) => handleIssueNoteNoChange(e.target.value)} />
+              <Input
+                onChange={(e) => handleIssueNoteNoChange(e.target.value)}
+              />
             </Form.Item>
             {/* <Form.Item label="ISSUE DA :" name="issueNoteDt">
               <Input value={12233} onChange={(e)=>handleIssueNoteDtChange(e.target.value)}/>
               {/* <DatePicker value={formData.issueNoteDt} format={dateFormat} style={{ width: '100%' }} onChange={(date, dateString) => handleChange("issueNoteDt", dateString)} /> */}
 
-            {/* </Form.Item> */} 
+            {/* </Form.Item> */}
 
             <Form.Item label="ISSUE DATE :" name="issueNoteDt">
               <Input value={formData.issueNoteDt} readOnly />
 
-              <div style={{ display: 'none' }}>
-                {formData.zipcode}
-              </div>
+              <div style={{ display: "none" }}>{formData.zipcode}</div>
             </Form.Item>
           </Col>
         </Row>
@@ -484,7 +515,7 @@ const RetunNote = () => {
           )}
         </Form.List> */}
 
-<Form.List name="items" initialValue={formData.items || [{}]}>
+        <Form.List name="items" initialValue={formData.items || [{}]}>
           {(fields, { add, remove }) => (
             <>
               {formData.items?.length > 0 &&
@@ -492,45 +523,89 @@ const RetunNote = () => {
                   return (
                     // <div className="xyz" style={{font:"150px", zIndex: "100"}}>xyz</div>
 
-                    <div key={key} style={{ marginBottom: 16, border: '1px solid #d9d9d9', padding: 16, borderRadius: 4, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',gap:'20px' }}>
-                      
-                        <Form.Item label="Serial No.">
-                          <Input value={item.srNo} readOnly />
-                        </Form.Item>
-                      
-                        <Form.Item label="ITEM CODE">
-                          <Input value={item.itemCode} readOnly />
-                        </Form.Item>
-                        
-                        <Form.Item label="ITEM DESCRIPTION">
-                          <Input value={item.itemDesc} readOnly />
-                        </Form.Item>
+                    <div
+                      key={key}
+                      style={{
+                        marginBottom: 16,
+                        border: "1px solid #d9d9d9",
+                        padding: 16,
+                        borderRadius: 4,
+                        display: "grid",
+                        gridTemplateColumns:
+                          "repeat(auto-fit, minmax(200px, 1fr))",
+                        gap: "20px",
+                      }}
+                    >
+                      <Form.Item label="Serial No.">
+                        <Input value={item.srNo} readOnly />
+                      </Form.Item>
 
-                        <Form.Item label="UOM">
-                          <Input value={findColumnValue(item.uom, uomMaster, "uomMaster")} />
-                        </Form.Item>
+                      <Form.Item label="ITEM CODE">
+                        <Input value={item.itemCode} readOnly />
+                      </Form.Item>
 
-                        <Form.Item label="RETURN QUANTITY">
-                          <Input value={item.quantity} onChange={(e)=>itemHandleChange("quantity", e.target.value, key)} />
-                        </Form.Item>
+                      <Form.Item label="ITEM DESCRIPTION">
+                        <Input value={item.itemDesc} readOnly />
+                      </Form.Item>
 
-                        <Form.Item label="RETURNED AFTER NO. OF DAYS">
-                          <Input value={formData.issueNoteDt !== undefined ? daysDifference(formData.issueNoteDt) : ""} onChange={(e) => itemHandleChange(`noOfDays`, e.target.value, key)} readOnly />
-                        </Form.Item>
+                      <Form.Item label="UOM">
+                        <Input
+                          value={findColumnValue(
+                            item.uom,
+                            uomMaster,
+                            "uomMaster"
+                          )}
+                        />
+                      </Form.Item>
 
-                        <Form.Item label="CONDITION OF GOODS" name={'conditionOfgoods'}>
-                          <Input value={formData.items?.[key]?.conditionOfGoods} readOnly/>
-                        </Form.Item>
+                      <Form.Item label="RETURN QUANTITY">
+                        <Input
+                          value={item.quantity}
+                          onChange={(e) =>
+                            itemHandleChange("quantity", e.target.value, key)
+                          }
+                        />
+                      </Form.Item>
 
+                      <Form.Item label="RETURNED AFTER NO. OF DAYS">
+                        <Input
+                          value={
+                            formData.issueNoteDt !== undefined
+                              ? daysDifference(formData.issueNoteDt)
+                              : ""
+                          }
+                          onChange={(e) =>
+                            itemHandleChange(`noOfDays`, e.target.value, key)
+                          }
+                          readOnly
+                        />
+                      </Form.Item>
 
+                      <Form.Item
+                        label="CONDITION OF GOODS"
+                        name={"conditionOfgoods"}
+                      >
+                        <Input
+                          value={formData.items?.[key]?.conditionOfGoods}
+                          readOnly
+                        />
+                      </Form.Item>
 
-                        <Form.Item label="REMARK">
-                          <Input value={item.remarks} onChange={(e)=>itemHandleChange("remarks", e.target.value, key)} />
-                        </Form.Item>
+                      <Form.Item label="REMARK">
+                        <Input
+                          value={item.remarks}
+                          onChange={(e) =>
+                            itemHandleChange("remarks", e.target.value, key)
+                          }
+                        />
+                      </Form.Item>
 
-                        <Col span={1}>
-                          <MinusCircleOutlined onClick={() => removeItem(key)} style={{ marginTop: 8 }} />
-                        </Col>
+                      <Col span={1}>
+                        <MinusCircleOutlined
+                          onClick={() => removeItem(key)}
+                          style={{ marginTop: 8 }}
+                        />
+                      </Col>
                     </div>
                   );
                 })}
@@ -543,74 +618,130 @@ const RetunNote = () => {
         <Row gutter={24}>
           <Col span={12}>
             <Form.Item label="TERMS AND CONDITION :" name="termsCondition">
-              <Input.TextArea onChange={(e) => handleChange("termsCondition", e.target.value)} />
+              <Input.TextArea
+                onChange={(e) => handleChange("termsCondition", e.target.value)}
+              />
             </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item label="NOTE" name="note">
-              <Input.TextArea onChange={(e) => handleChange("note", e.target.value)} />
+              <Input.TextArea
+                onChange={(e) => handleChange("note", e.target.value)}
+              />
             </Form.Item>
           </Col>
         </Row>
 
-
         {/* Note and Signature */}
 
-        <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between' }}>
-
+        <div
+          style={{
+            display: "flex",
+            width: "100%",
+            justifyContent: "space-between",
+          }}
+        >
           <div>
-            <div className='goods-receive-note-signature'>
-              GENERATED  BY
+            <div className="goods-receive-note-signature">GENERATED BY</div>
+            <div className="goods-receive-note-signature">
+              NAME & DESIGNATION :
+              <Form>
+                <Input
+                  value={formData.genName}
+                  name="genName"
+                  onChange={(e) => handleChange("genName", e.target.value)}
+                />
+              </Form>
             </div>
-            <div className='goods-receive-note-signature'>
-              NAME & DESIGNATION :<Form><Input value={formData.genName} name="genName" onChange={(e) => handleChange("genName", e.target.value)} /></Form>
-            </div>
-            <div className='goods-receive-note-signature'>
-              DATE & TIME :<DatePicker defaultValue={dayjs()} format={dateFormat} style={{ width: '58%' }} name="genDate" onChange={(date, dateString) => handleChange("genDate", dateString)} />
+            <div className="goods-receive-note-signature">
+              DATE & TIME :
+              <DatePicker
+                defaultValue={dayjs()}
+                format={dateFormat}
+                style={{ width: "58%" }}
+                name="genDate"
+                onChange={(date, dateString) =>
+                  handleChange("genDate", dateString)
+                }
+              />
             </div>
           </div>
-          <div  >
-            <div className='goods-receive-note-signature'>
+          <div>
+            <div className="goods-receive-note-signature">
               RETURNED/SUBMITTED BY
             </div>
-            <div className='goods-receive-note-signature'>
-              NAME & SIGNATURE :<Form><Input value={formData.approvedName} name='approvedName' onChange={(e) => handleChange("approvedName", e.target.value)} /></Form>
+            <div className="goods-receive-note-signature">
+              NAME & SIGNATURE :
+              <Form>
+                <Input
+                  value={formData.approvedName}
+                  name="approvedName"
+                  onChange={(e) => handleChange("approvedName", e.target.value)}
+                />
+              </Form>
             </div>
-            <div className='goods-receive-note-signature'>
-              DATE & TIME :<DatePicker defaultValue={dayjs()} format={dateFormat} style={{ width: '58%' }} name='approvedDate' onChange={(date, dateString) => handleChange("approvedDate", dateString)} />
+            <div className="goods-receive-note-signature">
+              DATE & TIME :
+              <DatePicker
+                defaultValue={dayjs()}
+                format={dateFormat}
+                style={{ width: "58%" }}
+                name="approvedDate"
+                onChange={(date, dateString) =>
+                  handleChange("approvedDate", dateString)
+                }
+              />
             </div>
           </div>
         </div>
 
-
-
         {/* Submit Button */}
-        <div className='goods-receive-note-button-container'>
-
-          <Form.Item >
-            <Button type="primary" htmlType="save" style={{ width: '200px', margin: 16 }}>
+        <div className="goods-receive-note-button-container">
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="save"
+              style={{ width: "200px", margin: 16 }}
+            >
               SAVE
             </Button>
           </Form.Item>
 
-          <Form.Item >
-            <Button type="primary" htmlType="submit" style={{ backgroundColor: '#4CAF50', borderColor: '#4CAF50', width: '200px', margin: 16 }}>
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              style={{
+                backgroundColor: "#4CAF50",
+                borderColor: "#4CAF50",
+                width: "200px",
+                margin: 16,
+              }}
+            >
               SUBMIT
             </Button>
           </Form.Item>
-          <Form.Item >
-            <Button type="primary" danger htmlType="save" style={{ width: '200px', margin: 16 }}>
+          <Form.Item>
+            <Button
+              type="primary"
+              danger
+              htmlType="save"
+              style={{ width: "200px", margin: 16 }}
+            >
               PRINT
             </Button>
           </Form.Item>
-
         </div>
-        <Modal title="Return Note saved successfully" visible={isModalOpen} onOk={handleOk} >
+        <Modal
+          title="Return Note saved successfully"
+          visible={isModalOpen}
+          onOk={handleOk}
+        >
           {successMessage && <p>{successMessage}</p>}
           {errorMessage && <p>{errorMessage}</p>}
         </Modal>
       </Form>
-    </div >
+    </div>
   );
 };
 

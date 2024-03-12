@@ -1,71 +1,82 @@
 // GoodsReceiveNoteForm.js
-import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, DatePicker, Button, Row, Col, Typography, AutoComplete, Modal, message } from 'antd';
-import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
-import './GoodsReceiveNoteForm.css';
-import dayjs from 'dayjs';
-import axios from 'axios';
-const dateFormat = 'DD/MM/YYYY';
+import React, { useState, useEffect } from "react";
+import {
+  Form,
+  Input,
+  Select,
+  DatePicker,
+  Button,
+  Row,
+  Col,
+  Typography,
+  AutoComplete,
+  Modal,
+  message,
+} from "antd";
+import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
+import "./GoodsReceiveNoteForm.css";
+import dayjs from "dayjs";
+import axios from "axios";
+const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
 
-
-
 const GoodsReceiveNoteForm = () => {
-  const [Type, setType] = useState('IRP');
+  const [Type, setType] = useState("IRP");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [itemData, setItemData] = useState([]);
+  const [uomMaster, setUomMaster] = useState([])
+  const [locatorMaster, setLocatorMaster] = useState([])
   const [formData, setFormData] = useState({
-    genDate: '',
-    genName: '',
-    issueDate: '',
-    issueName: '',
-    approvedDate: '',
-    approvedName: '',
-    processId: '',
-    type: '',
-    grnDate: '',
-    grnNo: '',
-    ceRegionalCenterCd: '',
-    ceRegionalCenterName: '',
-    ceAddress: '',
-    ceZipcode: '',
-    crRegionalCenterCd: '',
-    crRegionalCenterName: '',
-    crAddress: '',
-    crZipcode: '',
-    consumerName: '',
-    contactNo: '',
-    noaNo: '',
-    noaDate: '',
-    dateOfDelivery: '',
-    acceptanceNoteNo: '',
-    returnVoucher: '',
-    challanNo: '',
-    supplierCode: '',
-    supplierName: '',
-    noteType: '',
+    genDate: "",
+    genName: "",
+    issueDate: "",
+    issueName: "",
+    approvedDate: "",
+    approvedName: "",
+    processId: "",
+    type: "",
+    grnDate: "",
+    grnNo: "",
+    ceRegionalCenterCd: "",
+    ceRegionalCenterName: "",
+    ceAddress: "",
+    ceZipcode: "",
+    crRegionalCenterCd: "",
+    crRegionalCenterName: "",
+    crAddress: "",
+    crZipcode: "",
+    consumerName: "",
+    contactNo: "",
+    noaNo: "",
+    noaDate: "",
+    dateOfDelivery: "",
+    acceptanceNoteNo: "",
+    returnVoucher: "",
+    challanNo: "",
+    supplierCode: "",
+    supplierName: "",
+    noteType: "",
     items: [
-      {
-        srNo: 0,
-        itemCode: '',
-        itemDesc: '',
-        uom: '',
-        quantity: 0,
-        noOfDays: 0,
-        remarks: '',
-        conditionOfGoods: '',
-        budgetHeadProcurement: '',
-        locatorId: ''
-      }
+      // {
+      //   srNo: 0,
+      //   itemCode: "",
+      //   itemDesc: "",
+      //   uom: "",
+      //   quantity: 0,
+      //   noOfDays: 0,
+      //   remarks: "",
+      //   conditionOfGoods: "",
+      //   budgetHeadProcurement: "",
+      //   locatorId: "",
+      // },
     ],
-    userId: '',
-    conditionOfGoods: '',
-    note: ''
+    userId: "",
+    conditionOfGoods: "",
+    note: "",
   });
-
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -76,58 +87,79 @@ const GoodsReceiveNoteForm = () => {
   };
 
   const handleChange = (fieldName, value) => {
-    setFormData(prevValues => ({
+    setFormData((prevValues) => ({
       ...prevValues,
-      [fieldName]: value === "" ? null : value
+      [fieldName]: value === "" ? null : value,
     }));
   };
 
   const itemHandleChange = (fieldName, value, index) => {
-    setFormData(prevValues => {
+    setFormData((prevValues) => {
       const updatedItems = [...(prevValues.items || [])];
       updatedItems[index] = {
         ...updatedItems[index],
         [fieldName]: value === "" ? null : value,
-        uom: "string",
-        conditionOfGoods: "string", // Hard-coded data
-        budgetHeadProcurement: "string", // Hard-coded data
-        locatorId: "string", // Hard-coded data
       };
       return {
         ...prevValues,
-        items: updatedItems
+        items: updatedItems,
       };
     });
   };
 
-  useEffect(() => {
+  const populateItemData = async() => {
+    const itemMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster"
+    const locatorMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster"
+    const uomMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster"
+    
+    try{
+      const [itemMaster, locatorMaster, uomMaster] = await Promise.all([
+        axios.get(itemMasterUrl),
+        axios.get(locatorMasterUrl),
+        axios.get(uomMasterUrl),
+      ])
+      
+      const {responseData : itemMasterData} = itemMaster.data
+      const {responseData : locatorMasterData} = locatorMaster.data
+      const {responseData : uomMasterData} = uomMaster.data
 
-    fetchItemData()
-    fetchUserDetails()
+      setItemData([...itemMasterData])
+      setUomMaster([...uomMasterData])
+      setLocatorMaster([...locatorMasterData])
+
+    }catch(error){
+      console.log("Populate item data error: ", error)
+    }
+  }
+
+  useEffect(() => {
+    populateItemData()
+    fetchUserDetails();
   }, []);
 
-  const fetchItemData = async () => {
-    try {
-      const apiUrl = 'https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster';
-      const response = await axios.get(apiUrl);
-      const { responseData } = response.data;
-      setItemData(responseData);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
+  // const fetchItemData = async () => {
+  //   try {
+  //     const apiUrl =
+  //       "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster";
+  //     const response = await axios.get(apiUrl);
+  //     const { responseData } = response.data;
+  //     setItemData(responseData);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
   const fetchUserDetails = async () => {
     try {
-      const apiUrl = 'https://sai-services.azurewebsites.net/sai-inv-mgmt/login/authenticate';
+      const apiUrl =
+        "https://sai-services.azurewebsites.net/sai-inv-mgmt/login/authenticate";
       const response = await axios.post(apiUrl, {
         userCd: "dkg",
-        password: "string"
+        password: "string",
       });
 
       const { responseData } = response.data;
       const { organizationDetails } = responseData;
       const { userDetails } = responseData;
-      console.log('Fetched data:', organizationDetails);
       const currentDate = dayjs();
       // Update form data with fetched values
       setFormData({
@@ -144,23 +176,22 @@ const GoodsReceiveNoteForm = () => {
         approvedDate: currentDate.format(dateFormat),
         grnDate: currentDate.format(dateFormat),
         grnNo: "string",
-
       });
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
   };
   const handleReturnNoteNoChange = async (value) => {
     try {
-      const apiUrl = 'https://sai-services.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls';
+      const apiUrl =
+        "https://sai-services.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
       const response = await axios.post(apiUrl, {
         processId: value,
         processStage: "RN",
       });
       const responseData = response.data.responseData;
       const { processData, itemList } = responseData;
-      console.log('API Response:', response.data);
-      setFormData(prevFormData => ({
+      setFormData((prevFormData) => ({
         ...prevFormData,
 
         issueName: processData?.issueName,
@@ -175,30 +206,28 @@ const GoodsReceiveNoteForm = () => {
         consumerName: processData?.consumerName,
         contactNo: processData?.contactNo,
 
-        items: itemList.map(item => ({
+        items: itemList.map((item) => ({
           srNo: item?.sNo,
           itemCode: item?.itemCode,
           itemDesc: item?.itemDesc,
-          uom: item?.uom,
+          uom: parseInt(item?.uom),
           quantity: item?.quantity,
           noOfDays: item?.requiredDays,
           remarks: item?.remarks,
           conditionOfGoods: item?.conditionOfGoods,
           budgetHeadProcurement: item?.budgetHeadProcurement,
-          locatorId: item?.locatorId
-        }))
+          locatorId: parseInt(item?.locatorId),
+        })),
       }));
       // Handle response data as needed
     } catch (error) {
-      console.error('Error fetching sub process details:', error);
+      console.error("Error fetching sub process details:", error);
       // Handle error
     }
   };
 
-
   const onFinish = async (values) => {
     try {
-
       const formDataCopy = { ...formData };
 
       const allFields = [
@@ -234,57 +263,107 @@ const GoodsReceiveNoteForm = () => {
         "userId",
         "conditionOfGoods",
         "note",
-        "items"
+        "items",
       ];
 
-      allFields.forEach(field => {
+      allFields.forEach((field) => {
         if (!(field in formDataCopy)) {
           formDataCopy[field] = "";
         }
       });
 
-
-      const apiUrl = 'https://sai-services.azurewebsites.net/sai-inv-mgmt/saveGRN';
+      const apiUrl =
+        "https://sai-services.azurewebsites.net/sai-inv-mgmt/saveGRN";
       const response = await axios.post(apiUrl, formDataCopy);
-      console.log('API Response:', response.data);
-      if (response.status === 200 && response.data && response.data.responseStatus && response.data.responseStatus.message === 'Success') {
+      if (
+        response.status === 200 &&
+        response.data &&
+        response.data.responseStatus &&
+        response.data.responseStatus.message === "Success"
+      ) {
         // Access the specific success message data if available
-        const { processId, processType, subProcessId } = response.data.responseData;
-        setFormData({
-          grnNo: processId,
+        const { processId, processType, subProcessId } =
+          response.data.responseData;
+        setFormData(prevValues => {
+          return{
+            ...prevValues,
+            grnNo: processId,
+          }
         });
-        setSuccessMessage(` Goods Receive Note NO : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`);
+        setSuccessMessage(
+          ` Goods Receive Note NO : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
+        );
         showModal();
-        message.success(`Goods Receive Note successfully! Process ID: ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`);
-
-      } else {
+        message.success(
+          `Goods Receive Note successfully! Process ID: ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
+        );
+      } 
+      else {
         // Display a generic success message if specific data is not available
-        message.error('Failed to Goods Receive Note. Please try again later.');
+        message.error("Failed to Goods Receive Note. Please try again later.");
       }
       // Handle success response here
     } catch (error) {
-      console.error('Error saving Goods Receive Note:', error);
-      message.error('Failed to Goods Receive Note. Please try again later.');
-
-      // Handle error response here
+      console.log("Error saving Goods Receive Note:", error);
+      message.error("Failed to Goods Receive Note. Please try again later.");
     }
   };
-
 
   const handleValuesChange = (_, allValues) => {
     setType(allValues.type);
   };
 
-  return (
+  const findColumnValue = (id, dataSource, sourceName) => {
+    const foundObject = dataSource.find((obj) => obj.id === id);
 
+    if (sourceName === "locationMaster")
+      return foundObject ? foundObject["locationName"] : "Undefined";
+    if (sourceName === "locatorMaster")
+      return foundObject ? foundObject["locatorDesc"] : "Undefined";
+    if (sourceName === "vendorMaster")
+      return foundObject ? foundObject["vendorName"] : "Undefined";
+    if (sourceName === "uomMaster")
+      return foundObject ? foundObject["uomName"] : "Undefined";
+  };
+
+  const removeItem = (index) => {
+    setFormData((prevValues) => {
+      const updatedItems = prevValues.items;
+      updatedItems.splice(index, 1);
+
+      const updatedItems1 = updatedItems.map((item, key) => {
+        return { ...item, srNo: key };
+      });
+
+      return {
+        ...prevValues,
+        items: updatedItems1,
+      };
+    });
+  };
+
+  return (
     <div className="goods-receive-note-form-container">
       <h1>Sports Authority of India - Goods Receive Note</h1>
 
-      <Form onFinish={onFinish} className="goods-receive-note-form" onValuesChange={handleValuesChange} layout="vertical">
+      <Form
+        onFinish={onFinish}
+        className="goods-receive-note-form"
+        onValuesChange={handleValuesChange}
+        layout="vertical"
+      >
         <Row>
           <Col span={6} offset={18}>
             <Form.Item label="DATE" name="grnDate">
-              <DatePicker defaultValue={dayjs()} format={dateFormat} style={{ width: '100%' }} name="grnDate" onChange={(date, dateString) => handleChange("grnDate", dateString)} />
+              <DatePicker
+                defaultValue={dayjs()}
+                format={dateFormat}
+                style={{ width: "100%" }}
+                name="grnDate"
+                onChange={(date, dateString) =>
+                  handleChange("grnDate", dateString)
+                }
+              />
             </Form.Item>
           </Col>
           <Col span={6}>
@@ -298,119 +377,187 @@ const GoodsReceiveNoteForm = () => {
           </Col>
           <Col span={6} offset={12}>
             <Form.Item label="GRN NO." name="grnNo">
-              <Input disabled onChange={(e) => handleChange("grnNo", e.target.value)} />
+              <Input
+                disabled
+                onChange={(e) => handleChange("grnNo", e.target.value)}
+              />
             </Form.Item>
           </Col>
         </Row>
 
         <Row gutter={24}>
           <Col span={8}>
-            <Title strong level={2} underline type='danger' > CONSIGNEE DETAIL :-</Title>
+            <Title strong level={2} underline type="danger">
+              {" "}
+              CONSIGNEE DETAIL :-
+            </Title>
 
             <Form.Item label="REGIONAL CENTER CODE" name="ceRegionalCenterCd">
               <Input value={formData.ceRegionalCenterCd} />
-              <div style={{ display: 'none' }}>
+              <div style={{ display: "none" }}>
                 {formData.ceRegionalCenterCd}
               </div>
             </Form.Item>
-            <Form.Item label="REGIONAL CENTER NAME " name="ceRegionalCenterName">
+            <Form.Item
+              label="REGIONAL CENTER NAME "
+              name="ceRegionalCenterName"
+            >
               <Input value={formData.ceRegionalCenterName} />
-              <div style={{ display: 'none' }}>
+              <div style={{ display: "none" }}>
                 {formData.ceRegionalCenterCd}
               </div>
             </Form.Item>
             <Form.Item label="ADDRESS :" name="ceAddress">
               <Input value={formData.ceAddress} />
-              <div style={{ display: 'none' }}>
+              <div style={{ display: "none" }}>
                 {formData.ceRegionalCenterCd}
               </div>
             </Form.Item>
             <Form.Item label="ZIP CODE :" name="ceZipcode">
               <Input value={formData.ceZipcode} />
-              <div style={{ display: 'none' }}>
+              <div style={{ display: "none" }}>
                 {formData.ceRegionalCenterCd}
               </div>
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Title strong underline level={2} type="danger" >CONSIGNOR DETAIL :-</Title>
+            <Title strong underline level={2} type="danger">
+              CONSIGNOR DETAIL :-
+            </Title>
 
-            {Type === 'PO' && (
+            {Type === "PO" && (
               <>
                 <Form.Item label="SUPPLIER CODE :" name="supplierCode">
-                  <Input onChange={(e) => handleChange("supplierCode", e.target.value)} />
+                  <Input
+                    onChange={(e) =>
+                      handleChange("supplierCode", e.target.value)
+                    }
+                  />
                 </Form.Item>
                 <Form.Item label="SUPPLIER NAME :" name="supplierName">
-                  <Input onChange={(e) => handleChange("supplierName", e.target.value)} />
+                  <Input
+                    onChange={(e) =>
+                      handleChange("supplierName", e.target.value)
+                    }
+                  />
                 </Form.Item>
                 <Form.Item label="ADDRESS:" name="supplierAddress">
-                  <Input onChange={(e) => handleChange("supplierAddress", e.target.value)} />
+                  <Input
+                    onChange={(e) =>
+                      handleChange("supplierAddress", e.target.value)
+                    }
+                  />
                 </Form.Item>
               </>
             )}
 
-            {Type === 'IRP' && (
+            {Type === "IRP" && (
               <>
-                <Form.Item label="CONSUMER NAME :" name="consumerName" initialValue={formData.consumerName}>
-                  <Input value={formData.consumerName} onChange={(e) => handleChange("consumerName", e.target.value)} />
-                  <div style={{ display: 'none' }}>
-                    {formData.crZipcode}
-                  </div>
+                <Form.Item
+                  label="CONSUMER NAME :"
+                  name="consumerName"
+                  initialValue={formData.consumerName}
+                >
+                  <Input
+                    value={formData.consumerName}
+                    onChange={(e) =>
+                      handleChange("consumerName", e.target.value)
+                    }
+                  />
+                  <div style={{ display: "none" }}>{formData.crZipcode}</div>
                 </Form.Item>
-                <Form.Item label="CONTACT NO. :" name="contactNo" initialValue={formData.contactNo}>
-                  <Input value={formData.contactNo} onChange={(e) => handleChange("contactNo", e.target.value)} />
-                  <div style={{ display: 'none' }}>
-                    {formData.crZipcode}
-                  </div>
+                <Form.Item
+                  label="CONTACT NO. :"
+                  name="contactNo"
+                  initialValue={formData.contactNo}
+                >
+                  <Input
+                    value={formData.contactNo}
+                    onChange={(e) => handleChange("contactNo", e.target.value)}
+                  />
+                  <div style={{ display: "none" }}>{formData.crZipcode}</div>
                 </Form.Item>
               </>
             )}
 
-            {Type === 'IOP' && (
+            {Type === "IOP" && (
               <>
-                <Form.Item label="REGIONAL CENTER CODE" name="crRegionalCenterCd">
-                  <Input onChange={(e) => handleChange("crRegionalCenterCd", e.target.value)} />
+                <Form.Item
+                  label="REGIONAL CENTER CODE"
+                  name="crRegionalCenterCd"
+                >
+                  <Input
+                    onChange={(e) =>
+                      handleChange("crRegionalCenterCd", e.target.value)
+                    }
+                  />
                 </Form.Item>
-                <Form.Item label="REGIONAL CENTER NAME " name="crRegionalCenterName">
-                  <Input onChange={(e) => handleChange("crRegionalCenterName", e.target.value)} />
+                <Form.Item
+                  label="REGIONAL CENTER NAME "
+                  name="crRegionalCenterName"
+                >
+                  <Input
+                    onChange={(e) =>
+                      handleChange("crRegionalCenterName", e.target.value)
+                    }
+                  />
                 </Form.Item>
                 <Form.Item label="ADDRESS :" name="crAddress">
-                  <Input onChange={(e) => handleChange("crAddress", e.target.value)} />
+                  <Input
+                    onChange={(e) => handleChange("crAddress", e.target.value)}
+                  />
                 </Form.Item>
                 <Form.Item label="ZIP CODE :" name="crZipcode">
-                  <Input onChange={(e) => handleChange("crZipcode", e.target.value)} />
+                  <Input
+                    onChange={(e) => handleChange("crZipcode", e.target.value)}
+                  />
                 </Form.Item>
               </>
             )}
           </Col>
           <Col span={8}>
-            <Form.Item>
-            </Form.Item>
-            {Type === 'IRP' && (
+            <Form.Item></Form.Item>
+            {Type === "IRP" && (
               <Form.Item label="RETURN NOTE NO" name="returnVoucherNo">
-                <Input onChange={(e) => handleReturnNoteNoChange(e.target.value)} />
+                <Input
+                  onChange={(e) => handleReturnNoteNoChange(e.target.value)}
+                />
               </Form.Item>
             )}
-            {Type === 'PO' && (
+            {Type === "PO" && (
               <Form.Item label="ACCEPTANCE NOTE NO." name="acceptanceNoteNo">
                 <Input />
               </Form.Item>
             )}
-            {Type === 'IOP' && (
+            {Type === "IOP" && (
               <Form.Item label="INWARD GATE PASS" name="inwardGatePass">
                 <Input />
               </Form.Item>
             )}
-            {(Type === 'IOP' || Type === 'PO') && (
+            {(Type === "IOP" || Type === "PO") && (
               <>
                 <Form.Item label="NOA NO." name="noaNo">
-                  <Input onChange={(e) => handleChange("noaNo", e.target.value)} />
+                  <Input
+                    onChange={(e) => handleChange("noaNo", e.target.value)}
+                  />
                 </Form.Item>
                 <Form.Item label="NOA DATE" name="noaDate">
-                  <DatePicker format={dateFormat} style={{ width: '100%' }} onChange={(date, dateString) => handleChange("noaDate", dateString)} />
+                  <DatePicker
+                    format={dateFormat}
+                    style={{ width: "100%" }}
+                    onChange={(date, dateString) =>
+                      handleChange("noaDate", dateString)
+                    }
+                  />
                 </Form.Item>
                 <Form.Item label="DATE OF DELIVERY" name="dateOfDelivery">
-                  <DatePicker format={dateFormat} style={{ width: '100%' }} onChange={(date, dateString) => handleChange("dateOfDelivery", dateString)} />
+                  <DatePicker
+                    format={dateFormat}
+                    style={{ width: "100%" }}
+                    onChange={(date, dateString) =>
+                      handleChange("dateOfDelivery", dateString)
+                    }
+                  />
                 </Form.Item>
               </>
             )}
@@ -420,7 +567,7 @@ const GoodsReceiveNoteForm = () => {
         {/* Item Details */}
         <h2>ITEM DETAILS</h2>
 
-        <Form.List name="itemDetails" initialValue={formData.items || [{}]}>
+        {/* <Form.List name="itemDetails" initialValue={formData.items || [{}]}>
           {(fields, { add, remove }) => (
             <>
               <Form.Item style={{ textAlign: 'right' }}>
@@ -513,78 +660,228 @@ const GoodsReceiveNoteForm = () => {
               ))}
             </>
           )}
+        </Form.List> */}
+
+        <Form.List name="items" initialValue={formData.items || [{}]}>
+          {(fields, { add, remove }) => (
+            <>
+              {formData.items?.length > 0 &&
+                formData.items.map((item, key) => {
+                  return (
+                    // <div className="xyz" style={{font:"150px", zIndex: "100"}}>xyz</div>
+
+                    <div
+                      key={key}
+                      style={{
+                        marginBottom: 16,
+                        border: "1px solid #d9d9d9",
+                        padding: 16,
+                        borderRadius: 4,
+                        display: "grid",
+                        gridTemplateColumns:
+                          "repeat(auto-fit, minmax(200px, 1fr))",
+                        gap: "20px",
+                      }}
+                    >
+                      <Form.Item label="Serial No.">
+                        <Input value={item.srNo} readOnly />
+                      </Form.Item>
+
+                      <Form.Item label="ITEM CODE">
+                        <Input value={item.itemCode} readOnly />
+                      </Form.Item>
+
+                      <Form.Item label="ITEM DESCRIPTION">
+                        <Input value={item.itemDesc} readOnly />
+                      </Form.Item>
+
+                      <Form.Item label="UOM">
+                        <Input
+                          value={findColumnValue(
+                            item.uom,
+                            uomMaster,
+                            "uomMaster"
+                          )}
+                        />
+                      </Form.Item>
+
+                      <Form.Item label="RECEIVED QUANTITY">
+                        <Input
+                          value={item.quantity}
+                          onChange={(e) =>
+                            itemHandleChange("quantity", e.target.value, key)
+                          }
+                        />
+                      </Form.Item>
+
+                      <Form.Item label="BUDGET HEAD PROCUREMENT">
+                        <Input
+                          value={
+                            item.budgetHeadProcurement
+                          }
+                          readOnly
+                        />
+                      </Form.Item>
+
+                      <Form.Item
+                        label="LOCATOR DESCRIPTION"
+                      >
+                        <Input
+                          value={findColumnValue(item.locatorId, locatorMaster, "locatorMaster")}
+                          readOnly
+                        />
+                      </Form.Item>
+
+                      <Form.Item label="REMARK">
+                        <Input
+                          value={item.remarks}
+                          onChange={(e) =>
+                            itemHandleChange("remarks", e.target.value, key)
+                          }
+                        />
+                      </Form.Item>
+
+                      <Col span={1}>
+                        <MinusCircleOutlined
+                          onClick={() => removeItem(key)}
+                          style={{ marginTop: 8 }}
+                        />
+                      </Col>
+                    </div>
+                  );
+                })}
+            </>
+          )}
         </Form.List>
 
         {/* Condition of Goods */}
         <Row gutter={24}>
           <Col span={12}>
             <Form.Item label="CONDITION OF GOODS" name="conditionOfGoods">
-              <Input.TextArea onChange={(e) => handleChange("conditionOfGoods", e.target.value)} />
+              <Input.TextArea
+                onChange={(e) =>
+                  handleChange("conditionOfGoods", e.target.value)
+                }
+              />
             </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item label="NOTE" name="note">
-              <Input.TextArea onChange={(e) => handleChange("note", e.target.value)} />
+              <Input.TextArea
+                onChange={(e) => handleChange("note", e.target.value)}
+              />
             </Form.Item>
           </Col>
         </Row>
 
         {/* Note and Signature */}
 
-        <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between' }}>
-          <div  >
-            <div className='goods-receive-note-signature'>
-              GENERATED BY
+        <div
+          style={{
+            display: "flex",
+            width: "100%",
+            justifyContent: "space-between",
+          }}
+        >
+          <div>
+            <div className="goods-receive-note-signature">GENERATED BY</div>
+            <div className="goods-receive-note-signature">
+              NAME & DESIGNATION :
+              <Form>
+                <Input
+                  value={formData.genName}
+                  name="genName"
+                  onChange={(e) => handleChange("genName", e.target.value)}
+                />
+              </Form>
             </div>
-            <div className='goods-receive-note-signature'>
-              NAME & DESIGNATION :<Form><Input value={formData.genName} name="genName" onChange={(e) => handleChange("genName", e.target.value)} /></Form>
-            </div>
-            <div className='goods-receive-note-signature'>
-              DATE & TIME :<DatePicker defaultValue={dayjs()} format={dateFormat} style={{ width: '58%' }} name="genDate" onChange={(date, dateString) => handleChange("genDate", dateString)} />
+            <div className="goods-receive-note-signature">
+              DATE & TIME :
+              <DatePicker
+                defaultValue={dayjs()}
+                format={dateFormat}
+                style={{ width: "58%" }}
+                name="genDate"
+                onChange={(date, dateString) =>
+                  handleChange("genDate", dateString)
+                }
+              />
             </div>
           </div>
 
-          <div >
-            <div className='goods-receive-note-signature'>
-              VERIFIED BY
+          <div>
+            <div className="goods-receive-note-signature">VERIFIED BY</div>
+            <div className="goods-receive-note-signature">
+              NAME & SIGNATURE :
+              <Form>
+                <Input
+                  name="issueName"
+                  onChange={(e) => handleChange("issueName", e.target.value)}
+                />
+              </Form>
             </div>
-            <div className='goods-receive-note-signature'>
-              NAME & SIGNATURE :<Form><Input name='issueName' onChange={(e) => handleChange("issueName", e.target.value)} /></Form>
-            </div>
-            <div className='goods-receive-note-signature'>
-              DATE & TIME :<DatePicker defaultValue={dayjs()} format={dateFormat} style={{ width: '58%' }} name='issueDate' onChange={(date, dateString) => handleChange("issueDate", dateString)} />
+            <div className="goods-receive-note-signature">
+              DATE & TIME :
+              <DatePicker
+                defaultValue={dayjs()}
+                format={dateFormat}
+                style={{ width: "58%" }}
+                name="issueDate"
+                onChange={(date, dateString) =>
+                  handleChange("issueDate", dateString)
+                }
+              />
             </div>
           </div>
         </div>
 
-
-
         {/* Submit Button */}
-        <div className='goods-receive-note-button-container'>
-
-          <Form.Item >
-            <Button type="primary" htmlType="save" style={{ width: '200px', margin: 16 }}>
+        <div className="goods-receive-note-button-container">
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="save"
+              style={{ width: "200px", margin: 16 }}
+            >
               SAVE
             </Button>
           </Form.Item>
 
-          <Form.Item >
-            <Button type="primary" htmlType="submit" style={{ backgroundColor: '#4CAF50', borderColor: '#4CAF50', width: '200px', margin: 16 }}>
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              style={{
+                backgroundColor: "#4CAF50",
+                borderColor: "#4CAF50",
+                width: "200px",
+                margin: 16,
+              }}
+            >
               SUBMIT
             </Button>
           </Form.Item>
-          <Form.Item >
-            <Button type="primary" danger htmlType="save" style={{ width: '200px', margin: 16 }}>
+          <Form.Item>
+            <Button
+              type="primary"
+              danger
+              htmlType="save"
+              style={{ width: "200px", margin: 16 }}
+            >
               PRINT
             </Button>
           </Form.Item>
-          <Modal title="Goods Receive Note successfully" visible={isModalOpen} onOk={handleOk} >
+          <Modal
+            title="Goods Receive Note successfully"
+            visible={isModalOpen}
+            onOk={handleOk}
+          >
             {successMessage && <p>{successMessage}</p>}
             {errorMessage && <p>{errorMessage}</p>}
           </Modal>
         </div>
       </Form>
-    </div >
+    </div>
   );
 };
 
