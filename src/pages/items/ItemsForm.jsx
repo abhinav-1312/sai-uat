@@ -31,13 +31,14 @@ const ItemsForm = ({
   disciplines,
 }) => {
   const [form] = Form.useForm();
+  
 
   const onFinish = (values) => {
     onSubmit(values);
-    form.resetFields();
+    // form.resetFields();
   };
 
-  console.log("Vendores: ", vendors)
+  
   return (
     <Form
       form={form}

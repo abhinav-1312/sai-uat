@@ -35,6 +35,7 @@ const DemandNoteForm = () => {
   };
 
   const fetchData = async () => {
+    console.log("Fetch data called")
     try {
       const apiUrl = 'https://sai-services.azurewebsites.net/sai-inv-mgmt/login/authenticate';
       const response = await axios.post(apiUrl, {
@@ -99,7 +100,7 @@ const DemandNoteForm = () => {
         }
       });
 
-      console.log('Response from API:', response.data);
+      console.log("Form data submit karke: ", formData)
       // Handle successful response here, if needed
     } catch (error) {
       console.error('There was a problem with the API call:', error);

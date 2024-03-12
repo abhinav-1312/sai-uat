@@ -18,6 +18,10 @@ const InwardGatePass = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [itemData, setItemData] = useState([]);
+  const [uomMaster, setUomMaster] = useState([])
+  const [locatorMaster, setLocatorMaster] = useState([])
+  // const [locationMaster, setLocationMaster] = useState([])
+  // const [vendorMaster, setVendorMaster] = useState([])
   const [formData, setFormData] = useState({
     genDate: '',
     genName: '',
@@ -102,9 +106,34 @@ const InwardGatePass = () => {
     });
   };
 
-  useEffect(() => {
+  const populateItemData = async() => {
+    const itemMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster"
+    const locatorMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster"
+    const uomMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster"
+    try{
+      const [itemMaster, locatorMaster, uomMaster] = await Promise.all([
+        axios.get(itemMasterUrl),
+        axios.get(locatorMasterUrl),
+        axios.get(uomMasterUrl),
+      ])
+      
+      const {responseData : itemMasterData} = itemMaster.data
+      const {responseData : locatorMasterData} = locatorMaster.data
+      const {responseData : uomMasterData} = uomMaster.data
 
-    fetchItemData()
+      setItemData([...itemMasterData])
+      setUomMaster([...uomMasterData])
+      setLocatorMaster([...locatorMasterData])
+
+
+    }catch(error){
+      console.log("Populate item data error: ", error)
+    }
+  }
+
+  useEffect(() => {
+    populateItemData()
+    // fetchItemData()
     fetchUserDetails()
   }, []);
 
@@ -182,13 +211,13 @@ const InwardGatePass = () => {
           srNo: item?.sNo,
           itemCode: item?.itemCode,
           itemDesc: item?.itemDesc,
-          uom: item?.uom,
+          uom: parseInt(item?.uom),
           quantity: item?.quantity,
           noOfDays: item?.requiredDays,
           remarks: item?.remarks,
           conditionOfGoods: item?.conditionOfGoods,
           budgetHeadProcurement: item?.budgetHeadProcurement,
-          locatorId: item?.locatorId
+          locatorId: parseInt(item?.locatorId)
         }))
       }));
       // Handle response data as needed
@@ -256,6 +285,35 @@ const InwardGatePass = () => {
   const handleSelectChange = (value) => {
     setSelectedOption(value);
   };
+
+  const findColumnValue = (id, dataSource, sourceName) => {
+    const foundObject = dataSource.find(obj => obj.id === id);
+
+    if(sourceName === "locationMaster")
+      return foundObject ? foundObject['locationName'] : 'Undefined';
+    if(sourceName === "locatorMaster")
+      return foundObject ? foundObject['locatorDesc'] : 'Undefined';
+    if(sourceName === "vendorMaster")
+      return foundObject ? foundObject['vendorName'] : 'Undefined';
+    if(sourceName === 'uomMaster')
+      return foundObject ? foundObject['uomName'] : 'Undefined';
+  }
+
+  const removeItem = (index) => {
+    setFormData(prevValues=>{
+      const updatedItems = prevValues.items
+      updatedItems.splice(index, 1)
+      
+      const updatedItems1 = updatedItems.map((item, key)=>{
+        return {...item, srNo: key}
+      })
+
+      return {
+        ...prevValues,
+        items: updatedItems1
+      }
+    })
+  }
 
   return (
 
@@ -431,108 +489,54 @@ const InwardGatePass = () => {
         {/* Item Details */}
         <h2>ITEM DETAILS</h2>
 
-        <Form.List name="itemDetails" initialValue={formData.items || [{}]}>
+        <Form.List name="items" initialValue={formData.items || [{}]}>
           {(fields, { add, remove }) => (
             <>
-        <ItemSearchFilter />
-              
-              <Form.Item style={{ textAlign: 'right' }}>
-                <Button type="dashed" onClick={() => add()} style={{ marginBottom: 8 }} icon={<PlusOutlined />}>
-                  ADD ITEM
-                </Button>
-              </Form.Item>
-              {fields.map(({ key, name, ...restField }, index) => (
-                <div key={key} style={{ marginBottom: 16, border: '1px solid #d9d9d9', padding: 16, borderRadius: 4 }}>
-                  <Row gutter={24}>
-                    <Col span={6}>
-                      <Form.Item {...restField} label="S.NO." name={[name, 'srNo']}  >
-                        <Input value={formData.items?.[index]?.srNo} onChange={(e) => e.target && itemHandleChange(`srNo`, e.target.value, index)} />
-                        <span style={{ display: 'none' }}>{index + 1}</span>
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item {...restField} label="ITEM CODE" name={[name, 'itemCode']} initialValue={formData.items?.[index]?.itemCode}>
-                        <AutoComplete
-                          style={{ width: '100%' }}
-                          options={itemData.map(item => ({ value: item.itemMasterCd }))}
-                          placeholder="Enter item code"
-                          filterOption={(inputValue, option) =>
-                            option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-                          }
-                          value={formData.items?.[index]?.itemCode}
-                          onChange={(value) => {
-                            itemHandleChange(`itemCode`, value, index)
-                            // Find the selected item
-                            const selectedItem = itemData.find(item => item.itemMasterCd === value);
+              {formData.items?.length > 0 &&
+                formData.items.map((item, key) => {
+                  return (
+                    // <div className="xyz" style={{font:"150px", zIndex: "100"}}>xyz</div>
 
-
-                          }}
-                        />
-                        <span style={{ display: 'none' }}>{index + 1}</span>
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item {...restField} label="ITEM DESCRIPTION" name={[name, 'itemDesc']}>
-                        <AutoComplete
-                          style={{ width: '100%' }}
-                          options={itemData.map(item => ({ value: item.itemMasterDesc }))}
-                          placeholder="Enter item description"
-                          filterOption={(inputValue, option) =>
-                            option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-                          }
-                          onChange={(value) => itemHandleChange(`itemDesc`, value, index)}
-                          value={formData.items?.[index]?.itemDesc}
-
-                        />
-                        <span style={{ display: 'none' }}>{index + 1}</span>
-                      </Form.Item>
-                    </Col>
-                    <Col span={5}>
-                      <Form.Item {...restField} label="UOM" name={[name, 'uom']}>
-                        <AutoComplete
-                          style={{ width: '100%' }}
-                          options={itemData.map(item => ({ value: item.uom }))}
-                          placeholder="Enter UOM"
-                          filterOption={(inputValue, option) =>
-                            option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-                          }
-                          onChange={(value) => itemHandleChange(`uom`, value, index)}
-
-
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item {...restField} label=" QUANTITY" name={[name, 'quantity']}>
-                        <Input value={formData.items?.[index]?.quantity} onChange={(e) => itemHandleChange(`quantity`, e.target.value, index)} />
-                        <span style={{ display: 'none' }}>{index + 1}</span>
-
-                      </Form.Item>
-                    </Col>
-                    {Type === 'IRP' && (
-                      <Col span={6}>
-                        <Form.Item {...restField} label="REQUIRED FOR NO. OF DAYS" name={[name, 'budgetHeadProcurement']}>
-                          <Input value={formData.items?.[index]?.noOfDays} onChange={(e) => itemHandleChange(`noOfDays`, e.target.value, index)} />
-                          <span style={{ display: 'none' }}>{index + 1}</span>
-
+                    <div key={key} style={{ marginBottom: 16, border: '1px solid #d9d9d9', padding: 16, borderRadius: 4, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',gap:'20px' }}>
+                      
+                        <Form.Item label="Serial No.">
+                          <Input value={item.srNo} readOnly />
                         </Form.Item>
-                      </Col>
-                    )}
+                      
+                        <Form.Item label="ITEM CODE">
+                          <Input value={item.itemCode} readOnly />
+                        </Form.Item>
+                        
+                        <Form.Item label="ITEM DESCRIPTION">
+                          <Input value={item.itemDesc} readOnly />
+                        </Form.Item>
 
+                        <Form.Item label="UOM">
+                          <Input value={findColumnValue(item.uom, uomMaster, "uomMaster")} />
+                        </Form.Item>
 
-                    <Col span={5}>
-                      <Form.Item {...restField} label="REMARK" name={[name, 'remarks']}>
-                        <Input value={formData.items?.[index]?.remarks} onChange={(e) => itemHandleChange(`remarks`, e.target.value, index)} />
-                        <span style={{ display: 'none' }}>{index + 1}</span>
+                        <Form.Item label="LOCATOR DESCRIPITON">
+                          <Input value={findColumnValue(item.locatorId, locatorMaster, "locatorMaster")} readOnly />
+                        </Form.Item>
 
-                      </Form.Item>
-                    </Col>
-                    <Col span={1}>
-                      <MinusCircleOutlined onClick={() => remove(name)} style={{ marginTop: 8 }} />
-                    </Col>
-                  </Row>
-                </div>
-              ))}
+                        <Form.Item label="REQUIRED QUANTITY">
+                          <Input value={item.quantity} onChange={(e)=>itemHandleChange("quantity", e.target.value, key)} />
+                        </Form.Item>
+
+                        <Form.Item label="REQUIRED FOR NO. OF DAYS">
+                          <Input value={item.noOfDays} onChange={(e)=>itemHandleChange("noOfDays", e.target.value, key)} />
+                        </Form.Item>
+
+                        <Form.Item label="REMARK">
+                          <Input value={item.remarks} onChange={(e)=>itemHandleChange("remarks", e.target.value, key)} />
+                        </Form.Item>
+
+                        <Col span={1}>
+                          <MinusCircleOutlined onClick={() => removeItem(key)} style={{ marginTop: 8 }} />
+                        </Col>
+                    </div>
+                  );
+                })}
             </>
           )}
         </Form.List>

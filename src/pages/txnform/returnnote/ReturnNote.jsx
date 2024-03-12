@@ -14,6 +14,7 @@ const RetunNote = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [itemData, setItemData] = useState([]);
+  const [uomMaster, setUomMaster] = useState([])
   const [formData, setFormData] = useState({
     genDate: '',
     genName: '',
@@ -73,10 +74,10 @@ const RetunNote = () => {
       updatedItems[index] = {
         ...updatedItems[index],
         [fieldName]: value === "" ? null : value,
-        uom: "string",
-        conditionOfGoods: "string", // Hard-coded data
-        budgetHeadProcurement: "string", // Hard-coded data
-        locatorId: "string", // Hard-coded data
+        // uom: "string",
+        // conditionOfGoods: "string", // Hard-coded data
+        // budgetHeadProcurement: "string", // Hard-coded data
+        // locatorId: "string", // Hard-coded data
       };
       return {
         ...prevValues,
@@ -88,7 +89,20 @@ const RetunNote = () => {
 
     fetchItemData()
     fetchUserDetails()
+    fetchUomMaster()
   }, []);
+
+  const fetchUomMaster = async () => {
+    try{
+      const uomMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster"
+      const uomMaster = await axios.get(uomMasterUrl)
+      const {responseData : uomMasterData} = uomMaster.data
+      setUomMaster([...uomMasterData])
+    }
+    catch(error){
+      console.log("Error fetching Uom master details.", error)
+    }
+  }
 
 
   const fetchItemData = async () => {
@@ -153,9 +167,10 @@ const RetunNote = () => {
 
         items: itemList.map(item => ({
           srNo: item?.sNo,
+          id: item?.id || "Null",
           itemCode: item?.itemCode,
           itemDesc: item?.itemDesc,
-          uom: item?.uom,
+          uom: parseInt(item?.uom),
           quantity: item?.quantity,
           noOfDays: item?.requiredDays,
           remarks: item?.remarks,
@@ -214,8 +229,11 @@ const RetunNote = () => {
       if (response.status === 200 && response.data && response.data.responseStatus && response.data.responseStatus.message === 'Success') {
         // Access the specific success message data if available
         const { processId, processType, subProcessId } = response.data.responseData;
-        setFormData({
-          returnNoteNo: processId,
+        setFormData(prevValues => {
+          return {
+            ...prevValues,
+            returnNoteNo: processId,
+          }
         });
         setSuccessMessage(`Return Note successfully! Return Note : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`);
         showModal();
@@ -255,6 +273,42 @@ const RetunNote = () => {
     // const difference_days = 1
     return differenceDays ;
   }
+
+  const findUomName = (uomId) => {
+    const foundObj = uomMaster.find(obj => uomId === obj.id)
+    return foundObj ? foundObj.uomName : "Undefined"
+  }
+
+  const findColumnValue = (id, dataSource, sourceName) => {
+    const foundObject = dataSource.find(obj => obj.id === id);
+
+    if(sourceName === "locationMaster")
+      return foundObject ? foundObject['locationName'] : 'Undefined';
+    if(sourceName === "locatorMaster")
+      return foundObject ? foundObject['locatorDesc'] : 'Undefined';
+    if(sourceName === "vendorMaster")
+      return foundObject ? foundObject['vendorName'] : 'Undefined';
+    if(sourceName === 'uomMaster')
+      return foundObject ? foundObject['uomName'] : 'Undefined';
+  }
+
+  const removeItem = (index) => {
+    setFormData(prevValues=>{
+      const updatedItems = prevValues.items
+      updatedItems.splice(index, 1)
+      
+      const updatedItems1 = updatedItems.map((item, key)=>{
+        return {...item, srNo: key}
+      })
+
+      return {
+        ...prevValues,
+        items: updatedItems1
+      }
+    })
+  }
+
+
 
   return (
 
@@ -350,14 +404,10 @@ const RetunNote = () => {
         {/* Item Details */}
         <h2>ITEM DETAILS</h2>
 
-        <Form.List name="itemDetails" initialValue={formData.items || [{}]}>
+        {/* <Form.List name="itemDetails" initialValue={formData.items || [{}]}>
           {(fields, { add, remove }) => (
             <>
-              <Form.Item style={{ textAlign: 'right' }}>
-                {/* <Button type="dashed" onClick={() => add()} style={{ marginBottom: 8 }} icon={<PlusOutlined />}>
-                  ADD ITEM
-                </Button> */}
-              </Form.Item>
+              
               {fields.map(({ key, name, ...restField }, index) => (
                 <div key={key} style={{ marginBottom: 16, border: '1px solid #d9d9d9', padding: 16, borderRadius: 4 }}>
                   <Row gutter={24}>
@@ -389,16 +439,18 @@ const RetunNote = () => {
                         <span style={{ display: 'none' }}>{index + 1}</span>
                       </Form.Item>
                     </Col>
-                    <Col span={5}>
+                    <Col span={6}>
                       <Form.Item label="UOM" name={[name, 'uom']}>
                         <Input
                           style={{ width: '100%' }}
-                          onChange={(value) => itemHandleChange(`uom`, value, index)}
-                          value={formData.items?.[index]?.uom}
+                          value={findUomName(formData?.items?.[index]?.uom)}
                           readOnly
+
                         />
+                        <span style={{ display: 'none' }}>{index + 1}</span>
                       </Form.Item>
                     </Col>
+                    
                     <Col span={6}>
                       <Form.Item label="RETURN QUANTITY" name={[name, 'quantity']}>
                         <Input value={formData.items?.[index]?.quantity} onChange={(e) => itemHandleChange(`quantity`, e.target.value, index)} />
@@ -430,6 +482,60 @@ const RetunNote = () => {
               ))}
             </>
           )}
+        </Form.List> */}
+
+<Form.List name="items" initialValue={formData.items || [{}]}>
+          {(fields, { add, remove }) => (
+            <>
+              {formData.items?.length > 0 &&
+                formData.items.map((item, key) => {
+                  return (
+                    // <div className="xyz" style={{font:"150px", zIndex: "100"}}>xyz</div>
+
+                    <div key={key} style={{ marginBottom: 16, border: '1px solid #d9d9d9', padding: 16, borderRadius: 4, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',gap:'20px' }}>
+                      
+                        <Form.Item label="Serial No.">
+                          <Input value={item.srNo} readOnly />
+                        </Form.Item>
+                      
+                        <Form.Item label="ITEM CODE">
+                          <Input value={item.itemCode} readOnly />
+                        </Form.Item>
+                        
+                        <Form.Item label="ITEM DESCRIPTION">
+                          <Input value={item.itemDesc} readOnly />
+                        </Form.Item>
+
+                        <Form.Item label="UOM">
+                          <Input value={findColumnValue(item.uom, uomMaster, "uomMaster")} />
+                        </Form.Item>
+
+                        <Form.Item label="RETURN QUANTITY">
+                          <Input value={item.quantity} onChange={(e)=>itemHandleChange("quantity", e.target.value, key)} />
+                        </Form.Item>
+
+                        <Form.Item label="RETURNED AFTER NO. OF DAYS">
+                          <Input value={formData.issueNoteDt !== undefined ? daysDifference(formData.issueNoteDt) : ""} onChange={(e) => itemHandleChange(`noOfDays`, e.target.value, key)} readOnly />
+                        </Form.Item>
+
+                        <Form.Item label="CONDITION OF GOODS" name={'conditionOfgoods'}>
+                          <Input value={formData.items?.[key]?.conditionOfGoods} readOnly/>
+                        </Form.Item>
+
+
+
+                        <Form.Item label="REMARK">
+                          <Input value={item.remarks} onChange={(e)=>itemHandleChange("remarks", e.target.value, key)} />
+                        </Form.Item>
+
+                        <Col span={1}>
+                          <MinusCircleOutlined onClick={() => removeItem(key)} style={{ marginTop: 8 }} />
+                        </Col>
+                    </div>
+                  );
+                })}
+            </>
+          )}
         </Form.List>
 
         {/* Condition of Goods */}
@@ -457,7 +563,7 @@ const RetunNote = () => {
               GENERATED  BY
             </div>
             <div className='goods-receive-note-signature'>
-              NAME & SIGNATURE :<Form><Input value={formData.genName} name="genName" onChange={(e) => handleChange("genName", e.target.value)} /></Form>
+              NAME & DESIGNATION :<Form><Input value={formData.genName} name="genName" onChange={(e) => handleChange("genName", e.target.value)} /></Form>
             </div>
             <div className='goods-receive-note-signature'>
               DATE & TIME :<DatePicker defaultValue={dayjs()} format={dateFormat} style={{ width: '58%' }} name="genDate" onChange={(date, dateString) => handleChange("genDate", dateString)} />

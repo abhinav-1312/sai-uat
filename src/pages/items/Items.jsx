@@ -4,6 +4,7 @@ import { Button, Modal, Input } from "antd";
 import ItemsTable from "./ItemsTable";
 import ItemsForm from "./ItemsForm";
 import dayjs from "dayjs";
+import { itemNames, types, allDisciplines, subCategories, categories, sizes, usageCategories, brands, colors } from "./KeyValueMapping";
 
 const apiRequest = async (url, method, requestData) => {
   const options = {
@@ -38,102 +39,97 @@ const ItemsPage = () => {
   const [locators, setLocators] = useState([]);
   const [vendors, setVendors] = useState([]);
 
-  const itemNames = {
-    "001": "Arrow Pullar",
-    "002": "Arrow Liner",
-    "003": "Arm Guard",
-    "004": "Arrow Rest Plastic",
-    "005": "Beiter Clicker",
-    "006": "Bow Guage",
+  // const itemNames = {
+  //   "001": "Arrow Pullar",
+  //   "002": "Arrow Liner",
+  //   "003": "Arm Guard",
+  //   "004": "Arrow Rest Plastic",
+  //   "005": "Beiter Clicker",
+  //   "006": "Bow Guage",
+  // };
 
-  };
+  // // const types = [{ id: "9", value: "NA" }];
+  // const types = {
+  //   9: "NA",
+  //   1: "Track",
+  //   2: "Field",
 
-  // const types = [{ id: "9", value: "NA" }];
-  const types = {
-    9: "NA",
-    1: "Track",
-    2: "Field",
+  // };
 
-  };
-  // const disciplines = [
-  //   { id: "01", value: "Archery" },
-  //   { id: "11", value: "Common Use" },
-  //   { id: "10", value: "Wrestling" },
-  // ];
-  const disciplines = {
-    "01": "Archery",
-    11: "Common Use",
-    10: "Wrestling",
-  };
+  // const disciplines = {
+  //   "01": "Archery",
+  //   11: "Common Use",
+  //   10: "Wrestling",
+  // };
 
-  // const subCategories = [
-  //   { id: "1", value: "Games" },
-  //   { id: "2", value: "Athletics" },
-  //   { id: "9", value: "NA" },
-  // ];
-  const subCategories = {
-    2: "Games",
-    1: "Athletics",
-    9: "NA",
-  };
+  // // const subCategories = [
+  // //   { id: "1", value: "Games" },
+  // //   { id: "2", value: "Athletics" },
+  // //   { id: "9", value: "NA" },
+  // // ];
+  // const subCategories = {
+  //   2: "Games",
+  //   1: "Athletics",
+  //   9: "NA",
+  // };
 
-  // const categories = [
-  //   { id: "1", value: "FOP" },
-  //   { id: "2", value: "NON FOP" },
-  // ];
-  const categories = {
-    1: "FOP",
-    2: "NON FOP",
-  };
+  // // const categories = [
+  // //   { id: "1", value: "FOP" },
+  // //   { id: "2", value: "NON FOP" },
+  // // ];
+  // const categories = {
+  //   1: "FOP",
+  //   2: "NON FOP",
+  // };
 
-  // const sizes = [
-  //   { id: "001", value: "Normal" },
-  //   { id: "003", value: "Small" },
-  // ];
-  const sizes = {
-    "001": "Normal",
-    "002": "0",
-    "003": "25",
-  };
+  // // const sizes = [
+  // //   { id: "001", value: "Normal" },
+  // //   { id: "003", value: "Small" },
+  // // ];
+  // const sizes = {
+  //   "001": "Normal",
+  //   "002": "0",
+  //   "003": "25",
+  // };
 
-  // const usageCategories = [
-  //   { id: "2", value: "Non consumable" },
-  //   { id: "1", value: "Consumable" },
-  // ];
-  const usageCategories = {
-    2: "Non consumable",
-    1: "Consumable",
-  };
+  // // const usageCategories = [
+  // //   { id: "2", value: "Non consumable" },
+  // //   { id: "1", value: "Consumable" },
+  // // ];
+  // const usageCategories = {
+  //   2: "Non consumable",
+  //   1: "Consumable",
+  // };
 
-  // const brands = [
-  //   { id: "001", value: "Fivics" },
-  //   { id: "002", value: "Beiter" },
-  //   { id: "003", value: "Fivis" },
-  //   { id: "004", value: "Hoyt" },
-  //   { id: "005", value: "Indegeneous" },
-  // ];
+  // // const brands = [
+  // //   { id: "001", value: "Fivics" },
+  // //   { id: "002", value: "Beiter" },
+  // //   { id: "003", value: "Fivis" },
+  // //   { id: "004", value: "Hoyt" },
+  // //   { id: "005", value: "Indegeneous" },
+  // // ];
 
-  const brands = {
-    "001": "Fivics",
-    "002": "Beiter",
-    "003": "Fivis",
-    "004": "Hoyt",
-    "005": "Indegeneous",
-  };
+  // const brands = {
+  //   "001": "Fivics",
+  //   "002": "Beiter",
+  //   "003": "Fivis",
+  //   "004": "Hoyt",
+  //   "005": "Indegeneous",
+  // };
 
-  // const colors = [
-  //   { id: "01", value: "Black" },
-  //   { id: "02", value: "Silver" },
-  //   { id: "03", value: "Multicoloured" },
-  //   { id: "04", value: "White" },
-  // ];
-  const colors = {
-    "01": "Black",
-    "02": "Silver",
-    "03": "Multicoloured",
-    "04": "White",
-    "07": "Yellow",
-  };
+  // // const colors = [
+  // //   { id: "01", value: "Black" },
+  // //   { id: "02", value: "Silver" },
+  // //   { id: "03", value: "Multicoloured" },
+  // //   { id: "04", value: "White" },
+  // // ];
+  // const colors = {
+  //   "01": "Black",
+  //   "02": "Silver",
+  //   "03": "Multicoloured",
+  //   "04": "White",
+  //   "07": "Yellow",
+  // };
 
   const getUoms = async () => {
     const uomResponse = await apiRequest(
@@ -215,6 +211,8 @@ const ItemsPage = () => {
             }
           );
 
+          console.log("Item: ", item)
+
           return {
             key: item.id,
             id: item.id,
@@ -235,7 +233,7 @@ const ItemsPage = () => {
               : "Default",
             type: item.type ? types[item.type] : "Default",
             disciplines: item.disciplines
-              ? disciplines[item.disciplines]
+              ? allDisciplines[item.disciplines]
               : "Default",
             brand: item.brandId ? brands[item.brandId] : "Default",
             colour: item.colorId ? colors[item.colorId] : "Default",
@@ -312,6 +310,7 @@ const ItemsPage = () => {
 
   const handleFormSubmit = async (values) => {
     setEditingItem(null);
+    console.log("Values: ", values)
     const tempItem = {
       ...values,
       
@@ -319,7 +318,10 @@ const ItemsPage = () => {
       createUserId: "12345",
       endDate: values.endDate.format("DD/MM/YYYY"),
       itemName: values.itemMasterDesc,
+      itemMasterDesc: itemNames[values.itemMasterDesc]
     };
+
+    console.log("Tempitem: ", tempItem)
 
     if (!tempItem.itemMasterCd) {
       delete tempItem.itemMasterCd;
@@ -411,7 +413,7 @@ const ItemsPage = () => {
           categories={categories}
           usageCategories={usageCategories}
           sizes={sizes}
-          disciplines={disciplines}
+          disciplines={allDisciplines}
         />
       </Modal>
     </div>

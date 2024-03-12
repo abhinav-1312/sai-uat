@@ -16,6 +16,7 @@ import {
   Table,
   List,
 } from "antd";
+import { itemNames, types, allDisciplines, subCategories, categories, sizes, usageCategories, brands, colors } from "../../items/KeyValueMapping";
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
@@ -39,6 +40,10 @@ const IssueNote = () => {
   const [selectedItems, setSelectedItems] = useState([]); // State to hold selected item data
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [tableOpen, setTableOpen] = useState(true);
+  const [uomMaster, setUomMaster] = useState([])
+  const [locatorMaster, setLocatorMaster] = useState([])
+  const [locationMaster, setLocationMaster] = useState([])
+  const [vendorMaster, setVendorMaster] = useState([])
 
   const [formData, setFormData] = useState({
     genDate: "",
@@ -113,19 +118,30 @@ const IssueNote = () => {
   const populateItemData = async() => {
     const itemMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster"
     const locatorMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster"
+    const uomMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster"
+    const vendorMasteUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getVendorMaster"
+    const locationMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocationMaster"
     try{
-      const itemMaster = await axios.get(itemMasterUrl)
-      const locatorMaster = await axios.get(locatorMasterUrl)
+      const [itemMaster, locatorMaster, uomMaster, vendorMaster, locationMaster] = await Promise.all([
+        axios.get(itemMasterUrl),
+        axios.get(locatorMasterUrl),
+        axios.get(uomMasterUrl),
+        axios.get(vendorMasteUrl),
+        axios.get(locationMasterUrl)
+      ])
       
       const {responseData : itemMasterData} = itemMaster.data
       const {responseData : locatorMasterData} = locatorMaster.data
-      
-      const updatedItems = itemMasterData.map(item => {
-        const itemLocation = locatorMasterData.find(obj => obj.id === item.locatorId)
-        return {...item, locatorDesc: itemLocation?.locatorDesc || "Undefined"}
-      })
+      const {responseData : uomMasterData} = uomMaster.data
+      const {responseData : vendorMasterData} = vendorMaster.data
+      const {responseData : locationMasterData} = locationMaster.data
 
-      setData([...updatedItems])
+
+      setData([...itemMasterData])
+      setUomMaster([...uomMasterData])
+      setLocatorMaster([...locatorMasterData])
+      setVendorMaster([...vendorMasterData])
+      setLocationMaster([...locationMasterData])
 
     }catch(error){
       console.log("Populate item data error: ", error)
@@ -168,6 +184,7 @@ const IssueNote = () => {
   };
 
   const handleSelectItem = (record) => {
+    console.log("Record: ", record)
     setTableOpen(false);
     // Check if the item is already selected
     const index = selectedItems.findIndex((item) => item.id === record.id);
@@ -177,6 +194,7 @@ const IssueNote = () => {
       setFormData((prevData) => {
         const newItem = {
           srNo: prevData.items ? prevData.items.length + 1 : 1,
+          id: record.id,
           itemCode: record.itemMasterCd,
           itemDesc: record.itemMasterDesc,
           uom: record.uomId,
@@ -186,7 +204,8 @@ const IssueNote = () => {
           conditionOfGoods: "",
           budgetHeadProcurement: "",
           locatorId: record.locatorId,
-          locatorDesc: record.locatorDesc
+          locatorDesc: record.locatorDesc,
+          itemName: record.itemName
         };
         const updatedItems = [...(prevData.items || []), newItem];
         return {
@@ -202,6 +221,19 @@ const IssueNote = () => {
     }
   };
 
+  const findColumnValue = (id, dataSource, sourceName) => {
+    const foundObject = dataSource.find(obj => obj.id === id);
+
+    if(sourceName === "locationMaster")
+      return foundObject ? foundObject['locationName'] : 'Undefined';
+    if(sourceName === "locatorMaster")
+      return foundObject ? foundObject['locatorDesc'] : 'Undefined';
+    if(sourceName === "vendorMaster")
+      return foundObject ? foundObject['vendorName'] : 'Undefined';
+    if(sourceName === 'uomMaster')
+      return foundObject ? foundObject['uomName'] : 'Undefined';
+  }
+
   const columns = [
     { title: "S NO.", dataIndex: "id", key: "id", fixed: "left", width: 80 },
     {
@@ -211,35 +243,94 @@ const IssueNote = () => {
     },
     {
       title: "ITEM DESCRIPTION",
-      dataIndex: "itemMasterDesc",
+      dataIndex: "itemName",
       key: "itemMasterDesc",
+      render: (itemName) => itemNames[itemName]
     },
-    { title: "UOM", dataIndex: "uom", key: "uom" },
+    { 
+      title: "UOM", 
+      dataIndex: "uomId", 
+      key: "uom", 
+      render: (uomId) => findColumnValue(uomId, uomMaster, "uomMaster")
+    },
     {
       title: "QUANTITY ON HAND",
       dataIndex: "quantity",
       key: "quantity",
     },
-    { title: "LOCATION", dataIndex: "locationId", key: "location" },
+    { 
+      title: "LOCATION",
+      dataIndex: "locationId",
+      key: "location",
+      render: (locationId) => findColumnValue(locationId, locationMaster, "locationMaster")
+    },
     {
       title: "LOCATOR CODE",
       dataIndex: "locatorId",
       key: "locatorCode",
     },
-    {title: "LOCATOR DESCRIPTION", dataIndex: "locatorDesc", key: "locatorDesc"},
+    {
+      title: "LOCATOR DESCRIPTION", 
+      dataIndex: "locatorId", 
+      key: "locatorId",
+      render: (locatorId) => findColumnValue(locatorId, locatorMaster, "locatorMaster")
+    },
     { title: "PRICE", dataIndex: "price", key: "price" },
-    { title: "VENDOR DETAIL", dataIndex: "vendorId", key: "vendorDetail" },
-    { title: "CATEGORY", dataIndex: "category", key: "category" },
-    { title: "SUB-CATEGORY", dataIndex: "subCategory", key: "subCategory" },
-    { title: "Type", dataIndex: "type", key: "type" },
-    { title: "Disciplines", dataIndex: "disciplines", key: "disciplines" },
-    { title: "Brand", dataIndex: "brandId", key: "brand" },
-    { title: "Size", dataIndex: "size", key: "size" },
-    { title: "Colour", dataIndex: "colorId", key: "colour" },
+    { 
+      title: "VENDOR DETAIL", 
+      dataIndex: "vendorId", 
+      key: "vendorDetail",
+      render: (vendorId) => findColumnValue(vendorId, vendorMaster, "vendorMaster")
+
+    },
+    { 
+      title: "CATEGORY", 
+      dataIndex: "category", 
+      key: "category",
+      render: (category) => categories[category]
+
+    },
+    { 
+      title: "SUB-CATEGORY", 
+      dataIndex: "subCategory", 
+      key: "subCategory",
+      render: (subCategory) => subCategories[subCategory]
+    },
+    { 
+      title: "Type", 
+      dataIndex: "type", 
+      key: "type", 
+      render: (type) => types[type]
+    },
+    { 
+      title: "Disciplines", 
+      dataIndex: "disciplines", 
+      key: "disciplines",
+      render: (disciplines) => allDisciplines[disciplines]
+    },
+    { 
+      title: "Brand", 
+      dataIndex: "brandId", 
+      key: "brand",
+      render: (brandId) => brands[brandId]
+    },
+    { 
+      title: "Size", 
+      dataIndex: "size", 
+      key: "size",
+      render: (size) => sizes[size]
+    },
+    { 
+      title: "Colour", 
+      dataIndex: "colorId", 
+      key: "colour",
+      render: (colorId) => colors[colorId]
+    },
     {
       title: "Usage Category",
       dataIndex: "usageCategory",
       key: "usageCategory",
+      render: (usageCategory) => usageCategories[usageCategory]
     },
     {
       title: "MINIMUM STOCK LEVEL",
@@ -253,7 +344,7 @@ const IssueNote = () => {
     },
     { title: "RE ORDER POINT", dataIndex: "reOrderPoint", key: "reOrderPoint" },
     { title: "STATUS", dataIndex: "status", key: "status" },
-    { title: "END DATE", dataIndex: "endDate", key: "endDate" },
+    { title: "CREATE DATE", dataIndex: "endDate", key: "endDate" },
     {
       title: "Actions",
       key: "actions",
@@ -307,7 +398,7 @@ const IssueNote = () => {
       const currentDate = dayjs();
       // Update form data with fetched values
       setFormData({
-        crRegionalCenterCd: "20",
+        crRegionalCenterCd: organizationDetails.id,
         crRegionalCenterName: organizationDetails.location,
         crAddress: organizationDetails.locationAddr,
         crZipcode: "131021",
@@ -378,8 +469,11 @@ const IssueNote = () => {
         // Access the specific success message data if available
         const { processId, processType, subProcessId } =
           response.data.responseData;
-        setFormData({
-          issueNoteNo: processId,
+        setFormData(prevValues=>{
+          return {
+            ...prevValues,
+            issueNoteNo: processId,
+          }
         });
         setSuccessMessage(
           `Issue note saved successfully! Issue Note No : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
@@ -389,6 +483,7 @@ const IssueNote = () => {
           `Issue note saved successfully! Process ID: ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
         setFormSubmitted(true);
+        // fetchUserDetails()
       } else {
         // Display a generic success message if specific data is not available
         message.error("Failed to save issue note. Please try again later.");
@@ -398,6 +493,8 @@ const IssueNote = () => {
       message.error("Failed to submit issue note. ");
     }
   };
+
+  console.log("FormData: ", formData)
 
   const handleValuesChange = (_, allValues) => {
     setType(allValues.type);
@@ -417,6 +514,11 @@ const IssueNote = () => {
         items: updatedItems1
       }
     })
+  }
+
+  const findUomName = (uomId) => {
+    const foundObj = uomMaster.find(obj => uomId === obj.id)
+    return foundObj ? foundObj.uomName : "Undefined"
   }
 
   return (
@@ -652,93 +754,6 @@ const IssueNote = () => {
         <Form.List name="items" initialValue={formData.items || [{}]}>
           {(fields, { add, remove }) => (
             <>
-              <Form.Item style={{ textAlign: "right" }}>
-                {/* <Button
-                  type="dashed"
-                  onClick={() => add()}
-                  style={{ marginBottom: 8 }}
-                  icon={<PlusOutlined />}
-                >
-                  ADD ITEM
-                </Button> */}
-              </Form.Item>
-
-              {/* {fields.map(({ key, name, ...restField }, index) => (
-                <div key={key} style={{ marginBottom: 16, border: '1px solid #d9d9d9', padding: 16, borderRadius: 4 }}>
-                  <Row gutter={24}>
-                    <Col span={6}>
-
-                      <Form.Item {...restField} label="S.NO." name={[name, 'srNo']} >
-                        <Input value={index + 1} onChange={(e) => itemHandleChange(`srNo`, e.target.value, index)} />
-                        <span style={{ display: 'none' }}>{index + 1}</span>
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item {...restField} label="ITEM CODE" name={[name, 'itemCode']} initialValue={formData.items?.[index]?.itemCode}>
-                        <AutoComplete
-                          style={{ width: '100%' }}
-                          options={itemData.map(item => ({ value: item.itemMasterCd }))}
-                          placeholder="Enter item code"
-                          filterOption={(inputValue, option) =>
-                            option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-                          }
-                          value={formData.items?.[index]?.itemMasterCd}
-                          onChange={(value) => itemHandleChange(`itemCode`, value, index)}
-                        />
-                        <span style={{ display: 'none' }}>{index + 1}</span>
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item {...restField} label="ITEM DESCRIPTION" name={[name, 'itemDesc']}>
-                        <AutoComplete
-                          style={{ width: '100%' }}
-                          options={itemData.map(item => ({ value: item.itemMasterDesc }))}
-                          placeholder="Enter item description"
-                          filterOption={(inputValue, option) =>
-                            option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-                          }
-                          onChange={(value) => itemHandleChange(`itemDesc`, value, index)}
-                          value={formData.items?.[index]?.itemMasterDesc}
-
-                        />
-                        <span style={{ display: 'none' }}>{index + 1}</span>
-                      </Form.Item>
-                    </Col>
-                    <Col span={5}>
-                      <Form.Item {...restField} label="UOM" name={[name, 'uom']}>
-                        <AutoComplete
-                          style={{ width: '100%' }}
-                          options={itemData.map(item => ({ value: item.uom }))}
-                          placeholder="Enter UOM"
-                          filterOption={(inputValue, option) =>
-                            option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-                          }
-                          onChange={(value) => itemHandleChange(`uom`, value, index)}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item {...restField} label="REQUIRED QUANTITY" name={[name, 'quantity']}>
-                        <Input onChange={(e) => itemHandleChange(`quantity`, e.target.value, index)} />
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item {...restField} label="REQUIRED FOR NO. OF DAYS" name={[name, 'noOfDays']}>
-                        <Input onChange={(e) => itemHandleChange(`noOfDays`, e.target.value, index)} />
-                      </Form.Item>
-                    </Col>
-                    <Col span={5}>
-                      <Form.Item {...restField} label="REMARK" name={[name, 'remarks']}>
-                        <Input onChange={(e) => itemHandleChange(`remarks`, e.target.value, index)} />
-                      </Form.Item>
-                    </Col>
-                    <Col span={1}>
-                      <MinusCircleOutlined onClick={() => remove(name)} style={{ marginTop: 8 }} />
-                    </Col>
-                  </Row>
-                </div>
-              ))} */}
-
               {formData.items?.length > 0 &&
                 formData.items.map((item, key) => {
                   return (
@@ -755,15 +770,15 @@ const IssueNote = () => {
                         </Form.Item>
                         
                         <Form.Item label="ITEM DESCRIPTION">
-                          <Input value={item.itemDesc} readOnly />
+                          <Input value={itemNames[item.itemName]} readOnly />
                         </Form.Item>
 
                         <Form.Item label="UOM">
-                          <Input value={item.uom} />
+                          <Input value={findUomName(item.uom)} />
                         </Form.Item>
 
                         <Form.Item label="LOCATOR DESCRIPITON">
-                          <Input value={item.locatorDesc} readOnly />
+                          <Input value={findColumnValue(item.locatorId, locatorMaster, "locatorMaster")} readOnly />
                         </Form.Item>
 
                         <Form.Item label="REQUIRED QUANTITY">
@@ -781,9 +796,7 @@ const IssueNote = () => {
                         <Col span={1}>
                           <MinusCircleOutlined onClick={() => removeItem(key)} style={{ marginTop: 8 }} />
                         </Col>
-                    
                     </div>
-                    
                   );
                 })}
             </>
