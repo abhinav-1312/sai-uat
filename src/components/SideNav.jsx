@@ -30,6 +30,8 @@ const menuItems = [
   },
   { key: '2', icon: <EnvironmentOutlined />, label: 'Locations', path: '/location' },
   { key: '3', icon: <AppstoreAddOutlined />, label: 'Items', path: '/items' },
+  { key: '16', icon: <AccountBookOutlined />, label: 'OHQ', path: '/ohq' },
+  { key: '17', icon: <AccountBookOutlined />, label: 'Transaction Summary', path: '/trnsummary' },
   { key: '4', icon: <SearchOutlined />, label: 'Locators', path: '/locator' },
   { key: '14', icon: <AccountBookOutlined />, label: 'Department', path: '/department' },
   { key: '5', icon: <UserOutlined />, label: 'Users', path: '/user' },

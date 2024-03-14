@@ -25,6 +25,9 @@ import InwardGatePass from '../pages/txnform/inwardgatepass/InwardGatePass';
 import AcceptanceNote from '../pages/txnform/acceptancenote/AcceptanceNote';
 import RejectionNote from '../pages/txnform/rejectionnote/RejectionNote';
 import Itemdemandsearch from '../components/Itemdemandsearch';
+import OHQ from '../pages/ohq/ohq'
+import TransactionSummary from '../pages/transactionSummary/TransactionSummary';
+
 
 const RoutesComponent = () => {
   return (
@@ -32,6 +35,8 @@ const RoutesComponent = () => {
       <Route path="/sub-organization" element={<Organization />} />
       <Route path="/location" element={<Location />} />
       <Route path="/items" element={<Items />} />
+      <Route path = '/ohq' element = {<OHQ />} />
+      <Route path = '/trnsummary' element = {<TransactionSummary />} />
       <Route path="/locator" element={<Locator />} />
       <Route path="/department" element={<DepartmentPage />} />
       <Route path="/user" element={<User />} />

@@ -87,6 +87,7 @@ const IssueNote = () => {
     processType: "IRP",
     interRdDemandNote: "",
   });
+  
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -143,7 +144,8 @@ const IssueNote = () => {
       setVendorMaster([...vendorMasterData])
       setLocationMaster([...locationMasterData])
 
-    }catch(error){
+    }
+    catch(error){
       console.log("Populate item data error: ", error)
     }
   }
@@ -167,6 +169,7 @@ const IssueNote = () => {
     });
     setFilteredData(filtered);
   };
+
   const handleOnChange = (e) => {
     const { value } = e.target;
     setSearchValue(value);
@@ -184,7 +187,6 @@ const IssueNote = () => {
   };
 
   const handleSelectItem = (record) => {
-    console.log("Record: ", record)
     setTableOpen(false);
     // Check if the item is already selected
     const index = selectedItems.findIndex((item) => item.id === record.id);
@@ -952,6 +954,6 @@ const IssueNote = () => {
       </Form>
     </div>
   );
-};
+}
 
 export default IssueNote;
