@@ -110,6 +110,7 @@ const Ohq = () => {
         placeholder="Search item"
         allowClear
         enterButton="Search"
+        
         size="large"
         onSearch={(e) => handleSearch(e.target.value)}
         onChange={(e) => handleSearch(e.target.value)}
