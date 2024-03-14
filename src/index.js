@@ -13,7 +13,7 @@ root.render(
     <App />
   </Provider>,
 
-  // hell0
+  // hel
 );
 
 // If you want to start measuring performance in your app, pass a function
