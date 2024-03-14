@@ -9,11 +9,10 @@ import {
   Row,
   Col,
   Typography,
-  AutoComplete,
   Modal,
   message,
 } from "antd";
-import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
+import { MinusCircleOutlined } from "@ant-design/icons";
 import "./GoodsReceiveNoteForm.css";
 import dayjs from "dayjs";
 import axios from "axios";
@@ -136,8 +135,6 @@ const GoodsReceiveNoteForm = () => {
     populateItemData()
     fetchUserDetails();
   }, []);
-  console.log("Locator master: ", locatorMaster)
-  console.log("Fprm data: ", formData)
   const fetchUserDetails = async () => {
     try {
       const apiUrl =
@@ -336,7 +333,6 @@ const GoodsReceiveNoteForm = () => {
   };
   
   const handleLocatorChange = (itemIndex, locatorMasterIndex) => {
-    // console.log("FormItemIndex: ", object)
     setFormData(prevValues=>{
       const itemArray = [...prevValues.items]
       itemArray[itemIndex].locatorId = locatorMaster[locatorMasterIndex].id
