@@ -136,18 +136,8 @@ const GoodsReceiveNoteForm = () => {
     populateItemData()
     fetchUserDetails();
   }, []);
-
-  // const fetchItemData = async () => {
-  //   try {
-  //     const apiUrl =
-  //       "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster";
-  //     const response = await axios.get(apiUrl);
-  //     const { responseData } = response.data;
-  //     setItemData(responseData);
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //   }
-  // };
+  console.log("Locator master: ", locatorMaster)
+  console.log("Fprm data: ", formData)
   const fetchUserDetails = async () => {
     try {
       const apiUrl =
@@ -163,10 +153,10 @@ const GoodsReceiveNoteForm = () => {
       const currentDate = dayjs();
       // Update form data with fetched values
       setFormData({
-        ceRegionalCenterCd: "20",
-        ceRegionalCenterName: organizationDetails.location,
-        ceAddress: organizationDetails.locationAddr,
-        ceZipcode: "131021",
+        // ceRegionalCenterCd: "20",
+        // ceRegionalCenterName: organizationDetails.location,
+        // ceAddress: organizationDetails.locationAddr,
+        // ceZipcode: "131021",
         genName: userDetails.firstName,
         userId: "string",
         noaDate: currentDate.format(dateFormat),
@@ -198,13 +188,16 @@ const GoodsReceiveNoteForm = () => {
         approvedName: processData?.approvedName,
         processId: processData?.processId,
 
-        crRegionalCenterCd: processData?.crRegionalCenterCd,
-        crRegionalCenterName: processData?.crRegionalCenterName,
-        crAddress: processData?.crAddress,
-        crZipcode: processData?.crZipcode,
+        crRegionalCenterCd: processData?.regionalCenterCd,
+        crRegionalCenterName: processData?.regionalCenterName,
+        crAddress: processData?.address,
+        crZipcode: processData?.zipcode,
 
         consumerName: processData?.consumerName,
         contactNo: processData?.contactNo,
+
+        termsCondition: processData?.termsCondition,
+        note: processData?.note,
 
         items: itemList.map((item) => ({
           srNo: item?.sNo,
@@ -332,7 +325,7 @@ const GoodsReceiveNoteForm = () => {
       updatedItems.splice(index, 1);
 
       const updatedItems1 = updatedItems.map((item, key) => {
-        return { ...item, srNo: key };
+        return { ...item, srNo: key+1 };
       });
 
       return {
@@ -341,6 +334,19 @@ const GoodsReceiveNoteForm = () => {
       };
     });
   };
+  
+  const handleLocatorChange = (itemIndex, locatorMasterIndex) => {
+    // console.log("FormItemIndex: ", object)
+    setFormData(prevValues=>{
+      const itemArray = [...prevValues.items]
+      itemArray[itemIndex].locatorId = locatorMaster[locatorMasterIndex].id
+
+      return {
+        ...prevValues,
+        items: itemArray
+      }
+    })
+  }
 
   return (
     <div className="goods-receive-note-form-container">
@@ -392,31 +398,31 @@ const GoodsReceiveNoteForm = () => {
               CONSIGNEE DETAIL :-
             </Title>
 
-            <Form.Item label="REGIONAL CENTER CODE" name="ceRegionalCenterCd">
-              <Input value={formData.ceRegionalCenterCd} />
+            <Form.Item label="REGIONAL CENTER CODE" name="crRegionalCenterCd">
+              <Input value={formData.crRegionalCenterCd} />
               <div style={{ display: "none" }}>
-                {formData.ceRegionalCenterCd}
+                {formData.crRegionalCenterCd}
               </div>
             </Form.Item>
             <Form.Item
               label="REGIONAL CENTER NAME "
-              name="ceRegionalCenterName"
+              name="crRegionalCenterName"
             >
-              <Input value={formData.ceRegionalCenterName} />
+              <Input value={formData.crRegionalCenterName} />
               <div style={{ display: "none" }}>
-                {formData.ceRegionalCenterCd}
+                {formData.crRegionalCenterCd}
               </div>
             </Form.Item>
-            <Form.Item label="ADDRESS :" name="ceAddress">
-              <Input value={formData.ceAddress} />
+            <Form.Item label="ADDRESS :" name="crAddress">
+              <Input value={formData.crAddress} />
               <div style={{ display: "none" }}>
-                {formData.ceRegionalCenterCd}
+                {formData.crRegionalCenterCd}
               </div>
             </Form.Item>
-            <Form.Item label="ZIP CODE :" name="ceZipcode">
-              <Input value={formData.ceZipcode} />
+            <Form.Item label="ZIP CODE :" name="crZipcode">
+              <Input value={formData.crZipcode} />
               <div style={{ display: "none" }}>
-                {formData.ceRegionalCenterCd}
+                {formData.crRegionalCenterCd}
               </div>
             </Form.Item>
           </Col>
@@ -726,10 +732,17 @@ const GoodsReceiveNoteForm = () => {
                       <Form.Item
                         label="LOCATOR DESCRIPTION"
                       >
-                        <Input
+                        {/* <Input
                           value={findColumnValue(item.locatorId, locatorMaster, "locatorMaster")}
                           readOnly
-                        />
+                        /> */}
+
+                      <Select style={{ width: 200 }} onChange={(value)=>handleLocatorChange(key, value)} defaultValue={findColumnValue(item.locatorId, locatorMaster, "locatorMaster")}>
+                        {locatorMaster.map((option, index) => (
+                          <Option key={index} value={option.locatorId}>{option.locatorDesc}</Option>
+                        ))}
+                      </Select>
+
                       </Form.Item>
 
                       <Form.Item label="REMARK">
@@ -757,19 +770,23 @@ const GoodsReceiveNoteForm = () => {
         {/* Condition of Goods */}
         <Row gutter={24}>
           <Col span={12}>
-            <Form.Item label="CONDITION OF GOODS" name="conditionOfGoods">
+            <Form.Item label="TERMS AND CONDITION" name="conditionOfGoods">
               <Input.TextArea
-                onChange={(e) =>
-                  handleChange("conditionOfGoods", e.target.value)
-                }
+                value={formData.termsCondition}
+                readOnly
+                autoSize={{ minRows: 3, maxRows: 6 }} 
               />
+              <Input style={{display: "none"}} />
             </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item label="NOTE" name="note">
               <Input.TextArea
                 onChange={(e) => handleChange("note", e.target.value)}
+                autoSize={{ minRows: 3, maxRows: 6 }} 
+                value={formData.note}
               />
+              <Input style={{display: "none"}} />
             </Form.Item>
           </Col>
         </Row>

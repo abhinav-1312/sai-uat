@@ -94,10 +94,10 @@ const InwardGatePass = () => {
       updatedItems[index] = {
         ...updatedItems[index],
         [fieldName]: value === "" ? null : value,
-        uom: "string",
-        conditionOfGoods: "string", // Hard-coded data
-        budgetHeadProcurement: "string", // Hard-coded data
-        locatorId: "string", // Hard-coded data
+        // uom: "string",
+        // conditionOfGoods: "string", // Hard-coded data
+        // budgetHeadProcurement: "string", // Hard-coded data
+        // locatorId: "string", // Hard-coded data
       };
       return {
         ...prevValues,
@@ -162,10 +162,10 @@ const InwardGatePass = () => {
       const currentDate = dayjs();
       // Update form data with fetched values
       setFormData({
-        ceRegionalCenterCd: "20",
-        ceRegionalCenterName: organizationDetails.location,
-        ceAddress: organizationDetails.locationAddr,
-        ceZipcode: "131021",
+        // ceRegionalCenterCd: "20",
+        // ceRegionalCenterName: organizationDetails.location,
+        // ceAddress: organizationDetails.locationAddr,
+        // ceZipcode: "131021",
         genName: userDetails.firstName,
         noaDate: currentDate.format(dateFormat),
         dateOfDelivery: currentDate.format(dateFormat),
@@ -206,6 +206,9 @@ const InwardGatePass = () => {
 
         consumerName: processData?.consumerName,
         contactNo: processData?.contactNo,
+
+        termsCondition: processData?.termsCondition,
+        note: processData?.note,
 
         items: itemList.map(item => ({
           srNo: item?.sNo,
@@ -256,8 +259,11 @@ const InwardGatePass = () => {
       if (response.status === 200 && response.data && response.data.responseStatus && response.data.responseStatus.message === 'Success') {
         // Access the specific success message data if available
         const { processId, processType, subProcessId } = response.data.responseData;
-        setFormData({
-          gatePassNo: processId,
+        setFormData(prevValues => {
+          return{
+            ...prevValues,
+            gatePassNo: processId,
+          }
         });
         setSuccessMessage(`Inward gate pass successfully! Inward gate pass : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`);
         showModal();
@@ -347,28 +353,28 @@ const InwardGatePass = () => {
           <Col span={8}>
             <Title strong level={2} underline type='danger' > CONSIGNEE DETAIL :-</Title>
 
-            <Form.Item label="REGIONAL CENTER CODE" name="ceRegionalCenterCd">
-              <Input value={formData.ceRegionalCenterCd} />
+            <Form.Item label="REGIONAL CENTER CODE" name="crRegionalCenterCd">
+              <Input value={formData.crRegionalCenterCd} />
               <div style={{ display: 'none' }}>
-                {formData.ceRegionalCenterCd}
+                {formData.crRegionalCenterCd}
               </div>
             </Form.Item>
-            <Form.Item label="REGIONAL CENTER NAME " name="ceRegionalCenterName">
-              <Input value={formData.ceRegionalCenterName} />
+            <Form.Item label="REGIONAL CENTER NAME " name="crRegionalCenterName">
+              <Input value={formData.crRegionalCenterName} />
               <div style={{ display: 'none' }}>
-                {formData.ceRegionalCenterName}
+                {formData.crRegionalCenterName}
               </div>
             </Form.Item>
-            <Form.Item label="ADDRESS :" name="ceRegionalCenterCd">
-              <Input value={formData.ceAddress} />
+            <Form.Item label="ADDRESS :" name="crRegionalCenterCd">
+              <Input value={formData.crAddress} />
               <div style={{ display: 'none' }}>
-                {formData.ceRegionalCenterCd}
+                {formData.crRegionalCenterCd}
               </div>
             </Form.Item>
-            <Form.Item label="ZIP CODE :" name="ceZipcode">
-              <Input value={formData.ceZipcode} />
+            <Form.Item label="ZIP CODE :" name="crZipcode">
+              <Input value={formData.crZipcode} />
               <div style={{ display: 'none' }}>
-                {formData.ceRegionalCenterCd}
+                {formData.crRegionalCenterCd}
               </div>
             </Form.Item>
           </Col>
@@ -546,12 +552,14 @@ const InwardGatePass = () => {
         <Row gutter={24}>
           <Col span={12}>
             <Form.Item label="TERMS AND CONDITION :" name="termsCondition">
-              <Input.TextArea onChange={(e) => handleChange("termsCondition", e.target.value)} />
+              <Input.TextArea value={formData.termsCondition} autoSize={{ minRows: 3, maxRows: 6 }} readOnly />
+              <Input style={{display: "none"}} />
             </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item label="NOTE" name="note">
-              <Input.TextArea onChange={(e) => handleChange("note", e.target.value)} />
+              <Input.TextArea value={formData.note} autoSize={{ minRows: 3, maxRows: 6 }} onChange={(e) => handleChange("note", e.target.value)} />
+              <Input style={{display: "none"}} />
             </Form.Item>
           </Col>
         </Row>

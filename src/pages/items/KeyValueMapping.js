@@ -11,7 +11,6 @@ export const types = {
     9: "NA",
     1: "Track",
     2: "Field",
-
 };
 
 export const allDisciplines = {

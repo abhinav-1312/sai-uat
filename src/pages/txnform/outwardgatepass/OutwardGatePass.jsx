@@ -53,7 +53,7 @@ const OutwardGatePass = () => {
     noteType: "",
     rejectionNoteNo: "",
     userId: "string",
-    termsCondition: "",
+    termsCondition: "12345",
     note: "",
     items: [
       // {
@@ -161,16 +161,17 @@ const OutwardGatePass = () => {
       });
 
       const { responseData } = response.data;
+      console.log("Response data: ", responseData)
       const { organizationDetails } = responseData;
       const { userDetails } = responseData;
       const currentDate = dayjs();
       console.log('Fetched data:', organizationDetails);
       // Update form data with fetched values
       setFormData({
-        crRegionalCenterCd:"20",
-        crRegionalCenterName: organizationDetails.location,
-        crAddress: organizationDetails.locationAddr,
-        crZipcode: "131021",
+        // crRegionalCenterCd: organizationDetails.crRegionalCenterCd,
+        // crRegionalCenterName: organizationDetails.location,
+        // crAddress: organizationDetails.locationAddr,
+        // crZipcode: "131021",
         genName: userDetails.firstName,
         noaDate: currentDate.format(dateFormat),
         dateOfDelivery:currentDate.format(dateFormat),
@@ -198,6 +199,12 @@ const OutwardGatePass = () => {
       setFormData(prevFormData => ({
         ...prevFormData,
 
+        crRegionalCenterCd: processData?.crRegionalCenterCd,
+        crRegionalCenterName: processData?.crRegionalCenterName,
+        crAddress: processData?.crAddress,
+        crZipcode: processData.crZipcode,
+
+
         issueName: processData?.issueName,
         approvedName: processData?.approvedName,
         processId: processData?.processId,
@@ -206,6 +213,9 @@ const OutwardGatePass = () => {
         ceRegionalCenterName: processData?.ceRegionalCenterName,
         ceAddress: processData?.ceAddress,
         ceZipcode: processData?.ceZipcode,
+
+        termsCondition: processData?.termsCondition,
+        note: processData?.note,
 
         consumerName: processData?.consumerName,
         contactNo: processData?.contactNo,
@@ -323,6 +333,8 @@ const OutwardGatePass = () => {
     })
   }
 
+  console.log("FOrm data: ", formData)
+
   return (
 
     <div className="goods-receive-note-form-container">
@@ -355,7 +367,7 @@ const OutwardGatePass = () => {
           <Col span={8}>
             <Title strong underline level={2} type="danger" >CONSIGNOR DETAIL :-</Title>
             <Form.Item label="REGIONAL CENTER CODE" name="crRegionalCenterCd">
-              <Input value={formData.crRegionalCenterCd} disabled />
+              <Input value={formData.crRegionalCenterCd} readOnly />
               <div style={{ display: 'none' }}>
                 {formData.crRegionalCenterCd}
               </div>
@@ -566,13 +578,15 @@ const OutwardGatePass = () => {
         <h2>CONDITION OF GOODS</h2>*/}
         <Row gutter={24}>
           <Col span={12}>
-            <Form.Item label="CONDITION OF GOODS" name="conditionOfGoods">
-              <Input.TextArea onChange={(e) => handleChange("conditionOfGoods", e.target.value)} />
+            <Form.Item label="TERMS AND CONDITION :" name="conditionOfGoods">
+              <Input.TextArea value={formData.termsCondition} autoSize={{ minRows: 3, maxRows: 6 }} readonly />
+              <Input style={{display: "none"}}/>
             </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item label="NOTE" name="note">
-              <Input.TextArea onChange={(e) => handleChange("note", e.target.value)} />
+              <Input.TextArea value={formData.note} autoSize={{ minRows: 3, maxRows: 6 }} onChange={(e) => handleChange("note", e.target.value)}/>
+              <Input style={{display: "none"}}/>
             </Form.Item>
           </Col>
         </Row>

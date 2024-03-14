@@ -139,10 +139,10 @@ const RetunNote = () => {
       const currentDate = dayjs();
       // Update form data with fetched values
       setFormData({
-        regionalCenterCd: "20",
-        regionalCenterName: organizationDetails.location,
-        address: organizationDetails.locationAddr,
-        zipcode: "131021",
+        // regionalCenterCd: "20",
+        // regionalCenterName: organizationDetails.location,
+        // address: organizationDetails.locationAddr,
+        // zipcode: "131021",
         genName: userDetails.firstName,
         userId: "string",
         genDate: currentDate.format(dateFormat),
@@ -171,10 +171,18 @@ const RetunNote = () => {
       setFormData((prevFormData) => ({
         ...prevFormData,
 
+         regionalCenterCd: processData?.crRegionalCenterCd,
+        regionalCenterName: processData?.crRegionalCenterName,
+        address: processData?.crAddress,
+        zipcode: processData?.crZipcode,
+
         processId: processData?.processId,
         issueNoteDt: issueNoteDt,
         consumerName: processData?.consumerName,
         contactNo: processData?.contactNo,
+
+        termsCondition: processData?.termsCondition,
+        note: processData?.note,
 
         items: itemList.map((item) => ({
           srNo: item?.sNo,
@@ -619,15 +627,21 @@ const RetunNote = () => {
           <Col span={12}>
             <Form.Item label="TERMS AND CONDITION :" name="termsCondition">
               <Input.TextArea
-                onChange={(e) => handleChange("termsCondition", e.target.value)}
+                value={formData.termsCondition}
+                autoSize={{minRows: 3, maxRows: 6}}
+                readOnly
               />
+              <Input style={{display: "none"}} />
             </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item label="NOTE" name="note">
               <Input.TextArea
+                value={formData.note}
+                autoSize={{minRows: 3, maxRows: 6}}
                 onChange={(e) => handleChange("note", e.target.value)}
               />
+              <Input style={{display: "none"}} />
             </Form.Item>
           </Col>
         </Row>
