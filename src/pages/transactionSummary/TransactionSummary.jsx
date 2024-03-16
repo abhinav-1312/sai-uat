@@ -92,7 +92,7 @@ const TransactionSummary = () => {
     <>
     {/* <Button type="primary"> Button primary</Button>
     <Button type="success" style={{backgroundColor: "#3fb950", border: "#3fb950", color: "#ffffff"}}> Button primary</Button> */}
-      <h1 style={{textAlign: "center"}}> Transaction Detail </h1>
+      <h1 style={{textAlign: "center"}}> Transaction Summary</h1>
       <div style={{margin: "1rem", border: "1px solid rgb(87, 202, 195)", padding: "1rem", borderRadius: "1%"}}>
         <Form style={{display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1rem"}}>
 
