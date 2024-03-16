@@ -46,7 +46,8 @@ export const columnName = {
     "noaNo": "NOA No.",
     "modeOfDelivery": "Mode of Delivery",
     "rejectionNoteNo": "Rejection Note No.",
-    "termsCondition": "Terms and Condition"
+    "termsCondition": "Terms and Condition",
+    "dateOfInspection": "Date of Inspection"
 
 
 

@@ -70,10 +70,6 @@ const TransactionSummary = () => {
 
   const handleSearch = async () => {
     try{
-      console.log("Handle search called")
-      console.log("StartDate: ", formData.fromDate)
-      console.log("End date: ", formData.toDate)
-      console.log("Id: ", formData.itemCd)
       const {data} = await axios.post("https://sai-services.azurewebsites.net/sai-inv-mgmt/txns/getTxnSummary", {startDate: formData.fromDate, endDate: formData.toDate, itemCode: formData.itemCd})
       const {responseData} = data
       console.log("resposnedata: ", responseData)
@@ -92,7 +88,7 @@ const TransactionSummary = () => {
     <>
     {/* <Button type="primary"> Button primary</Button>
     <Button type="success" style={{backgroundColor: "#3fb950", border: "#3fb950", color: "#ffffff"}}> Button primary</Button> */}
-      <h1 style={{textAlign: "center"}}> Transaction Summary</h1>
+      <h1 style={{textAlign: "center"}}>Transaction Summary</h1>
       <div style={{margin: "1rem", border: "1px solid rgb(87, 202, 195)", padding: "1rem", borderRadius: "1%"}}>
         <Form style={{display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1rem"}}>
 

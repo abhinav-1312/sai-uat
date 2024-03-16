@@ -21,9 +21,9 @@ export const trnSummaryColumn = (handleViewClick, handlePrintClick) => {
             // render: (processType) => processTypeList(processType)
         },
         {
-            title: "Process Stage",
-            key: "processStage",
-            dataIndex: "processStage"
+            title: "Status",
+            key: "status",
+            dataIndex: "status"
             // render: (processType) => processTypeList(processType)
         },
         {

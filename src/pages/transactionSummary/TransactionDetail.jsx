@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Form, Input } from "antd";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import AcceptData from "./detailData/AcceptData";
+import DetailData from "./detailData/DetailData";
 
 const TransactionDetail = () => {
   const navigate = useNavigate();
@@ -55,10 +55,10 @@ const TransactionDetail = () => {
         <h1>Transaction No: {trnNo}</h1>
       </div>
       <div>
-        <h2>Accept Note</h2>
+        <h2>Accept Data</h2>
         {
           acceptData ? 
-          <AcceptData data = {acceptData?.data} itemList = {acceptData?.itemList} />
+          <DetailData data = {acceptData?.data} itemList = {acceptData?.itemList} />
           :
           "No data available."
         }
@@ -67,7 +67,7 @@ const TransactionDetail = () => {
         <h2>Goods Receive Note</h2>
         {
           grnData ?
-          <AcceptData data = {grnData?.data} itemList = {grnData?.itemList} />
+          <DetailData data = {grnData?.data} itemList = {grnData?.itemList} />
           :
           "No data available."
         }
@@ -76,7 +76,7 @@ const TransactionDetail = () => {
         <h2>Inward Gate Pass</h2>
         {
           igpData ?
-          <AcceptData data={igpData?.data} itemList={igpData?.itemList} /> 
+          <DetailData data={igpData?.data} itemList={igpData?.itemList} /> 
           :
           "No data available."
         }
@@ -85,7 +85,7 @@ const TransactionDetail = () => {
         <h2>Inspection Report Data</h2>
         {
           inspectionReportData ?
-          <AcceptData data={inspectionReportData?.data} itemList={inspectionReportData?.itemList} /> 
+          <DetailData data={inspectionReportData?.data} itemList={inspectionReportData?.itemList} /> 
           :
           "No data available."
         }
@@ -94,7 +94,7 @@ const TransactionDetail = () => {
         <h2>Issue Note</h2>
         {
           isnData ?
-          <AcceptData data={isnData?.data} itemList={isnData?.itemList} /> 
+          <DetailData data={isnData?.data} itemList={isnData?.itemList} /> 
           :
           "No data available."
         }
@@ -103,7 +103,7 @@ const TransactionDetail = () => {
         <h2>Outward Gate Pass</h2>
         {
           ogpData ?
-          <AcceptData data={ogpData?.data} itemList={ogpData?.itemList} /> 
+          <DetailData data={ogpData?.data} itemList={ogpData?.itemList} /> 
           :
           "No data available."
         }
@@ -112,7 +112,7 @@ const TransactionDetail = () => {
         <h2>Reject Data</h2>
         {
           rejectData ?
-          <AcceptData data={rejectData?.data} itemList={rejectData?.itemList} /> 
+          <DetailData data={rejectData?.data} itemList={rejectData?.itemList} /> 
           :
           "No data available."
         }
@@ -121,7 +121,7 @@ const TransactionDetail = () => {
         <h2>Return Note</h2>
         {
           returnData ? 
-          <AcceptData data={returnData?.data} itemList={returnData?.itemList} />
+          <DetailData data={returnData?.data} itemList={returnData?.itemList} />
           : 
           "No data available."
         }

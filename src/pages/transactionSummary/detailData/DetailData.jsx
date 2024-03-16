@@ -62,7 +62,7 @@ const itemListColumns = [
     dataIndex: "remarks",
   },
 ];
-const AcceptData = ({
+const DetailData = ({
   data,
   itemList,
 }) => {
@@ -103,4 +103,4 @@ const AcceptData = ({
   );
 };
 
-export default AcceptData;
+export default DetailData;
