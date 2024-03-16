@@ -55,7 +55,7 @@ const TransactionDetail = () => {
         <h1>Transaction No: {trnNo}</h1>
       </div>
       <div>
-        <h2>Accept Data</h2>
+        <h2>Acceptance Form</h2>
         {
           acceptData ? 
           <DetailData data = {acceptData?.data} itemList = {acceptData?.itemList} />
