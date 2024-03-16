@@ -27,6 +27,7 @@ import RejectionNote from '../pages/txnform/rejectionnote/RejectionNote';
 import Itemdemandsearch from '../components/Itemdemandsearch';
 import OHQ from '../pages/ohq/ohq'
 import TransactionSummary from '../pages/transactionSummary/TransactionSummary';
+import TransactionDetail from '../pages/transactionSummary/TransactionDetail';
 
 
 const RoutesComponent = () => {
@@ -37,6 +38,7 @@ const RoutesComponent = () => {
       <Route path="/items" element={<Items />} />
       <Route path = '/ohq' element = {<OHQ />} />
       <Route path = '/trnsummary' element = {<TransactionSummary />} />
+      <Route path = '/trnsummary/:trnno' element = {<TransactionDetail />} />
       <Route path="/locator" element={<Locator />} />
       <Route path="/department" element={<DepartmentPage />} />
       <Route path="/user" element={<User />} />

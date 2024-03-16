@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Input, Table } from "antd";
-import SampleData from "./SampleData";
+import axios from "axios";
 
 const Ohq = () => {
   const [itemData, setItemData] = useState([])
   const [filteredData, setFilteredData] = useState([])
+  // const [itemMasterData, setItemMasterData] = useState([])
 
-  const populateItemData = () => {
-    const {items} = SampleData
-     setItemData([...items])
-     setFilteredData([...items])
+  const populateItemData = async () => {
+    const {data} = await axios.post('https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getOHQ', {itemCode: null, userId: "string"}) // sending itemCode 'null' gives all available data
+    const {responseData} = data
+     setItemData([...responseData])
+     setFilteredData([...responseData])
   }
 
   const handleSearch = (searchText) => {
@@ -49,6 +51,7 @@ const Ohq = () => {
   }, [])
 
   const renderLocator = (obj) => {
+    console.log("Obj: ", obj)
     return (
       <Table 
         dataSource={obj}
@@ -56,8 +59,8 @@ const Ohq = () => {
         columns={[
           {
             title: "LOCATOR DESCRIPTION",
-            dataIndex: "locatorId",
-            key: "locatorId"
+            dataIndex: "locatorDesc",
+            key: "locatorDesc"
           },
           {
             title: "QUANTITY",
@@ -72,31 +75,31 @@ const Ohq = () => {
   const columns = [
     {
       title: "ITEM CODE",
-      dataIndex: "itemCd",
-      key: "itemCd"
+      dataIndex: "itemCode",
+      key: "itemCode"
     },
 
     {
       title: "ITEM NAME",
-      dataIndex: "itemMasterDesc",
-      key: "itemMasterDesc"
+      dataIndex: "itemName",
+      key: "itemName"
     },
 
     {
       title: "LOCATION",
-      dataIndex: "locationId",
-      key: "locationId"
+      dataIndex: "locationName",
+      key: "locationName"
     },
 
     {
       title: "UOM",
-      dataIndex: "uomId",
-      key: "uomId"
+      dataIndex: "uomDesc",
+      key: "uomDesc"
     },
 
     {
       title: "LOCATOR QUANTITY DETAILS",
-      dataIndex: "locatorQuantity",
+      dataIndex: "qtyList",
       key: "locatorId",
       render: (locatorQuantity) => renderLocator(locatorQuantity)
     },
