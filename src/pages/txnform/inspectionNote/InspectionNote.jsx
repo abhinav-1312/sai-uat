@@ -1,4 +1,4 @@
-// InsepctionReport.js
+// InspectionNote.js
 import React, { useState, useEffect } from "react";
 import {
   Form,
@@ -16,11 +16,12 @@ import {
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
-const dateFormat = "DD/MM/YYYY";
+
+const dateFormat = "YYYY/MM/DD";
 const { Option } = Select;
 const { Title } = Typography;
 
-const InsepctionReport = () => {
+const InspectionNote = () => {
   const [Type, setType] = useState("PO");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -70,6 +71,9 @@ const InsepctionReport = () => {
         conditionOfGoods: "",
         budgetHeadProcurement: "",
         locatorId: "",
+        inspectedQuantity: 0,
+        acceptedQuantity: 0,
+        rejectedQuantity: 0,
       },
     ],
   });
@@ -106,6 +110,7 @@ const InsepctionReport = () => {
       };
     });
   };
+
   useEffect(() => {
     fetchItemData();
     fetchUserDetails();
@@ -122,6 +127,7 @@ const InsepctionReport = () => {
       console.error("Error fetching data:", error);
     }
   };
+
   const fetchUserDetails = async () => {
     try {
       const apiUrl =
@@ -154,7 +160,6 @@ const InsepctionReport = () => {
       console.error("Error fetching data:", error);
     }
   };
-
   const handleInwardGatePassChange = async (value) => {
     try {
       const apiUrl =
@@ -208,7 +213,6 @@ const InsepctionReport = () => {
   const onFinish = async (values) => {
     try {
       const formDataCopy = { ...formData };
-
       const allFields = [
         "genDate",
         "genName",
@@ -242,7 +246,6 @@ const InsepctionReport = () => {
         "conditionOfGoods",
         "userId",
       ];
-
       allFields.forEach((field) => {
         if (!(field in formDataCopy)) {
           formDataCopy[field] = "";
@@ -250,7 +253,7 @@ const InsepctionReport = () => {
       });
 
       const apiUrl =
-        "https://sai-services.azurewebsites.net/sai-inv-mgmt/saveInspectionReport";
+        "https://sai-services.azurewebsites.net/sai-inv-mgmt/saveNewInspectionReport";
       const response = await axios.post(apiUrl, formDataCopy);
       console.log("Received values:", values);
       if (
@@ -266,71 +269,66 @@ const InsepctionReport = () => {
           inspectionRptNo: processId,
         });
         setSuccessMessage(
-          `Inspection Report : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
+          `Inspection Note : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
         showModal();
         message.success(
-          `Inspection Report  successfully! Process ID: ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
+          `Inspection Note  successfully! Process ID: ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
       } else {
         // Display a generic success message if specific data is not available
-        message.error("Failed to Inspection Report . Please try again later.");
+        message.error("Failed to Inspection Note . Please try again later.");
       }
     } catch (error) {
-      console.error("Error saving Inspection Report :", error);
-      message.error("Failed to Inspection Report . Please try again later.");
-
-      // Handle error response here
+      console.error("Error saving Inspection Note :", error);
+      message.error("Failed to Inspection Note . Please try again later.");
     }
   };
 
+  // ... (other JSX and return statement)
   const handleValuesChange = (_, allValues) => {
     setType(allValues.type);
   };
 
   return (
     <div className="goods-receive-note-form-container">
-      {Type === "PO" && (
-        <h1>Sports Authority of India - Material Inspection Report</h1>
-      )}
-      {Type !== "PO" && <h1>Sports Authority of India - Inspection Report</h1>}
-
+      <h1>Sports Authority of India - Inspection Note</h1>
       <Form
         onFinish={onFinish}
-        className="goods-receive-note-form"
+        className="goods-recieve-note-form"
         onValuesChange={handleValuesChange}
         layout="vertical"
       >
         <Row>
           <Col span={6} offset={18}>
-            <Form.Item label="DATE" name="inspectionRptDate">
+            <Form.Item label="DATE" name="inspectionNoteDate">
               <DatePicker
                 defaultValue={dayjs()}
                 format={dateFormat}
                 style={{ width: "100%" }}
-                name="inspectionRptDate"
+                name="inspectionNoteDate"
                 onChange={(date, dateString) =>
-                  handleChange("inspectionRptDate", dateString)
+                  handleChange("inspectionNoteDate", dateString)
                 }
-              />
+              ></DatePicker>
             </Form.Item>
           </Col>
           <Col span={6}>
             <Form.Item label="TYPE" name="type">
               <Select onChange={(value) => handleChange("type", value)}>
                 <Option value="PO">1. Purchase Order</Option>
-                <Option value="IOP">2. Inter-Org Transaction</Option>
+                <Option value="IOP">2. Intern-Org Transaction</Option>
               </Select>
             </Form.Item>
           </Col>
           <Col span={6} offset={12}>
-            <Form.Item label="INSEPCTION REPORT NO." name="inspectionRptNo">
+            <Form.Item label="Inspection Note NO." name="inspectionRptNo">
               <Input
                 disabled
                 onChange={(e) =>
                   handleChange("inspectionRptNo", e.target.value)
                 }
-              />
+              ></Input>
             </Form.Item>
           </Col>
         </Row>
@@ -338,23 +336,18 @@ const InsepctionReport = () => {
         <Row gutter={24}>
           <Col span={8}>
             <Title strong level={2} underline type="danger">
-              {" "}
               CONSIGNEE DETAIL :-
             </Title>
-
             <Form.Item label="REGIONAL CENTER CODE" name="ceRegionalCenterCd">
               <Input value={formData.ceRegionalCenterCd} />
               <div style={{ display: "none" }}>
                 {formData.ceRegionalCenterCd}
               </div>
             </Form.Item>
-            <Form.Item
-              label="REGIONAL CENTER NAME "
-              name="ceRegionalCenterName"
-            >
+            <Form.Item label="REGIONAL CENTER NAME" name="ceRegionalCenterName">
               <Input value={formData.ceRegionalCenterName} />
               <div style={{ display: "none" }}>
-                {formData.ceRegionalCenterCd}
+                {formData.ceRegionalCenterName}
               </div>
             </Form.Item>
             <Form.Item label="ADDRESS :" name="ceAddress">
@@ -374,7 +367,6 @@ const InsepctionReport = () => {
             <Title strong underline level={2} type="danger">
               CONSIGNOR DETAIL :-
             </Title>
-
             {Type === "PO" && (
               <>
                 <Form.Item label="SUPPLIER CODE :" name="supplierCode">
@@ -439,7 +431,7 @@ const InsepctionReport = () => {
           </Col>
           <Col span={8}>
             <Form.Item></Form.Item>
-            <Form.Item label="INWARD GATE PASS No." name="inwardGatePass">
+            <Form.Item label="MIS No." name="inwardGatePass">
               <Input
                 onChange={(e) => handleInwardGatePassChange(e.target.value)}
               />
@@ -483,7 +475,7 @@ const InsepctionReport = () => {
           </Col>
         </Row>
 
-        {/* Item Details */}
+        {/*Item Details*/}
         <h2>ITEM DETAILS</h2>
 
         <Form.List name="itemDetails" initialValue={formData.items || [{}]}>
@@ -604,11 +596,11 @@ const InsepctionReport = () => {
                     <Col span={6}>
                       <Form.Item
                         {...restField}
-                        label="RECEIVED QUANTITY"
-                        name={[name, "quantity"]}
+                        label="INSPECTED QUANTITY"
+                        name={[name, "inspectedQty"]}
                       >
                         <Input
-                          value={formData.items?.[index]?.quantity}
+                          value={formData.items?.[index]?.inspectedQty}
                           onChange={(e) =>
                             itemHandleChange(`quantity`, e.target.value, index)
                           }
@@ -617,6 +609,36 @@ const InsepctionReport = () => {
                       </Form.Item>
                     </Col>
                     <Col span={6}>
+                      <Form.Item
+                        {...restField}
+                        label="ACCEPTED QUANTITY"
+                        name={[name, "acceptedQty"]}
+                      >
+                        <Input
+                          value={formData.items?.[index]?.acceptedQty}
+                          onChange={(e) =>
+                            itemHandleChange(`quantity`, e.target.value, index)
+                          }
+                        />
+                        <span style={{ display: "none" }}>{index + 1}</span>
+                      </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                      <Form.Item
+                        {...restField}
+                        label="REJECTED QUANTITY"
+                        name={[name, "rejectedQty"]}
+                      >
+                        <Input
+                          value={formData.items?.[index]?.rejectedQty}
+                          onChange={(e) =>
+                            itemHandleChange(`quantity`, e.target.value, index)
+                          }
+                        />
+                        <span style={{ display: "none" }}>{index + 1}</span>
+                      </Form.Item>
+                    </Col>
+                    {/* <Col span={6}>
                       <Form.Item
                         {...restField}
                         label="BUDGET HEAD PROCUREMENT"
@@ -632,7 +654,7 @@ const InsepctionReport = () => {
                           }
                         />
                       </Form.Item>
-                    </Col>
+                    </Col> */}
                     {Type !== "PO" && (
                       <Col span={6}>
                         <Form.Item
@@ -678,9 +700,8 @@ const InsepctionReport = () => {
           )}
         </Form.List>
 
-        {/* Condition of Goods */}
-
-        <Row gutter={24}>
+        {/* Condition Of Goods */}
+        {/* <Row gutter={24}>
           <Col span={12}>
             <Form.Item label="CONDITION OF GOODS" name="conditionOfGoods">
               <Input.TextArea
@@ -697,10 +718,9 @@ const InsepctionReport = () => {
               />
             </Form.Item>
           </Col>
-        </Row>
+        </Row> */}
 
         {/* Note and Signature */}
-
         <div
           style={{
             display: "flex",
@@ -708,122 +728,56 @@ const InsepctionReport = () => {
             justifyContent: "space-between",
           }}
         >
-          {Type === "PO" && (
-            <div>
-              <div className="goods-receive-note-signature">GENERATED BY</div>
-              <div className="goods-receive-note-signature">
-                NAME & DESIGNATION :
-                <Form>
-                  <Input
-                    value={formData.genName}
-                    name="genName"
-                    onChange={(e) => handleChange("genName", e.target.value)}
-                  />
-                </Form>
-              </div>
-              <div className="goods-receive-note-signature">
-                DATE & TIME :
-                <DatePicker
-                  defaultValue={dayjs()}
-                  format={dateFormat}
-                  style={{ width: "58%" }}
-                  name="genDate"
-                  onChange={(date, dateString) =>
-                    handleChange("genDate", dateString)
-                  }
+          <div>
+            <div className="goods-receive-note-signature">GENERATED BY</div>
+            <div className="goods-receive-note-signature">
+              NAME & DESIGNATION :
+              <Form>
+                <Input
+                  value={formData.genName}
+                  name="genName"
+                  onChange={(e) => handleChange("genName", e.target.value)}
                 />
-              </div>
+              </Form>
             </div>
-          )}
-          {Type !== "PO" && (
-            <div>
-              <div className="goods-receive-note-signature">GENERATED BY</div>
-              <div className="goods-receive-note-signature">
-                NAME & SIGNATURE :
-                <Form>
-                  <Input
-                    value={formData.genName}
-                    name="genName"
-                    onChange={(e) => handleChange("genName", e.target.value)}
-                  />
-                </Form>
-              </div>
-              <div className="goods-receive-note-signature">
-                DATE & TIME :
-                <DatePicker
-                  defaultValue={dayjs()}
-                  format={dateFormat}
-                  style={{ width: "58%" }}
-                  name="genDate"
-                  onChange={(date, dateString) =>
-                    handleChange("genDate", dateString)
-                  }
+            <div className="goods-receive-note-signature">
+              DATE & TIME :
+              <DatePicker
+                defaultValue={dayjs()}
+                format={dateFormat}
+                style={{ width: "58%" }}
+                name="genDate"
+                onChange={(date, dateString) =>
+                  handleChange("genDate", dateString)
+                }
+              />
+            </div>
+          </div>
+
+          <div>
+            <div className="goods-receive-note-signature">APPROVED BY</div>
+            <div className="goods-receive-note-signature">
+              NAME & SIGNATURE :
+              <Form>
+                <Input
+                  name="issueName"
+                  onChange={(e) => handleChange("issueName", e.target.value)}
                 />
-              </div>
+              </Form>
             </div>
-          )}
-
-          {Type === "PO" && (
-            <>
-              <div>
-                <div className="goods-receive-note-signature">APPROVED BY</div>
-                <div className="goods-receive-note-signature">
-                  NAME & SIGNATURE :
-                  <Form>
-                    <Input
-                      name="issueName"
-                      onChange={(e) =>
-                        handleChange("issueName", e.target.value)
-                      }
-                    />
-                  </Form>
-                </div>
-                <div className="goods-receive-note-signature">
-                  DATE & TIME :
-                  <DatePicker
-                    defaultValue={dayjs()}
-                    format={dateFormat}
-                    style={{ width: "58%" }}
-                    name="issueDate"
-                    onChange={(date, dateString) =>
-                      handleChange("issueDate", dateString)
-                    }
-                  />
-                </div>
-              </div>
-            </>
-          )}
-
-          {Type !== "PO" && (
-            <>
-              <div>
-                <div className="goods-receive-note-signature">RECEIVED BY</div>
-                <div className="goods-receive-note-signature">
-                  NAME & SIGNATURE :
-                  <Form>
-                    <Input
-                      name="issueName"
-                      onChange={(e) =>
-                        handleChange("issueName", e.target.value)
-                      }
-                    />
-                  </Form>
-                </div>
-                <div className="goods-receive-note-signature">
-                  DATE & TIME :
-                  <DatePicker
-                    defaultValue={dayjs()}
-                    format={dateFormat}
-                    style={{ width: "58%" }}
-                    name="issueDate"
-                    onChange={(date, dateString) =>
-                      handleChange("issueDate", dateString)
-                    }
-                  />
-                </div>
-              </div>
-            </>
-          )}
+            <div className="goods-receive-note-signature">
+              DATE & TIME :
+              <DatePicker
+                defaultValue={dayjs()}
+                format={dateFormat}
+                style={{ width: "58%" }}
+                name="issueDate"
+                onChange={(date, dateString) =>
+                  handleChange("issueDate", dateString)
+                }
+              />
+            </div>
+          </div>
         </div>
         {/* Submit Button */}
         <div className="goods-receive-note-button-container">
@@ -871,8 +825,9 @@ const InsepctionReport = () => {
           {errorMessage && <p>{errorMessage}</p>}
         </Modal>
       </Form>
+      {/* ... (rest of the form structure) */}
     </div>
   );
 };
 
-export default InsepctionReport;
+export default InspectionNote;
