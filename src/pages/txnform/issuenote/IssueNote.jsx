@@ -40,10 +40,10 @@ const IssueNote = () => {
   const [selectedItems, setSelectedItems] = useState([]); // State to hold selected item data
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [tableOpen, setTableOpen] = useState(true);
-  const [uomMaster, setUomMaster] = useState([])
   const [locatorMaster, setLocatorMaster] = useState([])
   const [locationMaster, setLocationMaster] = useState([])
   const [vendorMaster, setVendorMaster] = useState([])
+  const [itemDetail, setItemDetail] = useState([])
 
   const [formData, setFormData] = useState({
     genDate: "",
@@ -103,43 +103,58 @@ const IssueNote = () => {
   };
 
   const itemHandleChange = (fieldName, value, index) => {
-    setFormData((prevValues) => {
-      const updatedItems = [...(prevValues.items) || []];
+    console.log("FieldName: ", fieldName, value, index)
+    setItemDetail((prevValues) => {
+      const updatedItems = prevValues;
+      console.log("Updated: ", updatedItems)
       updatedItems[index] = {
         ...updatedItems[index],
-        [fieldName]: value === "" ? null : value,
+        [fieldName]: value,
       };
+      // console.log("Updated Itemsss: ", updatedItems)
+      return [...updatedItems]
+    });
+
+    setFormData((prevValues)=>{
+      const updatedItems = prevValues.items
+      updatedItems[index] = {
+        ...updatedItems[index], 
+        [fieldName]: value
+      }
       return {
         ...prevValues,
-        items: updatedItems,
-      };
-    });
+        items: updatedItems
+      }
+    })
   };
+
+  console.log("Item Detail: ", itemDetail)
+  console.log("F)rm data: ", formData.items)
 
   const populateItemData = async() => {
     const itemMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster"
     const locatorMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster"
-    const uomMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster"
+    // const uomMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster"
     const vendorMasteUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getVendorMaster"
     const locationMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocationMaster"
     try{
-      const [itemMaster, locatorMaster, uomMaster, vendorMaster, locationMaster] = await Promise.all([
+      const [itemMaster, locatorMaster, vendorMaster, locationMaster] = await Promise.all([
         axios.get(itemMasterUrl),
         axios.get(locatorMasterUrl),
-        axios.get(uomMasterUrl),
+        // axios.get(uomMasterUrl),
         axios.get(vendorMasteUrl),
         axios.get(locationMasterUrl)
       ])
       
       const {responseData : itemMasterData} = itemMaster.data
       const {responseData : locatorMasterData} = locatorMaster.data
-      const {responseData : uomMasterData} = uomMaster.data
+      // const {responseData : uomMasterData} = uomMaster.data
       const {responseData : vendorMasterData} = vendorMaster.data
       const {responseData : locationMasterData} = locationMaster.data
 
 
       setData([...itemMasterData])
-      setUomMaster([...uomMasterData])
+      // setUomMaster([...uomMasterData])
       setLocatorMaster([...locatorMasterData])
       setVendorMaster([...vendorMasterData])
       setLocationMaster([...locationMasterData])
@@ -188,33 +203,49 @@ const IssueNote = () => {
 
   const handleSelectItem = (record) => {
     setTableOpen(false);
+    console.log("Record: ", record)
     // Check if the item is already selected
     const index = selectedItems.findIndex((item) => item.id === record.id);
     if (index === -1) {
       setSelectedItems((prevItems) => [...prevItems, record]); // Update selected items state
       // add data to formData hook
-      setFormData((prevData) => {
+      setItemDetail((prevData) => {
         const newItem = {
-          srNo: prevData.items ? prevData.items.length + 1 : 1,
-          id: record.id,
+          srNo: prevData.length ? prevData.length + 1 : 1,
           itemCode: record.itemMasterCd,
+          itemId: record.id,
           itemDesc: record.itemMasterDesc,
           uom: record.uomId,
+          uomDesc : record.uomDtls.baseUom,
           quantity: 1,
           noOfDays: 1,
           remarks: "",
           conditionOfGoods: "",
           budgetHeadProcurement: "",
           locatorId: record.locatorId,
-          locatorDesc: record.locatorDesc,
-          itemName: record.itemName
         };
-        const updatedItems = [...(prevData.items || []), newItem];
-        return {
-          ...prevData,
-          items: updatedItems,
-        };
+        const updatedItems = [...(prevData || []), newItem];
+        return [...updatedItems]
       });
+
+      setFormData(prevValues=>{
+        const newItem = {
+          srNo: prevValues.items?.length ? prevValues.items.length + 1 : 1,
+          itemCode: record.itemMasterCd,
+          itemId: record.id,
+          itemDesc: record.itemMasterDesc,
+          uom: record.uomId,
+          quantity: 1,
+          noOfDays: 1,
+          conditionOfGoods: "",
+          budgetHeadProcurement: "",
+          locatorId: record.locatorId,
+          remarks: "",
+        }
+
+        const updatedItems = [...(prevValues.items || []), newItem]
+        return {...prevValues, items: updatedItems}
+      })
     } else {
       // If item is already selected, deselect it
       const updatedItems = [...selectedItems];
@@ -251,9 +282,8 @@ const IssueNote = () => {
     },
     { 
       title: "UOM", 
-      dataIndex: "uomId", 
+      dataIndex: "uomDesc", 
       key: "uom", 
-      render: (uomId) => findColumnValue(uomId, uomMaster, "uomMaster")
     },
     {
       title: "QUANTITY ON HAND",
@@ -396,6 +426,7 @@ const IssueNote = () => {
       const { responseData } = response.data;
       const { organizationDetails } = responseData;
       const { userDetails } = responseData;
+      console.log("Organizational details: ", organizationDetails)
       // Get current date
       const currentDate = dayjs();
       // Update form data with fetched values
@@ -420,6 +451,7 @@ const IssueNote = () => {
   };
 
   const onFinish = async () => {
+
     try {
       const formDataCopy = { ...formData };
       
@@ -496,31 +528,31 @@ const IssueNote = () => {
     }
   };
 
-  console.log("FormData: ", formData)
-
   const handleValuesChange = (_, allValues) => {
     setType(allValues.type);
   };
 
   const removeItem = (index) => {
+    setItemDetail(prevValues=>{
+      const updatedItems = prevValues
+      updatedItems.splice(index, 1)
+      
+      const updatedItems1 = updatedItems.map((item, key)=>{
+        return {...item, srNo: key+1}
+      })
+
+      return [...updatedItems1]
+    })
     setFormData(prevValues=>{
       const updatedItems = prevValues.items
       updatedItems.splice(index, 1)
       
       const updatedItems1 = updatedItems.map((item, key)=>{
-        return {...item, srNo: key}
+        return {...item, srNo: key+1}
       })
 
-      return {
-        ...prevValues,
-        items: updatedItems1
-      }
+      return {...prevValues, items: updatedItems1}
     })
-  }
-
-  const findUomName = (uomId) => {
-    const foundObj = uomMaster.find(obj => uomId === obj.id)
-    return foundObj ? foundObj.uomName : "Undefined"
   }
 
   return (
@@ -757,8 +789,8 @@ const IssueNote = () => {
         <Form.List name="items" initialValue={formData.items || [{}]}>
           {(fields, { add, remove }) => (
             <>
-              {formData.items?.length > 0 &&
-                formData.items.map((item, key) => {
+              {itemDetail.length > 0 &&
+                itemDetail.map((item, key) => {
                   return (
                     // <div className="xyz" style={{font:"150px", zIndex: "100"}}>xyz</div>
 
@@ -773,11 +805,11 @@ const IssueNote = () => {
                         </Form.Item>
                         
                         <Form.Item label="ITEM DESCRIPTION">
-                          <Input value={itemNames[item.itemName]} readOnly />
+                          <Input value={item.itemDesc} readOnly />
                         </Form.Item>
 
                         <Form.Item label="UOM">
-                          <Input value={findUomName(item.uom)} />
+                          <Input value={item.uomDesc} />
                         </Form.Item>
 
                         <Form.Item label="LOCATOR DESCRIPITON">

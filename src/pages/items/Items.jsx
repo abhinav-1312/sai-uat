@@ -331,7 +331,7 @@ const ItemsPage = () => {
       if (selectedId) {
         tempItem["itemMasterId"] = selectedId;
       }
-      // Implement update logic here
+
       const data = await apiRequest(
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/updateItemMaster",
         "POST",

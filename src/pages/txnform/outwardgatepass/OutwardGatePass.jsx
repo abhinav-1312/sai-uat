@@ -71,7 +71,6 @@ const OutwardGatePass = () => {
     ],
   });
 
-  console.log("FormData: ", formData)
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -161,11 +160,9 @@ const OutwardGatePass = () => {
       });
 
       const { responseData } = response.data;
-      console.log("Response data: ", responseData)
       const { organizationDetails } = responseData;
       const { userDetails } = responseData;
       const currentDate = dayjs();
-      console.log('Fetched data:', organizationDetails);
       // Update form data with fetched values
       setFormData({
         // crRegionalCenterCd: organizationDetails.crRegionalCenterCd,
@@ -195,7 +192,6 @@ const OutwardGatePass = () => {
       });
       const responseData = response.data.responseData;
       const { processData, itemList } = responseData;
-      console.log('API Response:', response.data);
       setFormData(prevFormData => ({
         ...prevFormData,
 
@@ -222,6 +218,7 @@ const OutwardGatePass = () => {
 
         items: itemList.map(item => ({
           srNo: item?.sNo,
+          itemId: item?.itemId,
           itemCode: item?.itemCode,
           // itemName: item?.itemName,
           itemDesc: item?.itemDesc,
@@ -267,7 +264,6 @@ const OutwardGatePass = () => {
 
       const apiUrl = 'https://sai-services.azurewebsites.net/sai-inv-mgmt/saveOutwardGatePass';
       const response = await axios.post(apiUrl, formDataCopy);
-      console.log('API Response:', response.data);
       if (response.status === 200 && response.data && response.data.responseStatus && response.data.responseStatus.message === 'Success') {
         // Access the specific success message data if available
         const { processId, processType, subProcessId } = response.data.responseData;
@@ -332,8 +328,6 @@ const OutwardGatePass = () => {
       }
     })
   }
-
-  console.log("FOrm data: ", formData)
 
   return (
 

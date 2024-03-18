@@ -35,8 +35,10 @@ const ItemsForm = ({
 
   const onFinish = (values) => {
     onSubmit(values);
-    // form.resetFields();
+    form.resetFields();
   };
+
+  console.log("Locators: ", uoms)
 
   
   return (
@@ -77,7 +79,15 @@ const ItemsForm = ({
             label="UOM"
             rules={[{ required: true, message: "Please enter UOM" }]}
           >
-            <Input />
+            <Select>
+              {uoms.map((uom, index) => {
+                return (
+                  <Option key={index} value={uom.id}>
+                    {uom.uomName}
+                  </Option>
+                );
+              })}
+            </Select>
           </Form.Item>
         </Col>
       </Row>
@@ -114,14 +124,14 @@ const ItemsForm = ({
         <Col span={8}>
           <Form.Item
             name="locatorId"
-            label="Locator Code"
+            label="Locator Description"
             rules={[{ required: true, message: "Please enter Locator Code" }]}
           >
             <Select>
               {locators.map((locator, index) => {
                 return (
                   <Option key={index} value={locator.id}>
-                    {locator.locatorCd}
+                    {locator.locatorDesc}
                   </Option>
                 );
               })}

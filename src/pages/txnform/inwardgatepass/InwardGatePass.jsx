@@ -162,10 +162,10 @@ const InwardGatePass = () => {
       const currentDate = dayjs();
       // Update form data with fetched values
       setFormData({
-        // ceRegionalCenterCd: "20",
-        // ceRegionalCenterName: organizationDetails.location,
-        // ceAddress: organizationDetails.locationAddr,
-        // ceZipcode: "131021",
+        ceRegionalCenterCd: organizationDetails.id,
+        ceRegionalCenterName: organizationDetails.location,
+        ceAddress: organizationDetails.locationAddr,
+        ceZipcode: "131021",
         genName: userDetails.firstName,
         noaDate: currentDate.format(dateFormat),
         dateOfDelivery: currentDate.format(dateFormat),
@@ -191,7 +191,6 @@ const InwardGatePass = () => {
       });
       const responseData = response.data.responseData;
       const { processData, itemList } = responseData;
-      console.log('API Response:', response.data);
       setFormData(prevFormData => ({
         ...prevFormData,
 
@@ -212,6 +211,7 @@ const InwardGatePass = () => {
 
         items: itemList.map(item => ({
           srNo: item?.sNo,
+          itemId: item?.itemId,
           itemCode: item?.itemCode,
           itemDesc: item?.itemDesc,
           uom: parseInt(item?.uom),

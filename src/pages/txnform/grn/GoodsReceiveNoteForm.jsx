@@ -135,6 +135,9 @@ const GoodsReceiveNoteForm = () => {
     populateItemData()
     fetchUserDetails();
   }, []);
+
+  console.log("Formdata: ", formData.items)
+
   const fetchUserDetails = async () => {
     try {
       const apiUrl =
@@ -198,6 +201,7 @@ const GoodsReceiveNoteForm = () => {
 
         items: itemList.map((item) => ({
           srNo: item?.sNo,
+          itemId: item?.itemId,
           itemCode: item?.itemCode,
           itemDesc: item?.itemDesc,
           uom: parseInt(item?.uom),

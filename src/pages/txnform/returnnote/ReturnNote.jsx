@@ -189,6 +189,7 @@ const RetunNote = () => {
         items: itemList.map((item) => ({
           srNo: item?.sNo,
           id: item?.id || "Null",
+          itemId: item?.itemId,
           itemCode: item?.itemCode,
           itemDesc: item?.itemDesc,
           uom: parseInt(item?.uom),
