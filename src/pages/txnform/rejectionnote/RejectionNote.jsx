@@ -159,7 +159,7 @@ const RejectionNote = () => {
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
       const response = await axios.post(apiUrl, {
         processId: value,
-        processStage: "IR",
+        processStage: "IRN",
       });
       const responseData = response.data.responseData;
       const { processData, itemList } = responseData;
@@ -360,7 +360,7 @@ const RejectionNote = () => {
               CONSIGNOR DETAIL :-
             </Title>
 
-            {Type === "2" && (
+            {Type === "PO" && (
               <>
                 <Form.Item label="SUPPLIER CODE :" name="supplierCode">
                   <Input
@@ -386,7 +386,7 @@ const RejectionNote = () => {
               </>
             )}
 
-            {Type === "3" && (
+            {Type === "IOP" && (
               <>
                 <Form.Item
                   label="REGIONAL CENTER CODE"
@@ -425,7 +425,11 @@ const RejectionNote = () => {
           <Col span={8}>
             <Form.Item></Form.Item>
             <Form.Item
-              label="INSPECTION REPORT NO. :"
+              label={
+                Type !== "PO"
+                  ? "INSPECTION REPORT NO. :"
+                  : "INSPECTION NOTE NO. :"
+              }
               name="inspectionreportno"
             >
               <Input

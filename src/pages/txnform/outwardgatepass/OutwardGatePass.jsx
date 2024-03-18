@@ -778,28 +778,30 @@ const OutwardGatePass = () => {
 
         {/* Condition of Goods 
         <h2>CONDITION OF GOODS</h2>*/}
-        <Row gutter={24}>
-          <Col span={12}>
-            <Form.Item label="TERMS AND CONDITION :" name="conditionOfGoods">
-              <Input.TextArea
-                value={formData.termsCondition}
-                autoSize={{ minRows: 3, maxRows: 6 }}
-                readonly
-              />
-              <Input style={{ display: "none" }} />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item label="NOTE" name="note">
-              <Input.TextArea
-                value={formData.note}
-                autoSize={{ minRows: 3, maxRows: 6 }}
-                onChange={(e) => handleChange("note", e.target.value)}
-              />
-              <Input style={{ display: "none" }} />
-            </Form.Item>
-          </Col>
-        </Row>
+        {Type !== "PO" && (
+          <Row gutter={24}>
+            <Col span={12}>
+              <Form.Item label="TERMS AND CONDITION :" name="conditionOfGoods">
+                <Input.TextArea
+                  value={formData.termsCondition}
+                  autoSize={{ minRows: 3, maxRows: 6 }}
+                  readonly
+                />
+                <Input style={{ display: "none" }} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="NOTE" name="note">
+                <Input.TextArea
+                  value={formData.note}
+                  autoSize={{ minRows: 3, maxRows: 6 }}
+                  onChange={(e) => handleChange("note", e.target.value)}
+                />
+                <Input style={{ display: "none" }} />
+              </Form.Item>
+            </Col>
+          </Row>
+        )}
 
         {/* Note and Signature */}
 

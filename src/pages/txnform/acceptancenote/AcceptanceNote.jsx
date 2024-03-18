@@ -160,7 +160,7 @@ const AcceptanceNote = () => {
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
       const response = await axios.post(apiUrl, {
         processId: value,
-        processStage: "IR",
+        processStage: "IRN",
       });
       const responseData = response.data.responseData;
       const { processData, itemList } = responseData;
@@ -428,7 +428,9 @@ const AcceptanceNote = () => {
           <Col span={8}>
             <Form.Item></Form.Item>
             <Form.Item
-              label="INSPECTION REPORT NO. :"
+              label={
+                Type !== "PO" ? "INSPECTION REPORT NO.:" : "INSPECTION NOTE NO."
+              }
               name="inspectionreportno"
             >
               <Input
