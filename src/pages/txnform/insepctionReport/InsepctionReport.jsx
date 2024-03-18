@@ -324,7 +324,10 @@ const InsepctionReport = () => {
             </Form.Item>
           </Col>
           <Col span={6} offset={12}>
-            <Form.Item label="INSEPCTION REPORT NO." name="inspectionRptNo">
+            <Form.Item
+              label={Type !== "PO" ? "INSEPCTION REPORT NO." : "MIS NO"}
+              name="inspectionRptNo"
+            >
               <Input
                 disabled
                 onChange={(e) =>
