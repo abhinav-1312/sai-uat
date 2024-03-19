@@ -26,8 +26,9 @@ const GoodsReceiveNoteForm = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [itemData, setItemData] = useState([]);
-  const [uomMaster, setUomMaster] = useState([])
-  const [locatorMaster, setLocatorMaster] = useState([])
+  const [uomMaster, setUomMaster] = useState([]);
+  const [locatorQuantity, setLocatorQuantity] = useState(null);
+  const [locatorMaster, setLocatorMaster] = useState([]);
   const [formData, setFormData] = useState({
     genDate: "",
     genName: "",
@@ -106,37 +107,41 @@ const GoodsReceiveNoteForm = () => {
     });
   };
 
-  const populateItemData = async() => {
-    const itemMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster"
-    const locatorMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster"
-    const uomMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster"
-    
-    try{
-      const [itemMaster, locatorMaster, uomMaster] = await Promise.all([
-        axios.get(itemMasterUrl),
-        axios.get(locatorMasterUrl),
-        axios.get(uomMasterUrl),
-      ])
-      
-      const {responseData : itemMasterData} = itemMaster.data
-      const {responseData : locatorMasterData} = locatorMaster.data
-      const {responseData : uomMasterData} = uomMaster.data
+  const populateItemData = async () => {
+    const itemMasterUrl =
+      "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster";
+    const locatorMasterUrl =
+      "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster";
+    const uomMasterUrl =
+      "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster";
+    const ohqUrl =
+      "https://sai-services.azurewebsites.net/sai-inv-mgmt/txns/getTxnSummary";
 
-      setItemData([...itemMasterData])
-      setUomMaster([...uomMasterData])
-      setLocatorMaster([...locatorMasterData])
+    try {
+      const [itemMaster, locatorMaster, uomMaster, ohqData] = await Promise.all(
+        [
+          axios.get(itemMasterUrl),
+          axios.get(locatorMasterUrl),
+          axios.get(uomMasterUrl),
+        ]
+      );
 
-    }catch(error){
-      console.log("Populate item data error: ", error)
+      const { responseData: itemMasterData } = itemMaster.data;
+      const { responseData: locatorMasterData } = locatorMaster.data;
+      const { responseData: uomMasterData } = uomMaster.data;
+
+      setItemData([...itemMasterData]);
+      setUomMaster([...uomMasterData]);
+      setLocatorMaster([...locatorMasterData]);
+    } catch (error) {
+      console.log("Populate item data error: ", error);
     }
-  }
+  };
 
   useEffect(() => {
-    populateItemData()
+    populateItemData();
     fetchUserDetails();
   }, []);
-
-  console.log("Formdata: ", formData.items)
 
   const fetchUserDetails = async () => {
     try {
@@ -173,14 +178,53 @@ const GoodsReceiveNoteForm = () => {
   };
   const handleReturnNoteNoChange = async (value) => {
     try {
-      const apiUrl =
+      const subProcessDtlUrl =
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
-      const response = await axios.post(apiUrl, {
+      const ohqUrl =
+        "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getOHQ";
+
+      const subProcessRes = await axios.post(subProcessDtlUrl, {
         processId: value,
         processStage: "RN",
       });
-      const responseData = response.data.responseData;
-      const { processData, itemList } = responseData;
+
+      const { data: subProcess, status, statusText } = subProcessRes;
+      const { responseData: subProcessData } = subProcess;
+      const { processData, itemList } = subProcessData;
+
+      if (status === 200 && statusText === "OK") {
+        try {
+          const locatorQuantityArr = await Promise.all(
+            itemList.map(async (item) => {
+              const { itemCode } = item;
+
+              const ohqRes = await axios.post(ohqUrl, {
+                itemCode,
+                userId: "string",
+              });
+              const { data: ohqProcess } = ohqRes;
+              const { responseData: ohqData } = ohqProcess;
+              console.log("Qhq data: ", ohqData);
+              return {
+                itemCode: ohqData[0].itemCode,
+                qtyList: ohqData[0].qtyList,
+              };
+            })
+          );
+
+          const locatorQuantityObj = locatorQuantityArr.reduce((acc, item) => {
+            acc[item.itemCode] = item.qtyList;
+            return acc;
+          }, {});
+
+          console.log("Locator Quan arr", locatorQuantityObj);
+
+          setLocatorQuantity({ ...locatorQuantityObj });
+        } catch (error) {
+          console.log("Error: ", error);
+        }
+      }
+
       setFormData((prevFormData) => ({
         ...prevFormData,
 
@@ -206,11 +250,18 @@ const GoodsReceiveNoteForm = () => {
           itemDesc: item?.itemDesc,
           uom: parseInt(item?.uom),
           quantity: item?.quantity,
+          remQuantity: 0,
           noOfDays: item?.requiredDays,
           remarks: item?.remarks,
           conditionOfGoods: item?.conditionOfGoods,
           budgetHeadProcurement: item?.budgetHeadProcurement,
           locatorId: parseInt(item?.locatorId),
+          qtyList: [
+            {
+              locatorId: parseInt(item?.locatorId),
+              quantity: 0,
+            },
+          ],
         })),
       }));
       // Handle response data as needed
@@ -220,9 +271,40 @@ const GoodsReceiveNoteForm = () => {
     }
   };
 
+  console.log("FormData: ", formData.items);
+
   const onFinish = async (values) => {
+    let found = false
+    formData.items.forEach(item=>{
+      const {quantity, remQuantity} = item;
+      if(quantity-remQuantity > 0){
+        message.error("Please locate a locator to all quantity")
+        found = true;
+        return
+      }
+    })
+
+    if(found) return
+
+    const updatedForm = formData;
+    const updatedItems = updatedForm.items.map(item=>{
+      const itemObj = item
+      const {qtyList} = item
+      delete itemObj.quantity
+      delete itemObj.remQuantity
+      delete itemObj.qtyList
+
+      const insideArray = qtyList.map(qtyObj=>{
+        return {...itemObj, quantity: qtyObj.quantity, locatorId: qtyObj.locatorId}
+      })
+
+      return insideArray
+    })
+    
+    const flatItemsArray = updatedItems.flatMap(innerArray => innerArray);
+
     try {
-      const formDataCopy = { ...formData };
+      const formDataCopy = { ...formData, items: flatItemsArray };
 
       const allFields = [
         "genDate",
@@ -278,11 +360,11 @@ const GoodsReceiveNoteForm = () => {
         // Access the specific success message data if available
         const { processId, processType, subProcessId } =
           response.data.responseData;
-        setFormData(prevValues => {
-          return{
+        setFormData((prevValues) => {
+          return {
             ...prevValues,
             grnNo: processId,
-          }
+          };
         });
         setSuccessMessage(
           ` Goods Receive Note NO : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
@@ -291,8 +373,7 @@ const GoodsReceiveNoteForm = () => {
         message.success(
           `Goods Receive Note successfully! Process ID: ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
-      } 
-      else {
+      } else {
         // Display a generic success message if specific data is not available
         message.error("Failed to Goods Receive Note. Please try again later.");
       }
@@ -303,8 +384,22 @@ const GoodsReceiveNoteForm = () => {
     }
   };
 
+
   const handleValuesChange = (_, allValues) => {
     setType(allValues.type);
+  };
+
+  const addLocator = (index) => {
+    setFormData((prevValue) => {
+      const itemsArray = prevValue.items;
+      itemsArray[index].qtyList.push({ locatorId: "", quantity: 0 });
+      const qtyList = prevValue.items[index].qtyList;
+      const updatedQtyList = [...qtyList, { locatorId: "", quantity: 0 }];
+      return {
+        ...prevValue,
+        items: itemsArray,
+      };
+    });
   };
 
   const findColumnValue = (id, dataSource, sourceName) => {
@@ -326,7 +421,7 @@ const GoodsReceiveNoteForm = () => {
       updatedItems.splice(index, 1);
 
       const updatedItems1 = updatedItems.map((item, key) => {
-        return { ...item, srNo: key+1 };
+        return { ...item, srNo: key + 1 };
       });
 
       return {
@@ -335,18 +430,54 @@ const GoodsReceiveNoteForm = () => {
       };
     });
   };
-  
-  const handleLocatorChange = (itemIndex, locatorMasterIndex) => {
-    setFormData(prevValues=>{
-      const itemArray = [...prevValues.items]
-      itemArray[itemIndex].locatorId = locatorMaster[locatorMasterIndex].id
 
-      return {
-        ...prevValues,
-        items: itemArray
+  const handleLocatorChange = (fieldName, itemIndex, qtyListIndex, value) => {
+    // if(quantity-remQuantity-prevVal + val)
+    console.log("ItemIndex: ", itemIndex, value);
+    if (fieldName === "quantity") {
+      const { remQuantity, quantity, qtyList } = formData.items[itemIndex];
+      const val = value === "" ? 0 : parseInt(value);
+      const prevVal = qtyList[qtyListIndex].quantity;
+      const calc = quantity - (remQuantity - prevVal + val);
+
+      if (calc < 0) {
+        message.error(
+          "Please add items less than equal to remanining quantity."
+        );
+        return;
+      } else {
+        setFormData((prevValues) => {
+          console.log("Set form data quantity called");
+          const itemArray = [...prevValues.items];
+          const prevVal = itemArray[itemIndex].qtyList[qtyListIndex].quantity;
+          itemArray[itemIndex].qtyList[qtyListIndex].quantity =
+            value === "" ? 0 : parseInt(value);
+          itemArray[itemIndex].remQuantity =
+            itemArray[itemIndex].remQuantity +
+            itemArray[itemIndex].qtyList[qtyListIndex][fieldName] -
+            prevVal;
+          return {
+            ...prevValues,
+            items: itemArray,
+          };
+        });
+        return;
       }
-    })
-  }
+    } else {
+      setFormData((prevValues) => {
+        console.log("setForm data locatorId called");
+        const itemArray = [...prevValues.items];
+        itemArray[itemIndex].qtyList[qtyListIndex].locatorId = parseInt(value);
+
+        return {
+          ...prevValues,
+          items: itemArray,
+        };
+      });
+    }
+  };
+
+  console.log("Locator quantity: ", locatorQuantity);
 
   return (
     <div className="goods-receive-note-form-container">
@@ -624,7 +755,7 @@ const GoodsReceiveNoteForm = () => {
                     </Col>
                     <Col span={5}>
                       <Form.Item {...restField} label="UOM" name={[name, 'uom']}>
-                        <AutoComplete
+                        <AutoComplete quan
                           style={{ width: '100%' }}
                           options={itemData.map(item => ({ value: item.uom }))}
                           placeholder="Enter UOM"
@@ -673,6 +804,11 @@ const GoodsReceiveNoteForm = () => {
             <>
               {formData.items?.length > 0 &&
                 formData.items.map((item, key) => {
+                  console.log(
+                    "Item: ",
+                    item.itemCode,
+                    locatorQuantity[item.itemCode]
+                  );
                   return (
                     // <div className="xyz" style={{font:"150px", zIndex: "100"}}>xyz</div>
 
@@ -712,40 +848,17 @@ const GoodsReceiveNoteForm = () => {
                       </Form.Item>
 
                       <Form.Item label="RECEIVED QUANTITY">
-                        <Input
-                          value={item.quantity}
-                          onChange={(e) =>
-                            itemHandleChange("quantity", e.target.value, key)
-                          }
-                        />
+                        <Input value={item.quantity} readOnly />
                       </Form.Item>
 
                       <Form.Item label="BUDGET HEAD PROCUREMENT">
-                        <Input
-                          value={
-                            item.budgetHeadProcurement
-                          }
-                          readOnly
-                        />
+                        <Input value={item.budgetHeadProcurement} readOnly />
                       </Form.Item>
 
                       <Form.Item
-                        label="LOCATOR DESCRIPTION"
+                        label="REMARK"
+                        style={{ gridColumn: "span 2" }}
                       >
-                        {/* <Input
-                          value={findColumnValue(item.locatorId, locatorMaster, "locatorMaster")}
-                          readOnly
-                        /> */}
-
-                      <Select style={{ width: 200 }} onChange={(value)=>handleLocatorChange(key, value)} defaultValue={findColumnValue(item.locatorId, locatorMaster, "locatorMaster")}>
-                        {locatorMaster.map((option, index) => (
-                          <Option key={index} value={option.locatorId}>{option.locatorDesc}</Option>
-                        ))}
-                      </Select>
-
-                      </Form.Item>
-
-                      <Form.Item label="REMARK">
                         <Input
                           value={item.remarks}
                           onChange={(e) =>
@@ -753,6 +866,66 @@ const GoodsReceiveNoteForm = () => {
                           }
                         />
                       </Form.Item>
+
+                      <div style={{gridColumn: "span 4", width: "50%"}}>
+                      <h3>
+                        ITEMS LEFT TO LOCATE A LOCATOR:
+                        {item.quantity - item.remQuantity}
+                      </h3>
+
+                      {item.qtyList?.length > 0 &&
+                        item.qtyList.map((qtyObj, qtyKey) => {
+                          return (
+                            <div style={{display: "grid", gridTemplateColumns: 'auto auto', gap: '1rem'}}>
+                              <Form.Item label="LOCATOR DESCRIPTION">
+                                <Select
+                                  style={{ width: 200 }}
+                                  onChange={(value) =>
+                                    handleLocatorChange(
+                                      "locatorId",
+                                      key,
+                                      qtyKey,
+                                      value
+                                    )
+                                  }
+                                  defaultValue={qtyObj.locatorId}
+                                >
+                                  {locatorQuantity &&
+                                    locatorQuantity[item.itemCode].map(
+                                      (option, index) => (
+                                        <Option
+                                          key={index}
+                                          value={option.locatorId}
+                                        >
+                                          {option.locatorDesc}
+                                        </Option>
+                                      )
+                                    )}
+                                </Select>
+                              </Form.Item>
+
+                              <Form.Item label="No. of items kept">
+                                <Input
+                                  type="number"
+                                  value={qtyObj.quantity}
+                                  onChange={(e) =>
+                                    handleLocatorChange(
+                                      "quantity",
+                                      key,
+                                      qtyKey,
+                                      e.target.value
+                                    )
+                                  }
+                                />
+                              </Form.Item>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <Button onClick={() => addLocator(key)}>
+                        Add more locator
+                      </Button>
 
                       <Col span={1}>
                         <MinusCircleOutlined
@@ -774,19 +947,19 @@ const GoodsReceiveNoteForm = () => {
               <Input.TextArea
                 value={formData.termsCondition}
                 readOnly
-                autoSize={{ minRows: 3, maxRows: 6 }} 
+                autoSize={{ minRows: 3, maxRows: 6 }}
               />
-              <Input style={{display: "none"}} />
+              <Input style={{ display: "none" }} />
             </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item label="NOTE" name="note">
               <Input.TextArea
                 onChange={(e) => handleChange("note", e.target.value)}
-                autoSize={{ minRows: 3, maxRows: 6 }} 
+                autoSize={{ minRows: 3, maxRows: 6 }}
                 value={formData.note}
               />
-              <Input style={{display: "none"}} />
+              <Input style={{ display: "none" }} />
             </Form.Item>
           </Col>
         </Row>

@@ -6,7 +6,17 @@ import DetailData from "./detailData/DetailData";
 
 const TransactionDetail = () => {
   const navigate = useNavigate();
-  const { trnno: trnNo } = useParams();
+  const { trnno: url } = useParams();
+  const urlArr = url.split("_")
+  const trnNo = urlArr[0];
+
+  const arrayToConvert = urlArr.slice(1)
+  console.log("Array to convert: ", arrayToConvert)
+  const objectFromArr = arrayToConvert.reduce((acc, key) => {
+    acc[key] = true;
+    return acc;
+  }, {});
+  
   const [acceptData, setAcceptData] = useState(null)
   const [returnData, setReturnData] = useState(null)
   const [igpData, setIgpData] = useState(null)
@@ -54,7 +64,9 @@ const TransactionDetail = () => {
         <h1>Transaction Detail</h1>
         <h1>Transaction No: {trnNo}</h1>
       </div>
-      <div>
+
+      { objectFromArr["ACT"] &&
+        <div>
         <h2>Approved Transaction</h2>
         {
           acceptData ? 
@@ -63,7 +75,9 @@ const TransactionDetail = () => {
           "No data available."
         }
       </div>
-      <div>
+      }
+
+      { objectFromArr["GRN"] && <div>
         <h2>Goods Receive Note</h2>
         {
           grnData ?
@@ -71,8 +85,9 @@ const TransactionDetail = () => {
           :
           "No data available."
         }
-      </div>
-      <div>
+      </div>}
+
+      {objectFromArr["IGP"] && <div>
         <h2>Inward Gate Pass</h2>
         {
           igpData ?
@@ -80,8 +95,9 @@ const TransactionDetail = () => {
           :
           "No data available."
         }
-      </div>
-      <div>
+      </div>}
+
+      {objectFromArr["IR"] && <div>
         <h2>Inspection Report Data</h2>
         {
           inspectionReportData ?
@@ -89,8 +105,9 @@ const TransactionDetail = () => {
           :
           "No data available."
         }
-      </div>
-      <div>
+      </div>}
+
+      {objectFromArr["ISN"] && <div>
         <h2>Issue Note</h2>
         {
           isnData ?
@@ -99,7 +116,8 @@ const TransactionDetail = () => {
           "No data available."
         }
       </div>
-      <div>
+}
+      {objectFromArr["OGP"] && <div>
         <h2>Outward Gate Pass</h2>
         {
           ogpData ?
@@ -107,8 +125,9 @@ const TransactionDetail = () => {
           :
           "No data available."
         }
-      </div>
-      <div>
+      </div>}
+
+     { objectFromArr["REJ"] && <div>
         <h2>Reject Data</h2>
         {
           rejectData ?
@@ -116,7 +135,9 @@ const TransactionDetail = () => {
           :
           "No data available."
         }
-      </div>
+      </div>}
+
+{     objectFromArr["RN"] && 
       <div>
         <h2>Return Note</h2>
         {
@@ -125,7 +146,7 @@ const TransactionDetail = () => {
           : 
           "No data available."
         }
-      </div>
+      </div>}
     </div>
   );
 };

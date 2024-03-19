@@ -3,7 +3,7 @@ export const columnName = {
     "genName": "Generated Name",
     "issueDate": "Issue Date",
     "IssueName": "Issue Name",
-    "approvedDate": "Approved Name",
+    "approvedDate": "Approved Date",
     "approvedName": "Approved Name",
     "id": "Detail Id",
     "processId": "Process ID",
