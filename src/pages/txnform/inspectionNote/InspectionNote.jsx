@@ -166,7 +166,7 @@ const InspectionNote = () => {
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
       const response = await axios.post(apiUrl, {
         processId: value,
-        processStage: "IGP",
+        processStage: "IR",
       });
       const responseData = response.data.responseData;
       const { processData, itemList } = responseData;
