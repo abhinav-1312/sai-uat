@@ -166,9 +166,7 @@ const RetunNote = () => {
         processStage: "ISN",
       });
       const responseData = response.data.responseData;
-      console.log("Changed response: ", responseData);
       const { processData, itemList } = responseData;
-      // console.log('API Response:', response.data);
       const issueNoteDt = processData?.issueNoteDt;
       setFormData((prevFormData) => ({
         ...prevFormData,
@@ -247,7 +245,6 @@ const RetunNote = () => {
       const apiUrl =
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/saveReturnNote";
       const response = await axios.post(apiUrl, formDataCopy);
-      console.log("API Response:", response.data);
       // Handle success response here
       if (
         response.status === 200 &&

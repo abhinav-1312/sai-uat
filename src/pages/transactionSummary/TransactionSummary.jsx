@@ -10,20 +10,52 @@ const dateFormat = "DD/MM/YYYY";
 
 const TransactionSummary = () => {
   const navigate = useNavigate()
+  const txnType = {
+    "RN": "Return Note",
+    "ISN": "Issue Note",
+    "OGP": "Outward Gate Pass",
+    "IGP": "Inward Gate Pass",
+    "GRN": "Goods Receieved Note",
+    "IR": "Inspection Report",
+    "IRN": "Inspection Report New",
+    "REJ": "Rejection Note",
+    "ACT": "Acceptance Note"
+  }
+  const [writingItemCd, setWritingItemCd] = useState(true)
+  const [writingTxnType, setWritingTxnType] = useState(true)
 
   const [formData, setFormData] = useState({
-    trnNo: null,
-    orgName: "",
-    fromDate: null,
-    toDate: null,
-    transactionType: null,
-    processType: null,
-    itemCd: null,
-    itemName: ""
+    startDate: null,
+    endDate: null,
+    txnType: null,
+    itemCode: null,
   })
 
+  const [showTxn, setShowTxn] = useState(
+    {
+      "RN": true,
+      "ISN": true,
+      "OGP": true,
+      "IGP": true,
+      "GRN": true,
+      "IR": true,
+      "IRN": true,
+      "REJ": true,
+      "ACT": true
+    }
+  )
+
   const handleViewClick = (trnNo) => {
-    navigate(`/trnsummary/${trnNo}`)
+    const arr = [];
+    arr.push(trnNo)
+    for (const [key, value] of Object.entries(showTxn)) {
+      if (value === true) {
+        arr.push(key);
+      }
+    }
+    const url = arr.join("_")
+    // console.log("URL: ", url)
+    navigate(`/trnsummary/${url}`)
   }
 
   const handlePrintClick = (trnNo) => {
@@ -33,29 +65,40 @@ const TransactionSummary = () => {
   const trnSumColumn = trnSummaryColumn(handleViewClick, handlePrintClick)
 
   const handleFormValueChange = (field, value) => {
-    if(field === 'transactionType' || field === "processType"){
-      setFormData(prevValues => {
-        return {
-          ...prevValues,
-          [field]: value.value
-        }
-      })
-      return
-    }
+    // if(field === 'transactionType' || field === "processType"){
+    //   setFormData(prevValues => {
+    //     return {
+    //       ...prevValues,
+    //       [field]: value.value
+    //     }
+    //   })
+    //   return
+    // }
     setFormData(prevValues=>{
       return {
         ...prevValues,
         [field]: value
       }
     })
+    if(field === "txnType"){
+      setShowTxn(prevState => ({
+        ...Object.keys(prevState).reduce((acc, key) => {
+          acc[key] = key === value; // Set "field" key to true, rest to false
+          return acc;
+        }, {})
+      }));
+  
+    }
   }
+
+  console.log("Show txn: ", showTxn)
 
   const [itemData, setItemData] = useState([])
   const [filteredData, setFilteredData] = useState([])
 
   const populateData = async () => {
     try{
-      const {data} = await axios.post("https://sai-services.azurewebsites.net/sai-inv-mgmt/txns/getTxnSummary", {startDate: null, endDate: null, itemCode: null})
+      const {data} = await axios.post("https://sai-services.azurewebsites.net/sai-inv-mgmt/txns/getTxnSummary", {startDate: null, endDate: null, itemCode: null, txnType: null})
       const {responseData} = data
       setFilteredData([...responseData])
     }catch(error){
@@ -70,7 +113,16 @@ const TransactionSummary = () => {
 
   const handleSearch = async () => {
     try{
-      const {data} = await axios.post("https://sai-services.azurewebsites.net/sai-inv-mgmt/txns/getTxnSummary", {startDate: formData.fromDate, endDate: formData.toDate, itemCode: formData.itemCd})
+      const formDataCopy = {...formData}
+      if(writingItemCd){
+        delete formDataCopy.txnType
+      }
+      if(writingTxnType){
+        delete formDataCopy.itemCode
+      }
+      console.log("Form data copy: ", formDataCopy)
+
+      const {data} = await axios.post("https://sai-services.azurewebsites.net/sai-inv-mgmt/txns/getTxnSummary", formDataCopy )
       const {responseData} = data
       console.log("resposnedata: ", responseData)
       setFilteredData([...responseData])
@@ -81,8 +133,42 @@ const TransactionSummary = () => {
   } 
 
   const handleReset = () => {
-    setFormData({itemCd: null, fromDate: null, toDate: null})
+    setFormData({itemCode: null, startDate: null, endDate: null, txnType: null})
+    setShowTxn(prevState => ({
+      ...Object.keys(prevState).reduce((acc, key) => {
+        acc[key] = true; // Set "field" key to true, rest to false
+        return acc;
+      }, {})
+    }));
   }
+
+  const handleTxnTypeClick = () => {
+    setFormData(prevValues=>{
+      return{
+        ...prevValues,
+        itemCode: null
+      }
+    })
+    setWritingItemCd(false)
+    setWritingTxnType(true)
+  }
+  const handleItemCdClick = () => {
+    setFormData(prevValues=>{
+      return{
+        ...prevValues,
+        txnType: null
+      }
+    })
+    setWritingItemCd(true)
+    setWritingTxnType(false)
+    setShowTxn(prevState => ({
+      ...Object.keys(prevState).reduce((acc, key) => {
+        acc[key] = true; // Set "field" key to true, rest to false
+        return acc;
+      }, {})
+    }));
+  }
+
 
   return (
     <>
@@ -92,27 +178,43 @@ const TransactionSummary = () => {
       <div style={{margin: "1rem", border: "1px solid rgb(87, 202, 195)", padding: "1rem", borderRadius: "1%"}}>
         <Form style={{display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1rem"}}>
 
-          <Form.Item label="Item Code" name="itemCode" style={{gridColumn: "1 / span 2"}}>
-            <Input value={formData.itemCd} onChange={(e) => handleFormValueChange("itemCd", e.target.value)}/>
+          <div onClick={()=>handleItemCdClick()}>
+          <Form.Item label="Item Code" name="itemCode">
+            
+            <Input value={formData.itemCode} onChange={(e) => handleFormValueChange("itemCode", e.target.value)} disabled={!writingItemCd} />
           </Form.Item>
+          </div>
 
-          <Form.Item label="From Date" name="fromDate">
+          <div onClick={()=>handleTxnTypeClick()} >
+          <Form.Item label="Transaction Type">
+
+            <Select disabled={!writingTxnType} value={formData.txnType} onChange={(value)=>(handleFormValueChange("txnType", value))}>
+              {
+                Object.entries(txnType).map(([key, value])=>(
+                  <Option key={key} value={key}>{value}</Option>
+                  
+                  ))
+                }
+            </Select>
+          </Form.Item>
+          </div>
+
+          <Form.Item label="From Date" name="startDate">
             <DatePicker
               format={dateFormat}
               style={{ width: "100%" }}
               onChange={(date, dateString) =>
-                handleFormValueChange("fromDate", dateString)
+                handleFormValueChange("startDate", dateString)
               }
             />
           </Form.Item>
 
-
-          <Form.Item label="To Date" name="toDate">
+          <Form.Item label="To Date" name="endDate">
             <DatePicker
               format={dateFormat}
               style={{ width: "100%" }}
               onChange={(date, dateString) =>
-                handleFormValueChange("toDate", dateString)
+                handleFormValueChange("endDate", dateString)
               }
             />
           </Form.Item>
