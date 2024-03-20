@@ -111,6 +111,7 @@ const IssueNote = () => {
   };
 
   const itemHandleChange = (fieldName, value, index) => {
+    console.log("Item handle change called")
     // setItemDetail((prevValues) => {
     //   const updatedItems = prevValues;
     //   updatedItems[index] = {
@@ -119,6 +120,20 @@ const IssueNote = () => {
     //   };
     //   return [...updatedItems]
     // });
+
+    if(fieldName === 'quantity'){
+      console.log("fieldname quantity")
+      // const formItemQuantity = formData.items[index]
+      const {quantity: formItemQuantity, itemCode, locatorId:formDataLocId} = formData.items[index]
+      const filteredItemObj = filteredData.find(obj => obj.itemMasterCd === itemCode && obj.qtyList.some(inObj=> inObj.locatorId === formDataLocId))
+      const foundObj = filteredItemObj.qtyList.find(obj=> obj.locatorId === formDataLocId)
+
+      console.log("Filtred item obj", foundObj)
+      if(value > foundObj.quantity){
+        message.error(`Required quantity is greater than available quantity at Serial no: ${index+1}`)
+        return
+      }
+    }
 
     setFormData((prevValues)=>{
       const updatedItems = prevValues.items
@@ -134,7 +149,6 @@ const IssueNote = () => {
   };
 
   const mergeItemMasterAndOhq = (itemMasterArr, ohqArr) => {
-    console.log("ohq arr:", ohqArr)
     return itemMasterArr.map(item=>{
       const itemCodeMatch = ohqArr.find(itemOhq=>itemOhq.itemCode === item.itemMasterCd)
       if(itemCodeMatch)
@@ -382,8 +396,6 @@ const IssueNote = () => {
     }
   }
 
-  console.log("FILTERED DATA: ", filteredData)
-
   useEffect(() => {
     // Fetch data from the API
     populateItemData()
@@ -423,8 +435,6 @@ const IssueNote = () => {
 
   const handleSelectItem = (record, subRecord) => {
     setTableOpen(false);
-    console.log("Record: ", record)
-    console.log("Sub record: ", subRecord)
 
     const recordCopy = record // delete qtyList array from record
 
