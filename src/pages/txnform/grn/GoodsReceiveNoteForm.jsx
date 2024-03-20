@@ -78,6 +78,26 @@ const GoodsReceiveNoteForm = () => {
     note: "",
   });
 
+  const deepClone = (obj) => {
+    if (obj === null || typeof obj !== 'object') {
+      return obj;
+    }
+  
+    let clone = Array.isArray(obj) ? [] : {};
+  
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        clone[key] = deepClone(obj[key]);
+      }
+    }
+  
+    return clone;
+  }
+  
+  
+
+  console.log("Form data: ", formData.items)
+
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -274,8 +294,10 @@ const GoodsReceiveNoteForm = () => {
   console.log("FormData: ", formData.items);
 
   const onFinish = async (values) => {
+    console.log("Form data abve foud", formData)
     let found = false
-    formData.items.forEach(item=>{
+    const tempFormData = deepClone(formData)
+    tempFormData.items.forEach(item=>{
       const {quantity, remQuantity} = item;
       if(quantity-remQuantity > 0){
         message.error("Please locate a locator to all quantity")
@@ -286,7 +308,7 @@ const GoodsReceiveNoteForm = () => {
 
     if(found) return
 
-    const updatedForm = formData;
+    const updatedForm = deepClone(formData);
     const updatedItems = updatedForm.items.map(item=>{
       const itemObj = item
       const {qtyList} = item
@@ -302,6 +324,7 @@ const GoodsReceiveNoteForm = () => {
     })
     
     const flatItemsArray = updatedItems.flatMap(innerArray => innerArray);
+    console.log("Form data above try: ", formData)
 
     try {
       const formDataCopy = { ...formData, items: flatItemsArray };
@@ -373,14 +396,20 @@ const GoodsReceiveNoteForm = () => {
         message.success(
           `Goods Receive Note successfully! Process ID: ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
+        console.log("FOrm data onfinisg try: ",formData)
+        console.log("locatorMaster data onfinisg try: ",locatorMaster)
       } else {
         // Display a generic success message if specific data is not available
         message.error("Failed to Goods Receive Note. Please try again later.");
+        console.log("FOrm data onfinisg else: ",formData)
+        console.log("locatorMaster data onfinisg else: ",locatorMaster)
       }
       // Handle success response here
     } catch (error) {
       console.log("Error saving Goods Receive Note:", error);
       message.error("Failed to Goods Receive Note. Please try again later.");
+      console.log("FOrm data onfinisg catch: ",formData)
+      console.log("locatorMaster data onfinisg catch: ",locatorMaster)
     }
   };
 
@@ -449,7 +478,6 @@ const GoodsReceiveNoteForm = () => {
         return;
       } else {
         setFormData((prevValues) => {
-          console.log("Set form data quantity called");
           const itemArray = [...prevValues.items];
           const prevVal = itemArray[itemIndex].qtyList[qtyListIndex].quantity;
           itemArray[itemIndex].qtyList[qtyListIndex].quantity =
@@ -468,6 +496,8 @@ const GoodsReceiveNoteForm = () => {
     } else {
       setFormData((prevValues) => {
         console.log("setForm data locatorId called");
+        console.log("Item array: ", prevValues.items, itemIndex, qtyListIndex)
+        console.log("Form data setForm", formData.items)
         const itemArray = [...prevValues.items];
         itemArray[itemIndex].qtyList[qtyListIndex].locatorId = parseInt(value);
 
@@ -892,7 +922,7 @@ const GoodsReceiveNoteForm = () => {
                                   }
                                   defaultValue={qtyObj.locatorId}
                                 >
-                                  {locatorMaster &&
+                                  {locatorMaster ?
                                     locatorMaster.map(
                                       (option, index) => (
                                         <Option
@@ -902,7 +932,10 @@ const GoodsReceiveNoteForm = () => {
                                           {option.locatorDesc}
                                         </Option>
                                       )
-                                    )}
+                                    )
+                                    :
+                                    <Input />
+                                  }
                                 </Select>
                               </Form.Item>
 

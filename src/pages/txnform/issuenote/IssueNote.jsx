@@ -91,6 +91,7 @@ const IssueNote = () => {
     processType: "IRP",
     interRdDemandNote: "",
   });
+  console.log("Filtered data: ", filteredData)
 
   // const primaryColumn = primColumn(locationMaster, vendorMaster, selectedItems, setSelectedItems, setFormData)
   
@@ -133,10 +134,11 @@ const IssueNote = () => {
   };
 
   const mergeItemMasterAndOhq = (itemMasterArr, ohqArr) => {
+    console.log("ohq arr:", ohqArr)
     return itemMasterArr.map(item=>{
       const itemCodeMatch = ohqArr.find(itemOhq=>itemOhq.itemCode === item.itemMasterCd)
       if(itemCodeMatch)
-        return {...item, qtyList:itemCodeMatch.qtyList, locationId: itemCodeMatch.locationId}
+        return {...item, qtyList:itemCodeMatch.qtyList, locationId: itemCodeMatch.locationId, locationDesc: itemCodeMatch.locationName}
     })
   }
 
@@ -199,17 +201,10 @@ const IssueNote = () => {
       render: (uomDtls) => uomDtls.baseUom
     },
     {
-      title: "QUANTITY ON HAND",
-      dataIndex: "quantity",
-      key: "quantity",
+      title: "LOCATION",
+      dataIndex: "locationDesc",
+      key: "location"
     },
-    // {
-    //   title: "LOCATION",
-    //   dataIndex: "locationId",
-    //   key: "location",
-    //   render: (locationId) => locationMaster[locationId],
-    //   // render: (locationId) => locationMaster[locationId] findColumnValue(locationId, locationMaster, "locationMaster")
-    // },
     // {
     //   title: "LOCATOR CODE",
     //   dataIndex: "locatorId",
@@ -386,6 +381,8 @@ const IssueNote = () => {
       console.log("Populate item data error: ", error)
     }
   }
+
+  console.log("FILTERED DATA: ", filteredData)
 
   useEffect(() => {
     // Fetch data from the API
@@ -971,7 +968,7 @@ const IssueNote = () => {
           <Popover
             onClick={() => setTableOpen(true)}
             content={
-              <Table pagination={{pageSize: 5}} dataSource={filteredData} columns={tableColumns} scroll={{ x: "max-content" }} style={{width: "600px", display: tableOpen? "block": "none"}}/>
+              <Table pagination={{pageSize: 3}} dataSource={filteredData} columns={tableColumns} scroll={{ x: "max-content" }} style={{width: "600px", display: tableOpen? "block": "none"}}/>
             }
             title="Filtered Item Data"
             trigger="click"

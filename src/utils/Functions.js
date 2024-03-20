@@ -1,11 +1,20 @@
 import {Table, Button} from "antd"
-export const handleSearch = (searchText, itemData, setHook, setSearch) => {
-  setSearch(searchText)
+export const handleSearch = (searchText, itemData, setHook, setSearch=null) => {
+  if(setSearch !== null)
+    setSearch(searchText)
   const filtered = itemData.filter((parentObject) =>
     recursiveSearch(parentObject, searchText)
   );
   setHook([...filtered]);
 };
+
+// export const handleSearch = (searchText, itemData, setHook) => {
+//   setSearch(searchText)
+//   const filtered = itemData.filter((parentObject) =>
+//     recursiveSearch(parentObject, searchText)
+//   );
+//   setHook([...filtered]);
+// };
 
 const recursiveSearch = (object, searchText) => {
   for (let key in object) {

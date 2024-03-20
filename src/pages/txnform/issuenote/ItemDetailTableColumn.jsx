@@ -28,13 +28,13 @@ export const primColumn = ({locationMaster, vendorMaster, selectedItems, setSele
       dataIndex: "quantity",
       key: "quantity",
     },
-    // {
-    //   title: "LOCATION",
-    //   dataIndex: "locationId",
-    //   key: "location",
-    //   render: (locationId) => locationMaster[locationId],
-    //   // render: (locationId) => locationMaster[locationId] findColumnValue(locationId, locationMaster, "locationMaster")
-    // },
+    {
+      title: "LOCATION",
+      dataIndex: "locationDesc",
+      key: "location",
+      // render: (locationId) => locationMaster[locationId],
+      // render: (locationId) => locationMaster[locationId] findColumnValue(locationId, locationMaster, "locationMaster")
+    },
     // {
     //   title: "LOCATOR CODE",
     //   dataIndex: "locatorId",
