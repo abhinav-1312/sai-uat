@@ -22,6 +22,9 @@ import dayjs from "dayjs";
 import axios from "axios";
 import ItemSearchFilter from "../../../components/ItemSearchFilter";
 import moment from "moment";
+import { handleSearch, handleSelectItem } from "../../../utils/Functions";
+import { primColumn } from "./ItemDetailTableColumn";
+import ItemDetailTable from "./ItemDetailTable";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
@@ -39,11 +42,12 @@ const IssueNote = () => {
   const [searchValue, setSearchValue] = useState("");
   const [selectedItems, setSelectedItems] = useState([]); // State to hold selected item data
   const [formSubmitted, setFormSubmitted] = useState(false);
-  const [tableOpen, setTableOpen] = useState(true);
+  const [tableOpen, setTableOpen] = useState(false);
   const [locatorMaster, setLocatorMaster] = useState([])
-  const [locationMaster, setLocationMaster] = useState([])
-  const [vendorMaster, setVendorMaster] = useState([])
+  const [locationMaster, setLocationMaster] = useState({})
+  const [vendorMaster, setVendorMaster] = useState({})
   const [itemDetail, setItemDetail] = useState([])
+
 
   const [formData, setFormData] = useState({
     genDate: "",
@@ -87,6 +91,8 @@ const IssueNote = () => {
     processType: "IRP",
     interRdDemandNote: "",
   });
+
+  // const primaryColumn = primColumn(locationMaster, vendorMaster, selectedItems, setSelectedItems, setFormData)
   
   const showModal = () => {
     setIsModalOpen(true);
@@ -95,6 +101,7 @@ const IssueNote = () => {
   const handleOk = () => {
     setIsModalOpen(false);
   };
+
   const handleChange = (fieldName, value) => {
     setFormData((prevValues) => ({
       ...prevValues,
@@ -103,17 +110,14 @@ const IssueNote = () => {
   };
 
   const itemHandleChange = (fieldName, value, index) => {
-    console.log("FieldName: ", fieldName, value, index)
-    setItemDetail((prevValues) => {
-      const updatedItems = prevValues;
-      console.log("Updated: ", updatedItems)
-      updatedItems[index] = {
-        ...updatedItems[index],
-        [fieldName]: value,
-      };
-      // console.log("Updated Itemsss: ", updatedItems)
-      return [...updatedItems]
-    });
+    // setItemDetail((prevValues) => {
+    //   const updatedItems = prevValues;
+    //   updatedItems[index] = {
+    //     ...updatedItems[index],
+    //     [fieldName]: value,
+    //   };
+    //   return [...updatedItems]
+    // });
 
     setFormData((prevValues)=>{
       const updatedItems = prevValues.items
@@ -128,36 +132,254 @@ const IssueNote = () => {
     })
   };
 
-  console.log("Item Detail: ", itemDetail)
-  console.log("F)rm data: ", formData.items)
+  const mergeItemMasterAndOhq = (itemMasterArr, ohqArr) => {
+    return itemMasterArr.map(item=>{
+      const itemCodeMatch = ohqArr.find(itemOhq=>itemOhq.itemCode === item.itemMasterCd)
+      if(itemCodeMatch)
+        return {...item, qtyList:itemCodeMatch.qtyList, locationId: itemCodeMatch.locationId}
+    })
+  }
+
+  const renderLocatorISN = (obj, rowRecord) => {
+    return (
+      <Table 
+        dataSource={obj}
+        pagination={false}
+        columns={[
+          {
+            title: "LOCATOR DESCRIPTION",
+            dataIndex: "locatorDesc",
+            key: "locatorDesc"
+          },
+          {
+            title: "QUANTITY",
+            dataIndex: "quantity",
+            key: "quantity"
+          },
+          {
+            title: "ACTION",
+            fixed: "right",
+            render: (_, record) => (
+              <Button
+                    onClick={() => handleSelectItem(rowRecord, record)}
+                    type= {selectedItems?.some((item) => item.locatorId === record.locatorId && item.id === rowRecord.id) ? "default" : "primary"}
+                  >
+                    {
+                      selectedItems?.some((item) => item.locatorId === record.locatorId && item.id === rowRecord.id)
+                      ? "Deselect"
+                      : "Select"
+                    }
+                    
+                  </Button>
+            )
+          }
+        ]}
+      />
+    )
+  }
+
+  const tableColumns =  [
+    { title: "S NO.", dataIndex: "id", key: "id", fixed: "left", width: 80 },
+    {
+      title: "ITEM DESCRIPTION",
+      dataIndex: "itemMasterDesc",
+      key: "itemMasterDesc",
+      fixed: "left"
+      // render: (itemName) => itemNames[itemName],
+    },
+    {
+      title: "ITEM CODE",
+      dataIndex: "itemMasterCd",
+      key: "itemCode",
+    },
+    {
+      title: "UOM",
+      dataIndex: "uomDtls",
+      key: "uomDtls",
+      render: (uomDtls) => uomDtls.baseUom
+    },
+    {
+      title: "QUANTITY ON HAND",
+      dataIndex: "quantity",
+      key: "quantity",
+    },
+    // {
+    //   title: "LOCATION",
+    //   dataIndex: "locationId",
+    //   key: "location",
+    //   render: (locationId) => locationMaster[locationId],
+    //   // render: (locationId) => locationMaster[locationId] findColumnValue(locationId, locationMaster, "locationMaster")
+    // },
+    // {
+    //   title: "LOCATOR CODE",
+    //   dataIndex: "locatorId",
+    //   key: "locatorCode",
+    // },
+    { title: "PRICE", dataIndex: "price", key: "price" },
+    // {
+    //   title: "VENDOR DETAIL",
+    //   dataIndex: "vendorId",
+    //   key: "vendorDetail",
+    //   render: (vendorId) => vendorMaster[vendorId],
+    //   // render: (vendorId) => findColumnValue(vendorId, vendorMaster, "vendorMaster")
+    // },
+    {
+      title: "CATEGORY",
+      dataIndex: "categoryDesc",
+      key: "category",
+      // render: (category) => categories[category],
+    },
+    {
+      title: "SUB-CATEGORY",
+      dataIndex: "subCategoryDesc",
+      key: "subCategory",
+      // render: (subCategory) => subCategories[subCategory],
+    },
+    {
+      title: "Type",
+      dataIndex: "typeDesc",
+      key: "type",
+      // render: (type) => types[type],
+    },
+    {
+      title: "Disciplines",
+      dataIndex: "disciplinesDesc",
+      key: "disciplines",
+      // render: (disciplines) => allDisciplines[disciplines],
+    },
+    {
+      title: "Brand",
+      dataIndex: "brandDesc",
+      key: "brand",
+      // render: (brandId) => brands[brandId],
+    },
+    {
+      title: "Size",
+      dataIndex: "sizeDesc",
+      key: "size",
+      // render: (size) => sizes[size],
+    },
+    {
+      title: "Colour",
+      dataIndex: "colorDesc",
+      key: "colour",
+      // render: (colorId) => colors[colorId],
+    },
+    {
+      title: "Usage Category",
+      dataIndex: "usageCategoryDesc",
+      key: "usageCategory",
+      // render: (usageCategory) => usageCategories[usageCategory],
+    },
+    {
+      title: "MINIMUM STOCK LEVEL",
+      dataIndex: "minStockLevel",
+      key: "minStockLevel",
+    },
+    {
+      title: "MAXIMUM STOCK LEVEL",
+      dataIndex: "maxStockLevel",
+      key: "maxStockLevel",
+    },
+    { title: "RE ORDER POINT", dataIndex: "reOrderPoint", key: "reOrderPoint" },
+    { title: "STATUS", dataIndex: "status", key: "status" },
+    { title: "CREATE DATE", dataIndex: "endDate", key: "endDate" },
+    {
+        title: "LOCATOR QUANTITY DETAILS",
+        dataIndex: "qtyList",
+        key: "qtyList",
+        render: (locatorQuantity, rowRecord) => renderLocatorISN(locatorQuantity, rowRecord)
+    },
+
+
+    // {
+    //   title: "Actions",
+    //   key: "actions",
+    //   fixed: "right",
+    //   render: (text, record) => (
+    //     <Button
+    //       type={
+    //         selectedItems.some((item) => item.id === record.id)
+    //           ? "warning"
+    //           : "primary"
+    //       }
+    //       onClick={() => handleSelectItem(record, selectedItems, selectedItems, setFormData)}
+    //     >
+    //       {selectedItems.some((item) => item.id === record.id)
+    //         ? "Deselect"
+    //         : "Select"}
+    //     </Button>
+    //   ),
+    // },
+  ];
+  // const actionColumn = {
+  //   title: "Actions",
+  //   key: "actions",
+  //   fixed: "right",
+  //   render: (text, record) => (
+  //     <Button
+  //       type={
+  //         selectedItems.some((item) => item.id === record.id)
+  //           ? "warning"
+  //           : "primary"
+  //       }
+  //       onClick={() => handleSelectItem(record, selectedItems, selectedItems, setFormData)}
+  //     >
+  //       {selectedItems.some((item) => item.id === record.id)
+  //         ? "Deselect"
+  //         : "Select"}
+  //     </Button>
+  //   ),
+  // }
+
+  const newColumn = [
+    {
+      title: "ID",
+      dataIndex: "id"
+    },
+    {
+      title: "Item description",
+      dataIndex: "itemMasterDesc"
+    }
+  ]
 
   const populateItemData = async() => {
     const itemMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster"
-    const locatorMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster"
-    // const uomMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster"
+    const ohqUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getOHQ"
     const vendorMasteUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getVendorMaster"
     const locationMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocationMaster"
     try{
-      const [itemMaster, locatorMaster, vendorMaster, locationMaster] = await Promise.all([
+      const [itemMaster, ohq, vendorMaster, locationMaster] = await Promise.all([
         axios.get(itemMasterUrl),
-        axios.get(locatorMasterUrl),
-        // axios.get(uomMasterUrl),
+        axios.post(ohqUrl, {itemCode:null, user: "string"}),
         axios.get(vendorMasteUrl),
         axios.get(locationMasterUrl)
       ])
+
       
       const {responseData : itemMasterData} = itemMaster.data
-      const {responseData : locatorMasterData} = locatorMaster.data
+      // const {responseData : locatorMasterData} = locatorMaster.data
       // const {responseData : uomMasterData} = uomMaster.data
+      const {responseData: ohqData} = ohq.data
       const {responseData : vendorMasterData} = vendorMaster.data
       const {responseData : locationMasterData} = locationMaster.data
 
+      const mergedItemMaster = mergeItemMasterAndOhq(itemMasterData, ohqData)
 
-      setData([...itemMasterData])
-      // setUomMaster([...uomMasterData])
-      setLocatorMaster([...locatorMasterData])
-      setVendorMaster([...vendorMasterData])
-      setLocationMaster([...locationMasterData])
+      setData([...mergedItemMaster])
+      setFilteredData([...mergedItemMaster])
+
+      const locationMasterObj = locationMasterData.reduce((acc, obj)=>{
+        acc[obj.id] = obj.locationName
+        return acc
+      }, {})
+
+      const vendorMasterObj = vendorMasterData.reduce((acc, obj)=>{
+        acc[obj.id] = obj.vendorName
+        return acc
+      }, {})
+      setVendorMaster({...vendorMasterObj})
+      setLocationMaster({...locationMasterObj})
 
     }
     catch(error){
@@ -168,65 +390,71 @@ const IssueNote = () => {
   useEffect(() => {
     // Fetch data from the API
     populateItemData()
+    fetchUserDetails();
   }, []);
 
-  const handleOnSearch = (value) => {
-    setSearchValue(value);
-    // Filter data based on any field
-    const filtered = data.filter((item) => {
-      // Check if any field includes the search value
-      return Object.values(item).some((field) => {
-        if (typeof field === "string") {
-          return field.toLowerCase().includes(value.toLowerCase());
-        }
-        return false;
-      });
-    });
-    setFilteredData(filtered);
-  };
+// const handleOnSearch = (value) => {
+//     setSearchValue(value);
+//     // Filter data based on any field
+//     const filtered = data.filter((item) => {
+//       // Check if any field includes the search value
+//       return Object.values(item).some((field) => {
+//         if (typeof field === "string") {
+//           return field.toLowerCase().includes(value.toLowerCase());
+//         }
+//         return false;
+//       });
+//     });
+//     setFilteredData(filtered);
+//   };
 
-  const handleOnChange = (e) => {
-    const { value } = e.target;
-    setSearchValue(value);
-    // Filter data based on any field
-    const filtered = data.filter((item) => {
-      // Check if any field includes the search value
-      return Object.values(item).some((field) => {
-        if (typeof field === "string") {
-          return field.toLowerCase().includes(value.toLowerCase());
-        }
-        return false;
-      });
-    });
-    setFilteredData(filtered);
-  };
+  // const handleOnChange = (e) => {
+  //   const { value } = e.target;
+  //   setSearchValue(value);
+  //   // Filter data based on any field
+  //   const filtered = data.filter((item) => {
+  //     // Check if any field includes the search value
+  //     return Object.values(item).some((field) => {
+  //       if (typeof field === "string") {
+  //         return field.toLowerCase().includes(value.toLowerCase());
+  //       }
+  //       return false;
+  //     });
+  //   });
+  //   setFilteredData(filtered);
+  // };
 
-  const handleSelectItem = (record) => {
+  const handleSelectItem = (record, subRecord) => {
     setTableOpen(false);
     console.log("Record: ", record)
+    console.log("Sub record: ", subRecord)
+
+    const recordCopy = record // delete qtyList array from record
+
     // Check if the item is already selected
-    const index = selectedItems.findIndex((item) => item.id === record.id);
+    const index = selectedItems.findIndex((item) => item.id === record.id && item.locatorId === subRecord.locatorId);
+    console.log("Index: ", index)
     if (index === -1) {
-      setSelectedItems((prevItems) => [...prevItems, record]); // Update selected items state
-      // add data to formData hook
-      setItemDetail((prevData) => {
-        const newItem = {
-          srNo: prevData.length ? prevData.length + 1 : 1,
-          itemCode: record.itemMasterCd,
-          itemId: record.id,
-          itemDesc: record.itemMasterDesc,
-          uom: record.uomId,
-          uomDesc : record.uomDtls.baseUom,
-          quantity: 1,
-          noOfDays: 1,
-          remarks: "",
-          conditionOfGoods: "",
-          budgetHeadProcurement: "",
-          locatorId: record.locatorId,
-        };
-        const updatedItems = [...(prevData || []), newItem];
-        return [...updatedItems]
-      });
+      setSelectedItems((prevItems) => [...prevItems, {...recordCopy, locatorId: subRecord.locatorId}]); // Update selected items state
+    //   // add data to formData hook
+    //   // setItemDetail((prevData) => {
+    //   //   const newItem = {
+    //   //     srNo: prevData.length ? prevData.length + 1 : 1,
+    //   //     itemCode: record.itemMasterCd,
+    //   //     itemId: record.id,
+    //   //     itemDesc: record.itemMasterDesc,
+    //   //     uom: record.uomId,
+    //   //     uomDesc : record.uomDtls.baseUom,
+    //   //     quantity: 1,
+    //   //     noOfDays: 1,
+    //   //     remarks: "",
+    //   //     conditionOfGoods: "",
+    //   //     budgetHeadProcurement: "",
+    //   //     qtyList: record.qtyList
+    //   //   };
+    //   //   const updatedItems = [...(prevData || []), newItem];
+    //   //   return [...updatedItems]
+    //   // });
 
       setFormData(prevValues=>{
         const newItem = {
@@ -235,18 +463,22 @@ const IssueNote = () => {
           itemId: record.id,
           itemDesc: record.itemMasterDesc,
           uom: record.uomId,
+          uomDesc: record.uomDtls.baseUom,
           quantity: 1,
           noOfDays: 1,
           conditionOfGoods: "",
           budgetHeadProcurement: "",
-          locatorId: record.locatorId,
+          locatorId: subRecord.locatorId,
+          locatorDesc: subRecord.locatorDesc,
           remarks: "",
+          // qtyList: record.qtyList
         }
 
         const updatedItems = [...(prevValues.items || []), newItem]
         return {...prevValues, items: updatedItems}
       })
-    } else {
+    } 
+    else {
       // If item is already selected, deselect it
       const updatedItems = [...selectedItems];
       updatedItems.splice(index, 1);
@@ -294,25 +526,21 @@ const IssueNote = () => {
       title: "LOCATION",
       dataIndex: "locationId",
       key: "location",
-      render: (locationId) => findColumnValue(locationId, locationMaster, "locationMaster")
+      render: (locationId) => locationMaster[locationId] 
+      // render: (locationId) => locationMaster[locationId] findColumnValue(locationId, locationMaster, "locationMaster")
     },
     {
       title: "LOCATOR CODE",
       dataIndex: "locatorId",
       key: "locatorCode",
     },
-    {
-      title: "LOCATOR DESCRIPTION", 
-      dataIndex: "locatorId", 
-      key: "locatorId",
-      render: (locatorId) => findColumnValue(locatorId, locatorMaster, "locatorMaster")
-    },
     { title: "PRICE", dataIndex: "price", key: "price" },
     { 
       title: "VENDOR DETAIL", 
       dataIndex: "vendorId", 
       key: "vendorDetail",
-      render: (vendorId) => findColumnValue(vendorId, vendorMaster, "vendorMaster")
+      render: (vendorId) => vendorMaster[vendorId]
+      // render: (vendorId) => findColumnValue(vendorId, vendorMaster, "vendorMaster")
 
     },
     { 
@@ -383,37 +611,23 @@ const IssueNote = () => {
       fixed: "right",
       render: (text, record) => (
         <Button
-          type={
-            selectedItems.some((item) => item.id === record.id)
-              ? "warning"
-              : "primary"
-          }
+          // type={
+          //   selectedItems.some((item) => item.id === record.id)
+          //     ? "warning"
+          //     : "primary"
+          // }
           onClick={() => handleSelectItem(record)}
         >
-          {selectedItems.some((item) => item.id === record.id)
-            ? "Deselect"
-            : "Select"}
+          {
+            selectedItems.some((item) => item.locatorId === record.locatorId)
+              ? "Deselect"
+              : "Select"
+          }
         </Button>
       ),
     },
   ];
 
-  useEffect(() => {
-    fetchItemData();
-    fetchUserDetails();
-  }, []);
-
-  const fetchItemData = async () => {
-    try {
-      const apiUrl =
-        "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster";
-      const response = await axios.get(apiUrl);
-      const { responseData } = response.data;
-      setItemData(responseData);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
   const fetchUserDetails = async () => {
     try {
       const apiUrl =
@@ -426,7 +640,6 @@ const IssueNote = () => {
       const { responseData } = response.data;
       const { organizationDetails } = responseData;
       const { userDetails } = responseData;
-      console.log("Organizational details: ", organizationDetails)
       // Get current date
       const currentDate = dayjs();
       // Update form data with fetched values
@@ -533,16 +746,16 @@ const IssueNote = () => {
   };
 
   const removeItem = (index) => {
-    setItemDetail(prevValues=>{
-      const updatedItems = prevValues
-      updatedItems.splice(index, 1)
+    // setItemDetail(prevValues=>{
+    //   const updatedItems = prevValues
+    //   updatedItems.splice(index, 1)
       
-      const updatedItems1 = updatedItems.map((item, key)=>{
-        return {...item, srNo: key+1}
-      })
+    //   const updatedItems1 = updatedItems.map((item, key)=>{
+    //     return {...item, srNo: key+1}
+    //   })
 
-      return [...updatedItems1]
-    })
+    //   return [...updatedItems1]
+    // })
     setFormData(prevValues=>{
       const updatedItems = prevValues.items
       updatedItems.splice(index, 1)
@@ -753,25 +966,17 @@ const IssueNote = () => {
         </Row>
 
         {/* Item Details */}
-        <h2>ADD ITEMS</h2>
+        <h2>ITEM DETAILS</h2>
         <div style={{ width: "300px" }}>
           <Popover
             onClick={() => setTableOpen(true)}
             content={
-              <Table
-                dataSource={filteredData}
-                columns={columns}
-                pagination={true}
-                scroll={{ x: "max-content" }}
-                style={{
-                  width: "800px",
-                  display: tableOpen ? "block" : "none",
-                }}
-              />
+              <Table pagination={{pageSize: 5}} dataSource={filteredData} columns={tableColumns} scroll={{ x: "max-content" }} style={{width: "600px", display: tableOpen? "block": "none"}}/>
             }
             title="Filtered Item Data"
             trigger="click"
-            visible={searchValue !== "" && filteredData.length > 0}
+            // open={true}
+            open={searchValue !== "" && filteredData.length > 0}
             style={{ width: "200px" }}
             placement="right"
           >
@@ -780,8 +985,8 @@ const IssueNote = () => {
               allowClear
               enterButton="Search"
               size="large"
-              onSearch={handleOnSearch}
-              onChange={handleOnChange}
+              onSearch={(e)=>handleSearch(e.target?.value || "", data, setFilteredData, setSearchValue )}
+              onChange={(e)=>handleSearch(e.target?.value || "", data, setFilteredData, setSearchValue )}
             />
           </Popover>
         </div>
@@ -789,8 +994,8 @@ const IssueNote = () => {
         <Form.List name="items" initialValue={formData.items || [{}]}>
           {(fields, { add, remove }) => (
             <>
-              {itemDetail.length > 0 &&
-                itemDetail.map((item, key) => {
+              {formData?.items?.length > 0 &&
+                formData.items.map((item, key) => {
                   return (
                     // <div className="xyz" style={{font:"150px", zIndex: "100"}}>xyz</div>
 
@@ -813,7 +1018,7 @@ const IssueNote = () => {
                         </Form.Item>
 
                         <Form.Item label="LOCATOR DESCRIPITON">
-                          <Input value={findColumnValue(item.locatorId, locatorMaster, "locatorMaster")} readOnly />
+                          <Input value= {item.locatorDesc}readOnly />
                         </Form.Item>
 
                         <Form.Item label="REQUIRED QUANTITY">
@@ -984,6 +1189,12 @@ const IssueNote = () => {
           {errorMessage && <p>{errorMessage}</p>}
         </Modal>
       </Form>
+
+      <Modal open={false} width={1200} >
+        <Table dataSource={filteredData} columns={tableColumns} scroll={{ x: "max-content" }} />
+      </Modal>
+
+      {/* <ItemDetailTable dataSource={filteredData} selectedItems={selectedItems} setSelectedItems={setSelectedItems} setFormData={setFormData} locationMaster={locationMaster} vendorMaster={vendorMaster} /> */}
     </div>
   );
 }

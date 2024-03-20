@@ -39,6 +39,8 @@ const ItemsPage = () => {
   const [locators, setLocators] = useState([]);
   const [vendors, setVendors] = useState([]);
 
+  console.log("Items: ", items)
+
   // const itemNames = {
   //   "001": "Arrow Pullar",
   //   "002": "Arrow Liner",
@@ -175,32 +177,32 @@ const ItemsPage = () => {
 
       const itemList = await Promise.all(
         responseData.map(async (item) => {
-          const uomResponse = await apiRequest(
-            "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getUOMMasterById",
-            "POST",
-            {
-              id: item.uomId,
-              userId: "string",
-            }
-          );
+          // const uomResponse = await apiRequest(
+          //   "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getUOMMasterById",
+          //   "POST",
+          //   {
+          //     id: item.uomId,
+          //     userId: "string",
+          //   }
+          // );
 
-          const locationResponse = await apiRequest(
-            "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocationMasterById",
-            "POST",
-            {
-              locationId: item.locationId,
-              userId: "string",
-            }
-          );
+          // const locationResponse = await apiRequest(
+          //   "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocationMasterById",
+          //   "POST",
+          //   {
+          //     locationId: item.locationId,
+          //     userId: "string",
+          //   }
+          // );
 
-          const locatorResponse = await apiRequest(
-            "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocatorMasterById",
-            "POST",
-            {
-              id: item.locatorId,
-              userId: "string",
-            }
-          );
+          // const locatorResponse = await apiRequest(
+          //   "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocatorMasterById",
+          //   "POST",
+          //   {
+          //     id: item.locatorId,
+          //     userId: "string",
+          //   }
+          // );
 
           const vendorResponse = await apiRequest(
             "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getVendorMasterById",
@@ -217,30 +219,23 @@ const ItemsPage = () => {
             key: item.id,
             id: item.id,
             itemCode: item.itemMasterCd,
-            itemDescription: item.itemName
-              ? itemNames[item.itemName]
-              : "Default",
-            uom: uomResponse?.uomName || "default UOM",
-            quantityOnHand: item.quantity,
-            location: locationResponse?.locationName,
-            locatorCode: locatorResponse?.locatorCd,
-            locatorDesc: locatorResponse?.locatorDesc,
+            itemDescription: item.itemMasterDesc,
+            // uom: uomResponse?.uomName || "default UOM",
+            uom: item.uomDtls.uomName,
+            // quantityOnHand: item.quantity,
+            // location: locationResponse?.locationName,
+            // locatorCode: locatorResponse?.locatorCd,
+            // locatorDesc: locatorResponse?.locatorDesc,
             price: item.price,
-            vendorDetail: vendorResponse?.vendorName,
-            category: item.category ? categories[item.category] : "Default",
-            subcategory: item.subCategory
-              ? subCategories[item.subCategory]
-              : "Default",
-            type: item.type ? types[item.type] : "Default",
-            disciplines: item.disciplines
-              ? allDisciplines[item.disciplines]
-              : "Default",
-            brand: item.brandId ? brands[item.brandId] : "Default",
-            colour: item.colorId ? colors[item.colorId] : "Default",
-            size: item.size ? sizes[item.size] : "Default",
-            usageCategory: item.usageCategory
-              ? usageCategories[item.usageCategory]
-              : "Default",
+            vendorDetail: vendorResponse.vendorName,
+            category: item.categoryDesc,
+            subcategory: item.subCategoryDesc,
+            type: item.typeDesc,
+            disciplines: item.disciplinesDesc,
+            brand: item.brandDesc,
+            colour: item.colour,
+            size: item.size,
+            usageCategory: item.usageCategoryDesc,
             reOrderPoint: item.reOrderPoint? item.reOrderPoint : "null",
             minStockLevel: item.minStockLevel,
             maxStockLevel: item.maxStockLevel,
@@ -249,6 +244,7 @@ const ItemsPage = () => {
           };
         })
       );
+      console.log("ItemList: ", itemList)
       setItems(itemList);
     } catch (error) {
       console.error("Error fetching data:", error);

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Input, Table } from "antd";
 import axios from "axios";
+import { handleSearch, renderLocatorOHQ } from "../../utils/Functions";
 
 const Ohq = () => {
   const [itemData, setItemData] = useState([])
@@ -14,63 +15,30 @@ const Ohq = () => {
      setFilteredData([...responseData])
   }
 
-  const handleSearch = (searchText) => {
-    const filtered = itemData.filter((parentObject) =>
-      recursiveSearch(parentObject, searchText)
-    );
-    setFilteredData([...filtered]);
-  };
-
-  const recursiveSearch = (object, searchText) => {
-    for (let key in object) {
-      const value = object[key];
-      if (typeof value === 'object') {
-        if (Array.isArray(value)) {
-          for (let item of value) {
-            if (recursiveSearch(item, searchText)) {
-              return true;
-            }
-          }
-        } else {
-          if (recursiveSearch(value, searchText)) {
-            return true;
-          }
-        }
-      } else if (
-        value &&
-        value.toString().toLowerCase().includes(searchText.toLowerCase())
-      ) {
-        return true;
-      }
-    }
-    return false;
-  };
-
   useEffect(()=>{
     populateItemData()
   }, [])
 
-  const renderLocator = (obj) => {
-    console.log("Obj: ", obj)
-    return (
-      <Table 
-        dataSource={obj}
-        pagination={false}
-        columns={[
-          {
-            title: "LOCATOR DESCRIPTION",
-            dataIndex: "locatorDesc",
-            key: "locatorDesc"
-          },
-          {
-            title: "QUANTITY",
-            dataIndex: "quantity",
-            key: "quantity"
-          }
-        ]}
-      />
-    )
-  }
+  // const renderLocator = (obj) => {
+  //   return (
+  //     <Table 
+  //       dataSource={obj}
+  //       pagination={false}
+  //       columns={[
+  //         {
+  //           title: "LOCATOR DESCRIPTION",
+  //           dataIndex: "locatorDesc",
+  //           key: "locatorDesc"
+  //         },
+  //         {
+  //           title: "QUANTITY",
+  //           dataIndex: "quantity",
+  //           key: "quantity"
+  //         }
+  //       ]}
+  //     />
+  //   )
+  // }
 
   const columns = [
     {
@@ -101,7 +69,7 @@ const Ohq = () => {
       title: "LOCATOR QUANTITY DETAILS",
       dataIndex: "qtyList",
       key: "locatorId",
-      render: (locatorQuantity) => renderLocator(locatorQuantity)
+      render: (locatorQuantity) => renderLocatorOHQ(locatorQuantity)
     },
   ]
 
@@ -114,8 +82,8 @@ const Ohq = () => {
         allowClear
         enterButton="Search"
         size="large"
-        onSearch={(e) => handleSearch(e.target.value)}
-        onChange={(e) => handleSearch(e.target.value)}
+        onSearch={(e) => handleSearch(e.target.value, itemData, setFilteredData)}
+        onChange={(e) => handleSearch(e.target.value, itemData, setFilteredData)}
         style = {{width: "30%", margin: "1rem 0"}}
       />
 

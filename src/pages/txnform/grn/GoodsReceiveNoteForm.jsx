@@ -250,7 +250,7 @@ const GoodsReceiveNoteForm = () => {
           itemDesc: item?.itemDesc,
           uom: parseInt(item?.uom),
           quantity: item?.quantity,
-          remQuantity: 0,
+          remQuantity: item?.quantity,
           noOfDays: item?.requiredDays,
           remarks: item?.remarks,
           conditionOfGoods: item?.conditionOfGoods,
@@ -259,7 +259,7 @@ const GoodsReceiveNoteForm = () => {
           qtyList: [
             {
               locatorId: parseInt(item?.locatorId),
-              quantity: 0,
+              quantity: item?.quantity,
             },
           ],
         })),
@@ -414,6 +414,8 @@ const GoodsReceiveNoteForm = () => {
     if (sourceName === "uomMaster")
       return foundObject ? foundObject["uomName"] : "Undefined";
   };
+
+
 
   const removeItem = (index) => {
     setFormData((prevValues) => {
@@ -869,7 +871,7 @@ const GoodsReceiveNoteForm = () => {
 
                       <div style={{gridColumn: "span 4", width: "50%"}}>
                       <h3>
-                        ITEMS LEFT TO LOCATE A LOCATOR:
+                        ITEMS LEFT TO ASSIGN A LOCATOR:
                         {item.quantity - item.remQuantity}
                       </h3>
 
@@ -890,12 +892,12 @@ const GoodsReceiveNoteForm = () => {
                                   }
                                   defaultValue={qtyObj.locatorId}
                                 >
-                                  {locatorQuantity &&
-                                    locatorQuantity[item.itemCode].map(
+                                  {locatorMaster &&
+                                    locatorMaster.map(
                                       (option, index) => (
                                         <Option
                                           key={index}
-                                          value={option.locatorId}
+                                          value={option.id}
                                         >
                                           {option.locatorDesc}
                                         </Option>
