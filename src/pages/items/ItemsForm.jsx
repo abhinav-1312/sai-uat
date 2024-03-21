@@ -1,5 +1,5 @@
 // ItemsForm.js
-import React from "react";
+import React, { useState } from "react";
 import {
   Form,
   Input,
@@ -31,16 +31,24 @@ const ItemsForm = ({
   disciplines,
 }) => {
   const [form] = Form.useForm();
-  
+  // const [itemDescVal, setItemDescVal] = useState("");
+
+  // const handleSelectChange = (value) => {
+  //   console.log("Handle select change: ", value);
+  //   setItemDescVal(value);
+  // };
 
   const onFinish = (values) => {
+    values = { ...values, itemMasterDesc: values.itemMasterDesc[0] };
+    // console.log("Values: ", values);
     onSubmit(values);
     form.resetFields();
   };
 
-  console.log("Locators: ", uoms)
+  // const handleInputChange = (value) => {
+  //   setItemDescVal(value)
+  // }
 
-  
   return (
     <Form
       form={form}
@@ -62,7 +70,56 @@ const ItemsForm = ({
               { required: true, message: "Please enter Item Description" },
             ]}
           >
-            <Select>
+            {/* <Select>
+              {Object.entries(itemNames).map(([key, value]) => {
+                return (
+                  <Option key={key} value={key}>
+                    {value}
+                  </Option>
+                );
+              })}
+            </Select> */}
+
+            {/* <Select
+              showSearch
+              style={{ width: 200 }}
+              placeholder="Select or type"
+              optionFilterProp="children"
+              value={itemDescVal}
+              onChange={handleSelectChange}
+              filterOption={(input, option) =>
+                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            > */}
+            {/* {options.map(option => (
+          <Option key={option} value={option}>{option}</Option>
+        ))} */}
+
+            {/* {Object.entries(itemNames).map(([key, value]) => {
+                return (
+                  <Option key={key} value={key}>
+                    {value}
+                  </Option>
+                );
+              })}
+            </Select> */}
+
+            <Select
+              // showSearch
+              // value={itemDescVal}
+              // onChange={(e)=>handleSelectChange(e.target.val)}
+              // style={{ width: '100%' }}
+              // placeholder="Select or type"
+              // optionFilterProp="children"
+              showSearch
+              mode="tags"
+              style={{ width: "100%" }}
+              placeholder="Select or type"
+            >
+              {/* <Option value="option1">Option 1</Option>
+          <Option value="option2">Option 2</Option>
+          <Option value="option3">Option 3</Option> */}
+
               {Object.entries(itemNames).map(([key, value]) => {
                 return (
                   <Option key={key} value={key}>
@@ -71,6 +128,12 @@ const ItemsForm = ({
                 );
               })}
             </Select>
+            {/* <Input
+          value={itemDescVal}
+          onChange={(e) => handleInputChange(e.target.val)}
+          style={{ marginTop: '10px' }}
+          placeholder="Or type your own"
+        /> */}
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -361,7 +424,11 @@ const ItemsForm = ({
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item name="endDate" label="Create Date" rules={[{ required: true, message: "Please select Create date" }]}>
+          <Form.Item
+            name="endDate"
+            label="Create Date"
+            rules={[{ required: true, message: "Please select Create date" }]}
+          >
             <DatePicker />
           </Form.Item>
         </Col>

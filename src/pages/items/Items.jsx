@@ -39,7 +39,6 @@ const ItemsPage = () => {
   const [locators, setLocators] = useState([]);
   const [vendors, setVendors] = useState([]);
 
-  console.log("Items: ", items)
 
   // const itemNames = {
   //   "001": "Arrow Pullar",
@@ -173,7 +172,6 @@ const ItemsPage = () => {
       );
 
       const {responseData}  = await response.json();
-      console.log("Response data: ", responseData)
 
       const itemList = await Promise.all(
         responseData.map(async (item) => {
@@ -213,8 +211,6 @@ const ItemsPage = () => {
             }
           );
 
-          console.log("Item: ", item)
-
           return {
             key: item.id,
             id: item.id,
@@ -244,7 +240,7 @@ const ItemsPage = () => {
           };
         })
       );
-      console.log("ItemList: ", itemList)
+      
       setItems(itemList);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -304,17 +300,32 @@ const ItemsPage = () => {
     getItems();
   };
 
+  const generate3DigitRandString = () => {
+    // Generate a random number between 0 and 999 (inclusive)
+    const randomNumber = Math.floor(Math.random() * 1000);
+  
+    // Convert the random number to a string
+    let randomNumberString = randomNumber.toString();
+  
+    // Pad the string with leading zeros if necessary
+    if (randomNumberString.length < 3) {
+      randomNumberString = randomNumberString.padStart(3, '0');
+    }
+  
+    return randomNumberString;
+  }
+  
+
   const handleFormSubmit = async (values) => {
     setEditingItem(null);
-    console.log("Values: ", values)
     const tempItem = {
       ...values,
       
       uomId: Number(values.uomId),
       createUserId: "12345",
       endDate: values.endDate.format("DD/MM/YYYY"),
-      itemName: values.itemMasterDesc,
-      itemMasterDesc: itemNames[values.itemMasterDesc]
+      itemName: itemNames[values.itemMasterDesc] ? values.itemMasterDesc : generate3DigitRandString(),
+      itemMasterDesc: itemNames[values.itemMasterDesc] || values.itemMasterDesc
     };
 
     if (!tempItem.itemMasterCd) {
