@@ -193,8 +193,7 @@ const OutwardGatePass = () => {
 
       const { responseData } = response.data;
       console.log("Response data: ", responseData);
-      const { organizationDetails } = responseData;
-      const { userDetails } = responseData;
+      const { organizationDetails, userDetails, locationDetails } = responseData;
       const currentDate = dayjs();
       console.log("Fetched data:", organizationDetails);
       // Update form data with fetched values

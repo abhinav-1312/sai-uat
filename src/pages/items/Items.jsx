@@ -233,8 +233,8 @@ const ItemsPage = () => {
             type: item.typeDesc,
             disciplines: item.disciplinesDesc,
             brand: item.brandDesc,
-            colour: item.colour,
-            size: item.size,
+            colour: item.colorDesc,
+            size: item.sizeDesc,
             usageCategory: item.usageCategoryDesc,
             reOrderPoint: item.reOrderPoint? item.reOrderPoint : "null",
             minStockLevel: item.minStockLevel,
@@ -316,8 +316,6 @@ const ItemsPage = () => {
       itemName: values.itemMasterDesc,
       itemMasterDesc: itemNames[values.itemMasterDesc]
     };
-
-    console.log("Tempitem: ", tempItem)
 
     if (!tempItem.itemMasterCd) {
       delete tempItem.itemMasterCd;

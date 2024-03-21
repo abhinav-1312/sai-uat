@@ -2,6 +2,27 @@
 import React from "react";
 import { Table, Space, Button } from "antd";
 
+const convertEpochToDateString = (epochTime) => {
+  // Convert epoch time to milliseconds
+  let date = new Date(epochTime);
+
+  // Extract the day, month, and year from the Date object
+  let day = date.getDate();
+  let month = date.getMonth() + 1; // Month starts from 0
+  let year = date.getFullYear();
+
+  // Add leading zeros if needed
+  if (day < 10) {
+    day = '0' + day;
+  }
+  if (month < 10) {
+    month = '0' + month;
+  }
+
+  // Return the date string in DD/MM/YYYY format
+  return `${day}/${month}/${year}`;
+}
+
 const LocationTable = ({ locations, onEdit, onDelete }) => {
   const columns = [
     { title: "LOCATION ID", dataIndex: "id", key: "id", fixed: "left" },
@@ -21,7 +42,7 @@ const LocationTable = ({ locations, onEdit, onDelete }) => {
     { title: "Location Type", dataIndex: "locationType", key: "locationType" },
     { title: "GSTIN NO.", dataIndex: "gstin", key: "gstin" },
     { title: "STATUS", dataIndex: "status", key: "status" },
-    { title: "END DATE", dataIndex: "endDate", key: "endDate" },
+    { title: "CREATE DATE", dataIndex: "endDate", key: "endDate", render: (endDate) => convertEpochToDateString(endDate) },
     { title: "LATITUDE", dataIndex: "latitude", key: "latitude" },
     { title: "LONGITUDE", dataIndex: "longitude", key: "longitude" },
     {

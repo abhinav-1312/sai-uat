@@ -46,13 +46,14 @@ const DemandNoteForm = () => {
       const { responseData } = response.data;
       const { organizationDetails } = responseData;
       const { userDetails } = responseData;
-      console.log('Fetched data:', organizationDetails);
+      console.log('Fetched data:', responseData);
+      const {locationDetails} = responseData
       // Update form data with fetched values
       setFormData({
-        regionalCenterCode: organizationDetails.location,
+        regionalCenterCode: organizationDetails.id,
         regionalCenterName: organizationDetails.organizationName,
         consignorAddress: organizationDetails.locationAddr,
-        consignorZipCode: organizationDetails.contactNo,
+        consignorZipCode: locationDetails.zipcode,
         // firstName: userDetails.firstName,
         // lastName: userDetails.lastName
 

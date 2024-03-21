@@ -91,7 +91,6 @@ const IssueNote = () => {
     processType: "IRP",
     interRdDemandNote: "",
   });
-  console.log("Filtered data: ", filteredData)
 
   // const primaryColumn = primColumn(locationMaster, vendorMaster, selectedItems, setSelectedItems, setFormData)
   
@@ -645,16 +644,15 @@ const IssueNote = () => {
       });
 
       const { responseData } = response.data;
-      const { organizationDetails } = responseData;
-      const { userDetails } = responseData;
+      const { organizationDetails, userDetails, locationDetails } = responseData;
       // Get current date
       const currentDate = dayjs();
       // Update form data with fetched values
       setFormData({
         crRegionalCenterCd: organizationDetails.id,
-        crRegionalCenterName: organizationDetails.location,
+        crRegionalCenterName: organizationDetails.organizationName,
         crAddress: organizationDetails.locationAddr,
-        crZipcode: "131021",
+        crZipcode: locationDetails.zipcode,
         genName: userDetails.firstName,
         userId: "string",
         type: "",
