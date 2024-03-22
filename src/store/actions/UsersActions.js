@@ -1,4 +1,5 @@
 import { BASE_URL } from "../../utils/BaseUrl";
+import axios from "axios"
 
 export const setUsers = (users) => ({
   type: "SET_USERS",
@@ -17,8 +18,9 @@ export const fetchUsers = () => async (dispatch) => {
 };
 
 export const updateUser = (userId, values) => async (dispatch) => {
+  console.log("Update user called: ", userId, values)
   try {
-    const updateResponse = await fetch(`${BASE_URL}/updateUserMaster`, {
+    const updateResponse = await fetch(`https://sai-services.azurewebsites.net/sai-inv-mgmt/updateUserMaster`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -27,8 +29,7 @@ export const updateUser = (userId, values) => async (dispatch) => {
         userId,
         ...values,
       }),
-    });
-
+    })
     if (updateResponse.ok) {
       alert("Users updated successfully");
       dispatch(fetchUsers());
