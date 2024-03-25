@@ -130,7 +130,7 @@ const UserForm = ({ onSubmit, initialValues }) => {
         <Col span={8}>
           <Form.Item
             name="userType"
-            label="User Type"
+            label="User Role"
             rules={[{ required: true, message: "Please enter User Type" }]}
           >
             <Select>
