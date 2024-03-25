@@ -21,6 +21,7 @@ import axios from "axios";
 import moment from "moment";
 import ItemSearchFilter from "../../../components/ItemSearchFilter";
 import { handleSearch } from "../../../utils/Functions";
+import FormInputItem from "../../../components/FormInputItem";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Text, Title } = Typography;
@@ -100,16 +101,44 @@ const InwardGatePass = () => {
     setIsModalOpen(false);
   };
 
+  const searchVendor = async (value) => {
+    const vendorByIdUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getVendorMasterById"
+    try{
+      const response = await axios.post(vendorByIdUrl, {userId: "dkg", id: value})
+      const {responseStatus, responseData} = response.data
+      const {message, statusCode} = responseStatus
+
+      if(message === "Success" && statusCode === 200 && responseData !== null){
+        console.log("INSIDEEEEE")
+        setFormData(prev=>{
+          return{
+            ...prev,
+            supplierName: responseData.vendorName,
+            crAddress: responseData.address,
+            supplierCode: value
+          }
+        })
+      }
+
+    }catch(error){
+      console.log("Not getting vendor", error)
+    }
+
+  }
+
+  console.log("FORMDATAAAA: ", formData.crAddress)
+
   const handleChange = (fieldName, value) => {
-    console.log(`Fieldname: ${fieldName} value: ${value}`)
+    if(fieldName === "supplierCode"){
+      searchVendor(value)
+      return
+    }
+
     setFormData((prevValues) => ({
       ...prevValues,
       [fieldName]: value === "" ? null : value,
     }));
   };
-
-  console.log("Data: ", filteredData)
-  console.log("Form data: ", formData.items)
 
   const handleSelectItem = (record, subRecord) => {
     setTableOpen(false);
@@ -118,7 +147,6 @@ const InwardGatePass = () => {
 
     // Check if the item is already selected
     const index = selectedItems.findIndex((item) => item.id === record.id && item.locatorId === subRecord.locatorId);
-    console.log("Index: ", index)
     if (index === -1) {
       setSelectedItems((prevItems) => [...prevItems, {...recordCopy, locatorId: subRecord.locatorId}]); // Update selected items state
     //   // add data to formData hook
@@ -438,14 +466,13 @@ const InwardGatePass = () => {
       const { organizationDetails } = responseData;
       const { userDetails } = responseData;
       const {locationDetails} = responseData
-      console.log("Fetched data:", organizationDetails.id);
       const currentDate = dayjs();
       // Update form data with fetched values
       setFormData({
-        crRegionalCenterCd: organizationDetails.id,
-        crRegionalCenterName: organizationDetails.location,
-        crAddress: organizationDetails.locationAddr,
-        crZipcode: locationDetails.zipcode,
+        ceRegionalCenterCd: organizationDetails.id,
+        ceRegionalCenterName: organizationDetails.location,
+        ceAddress: organizationDetails.locationAddr,
+        ceZipcode: locationDetails.zipcode,
         genName: userDetails.firstName,
         noaDate: currentDate.format(dateFormat),
         dateOfDelivery: currentDate.format(dateFormat),
@@ -472,7 +499,6 @@ const InwardGatePass = () => {
       });
       const responseData = response.data.responseData;
       const { processData, itemList } = responseData;
-      console.log("API Response:", response.data);
       setFormData((prevFormData) => ({
         ...prevFormData,
 
@@ -511,8 +537,6 @@ const InwardGatePass = () => {
       // Handle error
     }
   };
-
-  console.log("Filtered: ", filteredData)
 
   const onFinish = async (values) => {
     try {
@@ -566,7 +590,6 @@ const InwardGatePass = () => {
       const apiUrl =
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/saveInwardGatePass";
       const response = await axios.post(apiUrl, {...formDataCopy, approvedName: aprName});
-      console.log("API Response:", response.data);
       if (
         response.status === 200 &&
         response.data &&
@@ -689,35 +712,10 @@ const InwardGatePass = () => {
             <Title strong level={2} underline type="danger">
               CONSIGNEE DETAIL :-
             </Title>
-
-            <Form.Item label="REGIONAL CENTER CODE" name="crRegionalCenterCd">
-              {/* <Input value={formData.crRegionalCenterCd} />
-              <div style={{ display: "none" }}>
-                {formData.crRegionalCenterCd}
-              </div> */}
-              <Input />
-            </Form.Item>
-            <Form.Item
-              label="REGIONAL CENTER NAME "
-              name="crRegionalCenterName"
-            >
-              <Input value={formData.crRegionalCenterName} />
-              <div style={{ display: "none" }}>
-                {formData.crRegionalCenterName}
-              </div>
-            </Form.Item>
-            <Form.Item label="ADDRESS :" name="crRegionalCenterCd">
-              <Input value={formData.crAddress} />
-              <div style={{ display: "none" }}>
-                {formData.crRegionalCenterCd}
-              </div>
-            </Form.Item>
-            <Form.Item label="ZIP CODE :" name="crZipcode">
-              <Input value={formData.crZipcode} />
-              <div style={{ display: "none" }}>
-                {formData.crRegionalCenterCd}
-              </div>
-            </Form.Item>
+            <FormInputItem label="REGIONAL CENTER CODE :" value={formData.ceRegionalCenterCd} readOnly={true}/>
+            <FormInputItem label="REGIONAL CENTER NAME :" value={formData.ceRegionalCenterName} readOnly={true} />
+            <FormInputItem label="ADDRESS :" value={formData.ceAddress} readOnly={true} />
+            <FormInputItem label="ZIPCODE :" value={formData.ceZipcode} readOnly={true} />
           </Col>
           <Col span={8}>
             <Title strong underline level={2} type="danger">
@@ -726,27 +724,9 @@ const InwardGatePass = () => {
 
             {Type === "PO" && (
               <>
-                <Form.Item label="SUPPLIER CODE :" name="supplierCode">
-                  <Input value="QKJEfjhwejf"
-                    onChange={(e) =>
-                      handleChange("supplierCode", e.target.value)
-                    }
-                  />
-                </Form.Item>
-                <Form.Item label="SUPPLIER NAME :" name="supplierName">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierName", e.target.value)
-                    }
-                  />
-                </Form.Item>
-                <Form.Item label="ADDRESS:" name="supplierAddress">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierAddress", e.target.value)
-                    }
-                  />
-                </Form.Item>
+                <FormInputItem label="SUPPLIER CODE :" name="supplierCode" onChange={handleChange} />
+                <FormInputItem label="SUPPLIER NAME :" value={formData.supplierName} />
+                <FormInputItem label="ADDRESS :" value={formData.crAddress} readOnly={true} />
               </>
             )}
 
@@ -783,7 +763,7 @@ const InwardGatePass = () => {
               <>
                 <Form.Item
                   label="REGIONAL CENTER CODE"
-                  name="crRegionalCenterCd"
+                  name="ceRegionalCenterCd"
                 >
                   <Input
                     onChange={(e) =>
@@ -791,7 +771,12 @@ const InwardGatePass = () => {
                     }
                   />
                 </Form.Item>
-                <Form.Item
+
+                <FormInputItem label="REGIONAL CENTER CODE :" value={formData.ceRegionalCenterCd} readOnly={true}/>
+                <FormInputItem label="REGIONAL CENTER NAME :" value={formData.ceRegionalCenterName} readOnly={true} />
+                <FormInputItem label="ADDRESS :" value={formData.ceAddress} readOnly={true} />
+                
+                {/* <Form.Item
                   label="REGIONAL CENTER NAME "
                   name="crRegionalCenterName"
                 >
@@ -800,12 +785,12 @@ const InwardGatePass = () => {
                       handleChange("crRegionalCenterName", e.target.value)
                     }
                   />
-                </Form.Item>
-                <Form.Item label="ADDRESS :" name="crAddress">
+                </Form.Item> */}
+                {/* <Form.Item label="ADDRESS :" name="crAddress">
                   <Input
                     onChange={(e) => handleChange("crAddress", e.target.value)}
                   />
-                </Form.Item>
+                </Form.Item> */}
                 <Form.Item label="ZIP CODE :" name="crZipcode">
                   <Input
                     onChange={(e) => handleChange("crZipcode", e.target.value)}
@@ -976,7 +961,7 @@ const InwardGatePass = () => {
                         />
                       </Form.Item>
 
-                      <Form.Item label="REQUIRED QUANTITY">
+                      <Form.Item label="QUANTITY">
                         <Input
                           value={item.quantity}
                           onChange={(e) =>

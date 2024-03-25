@@ -17,6 +17,8 @@ import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
 import FormInputItem from "../../../components/FormInputItem";
+import { FormItemInputContext } from "antd/es/form/context";
+import { convertArrayToObject } from "../../../utils/Functions";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
@@ -27,6 +29,7 @@ const AcceptanceNote = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [itemData, setItemData] = useState([]);
+  const [uomMaster, setUomMaster] = useState({});
   const [formData, setFormData] = useState({
     genDate: "",
     genName: "",
@@ -88,6 +91,24 @@ const AcceptanceNote = () => {
     }));
   };
 
+  const fetchUomLocatorMaster = async () => {
+    try {
+      const uomMasterUrl =
+        "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster";
+      const locatorMasterUrl =
+        "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster";
+      const uomMaster = await axios.get(uomMasterUrl);
+      const { responseData: uomMasterData } = uomMaster.data;
+      // const { responseData: locatorMasterData } = locatorMaster.data;
+      const uomObject = convertArrayToObject(uomMasterData, "id", "uomName");
+      // const locatorObj = convertArrayToObject(locatorMasterData, "id", "locatorDesc")
+      setUomMaster({ ...uomObject });
+      // setLocatorMaster({...locatorObj})
+    } catch (error) {
+      console.log("Error fetching Uom master details.", error);
+    }
+  };
+
   const itemHandleChange = (fieldName, value, index) => {
     setFormData((prevValues) => {
       const updatedItems = [...(prevValues.items || [])];
@@ -103,8 +124,9 @@ const AcceptanceNote = () => {
   };
 
   useEffect(() => {
-    fetchItemData();
+    // fetchItemData();
     fetchUserDetails();
+    fetchUomLocatorMaster();
   }, []);
 
   const fetchItemData = async () => {
@@ -192,7 +214,7 @@ const AcceptanceNote = () => {
           conditionOfGoods: item.conditionOfGoods,
           budgetHeadProcurement: item.budgetHeadProcurement,
           locatorId: item.locatorId,
-          acceptedQuantity: item.acceptedQuantityuantity
+          acceptedQuantity: item.acceptedQuantity,
         })),
       }));
       // Handle response data as needed
@@ -201,6 +223,23 @@ const AcceptanceNote = () => {
       // Handle error
     }
   };
+
+  const removeItem = (index) => {
+    setFormData((prevValues) => {
+      const updatedItems = prevValues.items;
+      updatedItems.splice(index, 1);
+
+      const updatedItems1 = updatedItems.map((item, key) => {
+        return { ...item, srNo: key + 1 };
+      });
+
+      return {
+        ...prevValues,
+        items: updatedItems1,
+      };
+    });
+  };
+
   const onFinish = async (values) => {
     try {
       const formDataCopy = { ...formData };
@@ -256,11 +295,11 @@ const AcceptanceNote = () => {
         // Access the specific success message data if available
         const { processId, processType, subProcessId } =
           response.data.responseData;
-        setFormData(prev=>{
-          return{
+        setFormData((prev) => {
+          return {
             ...prev,
             acptRejNoteNo: processId,
-          }
+          };
         });
         setSuccessMessage(
           `Acceptance Note : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
@@ -369,11 +408,20 @@ const AcceptanceNote = () => {
             </Title>
 
             {Type === "PO" && (
-              <> 
-              <FormInputItem label="SUPPLIER CODE :" value={formData.supplierCd} />
-              <FormInputItem label="SUPPLIER NAME :" value={formData.supplierName} />
-              <FormInputItem label="ADDRESS :" value={formData.crAddress || "Not defined"} />
-            </>
+              <>
+                <FormInputItem
+                  label="SUPPLIER CODE :"
+                  value={formData.supplierCd}
+                />
+                <FormInputItem
+                  label="SUPPLIER NAME :"
+                  value={formData.supplierName}
+                />
+                <FormInputItem
+                  label="ADDRESS :"
+                  value={formData.crAddress || "Not defined"}
+                />
+              </>
             )}
 
             {Type === "IOP" && (
@@ -454,7 +502,7 @@ const AcceptanceNote = () => {
         <Form.List name="itemDetails" initialValue={formData.items || [{}]}>
           {(fields, { add, remove }) => (
             <>
-              <Form.Item style={{ textAlign: "right" }}>
+              {/* <Form.Item style={{ textAlign: "right" }}>
                 <Button
                   type="dashed"
                   onClick={() => add()}
@@ -463,7 +511,90 @@ const AcceptanceNote = () => {
                 >
                   ADD ITEM
                 </Button>
-              </Form.Item>
+              </Form.Item> */}
+              {formData?.items?.length > 0 &&
+                formData.items.map((item, key) => (
+                  <div style={{
+                    marginBottom: 16,
+                    border: "1px solid #d9d9d9",
+                    padding: 16,
+                    borderRadius: 4,
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                    gap: "20px",
+                  }}>
+                    <FormInputItem
+                      label="Serial No. :"
+                      key={key}
+                      value={item.srNo}
+                    />
+                    <FormInputItem
+                      label="Item Code :"
+                      key={key}
+                      value={item.itemCode}
+                    />
+                    <FormInputItem
+                      label="Item Description :"
+                      key={key}
+                      value={item.itemDesc}
+                    />
+                    <FormInputItem
+                      label="UOM :"
+                      key={key}
+                      value={uomMaster[item.uom]}
+                    />
+
+                    {Type !== "PO" && (
+                      <>
+                        <Form.Item label="INSPECTED QUANTITY">
+                          <Input
+                            value={item.inspectedQuantity}
+                            onChange={(e) =>
+                              itemHandleChange(
+                                "inspectedQuantity",
+                                e.target.value,
+                                key
+                              )
+                            }
+                          />
+                        </Form.Item>
+                      </>
+                    )}
+
+                    <Form.Item label="ACCEPTED QUANTITY">
+                      <Input
+                        value={item.acceptedQuantity}
+                        onChange={(e) =>
+                          itemHandleChange(
+                            "acceptedQuantity",
+                            e.target.value,
+                            key
+                          )
+                        }
+                      />
+                    </Form.Item>
+                    <Form.Item label="REMARK">
+                      <Input
+                        value={item.remarks}
+                        onChange={(e) =>
+                          itemHandleChange(
+                            "remarks",
+                            e.target.value,
+                            key
+                          )
+                        }
+                      />
+                    </Form.Item>
+
+                    <Col span={1}>
+                        <MinusCircleOutlined
+                          onClick={() => removeItem(key)}
+                          style={{ marginTop: 8 }}
+                        />
+                      </Col>
+                  </div>
+                ))}
+{/* 
               {fields.map(({ key, name, ...restField }, index) => (
                 <div
                   key={key}
@@ -594,7 +725,11 @@ const AcceptanceNote = () => {
                       >
                         <Input
                           onChange={(e) =>
-                            itemHandleChange(`acceptedQuantity`, e.target.value, index)
+                            itemHandleChange(
+                              `acceptedQuantity`,
+                              e.target.value,
+                              index
+                            )
                           }
                         />
                       </Form.Item>
@@ -621,7 +756,7 @@ const AcceptanceNote = () => {
                     </Col>
                   </Row>
                 </div>
-              ))}
+              ))} */}
             </>
           )}
         </Form.List>

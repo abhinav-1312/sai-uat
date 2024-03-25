@@ -340,7 +340,7 @@ const InsepctionReport = () => {
   return (
     <div className="goods-receive-note-form-container">
       {Type === "PO" && (
-        <h1>Sports Authority of India - Material Inspection Report</h1>
+        <h1>Sports Authority of India - Material Inward Slip</h1>
       )}
       {Type !== "PO" && <h1>Sports Authority of India - Inspection Report</h1>}
       <Form
@@ -420,8 +420,8 @@ const InsepctionReport = () => {
             <FormInputItem label = "CHALLAN / INVOICE NO. :" value={formData.challanNo} readOnly={true} />
             <FormInputItem label = "MODE OF DELIVERY :" value={formData.modeOfDelivery} readOnly={true} />
             <FormInputItem label = "DATE OF DELIVERY :" value={formData.dateOfDeliveryDate} readOnly={true} />
-            <FormDatePickerItem label="DATE OF INSPECTION :" name="dateOfInspectionDate" onChange={handleChange} />
-            <FormInputItem label="TYPE OF INSPECTION :" name="typeOfInspection" onChange={handleChange} />
+            {/* <FormDatePickerItem label="DATE OF INSPECTION :" name="dateOfInspectionDate" onChange={handleChange} />
+            <FormInputItem label="TYPE OF INSPECTION :" name="typeOfInspection" onChange={handleChange} /> */}
           </Col>
         </Row>
 
@@ -467,9 +467,9 @@ const InsepctionReport = () => {
                           <Input value={item.quantity} onChange={(e)=>itemHandleChange("quantity", e.target.value, key)} />
                         </Form.Item>
 
-                        <Form.Item label="BUDGET HEAD PROCUREMENT">
+                        {/* <Form.Item label="BUDGET HEAD PROCUREMENT">
                           <Input value={item.budgetHeadProcurement} onChange={(e)=>itemHandleChange("budgetHeadProcurement", e.target.value, key)} />
-                        </Form.Item> 
+                        </Form.Item>  */}
 
                         {
                           Type !== "PO" && 
