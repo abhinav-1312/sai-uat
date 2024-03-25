@@ -147,6 +147,83 @@ const SideNav = () => {
     setCollapsed(!collapsed);
   };
 
+  const userRole = localStorage.getItem("userRoles");
+  const filteredMenuItems = menuItems.filter((item) => {
+    switch (userRole) {
+      case "InventoryManager":
+        // Only show items accessible to inventory managers
+        return (
+          item.key !== "2" &&
+          item.key !== "13" &&
+          item.key !== "14" &&
+          item.key !== "5" &&
+          item.key !== "6" &&
+          item.key !== "7" &&
+          item.key !== "10" &&
+          item.key !== "11" &&
+          item.key !== "12" &&
+          item.key !== "21"
+        ); // Hide these menus
+      case "QualityManager":
+        return (
+          item.key !== "2" &&
+          item.key !== "13" &&
+          item.key !== "3" &&
+          item.key !== "16" &&
+          item.key !== "17" &&
+          item.key !== "4" &&
+          item.key !== "5" &&
+          item.key !== "6" &&
+          item.key !== "7" &&
+          item.key !== "9" &&
+          item.key !== "10" &&
+          item.key !== "11" &&
+          item.key !== "12" &&
+          item.key !== "21"
+        );
+      case "ItemAdmin":
+        return (
+          item.key !== "2" &&
+          item.key !== "13" &&
+          item.key !== "16" &&
+          item.key !== "17" &&
+          item.key !== "4" &&
+          item.key !== "14" &&
+          item.key !== "5" &&
+          item.key !== "6" &&
+          item.key !== "7" &&
+          item.key !== "9" &&
+          item.key !== "10" &&
+          item.key !== "11" &&
+          item.key !== "12" &&
+          item.key !== "15" &&
+          item.key !== "8" &&
+          item.key !== "21"
+        );
+      case "VendorAdmin":
+        return (
+          item.key !== "2" &&
+          item.key !== "13" &&
+          item.key !== "16" &&
+          item.key !== "17" &&
+          item.key !== "4" &&
+          item.key !== "14" &&
+          item.key !== "5" &&
+          item.key !== "6" &&
+          item.key !== "7" &&
+          item.key !== "9" &&
+          item.key !== "10" &&
+          item.key !== "3" &&
+          item.key !== "12" &&
+          item.key !== "15" &&
+          item.key !== "8" &&
+          item.key !== "21"
+        );
+      default:
+        return true; // Show all items for other roles
+    }
+  });
+
   const renderSubMenu = (item) => (
     <Menu.SubMenu key={item.key} icon={item.icon} title={item.label}>
       {item.children.map((subItem) => (
@@ -175,7 +252,7 @@ const SideNav = () => {
           defaultSelectedKeys={["1"]}
           style={{ background: "#57cac3", color: "white" }}
         >
-          {menuItems.map((item) =>
+          {filteredMenuItems.map((item) =>
             item.children ? (
               renderSubMenu(item)
             ) : (
