@@ -1,6 +1,7 @@
 // UserForm.js
 import React from "react";
-import { Form, Input, Button, Select, Row, Col } from "antd";
+import { Form, Input, Button, Select, Row, Col, DatePicker } from "antd";
+import moment from "moment";
 
 const { Option } = Select;
 
@@ -8,6 +9,7 @@ const UserForm = ({ onSubmit, initialValues }) => {
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
+    values.endDate = moment(values.endDate).format("YYYY/MM/DD");
     onSubmit(values);
     form.resetFields();
   };
@@ -140,6 +142,15 @@ const UserForm = ({ onSubmit, initialValues }) => {
               <Option value="14">Item Admin</Option>
               <Option value="15">Vendor Admin</Option>
             </Select>
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item
+            name="endDate"
+            label="End Date"
+            rules={[{ required: true, message: "Please select End date" }]}
+          >
+            <DatePicker format="YYYY/MM/DD" showTime={false} />
           </Form.Item>
         </Col>
         {/* <Col span={8}>
