@@ -12,27 +12,36 @@ import {
   AutoComplete,
   message,
   Modal,
+  Popover,
+  Table
 } from "antd";
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
 import moment from "moment";
 import ItemSearchFilter from "../../../components/ItemSearchFilter";
+import { handleSearch } from "../../../utils/Functions";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Text, Title } = Typography;
 
 const InwardGatePass = () => {
+
   const [Type, setType] = useState("IRP");
   const [selectedOption, setSelectedOption] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [itemData, setItemData] = useState([]);
+  const [searchValue, setSearchValue] = useState("")
+  const [data, setData] = useState([])
   const [uomMaster, setUomMaster] = useState([]);
+  const [filteredData, setFilteredData] = useState([])
+  const [tableOpen, setTableOpen] = useState(false)
   const [locatorMaster, setLocatorMaster] = useState([]);
-  // const [locationMaster, setLocationMaster] = useState([])
-  // const [vendorMaster, setVendorMaster] = useState([])
+  const [selectedItems, setSelectedItems] = useState([])
+  const [locationMaster, setLocationMaster] = useState([])
+  const [vendorMaster, setVendorMaster] = useState([])
   const [formData, setFormData] = useState({
     genDate: "",
     genName: "",
@@ -64,18 +73,18 @@ const InwardGatePass = () => {
     noteType: "",
     rejectionNoteNo: "",
     items: [
-      {
-        srNo: 0,
-        itemCode: "",
-        itemDesc: "",
-        uom: "",
-        quantity: 0,
-        noOfDays: 0,
-        remarks: "",
-        conditionOfGoods: "",
-        budgetHeadProcurement: "",
-        locatorId: "",
-      },
+      // {
+      //   srNo: 0,
+      //   itemCode: "",
+      //   itemDesc: "",
+      //   uom: "",
+      //   quantity: 0,
+      //   noOfDays: 0,
+      //   remarks: "",
+      //   conditionOfGoods: "",
+      //   budgetHeadProcurement: "",
+      //   locatorId: "",
+      // },
     ],
     userId: "",
     termsCondition: "",
@@ -92,11 +101,241 @@ const InwardGatePass = () => {
   };
 
   const handleChange = (fieldName, value) => {
+    console.log(`Fieldname: ${fieldName} value: ${value}`)
     setFormData((prevValues) => ({
       ...prevValues,
       [fieldName]: value === "" ? null : value,
     }));
   };
+
+  console.log("Data: ", filteredData)
+  console.log("Form data: ", formData.items)
+
+  const handleSelectItem = (record, subRecord) => {
+    setTableOpen(false);
+
+    const recordCopy = record // delete qtyList array from record
+
+    // Check if the item is already selected
+    const index = selectedItems.findIndex((item) => item.id === record.id && item.locatorId === subRecord.locatorId);
+    console.log("Index: ", index)
+    if (index === -1) {
+      setSelectedItems((prevItems) => [...prevItems, {...recordCopy, locatorId: subRecord.locatorId}]); // Update selected items state
+    //   // add data to formData hook
+    //   // setItemDetail((prevData) => {
+    //   //   const newItem = {
+    //   //     srNo: prevData.length ? prevData.length + 1 : 1,
+    //   //     itemCode: record.itemMasterCd,
+    //   //     itemId: record.id,
+    //   //     itemDesc: record.itemMasterDesc,
+    //   //     uom: record.uomId,
+    //   //     uomDesc : record.uomDtls.baseUom,
+    //   //     quantity: 1,
+    //   //     noOfDays: 1,
+    //   //     remarks: "",
+    //   //     conditionOfGoods: "",
+    //   //     budgetHeadProcurement: "",
+    //   //     qtyList: record.qtyList
+    //   //   };
+    //   //   const updatedItems = [...(prevData || []), newItem];
+    //   //   return [...updatedItems]
+    //   // });
+
+      setFormData(prevValues=>{
+        const newItem = {
+          srNo: prevValues.items?.length ? prevValues.items.length + 1 : 1,
+          itemCode: record.itemMasterCd,
+          itemId: record.id,
+          itemDesc: record.itemMasterDesc,
+          uom: record.uomId,
+          uomDesc: record.uomDtls.baseUom,
+          quantity: 1,
+          noOfDays: 1,
+          conditionOfGoods: "",
+          budgetHeadProcurement: "",
+          locatorId: subRecord.locatorId,
+          locatorDesc: subRecord.locatorDesc,
+          remarks: "",
+          // qtyList: record.qtyList
+        }
+
+        const updatedItems = [...(prevValues.items || []), newItem]
+        return {...prevValues, items: updatedItems}
+      })
+    } 
+    else {
+      // If item is already selected, deselect it
+      const updatedItems = [...selectedItems];
+      updatedItems.splice(index, 1);
+      setSelectedItems(updatedItems);
+    }
+  };
+
+  const renderLocatorISN = (obj, rowRecord) => {
+    return (
+      <Table 
+        dataSource={obj}
+        pagination={false}
+        columns={[
+          {
+            title: "LOCATOR DESCRIPTION",
+            dataIndex: "locatorDesc",
+            key: "locatorDesc"
+          },
+          {
+            title: "QUANTITY",
+            dataIndex: "quantity",
+            key: "quantity"
+          },
+          {
+            title: "ACTION",
+            fixed: "right",
+            render: (_, record) => (
+              <Button
+                    onClick={() => handleSelectItem(rowRecord, record)}
+                    type= {selectedItems?.some((item) => item.locatorId === record.locatorId && item.id === rowRecord.id) ? "default" : "primary"}
+                  >
+                    {
+                      selectedItems?.some((item) => item.locatorId === record.locatorId && item.id === rowRecord.id)
+                      ? "Deselect"
+                      : "Select"
+                    }
+                    
+                  </Button>
+            )
+          }
+        ]}
+      />
+    )
+  }
+
+  const tableColumns =  [
+    { title: "S NO.", dataIndex: "id", key: "id", fixed: "left", width: 80 },
+    {
+      title: "ITEM DESCRIPTION",
+      dataIndex: "itemMasterDesc",
+      key: "itemMasterDesc",
+      fixed: "left"
+      // render: (itemName) => itemNames[itemName],
+    },
+    {
+      title: "ITEM CODE",
+      dataIndex: "itemMasterCd",
+      key: "itemCode",
+    },
+    {
+      title: "UOM",
+      dataIndex: "uomDtls",
+      key: "uomDtls",
+      render: (uomDtls) => uomDtls.baseUom
+    },
+    {
+      title: "LOCATION",
+      dataIndex: "locationDesc",
+      key: "location"
+    },
+    // {
+    //   title: "LOCATOR CODE",
+    //   dataIndex: "locatorId",
+    //   key: "locatorCode",
+    // },
+    { title: "PRICE", dataIndex: "price", key: "price" },
+    // {
+    //   title: "VENDOR DETAIL",
+    //   dataIndex: "vendorId",
+    //   key: "vendorDetail",
+    //   render: (vendorId) => vendorMaster[vendorId],
+    //   // render: (vendorId) => findColumnValue(vendorId, vendorMaster, "vendorMaster")
+    // },
+    {
+      title: "CATEGORY",
+      dataIndex: "categoryDesc",
+      key: "category",
+      // render: (category) => categories[category],
+    },
+    {
+      title: "SUB-CATEGORY",
+      dataIndex: "subCategoryDesc",
+      key: "subCategory",
+      // render: (subCategory) => subCategories[subCategory],
+    },
+    {
+      title: "Type",
+      dataIndex: "typeDesc",
+      key: "type",
+      // render: (type) => types[type],
+    },
+    {
+      title: "Disciplines",
+      dataIndex: "disciplinesDesc",
+      key: "disciplines",
+      // render: (disciplines) => allDisciplines[disciplines],
+    },
+    {
+      title: "Brand",
+      dataIndex: "brandDesc",
+      key: "brand",
+      // render: (brandId) => brands[brandId],
+    },
+    {
+      title: "Size",
+      dataIndex: "sizeDesc",
+      key: "size",
+      // render: (size) => sizes[size],
+    },
+    {
+      title: "Colour",
+      dataIndex: "colorDesc",
+      key: "colour",
+      // render: (colorId) => colors[colorId],
+    },
+    {
+      title: "Usage Category",
+      dataIndex: "usageCategoryDesc",
+      key: "usageCategory",
+      // render: (usageCategory) => usageCategories[usageCategory],
+    },
+    {
+      title: "MINIMUM STOCK LEVEL",
+      dataIndex: "minStockLevel",
+      key: "minStockLevel",
+    },
+    {
+      title: "MAXIMUM STOCK LEVEL",
+      dataIndex: "maxStockLevel",
+      key: "maxStockLevel",
+    },
+    { title: "RE ORDER POINT", dataIndex: "reOrderPoint", key: "reOrderPoint" },
+    { title: "STATUS", dataIndex: "status", key: "status" },
+    { title: "CREATE DATE", dataIndex: "endDate", key: "endDate" },
+    {
+        title: "LOCATOR QUANTITY DETAILS",
+        dataIndex: "qtyList",
+        key: "qtyList",
+        render: (locatorQuantity, rowRecord) => renderLocatorISN(locatorQuantity, rowRecord)
+    },
+
+
+    // {
+    //   title: "Actions",
+    //   key: "actions",
+    //   fixed: "right",
+    //   render: (text, record) => (
+    //     <Button
+    //       type={
+    //         selectedItems.some((item) => item.id === record.id)
+    //           ? "warning"
+    //           : "primary"
+    //       }
+    //       onClick={() => handleSelectItem(record, selectedItems, selectedItems, setFormData)}
+    //     >
+    //       {selectedItems.some((item) => item.id === record.id)
+    //         ? "Deselect"
+    //         : "Select"}
+    //     </Button>
+    //   ),
+    // },
+  ];
 
   const itemHandleChange = (fieldName, value, index) => {
     setFormData((prevValues) => {
@@ -116,31 +355,58 @@ const InwardGatePass = () => {
     });
   };
 
-  const populateItemData = async () => {
-    const itemMasterUrl =
-      "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster";
-    const locatorMasterUrl =
-      "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster";
-    const uomMasterUrl =
-      "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster";
-    try {
-      const [itemMaster, locatorMaster, uomMaster] = await Promise.all([
+  const mergeItemMasterAndOhq = (itemMasterArr, ohqArr) => {
+    return itemMasterArr.map(item=>{
+      const itemCodeMatch = ohqArr.find(itemOhq=>itemOhq.itemCode === item.itemMasterCd)
+      if(itemCodeMatch)
+        return {...item, qtyList:itemCodeMatch.qtyList, locationId: itemCodeMatch.locationId, locationDesc: itemCodeMatch.locationName}
+    })
+  }
+
+  const populateItemData = async() => {
+    const itemMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster"
+    const ohqUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getOHQ"
+    const vendorMasteUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getVendorMaster"
+    const locationMasterUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocationMaster"
+    try{
+      const [itemMaster, ohq, vendorMaster, locationMaster] = await Promise.all([
         axios.get(itemMasterUrl),
-        axios.get(locatorMasterUrl),
-        axios.get(uomMasterUrl),
-      ]);
+        axios.post(ohqUrl, {itemCode:null, user: "string"}),
+        axios.get(vendorMasteUrl),
+        axios.get(locationMasterUrl)
+      ])
 
-      const { responseData: itemMasterData } = itemMaster.data;
-      const { responseData: locatorMasterData } = locatorMaster.data;
-      const { responseData: uomMasterData } = uomMaster.data;
+      
+      const {responseData : itemMasterData} = itemMaster.data
+      // const {responseData : locatorMasterData} = locatorMaster.data
+      // const {responseData : uomMasterData} = uomMaster.data
+      const {responseData: ohqData} = ohq.data
+      const {responseData : vendorMasterData} = vendorMaster.data
+      const {responseData : locationMasterData} = locationMaster.data
 
-      setItemData([...itemMasterData]);
-      setUomMaster([...uomMasterData]);
-      setLocatorMaster([...locatorMasterData]);
-    } catch (error) {
-      console.log("Populate item data error: ", error);
+      const mergedItemMaster = mergeItemMasterAndOhq(itemMasterData, ohqData)
+
+      setData([...mergedItemMaster])
+      setFilteredData([...mergedItemMaster])
+
+      const locationMasterObj = locationMasterData.reduce((acc, obj)=>{
+        acc[obj.id] = obj.locationName
+        return acc
+      }, {})
+
+      const vendorMasterObj = vendorMasterData.reduce((acc, obj)=>{
+        acc[obj.id] = obj.vendorName
+        return acc
+      }, {})
+      setVendorMaster({...vendorMasterObj})
+      setLocationMaster({...locationMasterObj})
+
     }
-  };
+    catch(error){
+      console.log("Populate item data error: ", error)
+    }
+  }
+
 
   useEffect(() => {
     populateItemData();
@@ -171,14 +437,15 @@ const InwardGatePass = () => {
       const { responseData } = response.data;
       const { organizationDetails } = responseData;
       const { userDetails } = responseData;
-      console.log("Fetched data:", organizationDetails);
+      const {locationDetails} = responseData
+      console.log("Fetched data:", organizationDetails.id);
       const currentDate = dayjs();
       // Update form data with fetched values
       setFormData({
-        ceRegionalCenterCd: organizationDetails.id,
-        ceRegionalCenterName: organizationDetails.location,
-        ceAddress: organizationDetails.locationAddr,
-        ceZipcode: "131021",
+        crRegionalCenterCd: organizationDetails.id,
+        crRegionalCenterName: organizationDetails.location,
+        crAddress: organizationDetails.locationAddr,
+        crZipcode: locationDetails.zipcode,
         genName: userDetails.firstName,
         noaDate: currentDate.format(dateFormat),
         dateOfDelivery: currentDate.format(dateFormat),
@@ -213,7 +480,7 @@ const InwardGatePass = () => {
         approvedName: processData?.approvedName,
         processId: processData?.processId,
 
-        crRegionalCenterCd: processData?.crRegionalCenterCd,
+        crRegionalCenterCd: processData?.id,
         crRegionalCenterName: processData?.crRegionalCenterName,
         crAddress: processData?.crAddress,
         crZipcode: processData?.crZipcode,
@@ -244,6 +511,8 @@ const InwardGatePass = () => {
       // Handle error
     }
   };
+
+  console.log("Filtered: ", filteredData)
 
   const onFinish = async (values) => {
     try {
@@ -291,9 +560,12 @@ const InwardGatePass = () => {
         }
       });
 
+      // in processType PO, we need to pass "NA" in approved name
+      const aprName = formDataCopy.approvedName === "" ? "NA" : formDataCopy.approvedName 
+
       const apiUrl =
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/saveInwardGatePass";
-      const response = await axios.post(apiUrl, formDataCopy);
+      const response = await axios.post(apiUrl, {...formDataCopy, approvedName: aprName});
       console.log("API Response:", response.data);
       if (
         response.status === 200 &&
@@ -358,7 +630,7 @@ const InwardGatePass = () => {
       updatedItems.splice(index, 1);
 
       const updatedItems1 = updatedItems.map((item, key) => {
-        return { ...item, srNo: key };
+        return { ...item, srNo: key+1 };
       });
 
       return {
@@ -377,6 +649,7 @@ const InwardGatePass = () => {
         className="goods-receive-note-form"
         onValuesChange={handleValuesChange}
         layout="vertical"
+        initialValues={{fieldName: formData}}
       >
         <Row>
           <Col span={6} offset={18}>
@@ -414,15 +687,15 @@ const InwardGatePass = () => {
         <Row gutter={24}>
           <Col span={8}>
             <Title strong level={2} underline type="danger">
-              {" "}
               CONSIGNEE DETAIL :-
             </Title>
 
             <Form.Item label="REGIONAL CENTER CODE" name="crRegionalCenterCd">
-              <Input value={formData.crRegionalCenterCd} />
+              {/* <Input value={formData.crRegionalCenterCd} />
               <div style={{ display: "none" }}>
                 {formData.crRegionalCenterCd}
-              </div>
+              </div> */}
+              <Input />
             </Form.Item>
             <Form.Item
               label="REGIONAL CENTER NAME "
@@ -454,7 +727,7 @@ const InwardGatePass = () => {
             {Type === "PO" && (
               <>
                 <Form.Item label="SUPPLIER CODE :" name="supplierCode">
-                  <Input
+                  <Input value="QKJEfjhwejf"
                     onChange={(e) =>
                       handleChange("supplierCode", e.target.value)
                     }
@@ -630,6 +903,33 @@ const InwardGatePass = () => {
         {/* Item Details */}
         <h2>ITEM DETAILS</h2>
 
+        {
+          Type === "PO" &&
+          <div style={{ width: "300px" }}>
+          <Popover
+            onClick={() => setTableOpen(true)}
+            content={
+              <Table pagination={{pageSize: 3}} dataSource={filteredData} columns={tableColumns} scroll={{ x: "max-content" }} style={{width: "600px", display: tableOpen? "block": "none"}}/>
+            }
+            title="Filtered Item Data"
+            trigger="click"
+            // open={true}
+            open={searchValue !== "" && filteredData.length > 0}
+            style={{ width: "200px" }}
+            placement="right"
+          >
+            <Input.Search
+              placeholder="Search Item Data"
+              allowClear
+              enterButton="Search"
+              size="large"
+              onSearch={(e)=>handleSearch(e.target?.value || "", data, setFilteredData, setSearchValue )}
+              onChange={(e)=>handleSearch(e.target?.value || "", data, setFilteredData, setSearchValue )}
+            />
+          </Popover>
+        </div>
+        }
+
         <Form.List name="items" initialValue={formData.items || [{}]}>
           {(fields, { add, remove }) => (
             <>
@@ -665,21 +965,13 @@ const InwardGatePass = () => {
 
                       <Form.Item label="UOM">
                         <Input
-                          value={findColumnValue(
-                            item.uom,
-                            uomMaster,
-                            "uomMaster"
-                          )}
+                          value={item.uomDesc}
                         />
                       </Form.Item>
 
                       <Form.Item label="LOCATOR DESCRIPITON">
                         <Input
-                          value={findColumnValue(
-                            item.locatorId,
-                            locatorMaster,
-                            "locatorMaster"
-                          )}
+                          value={item.locatorDesc}
                           readOnly
                         />
                       </Form.Item>
@@ -732,7 +1024,8 @@ const InwardGatePass = () => {
               <Input.TextArea
                 value={formData.termsCondition}
                 autoSize={{ minRows: 3, maxRows: 6 }}
-                readOnly
+                readOnly = {Type === "PO" ? false : true}
+                onChange={(e) => handleChange("termsCondition", e.target.value)}
               />
               <Input style={{ display: "none" }} />
             </Form.Item>

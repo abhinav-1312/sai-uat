@@ -505,134 +505,134 @@ const IssueNote = () => {
       return foundObject ? foundObject['uomName'] : 'Undefined';
   }
 
-  const columns = [
-    { title: "S NO.", dataIndex: "id", key: "id", fixed: "left", width: 80 },
-    {
-      title: "ITEM CODE",
-      dataIndex: "itemMasterCd",
-      key: "itemCode",
-    },
-    {
-      title: "ITEM DESCRIPTION",
-      dataIndex: "itemName",
-      key: "itemMasterDesc",
-      render: (itemName) => itemNames[itemName]
-    },
-    { 
-      title: "UOM", 
-      dataIndex: "uomDesc", 
-      key: "uom", 
-    },
-    {
-      title: "QUANTITY ON HAND",
-      dataIndex: "quantity",
-      key: "quantity",
-    },
-    { 
-      title: "LOCATION",
-      dataIndex: "locationId",
-      key: "location",
-      render: (locationId) => locationMaster[locationId] 
-      // render: (locationId) => locationMaster[locationId] findColumnValue(locationId, locationMaster, "locationMaster")
-    },
-    {
-      title: "LOCATOR CODE",
-      dataIndex: "locatorId",
-      key: "locatorCode",
-    },
-    { title: "PRICE", dataIndex: "price", key: "price" },
-    { 
-      title: "VENDOR DETAIL", 
-      dataIndex: "vendorId", 
-      key: "vendorDetail",
-      render: (vendorId) => vendorMaster[vendorId]
-      // render: (vendorId) => findColumnValue(vendorId, vendorMaster, "vendorMaster")
+  // const columns = [
+  //   { title: "S NO.", dataIndex: "id", key: "id", fixed: "left", width: 80 },
+  //   {
+  //     title: "ITEM CODE",
+  //     dataIndex: "itemMasterCd",
+  //     key: "itemCode",
+  //   },
+  //   {
+  //     title: "ITEM DESCRIPTION",
+  //     dataIndex: "itemName",
+  //     key: "itemMasterDesc",
+  //     render: (itemName) => itemNames[itemName]
+  //   },
+  //   { 
+  //     title: "UOM", 
+  //     dataIndex: "uomDesc", 
+  //     key: "uom", 
+  //   },
+  //   {
+  //     title: "QUANTITY ON HAND",
+  //     dataIndex: "quantity",
+  //     key: "quantity",
+  //   },
+  //   { 
+  //     title: "LOCATION",
+  //     dataIndex: "locationId",
+  //     key: "location",
+  //     render: (locationId) => locationMaster[locationId] 
+  //     // render: (locationId) => locationMaster[locationId] findColumnValue(locationId, locationMaster, "locationMaster")
+  //   },
+  //   {
+  //     title: "LOCATOR CODE",
+  //     dataIndex: "locatorId",
+  //     key: "locatorCode",
+  //   },
+  //   { title: "PRICE", dataIndex: "price", key: "price" },
+  //   { 
+  //     title: "VENDOR DETAIL", 
+  //     dataIndex: "vendorId", 
+  //     key: "vendorDetail",
+  //     render: (vendorId) => vendorMaster[vendorId]
+  //     // render: (vendorId) => findColumnValue(vendorId, vendorMaster, "vendorMaster")
 
-    },
-    { 
-      title: "CATEGORY", 
-      dataIndex: "category", 
-      key: "category",
-      render: (category) => categories[category]
+  //   },
+  //   { 
+  //     title: "CATEGORY", 
+  //     dataIndex: "category", 
+  //     key: "category",
+  //     render: (category) => categories[category]
 
-    },
-    { 
-      title: "SUB-CATEGORY", 
-      dataIndex: "subCategory", 
-      key: "subCategory",
-      render: (subCategory) => subCategories[subCategory]
-    },
-    { 
-      title: "Type", 
-      dataIndex: "type", 
-      key: "type", 
-      render: (type) => types[type]
-    },
-    { 
-      title: "Disciplines", 
-      dataIndex: "disciplines", 
-      key: "disciplines",
-      render: (disciplines) => allDisciplines[disciplines]
-    },
-    { 
-      title: "Brand", 
-      dataIndex: "brandId", 
-      key: "brand",
-      render: (brandId) => brands[brandId]
-    },
-    { 
-      title: "Size", 
-      dataIndex: "size", 
-      key: "size",
-      render: (size) => sizes[size]
-    },
-    { 
-      title: "Colour", 
-      dataIndex: "colorId", 
-      key: "colour",
-      render: (colorId) => colors[colorId]
-    },
-    {
-      title: "Usage Category",
-      dataIndex: "usageCategory",
-      key: "usageCategory",
-      render: (usageCategory) => usageCategories[usageCategory]
-    },
-    {
-      title: "MINIMUM STOCK LEVEL",
-      dataIndex: "minStockLevel",
-      key: "minStockLevel",
-    },
-    {
-      title: "MAXIMUM STOCK LEVEL",
-      dataIndex: "maxStockLevel",
-      key: "maxStockLevel",
-    },
-    { title: "RE ORDER POINT", dataIndex: "reOrderPoint", key: "reOrderPoint" },
-    { title: "STATUS", dataIndex: "status", key: "status" },
-    { title: "CREATE DATE", dataIndex: "endDate", key: "endDate" },
-    {
-      title: "Actions",
-      key: "actions",
-      fixed: "right",
-      render: (text, record) => (
-        <Button
-          // type={
-          //   selectedItems.some((item) => item.id === record.id)
-          //     ? "warning"
-          //     : "primary"
-          // }
-          onClick={() => handleSelectItem(record)}
-        >
-          {
-            selectedItems.some((item) => item.locatorId === record.locatorId)
-              ? "Deselect"
-              : "Select"
-          }
-        </Button>
-      ),
-    },
-  ];
+  //   },
+  //   { 
+  //     title: "SUB-CATEGORY", 
+  //     dataIndex: "subCategory", 
+  //     key: "subCategory",
+  //     render: (subCategory) => subCategories[subCategory]
+  //   },
+  //   { 
+  //     title: "Type", 
+  //     dataIndex: "type", 
+  //     key: "type", 
+  //     render: (type) => types[type]
+  //   },
+  //   { 
+  //     title: "Disciplines", 
+  //     dataIndex: "disciplines", 
+  //     key: "disciplines",
+  //     render: (disciplines) => allDisciplines[disciplines]
+  //   },
+  //   { 
+  //     title: "Brand", 
+  //     dataIndex: "brandId", 
+  //     key: "brand",
+  //     render: (brandId) => brands[brandId]
+  //   },
+  //   { 
+  //     title: "Size", 
+  //     dataIndex: "size", 
+  //     key: "size",
+  //     render: (size) => sizes[size]
+  //   },
+  //   { 
+  //     title: "Colour", 
+  //     dataIndex: "colorId", 
+  //     key: "colour",
+  //     render: (colorId) => colors[colorId]
+  //   },
+  //   {
+  //     title: "Usage Category",
+  //     dataIndex: "usageCategory",
+  //     key: "usageCategory",
+  //     render: (usageCategory) => usageCategories[usageCategory]
+  //   },
+  //   {
+  //     title: "MINIMUM STOCK LEVEL",
+  //     dataIndex: "minStockLevel",
+  //     key: "minStockLevel",
+  //   },
+  //   {
+  //     title: "MAXIMUM STOCK LEVEL",
+  //     dataIndex: "maxStockLevel",
+  //     key: "maxStockLevel",
+  //   },
+  //   { title: "RE ORDER POINT", dataIndex: "reOrderPoint", key: "reOrderPoint" },
+  //   { title: "STATUS", dataIndex: "status", key: "status" },
+  //   { title: "CREATE DATE", dataIndex: "endDate", key: "endDate" },
+  //   {
+  //     title: "Actions",
+  //     key: "actions",
+  //     fixed: "right",
+  //     render: (text, record) => (
+  //       <Button
+  //         // type={
+  //         //   selectedItems.some((item) => item.id === record.id)
+  //         //     ? "warning"
+  //         //     : "primary"
+  //         // }
+  //         onClick={() => handleSelectItem(record)}
+  //       >
+  //         {
+  //           selectedItems.some((item) => item.locatorId === record.locatorId)
+  //             ? "Deselect"
+  //             : "Select"
+  //         }
+  //       </Button>
+  //     ),
+  //   },
+  // ];
 
   const fetchUserDetails = async () => {
     try {
@@ -751,16 +751,6 @@ const IssueNote = () => {
   };
 
   const removeItem = (index) => {
-    // setItemDetail(prevValues=>{
-    //   const updatedItems = prevValues
-    //   updatedItems.splice(index, 1)
-      
-    //   const updatedItems1 = updatedItems.map((item, key)=>{
-    //     return {...item, srNo: key+1}
-    //   })
-
-    //   return [...updatedItems1]
-    // })
     setFormData(prevValues=>{
       const updatedItems = prevValues.items
       updatedItems.splice(index, 1)
@@ -1195,11 +1185,6 @@ const IssueNote = () => {
         </Modal>
       </Form>
 
-      <Modal open={false} width={1200} >
-        <Table dataSource={filteredData} columns={tableColumns} scroll={{ x: "max-content" }} />
-      </Modal>
-
-      {/* <ItemDetailTable dataSource={filteredData} selectedItems={selectedItems} setSelectedItems={setSelectedItems} setFormData={setFormData} locationMaster={locationMaster} vendorMaster={vendorMaster} /> */}
     </div>
   );
 }
