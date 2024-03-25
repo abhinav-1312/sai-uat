@@ -16,6 +16,7 @@ import {
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
+import FormInputItem from "../../../components/FormInputItem";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
@@ -93,10 +94,6 @@ const AcceptanceNote = () => {
       updatedItems[index] = {
         ...updatedItems[index],
         [fieldName]: value === "" ? null : value,
-        uom: "string",
-        conditionOfGoods: "string", // Hard-coded data
-        budgetHeadProcurement: "string", // Hard-coded data
-        locatorId: "string", // Hard-coded data
       };
       return {
         ...prevValues,
@@ -180,17 +177,22 @@ const AcceptanceNote = () => {
         consumerName: processData?.consumerName,
         contactNo: processData?.contactNo,
 
+        supplierCd: processData?.supplierCd,
+        supplierName: processData?.supplierName,
+        crAddress: processData?.crAddress,
+
         items: itemList.map((item) => ({
           srNo: item.sNo,
           itemCode: item.itemCode,
           itemDesc: item.itemDesc,
           uom: item?.uom,
-          quantity: item.quantity,
+          quantity: item.acceptedQuantity,
           noOfDays: item.requiredDays,
           remarks: item.remarks,
           conditionOfGoods: item.conditionOfGoods,
           budgetHeadProcurement: item.budgetHeadProcurement,
           locatorId: item.locatorId,
+          acceptedQuantity: item.acceptedQuantityuantity
         })),
       }));
       // Handle response data as needed
@@ -254,8 +256,11 @@ const AcceptanceNote = () => {
         // Access the specific success message data if available
         const { processId, processType, subProcessId } =
           response.data.responseData;
-        setFormData({
-          acptRejNoteNo: processId,
+        setFormData(prev=>{
+          return{
+            ...prev,
+            acptRejNoteNo: processId,
+          }
         });
         setSuccessMessage(
           `Acceptance Note : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
@@ -364,29 +369,11 @@ const AcceptanceNote = () => {
             </Title>
 
             {Type === "PO" && (
-              <>
-                <Form.Item label="SUPPLIER CODE :" name="supplierCode">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierCode", e.target.value)
-                    }
-                  />
-                </Form.Item>
-                <Form.Item label="SUPPLIER NAME :" name="supplierName">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierName", e.target.value)
-                    }
-                  />
-                </Form.Item>
-                <Form.Item label="ADDRESS:" name="supplierAddress">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierAddress", e.target.value)
-                    }
-                  />
-                </Form.Item>
-              </>
+              <> 
+              <FormInputItem label="SUPPLIER CODE :" value={formData.supplierCd} />
+              <FormInputItem label="SUPPLIER NAME :" value={formData.supplierName} />
+              <FormInputItem label="ADDRESS :" value={formData.crAddress || "Not defined"} />
+            </>
             )}
 
             {Type === "IOP" && (
@@ -607,7 +594,7 @@ const AcceptanceNote = () => {
                       >
                         <Input
                           onChange={(e) =>
-                            itemHandleChange(`quantity`, e.target.value, index)
+                            itemHandleChange(`acceptedQuantity`, e.target.value, index)
                           }
                         />
                       </Form.Item>

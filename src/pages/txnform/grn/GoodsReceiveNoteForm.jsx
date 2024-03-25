@@ -16,6 +16,7 @@ import { MinusCircleOutlined } from "@ant-design/icons";
 import "./GoodsReceiveNoteForm.css";
 import dayjs from "dayjs";
 import axios from "axios";
+import FormInputItem from "../../../components/FormInputItem";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
@@ -78,6 +79,8 @@ const GoodsReceiveNoteForm = () => {
     note: "",
   });
 
+  console.log("Locator master: ", locatorMaster)
+
   const deepClone = (obj) => {
     if (obj === null || typeof obj !== 'object') {
       return obj;
@@ -138,7 +141,7 @@ const GoodsReceiveNoteForm = () => {
       "https://sai-services.azurewebsites.net/sai-inv-mgmt/txns/getTxnSummary";
 
     try {
-      const [itemMaster, locatorMaster, uomMaster, ohqData] = await Promise.all(
+      const [itemMaster, locatorMaster, uomMaster] = await Promise.all(
         [
           axios.get(itemMasterUrl),
           axios.get(locatorMasterUrl),
@@ -174,14 +177,16 @@ const GoodsReceiveNoteForm = () => {
 
       const { responseData } = response.data;
       const { organizationDetails } = responseData;
-      const { userDetails } = responseData;
+      const { userDetails, locationDetails } = responseData;
       const currentDate = dayjs();
+      console.log("USER DET", userDetails)
+      console.log("ORG DET", organizationDetails)
       // Update form data with fetched values
       setFormData({
-        // ceRegionalCenterCd: "20",
-        // ceRegionalCenterName: organizationDetails.location,
-        // ceAddress: organizationDetails.locationAddr,
-        // ceZipcode: "131021",
+        ceRegionalCenterCd: organizationDetails.id,
+        ceRegionalCenterName: organizationDetails.location,
+        ceAddress: organizationDetails.locationAddr,
+        ceZipcode: locationDetails.zipcode,
         genName: userDetails.firstName,
         userId: "string",
         noaDate: currentDate.format(dateFormat),
@@ -205,21 +210,24 @@ const GoodsReceiveNoteForm = () => {
 
       const subProcessRes = await axios.post(subProcessDtlUrl, {
         processId: value,
-        processStage: "RN",
+        processStage: Type==="IRP" ? "ISN" : "ACT",
       });
 
       const { data: subProcess, status, statusText } = subProcessRes;
       const { responseData: subProcessData } = subProcess;
       const { processData, itemList } = subProcessData;
 
+      console.log("Status: ", status, statusText)
+
       if (status === 200 && statusText === "OK") {
         try {
-          const locatorQuantityArr = await Promise.all(
+          const locatorQuantityArr= await Promise.all(
             itemList.map(async (item) => {
-              const { itemCode } = item;
+              console.log("itEMMMM: ", item)
+              const itemCode  = item.itemCode;
 
               const ohqRes = await axios.post(ohqUrl, {
-                itemCode,
+                itemCode: itemCode,
                 userId: "string",
               });
               const { data: ohqProcess } = ohqRes;
@@ -243,6 +251,8 @@ const GoodsReceiveNoteForm = () => {
         } catch (error) {
           console.log("Error: ", error);
         }
+      }else{
+        console.log("ELSEEEEE")
       }
 
       setFormData((prevFormData) => ({
@@ -252,9 +262,9 @@ const GoodsReceiveNoteForm = () => {
         approvedName: processData?.approvedName,
         processId: processData?.processId,
 
-        crRegionalCenterCd: processData?.regionalCenterCd,
-        crRegionalCenterName: processData?.regionalCenterName,
-        crAddress: processData?.address,
+        crRegionalCenterCd: processData?.crRegionalCenterCd,
+        crRegionalCenterName: processData?.crRegionalCenterName,
+        // crAddress: processData?.address,
         crZipcode: processData?.zipcode,
 
         consumerName: processData?.consumerName,
@@ -263,6 +273,12 @@ const GoodsReceiveNoteForm = () => {
         termsCondition: processData?.termsCondition,
         note: processData?.note,
 
+        supplierCode: processData?.supplierCd,
+        supplierName: processData?.supplierName,
+        crAddress: processData?.crAddress,
+        noa: processData?.noa,
+        noaDate: processData?.noaDate,
+
         items: itemList.map((item) => ({
           srNo: item?.sNo,
           itemId: item?.itemId,
@@ -270,7 +286,7 @@ const GoodsReceiveNoteForm = () => {
           itemDesc: item?.itemDesc,
           uom: parseInt(item?.uom),
           quantity: item?.quantity,
-          remQuantity: item?.quantity,
+          remQuantity:item?.quantity,
           noOfDays: item?.requiredDays,
           remarks: item?.remarks,
           conditionOfGoods: item?.conditionOfGoods,
@@ -291,7 +307,7 @@ const GoodsReceiveNoteForm = () => {
     }
   };
 
-  console.log("FormData: ", formData.items);
+  console.log("FormData: ", formData);
 
   const onFinish = async (values) => {
     console.log("Form data abve foud", formData)
@@ -520,6 +536,7 @@ const GoodsReceiveNoteForm = () => {
         className="goods-receive-note-form"
         onValuesChange={handleValuesChange}
         layout="vertical"
+        initialValues={formData}
       >
         <Row>
           <Col span={6} offset={18}>
@@ -562,7 +579,7 @@ const GoodsReceiveNoteForm = () => {
             </Title>
 
             <Form.Item label="REGIONAL CENTER CODE" name="crRegionalCenterCd">
-              <Input value={formData.crRegionalCenterCd} />
+              <Input value={formData.ceRegionalCenterCd} />
               <div style={{ display: "none" }}>
                 {formData.crRegionalCenterCd}
               </div>
@@ -571,19 +588,19 @@ const GoodsReceiveNoteForm = () => {
               label="REGIONAL CENTER NAME "
               name="crRegionalCenterName"
             >
-              <Input value={formData.crRegionalCenterName} />
+              <Input value={formData.ceRegionalCenterName} />
               <div style={{ display: "none" }}>
                 {formData.crRegionalCenterCd}
               </div>
             </Form.Item>
             <Form.Item label="ADDRESS :" name="crAddress">
-              <Input value={formData.crAddress} />
+              <Input value={formData.ceAddress} />
               <div style={{ display: "none" }}>
                 {formData.crRegionalCenterCd}
               </div>
             </Form.Item>
             <Form.Item label="ZIP CODE :" name="crZipcode">
-              <Input value={formData.crZipcode} />
+              <Input value={formData.ceZipcode} />
               <div style={{ display: "none" }}>
                 {formData.crRegionalCenterCd}
               </div>
@@ -595,29 +612,11 @@ const GoodsReceiveNoteForm = () => {
             </Title>
 
             {Type === "PO" && (
-              <>
-                <Form.Item label="SUPPLIER CODE :" name="supplierCode">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierCode", e.target.value)
-                    }
-                  />
-                </Form.Item>
-                <Form.Item label="SUPPLIER NAME :" name="supplierName">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierName", e.target.value)
-                    }
-                  />
-                </Form.Item>
-                <Form.Item label="ADDRESS:" name="supplierAddress">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierAddress", e.target.value)
-                    }
-                  />
-                </Form.Item>
-              </>
+              <> 
+              <FormInputItem label="SUPPLIER CODE :" value={formData.supplierCode} />
+              <FormInputItem label="SUPPLIER NAME :" value={formData.supplierName} />
+              <FormInputItem label="ADDRESS :" value={formData.crAddress || "Not defined"} />
+            </>
             )}
 
             {Type === "IRP" && (
@@ -695,7 +694,7 @@ const GoodsReceiveNoteForm = () => {
             )}
             {Type === "PO" && (
               <Form.Item label="ACCEPTANCE NOTE NO." name="acceptanceNoteNo">
-                <Input />
+                <Input onChange={(e) => handleReturnNoteNoChange(e.target.value)} />
               </Form.Item>
             )}
             {Type === "IOP" && (
@@ -836,13 +835,7 @@ const GoodsReceiveNoteForm = () => {
             <>
               {formData.items?.length > 0 &&
                 formData.items.map((item, key) => {
-                  console.log(
-                    "Item: ",
-                    item.itemCode,
-                    locatorQuantity[item.itemCode]
-                  );
                   return (
-                    // <div className="xyz" style={{font:"150px", zIndex: "100"}}>xyz</div>
 
                     <div
                       key={key}
@@ -862,7 +855,7 @@ const GoodsReceiveNoteForm = () => {
                       </Form.Item>
 
                       <Form.Item label="ITEM CODE">
-                        <Input value={item.itemCode} readOnly />
+                        <Input value={item?.itemCode} readOnly />
                       </Form.Item>
 
                       <Form.Item label="ITEM DESCRIPTION">
@@ -878,8 +871,8 @@ const GoodsReceiveNoteForm = () => {
                           )}
                         />
                       </Form.Item>
-
-                      <Form.Item label="RECEIVED QUANTITY">
+                      
+                        <Form.Item label="RECEIVED QUANTITY">
                         <Input value={item.quantity} readOnly />
                       </Form.Item>
 
