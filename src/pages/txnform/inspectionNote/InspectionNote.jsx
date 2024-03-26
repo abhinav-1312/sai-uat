@@ -449,7 +449,7 @@ const InspectionNote = () => {
               <> 
                 <FormInputItem label="SUPPLIER CODE :" value={formData.supplierCd} />
                 <FormInputItem label="SUPPLIER NAME :" value={formData.supplierName} />
-                <FormInputItem label="ADDRESS :" value={formData.supplierAddress || "Not defined"} />
+                <FormInputItem label="ADDRESS :" value={formData.crAddress || "Not defined"} />
               </>
             )}
 

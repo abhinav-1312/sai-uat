@@ -204,6 +204,8 @@ const AcceptanceNote = () => {
         supplierName: processData?.supplierName,
         crAddress: processData?.crAddress,
 
+        dateOfDelivery: processData?.dateOfDelivery,
+
         items: itemList.map((item) => ({
           srNo: item.sNo,
           itemCode: item.itemCode,
@@ -479,7 +481,7 @@ const AcceptanceNote = () => {
                 }
               />
             </Form.Item>
-            <Form.Item label="DATE OF DELIVERY" name="dateOfDelivery">
+            {/* <Form.Item label="DATE OF DELIVERY" name="dateOfDelivery">
               <DatePicker
                 format={dateFormat}
                 style={{ width: "100%" }}
@@ -487,7 +489,9 @@ const AcceptanceNote = () => {
                   handleChange("dateOfDelivery", dateString)
                 }
               />
-            </Form.Item>
+            </Form.Item> */}
+
+            <FormInputItem label="DATE OF DELIVERY" value={formData.dateOfDelivery} />
           </Col>
         </Row>
 

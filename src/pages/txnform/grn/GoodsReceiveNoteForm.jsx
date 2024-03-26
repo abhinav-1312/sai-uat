@@ -21,6 +21,28 @@ const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
 
+
+const convertEpochToDateString = (epochTime) => {
+  // Convert epoch time to milliseconds
+  let date = new Date(epochTime);
+
+  // Extract the day, month, and year from the Date object
+  let day = date.getDate();
+  let month = date.getMonth() + 1; // Month starts from 0
+  let year = date.getFullYear();
+
+  // Add leading zeros if needed
+  if (day < 10) {
+    day = '0' + day;
+  }
+  if (month < 10) {
+    month = '0' + month;
+  }
+
+  // Return the date string in DD/MM/YYYY format
+  return `${day}/${month}/${year}`;
+}
+
 const GoodsReceiveNoteForm = () => {
   const [Type, setType] = useState("IRP");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -183,8 +205,8 @@ const GoodsReceiveNoteForm = () => {
         ceZipcode: locationDetails.zipcode,
         genName: userDetails.firstName,
         userId: "string",
-        noaDate: currentDate.format(dateFormat),
-        dateOfDelivery: currentDate.format(dateFormat),
+        // noaDate: currentDate.format(dateFormat),
+        // dateOfDelivery: currentDate.format(dateFormat),
         genDate: currentDate.format(dateFormat),
         issueDate: currentDate.format(dateFormat),
         approvedDate: currentDate.format(dateFormat),
@@ -264,7 +286,8 @@ const GoodsReceiveNoteForm = () => {
         supplierName: processData?.supplierName,
         crAddress: processData?.crAddress,
         noa: processData?.noa,
-        noaDate: processData?.noaDate,
+        noaDate: convertEpochToDateString(processData?.noaDate),
+        dateOfDelivery: processData?.dateOfDelivery,
 
         items: itemList.map((item) => ({
           srNo: item?.sNo,
@@ -679,7 +702,7 @@ const GoodsReceiveNoteForm = () => {
                     onChange={(e) => handleChange("noaNo", e.target.value)}
                   />
                 </Form.Item>
-                <Form.Item label="NOA DATE" name="noaDate">
+                {/* <Form.Item label="NOA DATE" name="noaDate">
                   <DatePicker
                     format={dateFormat}
                     style={{ width: "100%" }}
@@ -687,8 +710,11 @@ const GoodsReceiveNoteForm = () => {
                       handleChange("noaDate", dateString)
                     }
                   />
-                </Form.Item>
-                <Form.Item label="DATE OF DELIVERY" name="dateOfDelivery">
+                </Form.Item> */}
+
+                <FormInputItem label="NOA DATE" value={formData.noaDate} />
+
+                {/* <Form.Item label="DATE OF DELIVERY" name="dateOfDelivery">
                   <DatePicker
                     format={dateFormat}
                     style={{ width: "100%" }}
@@ -696,7 +722,9 @@ const GoodsReceiveNoteForm = () => {
                       handleChange("dateOfDelivery", dateString)
                     }
                   />
-                </Form.Item>
+                </Form.Item> */}
+
+                <FormInputItem label="DATE OF DELIVERY" value={formData.dateOfDelivery} />
               </>
             )}
           </Col>
