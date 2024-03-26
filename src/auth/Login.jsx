@@ -28,9 +28,9 @@ const SignIn = () => {
       // Store user details in local storage
       localStorage.setItem("userCd", userCd);
       localStorage.setItem("userType", userType);
+      localStorage.setItem("password", values.password);
 
       setIsLoggedIn(true);
-      console.log(isLoggedIn);
 
       if (userType === "11") {
         const userRoles = "admin";

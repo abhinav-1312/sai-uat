@@ -128,12 +128,14 @@ const RetunNote = () => {
     }
   };
   const fetchUserDetails = async () => {
+    const userCd = localStorage.getItem('userCd');
+    const password = localStorage.getItem('password');
     try {
       const apiUrl =
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/login/authenticate";
       const response = await axios.post(apiUrl, {
-        userCd: "dkg",
-        password: "string",
+        userCd,
+        password
       });
 
       const { responseData } = response.data;
@@ -272,7 +274,6 @@ const RetunNote = () => {
       } else {
         // Display a generic success message if specific data is not available
         message.error("Failed to Return Note. Please try again later.");
-        console.log(response.data);
       }
     } catch (error) {
       console.error("Error saving Return Note:", error);

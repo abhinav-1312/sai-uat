@@ -59,12 +59,12 @@ const QuickCodeTable = () => {
 
   const handleDelete = (record) => {
     // Add your delete logic here
-    console.log('Delete config:', record);
+    // console.log('Delete config:', record);
   };
 
   const handleEditModalOk = () => {
     // Add your edit logic here
-    console.log('Edited config:', editedConfig);
+    // console.log('Edited config:', editedConfig);
     setEditModalVisible(false);
   };
 

@@ -141,25 +141,27 @@ const AcceptanceNote = () => {
     }
   };
   const fetchUserDetails = async () => {
+    const userCd = localStorage.getItem('userCd');
+    const password = localStorage.getItem('password');
+
     try {
       const apiUrl =
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/login/authenticate";
       const response = await axios.post(apiUrl, {
-        userCd: "dkg",
-        password: "string",
+        userCd: userCd,
+        password: password,
       });
 
       const { responseData } = response.data;
       const { organizationDetails } = responseData;
-      const { userDetails } = responseData;
-      console.log("Fetched data:", organizationDetails);
+      const { userDetails, locationDetails } = responseData;
       const currentDate = dayjs();
       // Update form data with fetched values
       setFormData({
         ceRegionalCenterCd: organizationDetails.location,
         ceRegionalCenterName: organizationDetails.organizationName,
         ceAddress: organizationDetails.locationAddr,
-        ceZipcode: "",
+        ceZipcode: locationDetails.zipcode,
         genName: userDetails.firstName,
         userId: "string",
         genDate: currentDate.format(dateFormat),
@@ -183,7 +185,6 @@ const AcceptanceNote = () => {
       });
       const responseData = response.data.responseData;
       const { processData, itemList } = responseData;
-      console.log("API Response:", response.data);
       setFormData((prevFormData) => ({
         ...prevFormData,
 
@@ -285,7 +286,6 @@ const AcceptanceNote = () => {
       const apiUrl =
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/saveAcceptanceNote";
       const response = await axios.post(apiUrl, formDataCopy);
-      console.log("Received values:", values);
       if (
         response.status === 200 &&
         response.data &&

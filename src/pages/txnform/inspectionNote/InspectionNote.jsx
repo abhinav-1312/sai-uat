@@ -131,18 +131,19 @@ const InspectionNote = () => {
   };
 
   const fetchUserDetails = async () => {
+    const userCd = localStorage.getItem('userCd');
+    const password = localStorage.getItem('password');
     try {
       const apiUrl =
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/login/authenticate";
       const response = await axios.post(apiUrl, {
-        userCd: "dkg",
-        password: "string",
+        userCd,
+        password,
       });
 
       const { responseData } = response.data;
       const { organizationDetails } = responseData;
       const { userDetails, locationDetails } = responseData;
-      console.log("Fetched data:", responseData);
       const currentDate = dayjs();
       // Update form data with fetched values
       setFormData({
@@ -173,7 +174,6 @@ const InspectionNote = () => {
       });
       const {responseData} = response.data;
       const { processData, itemList } = responseData;
-      console.log("API Response:", itemList);
       setFormData((prevFormData) => ({
         ...prevFormData,
 
@@ -298,7 +298,6 @@ const InspectionNote = () => {
       const apiUrl =
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/saveNewInspectionReport";
       const response = await axios.post(apiUrl, formDataCopy);
-      console.log("Received values:", values);
       if (
         response.status === 200 &&
         response.data &&

@@ -79,8 +79,6 @@ const GoodsReceiveNoteForm = () => {
     note: "",
   });
 
-  console.log("Locator master: ", locatorMaster)
-
   const deepClone = (obj) => {
     if (obj === null || typeof obj !== 'object') {
       return obj;
@@ -97,9 +95,6 @@ const GoodsReceiveNoteForm = () => {
     return clone;
   }
   
-  
-
-  console.log("Form data: ", formData.items)
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -167,20 +162,19 @@ const GoodsReceiveNoteForm = () => {
   }, []);
 
   const fetchUserDetails = async () => {
+    const userCd = localStorage.getItem('userCd');
+    const password = localStorage.getItem('password');
     try {
       const apiUrl =
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/login/authenticate";
       const response = await axios.post(apiUrl, {
-        userCd: "dkg",
-        password: "string",
+        userCd, password
       });
 
       const { responseData } = response.data;
       const { organizationDetails } = responseData;
       const { userDetails, locationDetails } = responseData;
       const currentDate = dayjs();
-      console.log("USER DET", userDetails)
-      console.log("ORG DET", organizationDetails)
       // Update form data with fetched values
       setFormData({
         ceRegionalCenterCd: organizationDetails.id,
@@ -217,13 +211,10 @@ const GoodsReceiveNoteForm = () => {
       const { responseData: subProcessData } = subProcess;
       const { processData, itemList } = subProcessData;
 
-      console.log("Status: ", status, statusText)
-
       if (status === 200 && statusText === "OK") {
         try {
           const locatorQuantityArr= await Promise.all(
             itemList.map(async (item) => {
-              console.log("itEMMMM: ", item)
               const itemCode  = item.itemCode;
 
               const ohqRes = await axios.post(ohqUrl, {
@@ -232,7 +223,6 @@ const GoodsReceiveNoteForm = () => {
               });
               const { data: ohqProcess } = ohqRes;
               const { responseData: ohqData } = ohqProcess;
-              console.log("Qhq data: ", ohqData);
               return {
                 itemCode: ohqData[0].itemCode,
                 qtyList: ohqData[0].qtyList,
@@ -245,14 +235,11 @@ const GoodsReceiveNoteForm = () => {
             return acc;
           }, {});
 
-          console.log("Locator Quan arr", locatorQuantityObj);
-
           setLocatorQuantity({ ...locatorQuantityObj });
         } catch (error) {
           console.log("Error: ", error);
         }
       }else{
-        console.log("ELSEEEEE")
       }
 
       setFormData((prevFormData) => ({
@@ -307,8 +294,6 @@ const GoodsReceiveNoteForm = () => {
     }
   };
 
-  console.log("FormData: ", formData);
-
   const onFinish = async (values) => {
     let found = false
     const tempFormData = deepClone(formData)
@@ -339,7 +324,6 @@ const GoodsReceiveNoteForm = () => {
     })
     
     const flatItemsArray = updatedItems.flatMap(innerArray => innerArray);
-    console.log("Form data above try: ", formData)
 
     try {
       const formDataCopy = { ...formData, items: flatItemsArray };
@@ -411,20 +395,16 @@ const GoodsReceiveNoteForm = () => {
         message.success(
           `Goods Receive Note successfully! Process ID: ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
-        console.log("FOrm data onfinisg try: ",formData)
-        console.log("locatorMaster data onfinisg try: ",locatorMaster)
+
       } else {
         // Display a generic success message if specific data is not available
         message.error("Failed to Goods Receive Note. Please try again later.");
-        console.log("FOrm data onfinisg else: ",formData)
-        console.log("locatorMaster data onfinisg else: ",locatorMaster)
+
       }
       // Handle success response here
     } catch (error) {
       console.log("Error saving Goods Receive Note:", error);
       message.error("Failed to Goods Receive Note. Please try again later.");
-      console.log("FOrm data onfinisg catch: ",formData)
-      console.log("locatorMaster data onfinisg catch: ",locatorMaster)
     }
   };
 
@@ -479,7 +459,6 @@ const GoodsReceiveNoteForm = () => {
 
   const handleLocatorChange = (fieldName, itemIndex, qtyListIndex, value) => {
     // if(quantity-remQuantity-prevVal + val)
-    console.log("ItemIndex: ", itemIndex, value);
     if (fieldName === "quantity") {
       const { remQuantity, quantity, qtyList } = formData.items[itemIndex];
       const val = value === "" ? 0 : parseInt(value);
@@ -510,9 +489,6 @@ const GoodsReceiveNoteForm = () => {
       }
     } else {
       setFormData((prevValues) => {
-        console.log("setForm data locatorId called");
-        console.log("Item array: ", prevValues.items, itemIndex, qtyListIndex)
-        console.log("Form data setForm", formData.items)
         const itemArray = [...prevValues.items];
         itemArray[itemIndex].qtyList[qtyListIndex].locatorId = parseInt(value);
 
@@ -523,8 +499,6 @@ const GoodsReceiveNoteForm = () => {
       });
     }
   };
-
-  console.log("Locator quantity: ", locatorQuantity);
 
   return (
     <div className="goods-receive-note-form-container">

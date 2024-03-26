@@ -51,11 +51,9 @@ export const handleSelectItem = (
     // setTableHook(false);
 
   // Check if the item is already selected
-  console.log("Sleect hook: ", selectHook)
-  console.log("Valur obj: ", valueObj)
+
   selectHook = selectHook || []
   const index = selectHook?.findIndex((item) => item.id === valueObj.id);
-  console.log("Index: ", index)
   if (index === -1) {
     setSelectHook((prevItems) => [...prevItems, valueObj]); // Update selected items state
     // add data to formData hook

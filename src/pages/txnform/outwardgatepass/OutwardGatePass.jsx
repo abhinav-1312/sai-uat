@@ -115,8 +115,6 @@ const OutwardGatePass = () => {
     ],
   });
 
-  console.log("FormData: ", formData);
-
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -206,19 +204,19 @@ const OutwardGatePass = () => {
     }
   };
   const fetchUserDetails = async () => {
+    const userCd = localStorage.getItem('userCd');
+    const password = localStorage.getItem('password');
     try {
       const apiUrl =
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/login/authenticate";
       const response = await axios.post(apiUrl, {
-        userCd: "dkg",
-        password: "string",
+        userCd,
+        password
       });
 
       const { responseData } = response.data;
-      console.log("Response data: ", responseData);
       const { organizationDetails, userDetails, locationDetails } = responseData;
       const currentDate = dayjs();
-      console.log("Fetched data:", organizationDetails);
       // Update form data with fetched values
       setFormData({
         crRegionalCenterCd: organizationDetails.id,
@@ -423,7 +421,6 @@ const OutwardGatePass = () => {
       const apiUrl =
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/saveOutwardGatePass";
       const response = await axios.post(apiUrl, formDataCopy);
-      console.log("API Response:", response.data);
       if (
         response.status === 200 &&
         response.data &&
@@ -496,8 +493,6 @@ const OutwardGatePass = () => {
       };
     });
   };
-
-  console.log("FOrm data: ", formData);
 
   return (
     <div className="goods-receive-note-form-container">

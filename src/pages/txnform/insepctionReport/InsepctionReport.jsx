@@ -113,7 +113,6 @@ const InsepctionReport = () => {
         ...updatedItems[index],
         [fieldName]: value === "" ? null : value,
       };
-      console.log("UPdate items: ", updatedItems)
       return {
         ...prevValues,
         items: updatedItems,
@@ -145,12 +144,16 @@ const InsepctionReport = () => {
   };
 
   const fetchUserDetails = async () => {
+
+    const userCd = localStorage.getItem('userCd');
+    const password = localStorage.getItem('password');
+
     try {
       const apiUrl =
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/login/authenticate";
       const response = await axios.post(apiUrl, {
-        userCd: "dkg",
-        password: "string",
+        userCd,
+        password
       });
 
       const { responseData } = response.data;
@@ -188,7 +191,6 @@ const InsepctionReport = () => {
       });
       const {responseData} = response.data;
       const { processData, itemList } = responseData;
-      console.log("API Response:", itemList);
       setFormData((prevFormData) => ({
         ...prevFormData,
 
@@ -281,7 +283,6 @@ const InsepctionReport = () => {
       const apiUrl =
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/saveInspectionReport";
       const response = await axios.post(apiUrl, formDataCopy);
-      console.log("Received values:", values);
       if (
         response.status === 200 &&
         response.data &&
@@ -315,10 +316,6 @@ const InsepctionReport = () => {
       // Handle error response here
     }
   };
-
-  console.log("BudgetHeadProcurement: ", formData.items?.[0].budgetHeadProcurement)
-  console.log("Quantity: ", formData.items?.[0].quantity)
-  console.log("Remarks: ", formData.items?.[0].remarks)
 
   const handleValuesChange = (_, allValues) => {
     setType(allValues.type);

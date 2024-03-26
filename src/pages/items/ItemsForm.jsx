@@ -31,16 +31,9 @@ const ItemsForm = ({
   disciplines,
 }) => {
   const [form] = Form.useForm();
-  // const [itemDescVal, setItemDescVal] = useState("");
-
-  // const handleSelectChange = (value) => {
-  //   console.log("Handle select change: ", value);
-  //   setItemDescVal(value);
-  // };
 
   const onFinish = (values) => {
     values = { ...values, itemMasterDesc: values.itemMasterDesc[0] };
-    // console.log("Values: ", values);
     onSubmit(values);
     form.resetFields();
   };
@@ -49,10 +42,10 @@ const ItemsForm = ({
   //   setItemDescVal(value)
   // }
   const onChange = (value) => {
-    console.log(`selected ${value}`);
+    // console.log(`selected ${value}`);
   };
   const onSearch = (value) => {
-    console.log("search:", value);
+    // console.log("search:", value);
   };
 
   const filterOption = (input, option) =>

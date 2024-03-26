@@ -11,7 +11,6 @@ const TransactionDetail = () => {
   const trnNo = urlArr[0];
 
   const arrayToConvert = urlArr.slice(1)
-  console.log("Array to convert: ", arrayToConvert)
   const objectFromArr = arrayToConvert.reduce((acc, key) => {
     acc[key] = true;
     return acc;
@@ -25,7 +24,6 @@ const TransactionDetail = () => {
   const [grnData, setGrnData] = useState(null)
   const [ogpData, setOgpData] = useState(null)
   const [rejectData, setRejectData] = useState(null)
-  console.log("Return data: ", igpData)
   const populateData = async () => {
     const trnDetailUrl =
       "https://sai-services.azurewebsites.net/sai-inv-mgmt/txns/getTxnDtls";

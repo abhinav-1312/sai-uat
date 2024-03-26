@@ -110,7 +110,6 @@ const IssueNote = () => {
   };
 
   const itemHandleChange = (fieldName, value, index) => {
-    console.log("Item handle change called")
     // setItemDetail((prevValues) => {
     //   const updatedItems = prevValues;
     //   updatedItems[index] = {
@@ -121,13 +120,11 @@ const IssueNote = () => {
     // });
 
     if(fieldName === 'quantity'){
-      console.log("fieldname quantity")
       // const formItemQuantity = formData.items[index]
       const {quantity: formItemQuantity, itemCode, locatorId:formDataLocId} = formData.items[index]
       const filteredItemObj = filteredData.find(obj => obj.itemMasterCd === itemCode && obj.qtyList.some(inObj=> inObj.locatorId === formDataLocId))
       const foundObj = filteredItemObj.qtyList.find(obj=> obj.locatorId === formDataLocId)
 
-      console.log("Filtred item obj", foundObj)
       if(value > foundObj.quantity){
         message.error(`Required quantity is greater than available quantity at Serial no: ${index+1}`)
         return
@@ -439,7 +436,6 @@ const IssueNote = () => {
 
     // Check if the item is already selected
     const index = selectedItems.findIndex((item) => item.id === record.id && item.locatorId === subRecord.locatorId);
-    console.log("Index: ", index)
     if (index === -1) {
       setSelectedItems((prevItems) => [...prevItems, {...recordCopy, locatorId: subRecord.locatorId}]); // Update selected items state
     //   // add data to formData hook
@@ -635,12 +631,14 @@ const IssueNote = () => {
   // ];
 
   const fetchUserDetails = async () => {
+    const userCd = localStorage.getItem('userCd');
+    const password = localStorage.getItem('password');
     try {
       const apiUrl =
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/login/authenticate";
       const response = await axios.post(apiUrl, {
-        userCd: "dkg",
-        password: "string",
+        userCd,
+        password
       });
 
       const { responseData } = response.data;
