@@ -19,8 +19,9 @@ const UserTable = ({ users, onEdit, onDelete }) => {
     { title: "DEPARTMENT", dataIndex: "department", key: "department" },
     { title: "EMAIL ID", dataIndex: "email", key: "email" },
     { title: "CONTACT NO.", dataIndex: "contactNo", key: "contactNo" },
-    { title: "USER STATUS", dataIndex: "userStatus", key: "userStatus" },
-    { title: "PRIVILEGES", dataIndex: "privileges", key: "privileges" },
+    { title: "END DATE", dataIndex: "endDate", key: "endDate" },
+    // { title: "USER STATUS", dataIndex: "userStatus", key: "userStatus" },
+    // { title: "PRIVILEGES", dataIndex: "privileges", key: "privileges" },
     {
       title: "Actions",
       key: "actions",

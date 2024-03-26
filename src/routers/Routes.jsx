@@ -1,5 +1,5 @@
 // routes.js
-import React from "react";
+import React, { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import Organization from "../pages/organization/Organization";
 import Location from "../pages/location/Location";
@@ -29,10 +29,13 @@ import Itemdemandsearch from "../components/Itemdemandsearch";
 import OHQ from "../pages/ohq/ohq";
 import TransactionSummary from "../pages/transactionSummary/TransactionSummary";
 import TransactionDetail from "../pages/transactionSummary/TransactionDetail";
+import SignIn from "../auth/Login";
 
 const RoutesComponent = () => {
-  return (
-    <Routes>
+  const userRole = localStorage.getItem("userRoles");
+
+  const adminRoutes = (
+    <>
       <Route path="/sub-organization" element={<Organization />} />
       <Route path="/location" element={<Location />} />
       <Route path="/items" element={<Items />} />
@@ -61,6 +64,70 @@ const RoutesComponent = () => {
       <Route path="/trans/acceptance" element={<AcceptanceNote />} />
       <Route path="/trans/rejection" element={<RejectionNote />} />
       {<Route path="/itemsearch" element={<Itemdemandsearch />} />}
+    </>
+  );
+
+  const inventoryManagerRoutes = (
+    <>
+      <Route path="/sub-organization" element={<Organization />} />
+      <Route path="/items" element={<Items />} />
+      <Route path="/ohq" element={<OHQ />} />
+      <Route path="/trnsummary" element={<TransactionSummary />} />
+      <Route path="/trnsummary/:trnno" element={<TransactionDetail />} />
+      <Route path="/locator" element={<Locator />} />
+      <Route path="/uom" element={<UOM />} />
+      <Route path="/trans/grn" element={<GoodsReceiveNoteForm />} />
+      <Route path="/trans/demand" element={<DemandNoteForm />} />
+      <Route path="/trans/ird-demand" element={<IrdDemand />} />
+      <Route path="/trans/issue" element={<IssueNote />} />
+      <Route path="/trans/outward" element={<OutwardGatePass />} />
+      <Route path="/trans/inward" element={<InwardGatePass />} />
+      <Route path="/trans/return" element={<RetunNote />} />
+      <Route path="/trans/inspection" element={<InsepctionReport />} />
+      <Route path="/trans/inspectionNote" element={<InspectionNote />} />
+      <Route path="/trans/acceptance" element={<AcceptanceNote />} />
+      <Route path="/trans/rejection" element={<RejectionNote />} />
+      {<Route path="/itemsearch" element={<Itemdemandsearch />} />}
+    </>
+  );
+
+  const qualityManagerRoutes = (
+    <>
+      <Route path="/ohq" element={<OHQ />} />
+      <Route path="/trans/grn" element={<GoodsReceiveNoteForm />} />
+      <Route path="/trans/demand" element={<DemandNoteForm />} />
+      <Route path="/trans/ird-demand" element={<IrdDemand />} />
+      <Route path="/trans/issue" element={<IssueNote />} />
+      <Route path="/trans/outward" element={<OutwardGatePass />} />
+      <Route path="/trans/inward" element={<InwardGatePass />} />
+      <Route path="/trans/return" element={<RetunNote />} />
+      <Route path="/trans/inspection" element={<InsepctionReport />} />
+      <Route path="/trans/inspectionNote" element={<InspectionNote />} />
+      <Route path="/trans/acceptance" element={<AcceptanceNote />} />
+      <Route path="/trans/rejection" element={<RejectionNote />} />
+    </>
+  );
+
+  const itemAdminRoutes = (
+    <>
+      <Route path="/items" element={<Items />} />
+    </>
+  );
+
+  const vendorAdminRoutes = (
+    <>
+      <Route path="/Vendor" element={<Vendor />} />
+      <Route path="/trans/inward" element={<InwardGatePass />} />
+    </>
+  );
+
+  return (
+    <Routes>
+      {userRole === "admin" && adminRoutes}
+      {userRole === "InventoryManager" && inventoryManagerRoutes}
+      {userRole === "QualityManager" && qualityManagerRoutes}
+      {userRole === "ItemAdmin" && itemAdminRoutes}
+      {userRole === "VendorAdmin" && vendorAdminRoutes}
     </Routes>
   );
 };
