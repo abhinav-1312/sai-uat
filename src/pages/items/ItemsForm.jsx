@@ -1,5 +1,5 @@
 // ItemsForm.js
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Form,
   Input,
@@ -10,6 +10,7 @@ import {
   Col,
   InputNumber,
 } from "antd";
+import axios from "axios";
 
 const { Option } = Select;
 
@@ -31,6 +32,8 @@ const ItemsForm = ({
   disciplines,
 }) => {
   const [form] = Form.useForm();
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [subCategoryOptions, setSubCategoryOptions] = useState([]);
   // const [itemDescVal, setItemDescVal] = useState("");
 
   // const handleSelectChange = (value) => {
@@ -38,6 +41,35 @@ const ItemsForm = ({
   //   setItemDescVal(value);
   // };
 
+  const handleCategoryChange = (value) => {
+    setSelectedCategory(value);
+  };
+
+  useEffect(() => {
+    if (selectedCategory) {
+      const fetchSubCategories = async () => {
+        try {
+          const response = await axios.post(
+            "https://sai-services.azurewebsites.net/sai-inv-mgmt/genparam/getAllSubCategoriesByDtls",
+            {
+              categoryCode: selectedCategory,
+            }
+          );
+          const data = response.data.responseData;
+          // Assuming the response contains an array of subcategory options
+          const subcategoryOptions = data.map((subcategory) => ({
+            key: subcategory.subCategoryCode,
+            value: subcategory.subCategoryDesc,
+          }));
+          setSubCategoryOptions(subcategoryOptions);
+        } catch (error) {
+          console.error("Error fetching subcategories:", error);
+        }
+      };
+
+      fetchSubCategories();
+    }
+  }, [selectedCategory]);
   const onFinish = (values) => {
     values = { ...values, itemMasterDesc: values.itemMasterDesc[0] };
     // console.log("Values: ", values);
@@ -247,11 +279,11 @@ const ItemsForm = ({
             label="Category"
             rules={[{ required: true, message: "Please enter Category" }]}
           >
-            <Select>
-              {Object.entries(categories).map(([key, value]) => {
+            <Select onChange={handleCategoryChange}>
+              {categories.map((category, index) => {
                 return (
-                  <Option key={key} value={key}>
-                    {value}
+                  <Option key={index} value={category.paramVal}>
+                    {category.paramDesc}
                   </Option>
                 );
               })}
@@ -267,14 +299,12 @@ const ItemsForm = ({
             label="SUB-CATEGORY"
             rules={[{ required: true, message: "Please enter SUB-CATEGORY" }]}
           >
-            <Select>
-              {Object.entries(subCategories).map(([key, value]) => {
-                return (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
-                );
-              })}
+            <Select disabled={!selectedCategory}>
+              {subCategoryOptions.map((option) => (
+                <Option key={option.key} value={option.key}>
+                  {option.value}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
         </Col>
