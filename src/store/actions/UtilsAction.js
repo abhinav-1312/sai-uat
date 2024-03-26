@@ -14,7 +14,6 @@ export const authenticateUser = (userCd, password) => async (dispatch) => {
       }),
     });
     const data = await response.json();
-console.log(data);
     if (response.ok) {
       const { userDetails, organizationDetails } = data.responseData;
       dispatch(setUserDetails(userDetails));

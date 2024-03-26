@@ -91,8 +91,6 @@ const TransactionSummary = () => {
     }
   }
 
-  console.log("Show txn: ", showTxn)
-
   const [itemData, setItemData] = useState([])
   const [filteredData, setFilteredData] = useState([])
 
@@ -120,11 +118,9 @@ const TransactionSummary = () => {
       if(writingTxnType){
         delete formDataCopy.itemCode
       }
-      console.log("Form data copy: ", formDataCopy)
 
       const {data} = await axios.post("https://sai-services.azurewebsites.net/sai-inv-mgmt/txns/getTxnSummary", formDataCopy )
       const {responseData} = data
-      console.log("resposnedata: ", responseData)
       setFilteredData([...responseData])
     }catch(error){
       message.error("Some error occured. Please try again.");

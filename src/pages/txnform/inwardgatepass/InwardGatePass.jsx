@@ -109,7 +109,6 @@ const InwardGatePass = () => {
       const {message, statusCode} = responseStatus
 
       if(message === "Success" && statusCode === 200 && responseData !== null){
-        console.log("INSIDEEEEE")
         setFormData(prev=>{
           return{
             ...prev,
@@ -126,8 +125,6 @@ const InwardGatePass = () => {
 
   }
 
-  console.log("FORMDATAAAA: ", formData.crAddress)
-
   const handleChange = (fieldName, value) => {
     if(fieldName === "supplierCode"){
       searchVendor(value)
@@ -140,15 +137,14 @@ const InwardGatePass = () => {
     }));
   };
 
-  const handleSelectItem = (record, subRecord) => {
+  const handleSelectItem = (record) => {
     setTableOpen(false);
-
     const recordCopy = record // delete qtyList array from record
 
     // Check if the item is already selected
-    const index = selectedItems.findIndex((item) => item.id === record.id && item.locatorId === subRecord.locatorId);
+    const index = selectedItems.findIndex((item) => item.id === record.id);
     if (index === -1) {
-      setSelectedItems((prevItems) => [...prevItems, {...recordCopy, locatorId: subRecord.locatorId}]); // Update selected items state
+      setSelectedItems((prevItems) => [...prevItems, {...recordCopy}]); // Update selected items state
     //   // add data to formData hook
     //   // setItemDetail((prevData) => {
     //   //   const newItem = {
@@ -172,17 +168,17 @@ const InwardGatePass = () => {
       setFormData(prevValues=>{
         const newItem = {
           srNo: prevValues.items?.length ? prevValues.items.length + 1 : 1,
-          itemCode: record.itemMasterCd,
+          itemCode: record?.itemMasterCd,
           itemId: record.id,
           itemDesc: record.itemMasterDesc,
           uom: record.uomId,
-          uomDesc: record.uomDtls.baseUom,
+          uomDesc: record?.uomDtls?.baseUom || "NA",
           quantity: 1,
           noOfDays: 1,
           conditionOfGoods: "",
           budgetHeadProcurement: "",
-          locatorId: subRecord.locatorId,
-          locatorDesc: subRecord.locatorDesc,
+          // locatorId: subRecord.locatorId,
+          // locatorDesc: subRecord.locatorDesc,
           remarks: "",
           // qtyList: record.qtyList
         }
@@ -216,7 +212,7 @@ const InwardGatePass = () => {
             key: "quantity"
           },
           {
-            title: "ACTION",
+            title: "ACTIONS",
             fixed: "right",
             render: (_, record) => (
               <Button
@@ -255,7 +251,7 @@ const InwardGatePass = () => {
       title: "UOM",
       dataIndex: "uomDtls",
       key: "uomDtls",
-      render: (uomDtls) => uomDtls.baseUom
+      render: (uomDtls) => uomDtls?.baseUom
     },
     {
       title: "LOCATION",
@@ -336,12 +332,24 @@ const InwardGatePass = () => {
     { title: "RE ORDER POINT", dataIndex: "reOrderPoint", key: "reOrderPoint" },
     { title: "STATUS", dataIndex: "status", key: "status" },
     { title: "CREATE DATE", dataIndex: "endDate", key: "endDate" },
+
     {
-        title: "LOCATOR QUANTITY DETAILS",
-        dataIndex: "qtyList",
-        key: "qtyList",
-        render: (locatorQuantity, rowRecord) => renderLocatorISN(locatorQuantity, rowRecord)
-    },
+      title: "ACTIONS",
+      fixed: "right",
+      render: (_, record) => (
+        <Button type={selectedItems.some(item => item.id === record.id) ? "default" : "primary"}  onClick={()=> handleSelectItem(record)}>
+          {
+            selectedItems.some(item => item.id === record.id) ? "Deselect" : "Select"
+          }
+          </Button>
+      )
+    }
+    // {
+    //     title: "LOCATOR QUANTITY DETAILS",
+    //     dataIndex: "qtyList",
+    //     key: "qtyList",
+    //     render: (locatorQuantity, rowRecord) => renderLocatorISN(locatorQuantity, rowRecord)
+    // },
 
 
     // {
@@ -382,6 +390,8 @@ const InwardGatePass = () => {
       };
     });
   };
+
+  // tryFun()
 
   const mergeItemMasterAndOhq = (itemMasterArr, ohqArr) => {
     return itemMasterArr.map(item=>{
@@ -454,12 +464,14 @@ const InwardGatePass = () => {
     }
   };
   const fetchUserDetails = async () => {
+    const userCd = localStorage.getItem('userCd');
+    const password = localStorage.getItem('password');
     try {
       const apiUrl =
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/login/authenticate";
       const response = await axios.post(apiUrl, {
-        userCd: "dkg",
-        password: "string",
+        userCd,
+        password,
       });
 
       const { responseData } = response.data;
@@ -956,12 +968,12 @@ const InwardGatePass = () => {
                         />
                       </Form.Item>
 
-                      <Form.Item label="LOCATOR DESCRIPITON">
+                      {/* <Form.Item label="LOCATOR DESCRIPITON">
                         <Input
                           value={item.locatorDesc}
                           readOnly
                         />
-                      </Form.Item>
+                      </Form.Item> */}
 
                       <Form.Item label="QUANTITY">
                         <Input

@@ -165,7 +165,6 @@ const ItemsPage = () => {
             id: item.id,
             itemCode: item.itemMasterCd,
             itemDescription: item.itemMasterDesc,
-            // uom: uomResponse?.uomName || "default UOM",
             uom: item.uomDtls.uomName,
             // quantityOnHand: item.quantity,
             // location: locationResponse?.locationName,

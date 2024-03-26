@@ -48,7 +48,6 @@ const LocationPage = ({
     // Fetch data from Redux store on component mount
     fetchLocations();
   }, [fetchLocations]);
-  console.log(editingLocation);
 
   const getLocation = async (id) => {
     const itemResponse = await apiRequest(

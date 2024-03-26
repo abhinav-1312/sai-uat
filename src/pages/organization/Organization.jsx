@@ -26,7 +26,6 @@ const OrganizationPage = ({
   }, [fetchOrganizations]);
 
   const handleEdit = (organization) => {
-    console.log(organization);
     setEditingOrganization(organization);
     setVisible(true);
   };

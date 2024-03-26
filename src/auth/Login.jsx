@@ -31,7 +31,6 @@ const SignIn = () => {
       localStorage.setItem("password", values.password);
 
       setIsLoggedIn(true);
-      console.log(isLoggedIn);
 
       if (userType === "11") {
         const userRoles = "admin";

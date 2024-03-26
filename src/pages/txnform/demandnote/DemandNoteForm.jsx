@@ -1,8 +1,10 @@
 // DemandNoteForm.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import dayjs from 'dayjs';
 import { Form, Input, Button, Row, Col, DatePicker, AutoComplete, Select } from 'antd';
 import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import axios from 'axios';
 import moment from 'moment';
 const { TextArea } = Input;
@@ -10,6 +12,7 @@ const dateFormat = 'DD/MM/YYYY';
 const { Option } = Select;
 
 const DemandNoteForm = () => {
+  const formRef = useRef(null)
   const [itemData, setItemData] = useState([]);
   const [formData, setFormData] = useState({
     regionalCenterCode: '',
@@ -23,6 +26,34 @@ const DemandNoteForm = () => {
     fetchData();
   }, []);
 
+
+  const printOrSaveAsPDF = () => {
+    const formElement = document.getElementById("formContainer")
+
+    if(formElement){
+      html2canvas(formElement
+      ).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF();
+        pdf.addImage(imgData, 'PNG', 0, 0);
+        
+        // Check if user wants to print or save
+        const printOrSave = window.confirm('Do you want to print the component? If not, the component will be saved as a PDF.');
+        
+        if (printOrSave) {
+          // Print the document if user chooses to print
+          window.print();
+        } else {
+          // Save the PDF with a name
+          pdf.save('component.pdf');
+        }
+      });
+    }
+  };
+
+
+
+
   const fetchItemData = async () => {
     try {
       const apiUrl = 'https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster';
@@ -35,7 +66,6 @@ const DemandNoteForm = () => {
   };
 
   const fetchData = async () => {
-    console.log("Fetch data called")
     try {
       const apiUrl = 'https://sai-services.azurewebsites.net/sai-inv-mgmt/login/authenticate';
       const response = await axios.post(apiUrl, {
@@ -46,7 +76,6 @@ const DemandNoteForm = () => {
       const { responseData } = response.data;
       const { organizationDetails } = responseData;
       const { userDetails } = responseData;
-      console.log('Fetched data:', responseData);
       const {locationDetails} = responseData
       // Update form data with fetched values
       setFormData({
@@ -100,8 +129,6 @@ const DemandNoteForm = () => {
           'Content-Type': 'application/json'
         }
       });
-
-      console.log("Form data submit karke: ", formData)
       // Handle successful response here, if needed
     } catch (error) {
       console.error('There was a problem with the API call:', error);
@@ -109,12 +136,36 @@ const DemandNoteForm = () => {
     }
   };
 
+  const printQRCode = () => {
+    const doc = new jsPDF();
+    const qrCodeImgData = document
+      .getElementById('form')
+      .toDataURL('image/png');
+    doc.addImage(qrCodeImgData, 'PNG', 10, 10, 50, 50); // add the image to the PDF
+    doc.output('dataurlnewwindow');
+    doc.autoPrint();
+  };
+
+  const printForm = () => {
+    const formElement = document.querySelector('.goods-receive-note-form');
+
+    if (formElement) {
+      html2canvas(formElement)
+        .then(canvas => {
+          const imgData = canvas.toDataURL('image/png');
+          const pdf = new jsPDF();
+          pdf.addImage(imgData, 'PNG', 0, 0);
+          pdf.save('form.pdf');
+        });
+    }
+
+  };
 
   return (
-    <div className="goods-receive-note-form-container">
+    <div className="goods-receive-note-form-container" id="formContainer" style={{ width: '100%', height: '100%', overflow: 'auto' }}>
       <h1>Sports Authority of India - Demand Note</h1>
 
-      <Form onFinish={onFinish} className="goods-receive-note-form" layout="vertical">
+      <Form ref={formRef} onFinish={onFinish} className="goods-receive-note-form" layout="vertical">
         <Row>
           <Col span={6} offset={18}>
             <Form.Item label="DATE" name="date">

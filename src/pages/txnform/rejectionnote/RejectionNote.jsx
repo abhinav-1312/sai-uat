@@ -145,12 +145,14 @@ const RejectionNote = () => {
   };
 
   const fetchUserDetails = async () => {
+    const userCd = localStorage.getItem('userCd');
+    const password = localStorage.getItem('password');
     try {
       const apiUrl =
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/login/authenticate";
       const response = await axios.post(apiUrl, {
-        userCd: "dkg",
-        password: "string",
+        userCd,
+        password
       });
 
       const { responseData } = response.data;
@@ -186,7 +188,6 @@ const RejectionNote = () => {
       });
       const responseData = response.data.responseData;
       const { processData, itemList } = responseData;
-      console.log("API Response:", response.data);
       setFormData((prevFormData) => ({
         ...prevFormData,
 
