@@ -15,6 +15,7 @@ import {
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
+import FormInputItem from "../../../components/FormInputItem";
 const dateFormat = "DD/MM/YYYY";
 
 // Hello
@@ -362,12 +363,13 @@ const RetunNote = () => {
           </Col>
           <Col span={6}></Col>
           <Col span={6} offset={12}>
-            <Form.Item label="RETURN NOTE NO." name="returnNoteNo">
+            {/* <Form.Item label="RETURN NOTE NO." name="returnNoteNo">
               <Input
                 disabled
                 onChange={(e) => handleChange("returnNoteNo", e.target.value)}
               />
-            </Form.Item>
+            </Form.Item> */}
+            <FormInputItem label="RETURN NOTE NO." value={formData.returnNoteNo==="string" ? "not defined" : formData.returnNoteNo} />
           </Col>
         </Row>
 

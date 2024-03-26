@@ -368,14 +368,16 @@ const InspectionNote = () => {
             </Form.Item>
           </Col>
           <Col span={6} offset={12}>
-            <Form.Item label="Inspection Note NO." name="inspectionRptNo">
+            {/* <Form.Item label="Inspection Note NO." name="inspectionRptNo">
               <Input
                 disabled
                 onChange={(e) =>
                   handleChange("inspectionRptNo", e.target.value)
                 }
               ></Input>
-            </Form.Item>
+            </Form.Item> */}
+
+            <FormInputItem label = "Inspection Note No." value={formData.inspectionRptNo === "string" ? "not defined" : formData.inspectionRptNo} />
           </Col>
         </Row>
 

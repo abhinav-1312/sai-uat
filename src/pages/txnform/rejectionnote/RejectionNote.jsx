@@ -97,10 +97,10 @@ const RejectionNote = () => {
       updatedItems[index] = {
         ...updatedItems[index],
         [fieldName]: value === "" ? null : value,
-        uom: "string",
-        conditionOfGoods: "string", // Hard-coded data
-        budgetHeadProcurement: "string", // Hard-coded data
-        locatorId: "string", // Hard-coded data
+        // uom: "string",
+        // conditionOfGoods: "string", // Hard-coded data
+        // budgetHeadProcurement: "string", // Hard-coded data
+        // locatorId: "string", // Hard-coded data
       };
       return {
         ...prevValues,
@@ -211,7 +211,7 @@ const RejectionNote = () => {
           itemCode: item.itemCode,
           itemDesc: item.itemDesc,
           uom: item?.uom,
-          quantity: item.quantity,
+          quantity: item.rejectedQuantity,
           noOfDays: item.requiredDays,
           remarks: item.remarks,
           conditionOfGoods: item.conditionOfGoods,
@@ -282,8 +282,11 @@ const RejectionNote = () => {
         // Access the specific success message data if available
         const { processId, processType, subProcessId } =
           response.data.responseData;
-        setFormData({
-          acptRejNoteNo: processId,
+        setFormData(prev=>{
+          return{
+            ...prev,
+            acptRejNoteNo: processId,
+          }
         });
         setSuccessMessage(
           `Rejection note saved successfully! Issue Note No : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
@@ -356,12 +359,14 @@ const RejectionNote = () => {
             </Form.Item>
           </Col>
           <Col span={6} offset={12}>
-            <Form.Item label="REJECTION NOTE NO ." name="acptRejNoteNo">
+            {/* <Form.Item label="REJECTION NOTE NO ." name="acptRejNoteNo">
               <Input
                 disabled
                 onChange={(e) => handleChange("acptRejNoteNo", e.target.value)}
               />
-            </Form.Item>
+            </Form.Item> */}
+
+            <FormInputItem label="REJECTION NOTE NO." value={formData.acptRejNoteNo === "string" ? "not defined" : formData.acptRejNoteNo} />
           </Col>
         </Row>
 
@@ -872,7 +877,7 @@ const RejectionNote = () => {
         </div>
         <Modal
           title="Rejection Note saved successfully"
-          visible={isModalOpen}
+          open={isModalOpen}
           onOk={handleOk}
         >
           {successMessage && <p>{successMessage}</p>}

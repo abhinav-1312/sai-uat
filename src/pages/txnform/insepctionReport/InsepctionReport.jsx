@@ -70,7 +70,7 @@ const InsepctionReport = () => {
     address: "",
     contactNo: "",
     dateOfDeliveryDate: "",
-    dateOfInspectionDate: "",
+    dateOfInspectionDate: "20/12/2026",
     note: "",
     conditionOfGoods: "",
     userId: "",
@@ -107,7 +107,6 @@ const InsepctionReport = () => {
 
 
   const itemHandleChange = (fieldName, value, index) => {
-    console.log("FIELDNAME: ", fieldName, value, index)
     setFormData((prevValues) => {
       const updatedItems = [...(prevValues.items || [])];
       updatedItems[index] = {
@@ -172,6 +171,7 @@ const InsepctionReport = () => {
         approvedDate: currentDate.format(dateFormat),
         inspectionRptDate: currentDate.format(dateFormat),
         inspectionRptNo: "string",
+        dateOfInspectionDate: "20/12/2026" // bogus data since field is not required in this form, and form not getting submitted with it being empty
       });
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -365,17 +365,7 @@ const InsepctionReport = () => {
             <FormDropdownItem label="TYPE" name="type" onChange={handleChange} dropdownArray={typeArray} valueField="valueField" visibleField="visibleField" />
           </Col>
           <Col span={6} offset={12}>
-            <Form.Item
-              label={Type !== "PO" ? "INSEPCTION REPORT NO." : "MIS NO"}
-              name="inspectionRptNo"
-            >
-              <Input
-                disabled
-                onChange={(e) =>
-                  handleChange("inspectionRptNo", e.target.value)
-                }
-              />
-            </Form.Item>
+            <FormInputItem label={Type !== "PO" ? "INSEPCTION REPORT NO." : "MIS NO"}  value={formData.inspectionRptNo !== "string" ? formData.inspectionRptNo : "not defined"} readOnly={true} />
           </Col>
         </Row>
 
@@ -400,7 +390,7 @@ const InsepctionReport = () => {
               <> 
                 <FormInputItem label="SUPPLIER CODE :" value={formData.supplierCd} />
                 <FormInputItem label="SUPPLIER NAME :" value={formData.supplierName} />
-                <FormInputItem label="ADDRESS :" value={formData.supplierAddress || "Not defined"} />
+                <FormInputItem label="ADDRESS :" value={formData.crAddress || "Not defined"} />
               </>
             )}
 

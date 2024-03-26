@@ -48,6 +48,15 @@ const ItemsForm = ({
   // const handleInputChange = (value) => {
   //   setItemDescVal(value)
   // }
+  const onChange = (value) => {
+    console.log(`selected ${value}`);
+  };
+  const onSearch = (value) => {
+    console.log("search:", value);
+  };
+
+  const filterOption = (input, option) =>
+    (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
 
   return (
     <Form
@@ -313,10 +322,10 @@ const ItemsForm = ({
             rules={[{ required: true, message: "Please enter Brand " }]}
           >
             <Select>
-              {Object.entries(brands).map(([key, value]) => {
+              {brands.map((brand, index) => {
                 return (
-                  <Option key={key} value={key}>
-                    {value}
+                  <Option key={index} value={brand.paramVal}>
+                    {brand.paramDesc}
                   </Option>
                 );
               })}
@@ -330,10 +339,10 @@ const ItemsForm = ({
             rules={[{ required: true, message: "Please enter Size" }]}
           >
             <Select>
-              {Object.entries(sizes).map(([key, value]) => {
+              {sizes.map((size, index) => {
                 return (
-                  <Option key={key} value={key}>
-                    {value}
+                  <Option key={index} value={size.paramVal}>
+                    {size.paramDesc}
                   </Option>
                 );
               })}
@@ -347,10 +356,10 @@ const ItemsForm = ({
             rules={[{ required: true, message: "Please enter Colour" }]}
           >
             <Select>
-              {Object.entries(colors).map(([key, value]) => {
+              {colors.map((color, index) => {
                 return (
-                  <Option key={key} value={key}>
-                    {value}
+                  <Option key={index} value={color.paramVal}>
+                    {color.paramDesc}
                   </Option>
                 );
               })}
@@ -401,10 +410,10 @@ const ItemsForm = ({
             rules={[{ required: true, message: "Please enter Category" }]}
           >
             <Select>
-              {Object.entries(usageCategories).map(([key, value]) => {
+              {usageCategories.map((usageCategory, index) => {
                 return (
-                  <Option key={key} value={key}>
-                    {value}
+                  <Option key={index} value={usageCategory.paramVal}>
+                    {usageCategory.paramDesc}
                   </Option>
                 );
               })}

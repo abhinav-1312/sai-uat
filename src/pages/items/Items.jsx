@@ -4,7 +4,14 @@ import { Button, Modal, Input } from "antd";
 import ItemsTable from "./ItemsTable";
 import ItemsForm from "./ItemsForm";
 import dayjs from "dayjs";
-import { itemNames, types, allDisciplines, subCategories, categories, sizes, usageCategories, brands, colors } from "./KeyValueMapping";
+import {
+  itemNames,
+  types,
+  allDisciplines,
+  subCategories,
+  categories,
+  usageCategories,
+} from "./KeyValueMapping";
 
 const apiRequest = async (url, method, requestData) => {
   const options = {
@@ -32,105 +39,15 @@ const ItemsPage = () => {
   const [visible, setVisible] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [searchText, setSearchText] = useState("");
-
+  const [brands, setBrands] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const [uoms, setUoms] = useState([]);
   const [locations, setLocations] = useState([]);
   const [locators, setLocators] = useState([]);
   const [vendors, setVendors] = useState([]);
-
-
-  // const itemNames = {
-  //   "001": "Arrow Pullar",
-  //   "002": "Arrow Liner",
-  //   "003": "Arm Guard",
-  //   "004": "Arrow Rest Plastic",
-  //   "005": "Beiter Clicker",
-  //   "006": "Bow Guage",
-  // };
-
-  // // const types = [{ id: "9", value: "NA" }];
-  // const types = {
-  //   9: "NA",
-  //   1: "Track",
-  //   2: "Field",
-
-  // };
-
-  // const disciplines = {
-  //   "01": "Archery",
-  //   11: "Common Use",
-  //   10: "Wrestling",
-  // };
-
-  // // const subCategories = [
-  // //   { id: "1", value: "Games" },
-  // //   { id: "2", value: "Athletics" },
-  // //   { id: "9", value: "NA" },
-  // // ];
-  // const subCategories = {
-  //   2: "Games",
-  //   1: "Athletics",
-  //   9: "NA",
-  // };
-
-  // // const categories = [
-  // //   { id: "1", value: "FOP" },
-  // //   { id: "2", value: "NON FOP" },
-  // // ];
-  // const categories = {
-  //   1: "FOP",
-  //   2: "NON FOP",
-  // };
-
-  // // const sizes = [
-  // //   { id: "001", value: "Normal" },
-  // //   { id: "003", value: "Small" },
-  // // ];
-  // const sizes = {
-  //   "001": "Normal",
-  //   "002": "0",
-  //   "003": "25",
-  // };
-
-  // // const usageCategories = [
-  // //   { id: "2", value: "Non consumable" },
-  // //   { id: "1", value: "Consumable" },
-  // // ];
-  // const usageCategories = {
-  //   2: "Non consumable",
-  //   1: "Consumable",
-  // };
-
-  // // const brands = [
-  // //   { id: "001", value: "Fivics" },
-  // //   { id: "002", value: "Beiter" },
-  // //   { id: "003", value: "Fivis" },
-  // //   { id: "004", value: "Hoyt" },
-  // //   { id: "005", value: "Indegeneous" },
-  // // ];
-
-  // const brands = {
-  //   "001": "Fivics",
-  //   "002": "Beiter",
-  //   "003": "Fivis",
-  //   "004": "Hoyt",
-  //   "005": "Indegeneous",
-  // };
-
-  // // const colors = [
-  // //   { id: "01", value: "Black" },
-  // //   { id: "02", value: "Silver" },
-  // //   { id: "03", value: "Multicoloured" },
-  // //   { id: "04", value: "White" },
-  // // ];
-  // const colors = {
-  //   "01": "Black",
-  //   "02": "Silver",
-  //   "03": "Multicoloured",
-  //   "04": "White",
-  //   "07": "Yellow",
-  // };
+  const [sizes, setSizes] = useState([]);
+  const [colors, setColors] = useState([]);
+  const [usageCategories, setUsageCategories] = useState([]);
 
   const getUoms = async () => {
     const uomResponse = await apiRequest(
@@ -139,6 +56,38 @@ const ItemsPage = () => {
     );
 
     setUoms(uomResponse);
+  };
+  const getBrands = async () => {
+    const brandsResponse = await apiRequest(
+      "https://sai-services.azurewebsites.net/sai-inv-mgmt/genparam/getAllBrands",
+      "GET"
+    );
+
+    setBrands(brandsResponse);
+  };
+  const getSizes = async () => {
+    const sizesResponse = await apiRequest(
+      "https://sai-services.azurewebsites.net/sai-inv-mgmt/genparam/getAllSizes",
+      "GET"
+    );
+
+    setSizes(sizesResponse);
+  };
+  const getColors = async () => {
+    const colorsResponse = await apiRequest(
+      "https://sai-services.azurewebsites.net/sai-inv-mgmt/genparam/getAllColors",
+      "GET"
+    );
+
+    setColors(colorsResponse);
+  };
+  const getUsageCategories = async () => {
+    const usageCategoriesRespone = await apiRequest(
+      "https://sai-services.azurewebsites.net/sai-inv-mgmt/genparam/getAllUsageCategories",
+      "GET"
+    );
+
+    setUsageCategories(usageCategoriesRespone);
   };
 
   const getLocations = async () => {
@@ -171,7 +120,7 @@ const ItemsPage = () => {
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster"
       );
 
-      const {responseData}  = await response.json();
+      const { responseData } = await response.json();
 
       const itemList = await Promise.all(
         responseData.map(async (item) => {
@@ -232,7 +181,7 @@ const ItemsPage = () => {
             colour: item.colorDesc,
             size: item.sizeDesc,
             usageCategory: item.usageCategoryDesc,
-            reOrderPoint: item.reOrderPoint? item.reOrderPoint : "null",
+            reOrderPoint: item.reOrderPoint ? item.reOrderPoint : "null",
             minStockLevel: item.minStockLevel,
             maxStockLevel: item.maxStockLevel,
             status: item.status === "A" ? "Active" : "InActive",
@@ -240,7 +189,7 @@ const ItemsPage = () => {
           };
         })
       );
-      
+
       setItems(itemList);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -253,6 +202,10 @@ const ItemsPage = () => {
     getLocators();
     getVendors();
     getItems();
+    getBrands();
+    getSizes();
+    getColors();
+    getUsageCategories();
   };
 
   useEffect(() => {
@@ -289,7 +242,7 @@ const ItemsPage = () => {
 
   const handleDelete = async (itemId) => {
     // Implement delete logic here
-      await apiRequest(
+    await apiRequest(
       "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/deleteItemMaster",
       "POST",
       {
@@ -303,29 +256,30 @@ const ItemsPage = () => {
   const generate3DigitRandString = () => {
     // Generate a random number between 0 and 999 (inclusive)
     const randomNumber = Math.floor(Math.random() * 1000);
-  
+
     // Convert the random number to a string
     let randomNumberString = randomNumber.toString();
-  
+
     // Pad the string with leading zeros if necessary
     if (randomNumberString.length < 3) {
-      randomNumberString = randomNumberString.padStart(3, '0');
+      randomNumberString = randomNumberString.padStart(3, "0");
     }
-  
+
     return randomNumberString;
-  }
-  
+  };
 
   const handleFormSubmit = async (values) => {
     setEditingItem(null);
     const tempItem = {
       ...values,
-      
+
       uomId: Number(values.uomId),
       createUserId: "12345",
       endDate: values.endDate.format("DD/MM/YYYY"),
-      itemName: itemNames[values.itemMasterDesc] ? values.itemMasterDesc : generate3DigitRandString(),
-      itemMasterDesc: itemNames[values.itemMasterDesc] || values.itemMasterDesc
+      itemName: itemNames[values.itemMasterDesc]
+        ? values.itemMasterDesc
+        : generate3DigitRandString(),
+      itemMasterDesc: itemNames[values.itemMasterDesc] || values.itemMasterDesc,
     };
 
     if (!tempItem.itemMasterCd) {
