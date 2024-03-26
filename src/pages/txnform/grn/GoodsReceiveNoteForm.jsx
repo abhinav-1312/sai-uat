@@ -310,7 +310,6 @@ const GoodsReceiveNoteForm = () => {
   console.log("FormData: ", formData);
 
   const onFinish = async (values) => {
-    console.log("Form data abve foud", formData)
     let found = false
     const tempFormData = deepClone(formData)
     tempFormData.items.forEach(item=>{
@@ -562,12 +561,9 @@ const GoodsReceiveNoteForm = () => {
             </Form.Item>
           </Col>
           <Col span={6} offset={12}>
-            <Form.Item label="GRN NO." name="grnNo">
-              <Input
-                disabled
-                onChange={(e) => handleChange("grnNo", e.target.value)}
-              />
-            </Form.Item>
+    
+
+            <FormInputItem label="GRN No." value={formData.grnNo === "string" ? "not defined" : formData.grnNo} />
           </Col>
         </Row>
 

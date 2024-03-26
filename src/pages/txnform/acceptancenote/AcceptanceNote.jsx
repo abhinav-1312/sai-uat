@@ -357,12 +357,7 @@ const AcceptanceNote = () => {
             </Form.Item>
           </Col>
           <Col span={6} offset={12}>
-            <Form.Item label="ACCEPTANCE NOTE NO." name="acptRejNoteNo">
-              <Input
-                disabled
-                onChange={(e) => handleChange("acptRejNoteNo", e.target.value)}
-              />
-            </Form.Item>
+            <FormInputItem label="ACCEPTANCE NOTE NO." value={formData.acptRejNoteNo === "string" ? "not defined" : formData.acptRejNoteNo} />
           </Col>
         </Row>
 

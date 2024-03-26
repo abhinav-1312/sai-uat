@@ -28,9 +28,32 @@ import {
 import dayjs from "dayjs";
 import axios from "axios";
 import moment from "moment";
+import FormInputItem from "../../../components/FormInputItem";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Text, Title } = Typography;
+
+const convertEpochToDateString = (epochTime) => {
+  // Convert epoch time to milliseconds
+  let date = new Date(epochTime);
+
+  // Extract the day, month, and year from the Date object
+  let day = date.getDate();
+  let month = date.getMonth() + 1; // Month starts from 0
+  let year = date.getFullYear();
+
+  // Add leading zeros if needed
+  if (day < 10) {
+    day = '0' + day;
+  }
+  if (month < 10) {
+    month = '0' + month;
+  }
+
+  // Return the date string in DD/MM/YYYY format
+  return `${day}/${month}/${year}`;
+}
+
 
 const OutwardGatePass = () => {
   const [Type, setType] = useState("IRP");
@@ -69,7 +92,7 @@ const OutwardGatePass = () => {
     dateOfDelivery: "",
     modeOfDelivery: "",
     challanNo: "",
-    supplierCode: "",
+    supplierCd: "",
     supplierName: "",
     noteType: "",
     rejectionNoteNo: "",
@@ -198,10 +221,10 @@ const OutwardGatePass = () => {
       console.log("Fetched data:", organizationDetails);
       // Update form data with fetched values
       setFormData({
-        // crRegionalCenterCd: organizationDetails.crRegionalCenterCd,
-        // crRegionalCenterName: organizationDetails.location,
-        // crAddress: organizationDetails.locationAddr,
-        // crZipcode: "131021",
+        crRegionalCenterCd: organizationDetails.id,
+        crRegionalCenterName: organizationDetails.location,
+        crAddress: organizationDetails.locationAddr,
+        crZipcode: locationDetails.zipcode,
         genName: userDetails.firstName,
         noaDate: currentDate.format(dateFormat),
         dateOfDelivery: currentDate.format(dateFormat),
@@ -216,6 +239,85 @@ const OutwardGatePass = () => {
       console.error("Error fetching data:", error);
     }
   };
+
+  const handleReturnNoteNoChange = async (value) => {
+    try{
+      const apiUrl =
+        "https://sai-services.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
+      const response = await axios.post(apiUrl, {
+        processId: value,
+        processStage: "REJ",
+      });
+      const responseData = response.data.responseData;
+      const { processData, itemList } = responseData;
+
+      setFormData(prev=>{
+        return {
+          ...prev,
+          genName: processData?.genName,
+          genDate: processData?.genDate,
+          issueDate: processData?.issueDate,
+          issueName: processData?.issueName,
+          approvedDate: processData?.approvedDate,
+          approvedName: processData?.approvedName,
+          processId: processData.processId,
+          type: processData?.type,
+          typeOfNote: processData?.typeOfNote,
+
+
+          inspectionRptNo: processData?.inspectionRptNo,
+          acptRejNoteNo: processData?.acptRejNoteNo,
+          acptRejNoteDT: processData?.acptRejNoteDT,
+          dateOfDelivery: processData?.dateOfDelivery,
+          ceRegionalCenterCd: processData?.crRegionalCenterCd,
+          ceRegionalCenterName: processData?.crRegionalCenterName,
+          ceAddress: processData?.crAddress,
+          ceZipcode: processData?.crZipcode,
+          crRegionalCenterCd: processData?.ceRegionalCenterCd,
+          crRegionalCenterName: processData?.ceRegionalCenterName,
+          crAddress: processData?.ceAddress,
+          crZipcode: processData?.ceZipcode,
+          consumerName: processData?.consumerName,
+          supplierName: processData?.supplierName,
+          supplierCd: processData?.supplierCd,
+          address: processData?.address,
+          contactNo: processData?.contactNo,
+          note: processData?.note,
+          noaDate: convertEpochToDateString(processData?.noaDate),
+          noa: processData?.noa,
+          conditionOfGoods: processData?.conditionOfGoods,
+
+          items: itemList.map(item=>(
+            {
+              id: item?.id,
+              itemId: item?.id,
+              srNo: item?.sNo,
+              itemCode: item?.itemCode,
+              itemDesc: item?.itemDesc,
+              uom: item?.uom,
+              quantity: item?.quantity,
+              noOfDays: 12,
+              inspectedQuantity: item?.inspectedQuantity,
+              acceptedQuantity: item?.acceptedQuantity,
+              rejectedQuantity: item?.rejectedQuantity,
+              requiredDays: item?.requiredDays,
+              remarks: item?.remarks,
+              processId: item?.processId,
+              processType: item?.processType,
+              processStage: item?.processStage,
+              conditionOfGoods: item?.conditionOfGoods,
+              budgetHeadProcurement: item?.budgetHeadProcurement,
+              locatorId: item?.locatorId,
+            }
+          ))
+        }
+      } )
+
+    }catch (error) {
+      console.error("Error fetching sub process details:", error);
+    }
+  }
+
   const handleIssueNoteNoChange = async (value) => {
     try {
       const apiUrl =
@@ -226,28 +328,28 @@ const OutwardGatePass = () => {
       });
       const responseData = response.data.responseData;
       const { processData, itemList } = responseData;
-      console.log("API Response:", response.data);
+
       setFormData((prevFormData) => ({
         ...prevFormData,
 
         crRegionalCenterCd: processData?.crRegionalCenterCd,
         crRegionalCenterName: processData?.crRegionalCenterName,
         crAddress: processData?.crAddress,
-        crZipcode: processData.crZipcode,
+        crZipcode: processData?.crZipcode,
 
         issueName: processData?.issueName,
         approvedName: processData?.approvedName,
-        processId: processData?.processId,
-
+        
         ceRegionalCenterCd: processData?.ceRegionalCenterCd,
         ceRegionalCenterName: processData?.ceRegionalCenterName,
         ceAddress: processData?.ceAddress,
         ceZipcode: processData?.ceZipcode,
-
+        consumerName: processData?.consumerName,
+        
+        processId: processData?.processId,
         termsCondition: processData?.termsCondition,
         note: processData?.note,
 
-        consumerName: processData?.consumerName,
         contactNo: processData?.contactNo,
 
         items: itemList.map((item) => ({
@@ -367,7 +469,7 @@ const OutwardGatePass = () => {
   };
 
   const findColumnValue = (id, dataSource, sourceName) => {
-    const foundObject = dataSource.find((obj) => obj.id === id);
+    const foundObject = dataSource.find((obj) => obj.id === parseInt(id));
 
     if (sourceName === "locationMaster")
       return foundObject ? foundObject["locationName"] : "Undefined";
@@ -431,12 +533,13 @@ const OutwardGatePass = () => {
             </Form.Item>
           </Col>
           <Col span={6} offset={12}>
-            <Form.Item label="OUTER GATE PASS NO." name="gatePassNo">
+            {/* <Form.Item label="OUTER GATE PASS NO." name="gatePassNo">
               <Input
                 disabled
                 onChange={(e) => handleChange("gatePassNo", e.target.value)}
               />
-            </Form.Item>
+            </Form.Item> */}
+            <FormInputItem label="OUTER GATE PASS NO." value={formData.gatePassNo==="string" ? "not defined" : formData.gatePassNo} />
           </Col>
         </Row>
 
@@ -479,27 +582,9 @@ const OutwardGatePass = () => {
 
             {Type === "PO" && (
               <>
-                <Form.Item label="SUPPLIER CODE :" name="supplierCode">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierCode", e.target.value)
-                    }
-                  />
-                </Form.Item>
-                <Form.Item label="SUPPLIER NAME :" name="supplierName">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierName", e.target.value)
-                    }
-                  />
-                </Form.Item>
-                <Form.Item label="ADDRESS:" name="supplierAddress">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierAddress", e.target.value)
-                    }
-                  />
-                </Form.Item>
+                <FormInputItem label="SUPPLIER CODE :" value={formData.supplierCd} readOnly={true}/>
+                <FormInputItem label="SUPPLIER NAME :" value={formData.supplierName} readOnly={true}/>
+                <FormInputItem label="ADDRESS :" value={formData.ceAddress} readOnly={true}/>
               </>
             )}
 
@@ -596,7 +681,7 @@ const OutwardGatePass = () => {
               <Form.Item label="REJECTION NOTE NO.  :" name="rejectionNoteNo">
                 <Input
                   onChange={(e) =>
-                    handleChange("rejectionNoteNo", e.target.value)
+                    handleReturnNoteNoChange(e.target.value)
                   }
                 />
               </Form.Item>
@@ -622,7 +707,7 @@ const OutwardGatePass = () => {
                   >
                     <Input
                       onChange={(e) =>
-                        handleChange("rejectionNoteNo", e.target.value)
+                        handleIssueNoteNoChange("rejectionNoteNo", e.target.value)
                       }
                     />
                   </Form.Item>
@@ -636,7 +721,8 @@ const OutwardGatePass = () => {
                     onChange={(e) => handleChange("noaNo", e.target.value)}
                   />
                 </Form.Item>
-                <Form.Item label="NOA DATE" name="noaDate">
+
+                {/* <Form.Item label="NOA DATE" name="noaDate">
                   <DatePicker
                     format={dateFormat}
                     style={{ width: "100%" }}
@@ -644,7 +730,9 @@ const OutwardGatePass = () => {
                       handleChange("noaDate", dateString)
                     }
                   />
-                </Form.Item>
+                </Form.Item> */}
+
+                  <FormInputItem label="NOA DATE" value={formData.noaDate} />
                 <Form.Item label="DATE OF DELIVERY" name="dateOfDelivery">
                   <DatePicker
                     format={dateFormat}
@@ -724,18 +812,23 @@ const OutwardGatePass = () => {
                         />
                       </Form.Item>
 
-                      <Form.Item label="LOCATOR DESCRIPITON">
+                      {
+                        Type === "IRP" &&
+                        
+                        <Form.Item label="LOCATOR DESCRIPITON">
                         <Input
                           value={findColumnValue(
                             item.locatorId,
                             locatorMaster,
                             "locatorMaster"
-                          )}
-                          readOnly
-                        />
+                            )}
+                            readOnly
+                            />
                       </Form.Item>
+                          }
+                    
 
-                      <Form.Item label="REQUIRED QUANTITY">
+                      <Form.Item label={Type === "IRP" ? "REQUIRED QUANTITY" : "QUANTITY"}>
                         <Input
                           value={item.quantity}
                           onChange={(e) =>
@@ -744,14 +837,18 @@ const OutwardGatePass = () => {
                         />
                       </Form.Item>
 
-                      <Form.Item label="REQUIRED FOR NO. OF DAYS">
+                      {
+
+                         Type === "IRP" && 
+                        <Form.Item label="REQUIRED FOR NO. OF DAYS">
                         <Input
                           value={item.noOfDays}
                           onChange={(e) =>
                             itemHandleChange("noOfDays", e.target.value, key)
                           }
-                        />
+                          />
                       </Form.Item>
+                      }
 
                       <Form.Item label="REMARK">
                         <Input

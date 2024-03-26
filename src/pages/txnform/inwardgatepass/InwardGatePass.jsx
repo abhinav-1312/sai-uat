@@ -481,7 +481,7 @@ const InwardGatePass = () => {
         issueDate: currentDate.format(dateFormat),
         approvedDate: currentDate.format(dateFormat),
         gatePassDate: currentDate.format(dateFormat),
-        gatePassNo: "string",
+        gatePassNo: "Not defined",
         type: "string",
       });
     } catch (error) {
@@ -698,12 +698,14 @@ const InwardGatePass = () => {
             </Form.Item>
           </Col>
           <Col span={6} offset={12}>
-            <Form.Item label="INWARD GATE PASS NO." name="gatePassDate">
+            {/* <Form.Item label="INWARD GATE PASS NO." name="gatePassDate">
               <Input
                 disabled
                 onChange={(e) => handleChange("gatePassNo", e.target.value)}
               />
-            </Form.Item>
+            </Form.Item> */}
+
+            <FormInputItem label="INWARD GATE PASS NO." value={formData.gatePassNo ? formData.gatePassNo : ""} readOnly={true}/>
           </Col>
         </Row>
 
