@@ -9,7 +9,7 @@ const UserForm = ({ onSubmit, initialValues }) => {
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
-    values.endDate = moment(values.endDate).format("YYYY/MM/DD");
+    values.endDate = moment(values.endDate).format("DD/MM/YYYY");
     onSubmit(values);
     form.resetFields();
   };
@@ -150,7 +150,16 @@ const UserForm = ({ onSubmit, initialValues }) => {
             label="End Date"
             rules={[{ required: true, message: "Please select End date" }]}
           >
-            <DatePicker format="YYYY/MM/DD" showTime={false} />
+            <DatePicker format="DD/MM/YYYY" showTime={false} />
+          </Form.Item>
+        </Col>
+        <Col span={8}>
+          <Form.Item
+            name="createUserId"
+            label="Create User Id"
+            rules={[{ required: true, message: "Please enter Create User Id" }]}
+          >
+            <Input />
           </Form.Item>
         </Col>
         {/* <Col span={8}>
@@ -161,8 +170,8 @@ const UserForm = ({ onSubmit, initialValues }) => {
           >
             <Input />
           </Form.Item>
-        </Col> */}
-        {/* <Col span={8}>
+        </Col>{" "}
+        <Col span={8}>
           <Form.Item
             name="privileges"
             label="Privileges"
