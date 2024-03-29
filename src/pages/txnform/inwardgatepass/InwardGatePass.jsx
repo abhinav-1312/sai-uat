@@ -1178,7 +1178,7 @@ import dayjs from "dayjs";
 import axios from "axios";
 import moment from "moment";
 import ItemSearchFilter from "../../../components/ItemSearchFilter";
-import { handleSearch, printOrSaveAsPDF } from "../../../utils/Functions";
+import { fetchUomLocatorMaster, handleSearch, printOrSaveAsPDF } from "../../../utils/Functions";
 import FormInputItem from "../../../components/FormInputItem";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
@@ -1288,6 +1288,17 @@ const InwardGatePass = () => {
   console.log("FORMDATAAAA: ", formData.crAddress)
 
   const handleChange = (fieldName, value) => {
+    if(fieldName === "processType"){
+      setFormData(prev=>{
+        return{
+          ...prev,
+          processType: value,
+          type: value
+        }
+      })
+
+      return;
+    }
     if(fieldName === "supplierCode"){
       searchVendor(value)
       return
@@ -1594,8 +1605,12 @@ const InwardGatePass = () => {
     }
   }
 
+  console.log("UOM master: ",uomMaster)
+  console.log("LOCATOR master: ",locatorMaster)
+
 
   useEffect(() => {
+    fetchUomLocatorMaster(setUomMaster, setLocatorMaster)
     populateItemData();
     // fetchItemData()
     fetchUserDetails();
@@ -1643,7 +1658,6 @@ const InwardGatePass = () => {
         approvedDate: currentDate.format(dateFormat),
         gatePassDate: currentDate.format(dateFormat),
         gatePassNo: "Not defined",
-        type: "string",
       });
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -1677,6 +1691,7 @@ const InwardGatePass = () => {
 
         termsCondition: processData?.termsCondition,
         note: processData?.note,
+        type: processData?.type,
 
         items: itemList.map((item) => ({
           srNo: item?.sNo,
@@ -1698,6 +1713,8 @@ const InwardGatePass = () => {
       // Handle error
     }
   };
+
+  console.log("FORMDATA ITEMS: ", formData.items)
 
   const onFinish = async (values) => {
     try {
@@ -1875,7 +1892,7 @@ const InwardGatePass = () => {
         <Row gutter={24}>
           <Col span={8}>
             <Title strong level={2} underline type="danger">
-              CONSIGNEE DETAIL :-
+              CONSIGNOR DETAIL :-
             </Title>
             <FormInputItem label="REGIONAL CENTER CODE :" value={formData.ceRegionalCenterCd} readOnly={true}/>
             <FormInputItem label="REGIONAL CENTER NAME :" value={formData.ceRegionalCenterName} readOnly={true} />
@@ -1884,7 +1901,7 @@ const InwardGatePass = () => {
           </Col>
           <Col span={8}>
             <Title strong underline level={2} type="danger">
-              CONSIGNOR DETAIL :-
+              CONSIGNEE DETAIL :-
             </Title>
 
             {Type === "PO" && (
@@ -2115,13 +2132,13 @@ const InwardGatePass = () => {
 
                       <Form.Item label="UOM">
                         <Input
-                          value={item.uomDesc}
+                          value={item.uomDesc || uomMaster[item.uom]}
                         />
                       </Form.Item>
 
                       <Form.Item label="LOCATOR DESCRIPITON">
                         <Input
-                          value={item.locatorDesc}
+                          value={item.locatorDesc || locatorMaster[item.locatorId]}
                           readOnly
                         />
                       </Form.Item>
@@ -2134,15 +2151,18 @@ const InwardGatePass = () => {
                           }
                         />
                       </Form.Item>
-
+                    
+                    {
+                      Type === "IRP" &&
                       <Form.Item label="REQUIRED FOR NO. OF DAYS">
                         <Input
                           value={item.noOfDays}
                           onChange={(e) =>
                             itemHandleChange("noOfDays", e.target.value, key)
                           }
-                        />
+                          />
                       </Form.Item>
+                      }
 
                       <Form.Item label="REMARK">
                         <Input

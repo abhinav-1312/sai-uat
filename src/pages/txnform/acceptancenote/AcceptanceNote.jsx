@@ -18,7 +18,7 @@ import dayjs from "dayjs";
 import axios from "axios";
 import FormInputItem from "../../../components/FormInputItem";
 import { FormItemInputContext } from "antd/es/form/context";
-import { convertArrayToObject, printOrSaveAsPDF } from "../../../utils/Functions";
+import { convertArrayToObject, convertEpochToDateString, fetchUomLocatorMaster, printOrSaveAsPDF } from "../../../utils/Functions";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
@@ -32,6 +32,7 @@ const AcceptanceNote = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [itemData, setItemData] = useState([]);
   const [uomMaster, setUomMaster] = useState({});
+  const [locatorMaster, setLocatorMaster] = useState({});
   const [formData, setFormData] = useState({
     genDate: "",
     genName: "",
@@ -93,23 +94,25 @@ const AcceptanceNote = () => {
     }));
   };
 
-  const fetchUomLocatorMaster = async () => {
-    try {
-      const uomMasterUrl =
-        "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster";
-      const locatorMasterUrl =
-        "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster";
-      const uomMaster = await axios.get(uomMasterUrl);
-      const { responseData: uomMasterData } = uomMaster.data;
-      // const { responseData: locatorMasterData } = locatorMaster.data;
-      const uomObject = convertArrayToObject(uomMasterData, "id", "uomName");
-      // const locatorObj = convertArrayToObject(locatorMasterData, "id", "locatorDesc")
-      setUomMaster({ ...uomObject });
-      // setLocatorMaster({...locatorObj})
-    } catch (error) {
-      console.log("Error fetching Uom master details.", error);
-    }
-  };
+  // const fetchUomLocatorMaster = async () => {
+  //   try {
+  //     const uomMasterUrl =
+  //       "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster";
+  //     const locatorMasterUrl =
+  //       "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster";
+  //     const uomMaster = await axios.get(uomMasterUrl);
+  //     const { responseData: uomMasterData } = uomMaster.data;
+  //     // const { responseData: locatorMasterData } = locatorMaster.data;
+  //     const uomObject = convertArrayToObject(uomMasterData, "id", "uomName");
+  //     // const locatorObj = convertArrayToObject(locatorMasterData, "id", "locatorDesc")
+  //     setUomMaster({ ...uomObject });
+  //     // setLocatorMaster({...locatorObj})
+  //   } catch (error) {
+  //     console.log("Error fetching Uom master details.", error);
+  //   }
+  // };
+
+  
 
   const itemHandleChange = (fieldName, value, index) => {
     setFormData((prevValues) => {
@@ -127,9 +130,12 @@ const AcceptanceNote = () => {
 
   useEffect(() => {
     // fetchItemData();
+    fetchUomLocatorMaster(setUomMaster, setLocatorMaster)
     fetchUserDetails();
     fetchUomLocatorMaster();
   }, []);
+
+  console.log("UOMASTEEEEZr: ", uomMaster)
 
   const fetchItemData = async () => {
     try {
@@ -207,6 +213,8 @@ const AcceptanceNote = () => {
         crAddress: processData?.crAddress,
 
         dateOfDelivery: processData?.dateOfDelivery,
+        noaDate:convertEpochToDateString(processData?.noaDate),
+        noa: processData?.noa,
 
         items: itemList.map((item) => ({
           srNo: item.sNo,
@@ -472,10 +480,14 @@ const AcceptanceNote = () => {
                 onChange={(e) => handleInspectionNOChange(e.target.value)}
               />
             </Form.Item>
-            <Form.Item label="NOA NO." name="noaNo">
+
+            <FormInputItem label="NOA NO. :" value={formData.noa} />
+
+            {/* <Form.Item label="NOA NO." name="noaNo">
               <Input onChange={(e) => handleChange("noaNo", e.target.value)} />
-            </Form.Item>
-            <Form.Item label="NOA DATE" name="noaDate">
+            </Form.Item> */}
+
+            {/* <Form.Item label="NOA DATE" name="noaDate">
               <DatePicker
                 format={dateFormat}
                 style={{ width: "100%" }}
@@ -483,7 +495,8 @@ const AcceptanceNote = () => {
                   handleChange("noaDate", dateString)
                 }
               />
-            </Form.Item>
+            </Form.Item> */}
+            <FormInputItem label="NOA DATE :" value={formData.noaDate} />
             {/* <Form.Item label="DATE OF DELIVERY" name="dateOfDelivery">
               <DatePicker
                 format={dateFormat}

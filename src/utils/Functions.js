@@ -1,5 +1,6 @@
 import {Table, Button} from "antd"
 import html2pdf from 'html2pdf.js';
+import axios from 'axios'
 
 export const handleSearch = (searchText, itemData, setHook, setSearch=null) => {
   if(setSearch !== null)
@@ -219,3 +220,45 @@ export const convertArrayToObject = (array, _makeKey, valueKey ) => {
     });
 
   };
+
+
+  export const fetchUomLocatorMaster = async (setUomHook, setLocatorHook) => {
+    try {
+      const uomMasterUrl =
+        "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster";
+      const locatorMasterUrl =
+        "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster";
+      const [uomMaster, locatorMaster] = await Promise.all([axios.get(uomMasterUrl), axios.get(locatorMasterUrl)]);
+      const { responseData: uomMasterData } = uomMaster.data;
+      const { responseData: locatorMasterData } = locatorMaster.data;
+      const uomObject = convertArrayToObject(uomMasterData, "id", "uomName");
+      const locatorObj = convertArrayToObject(locatorMasterData, "id", "locatorDesc")
+      setUomHook({ ...uomObject });
+      setLocatorHook({...locatorObj})
+      // return {uomObject, locatorObj}
+    } catch (error) {
+      console.log("Error fetching Uom master details.", error);
+    }
+  };
+
+  export const convertEpochToDateString = (epochTime) => {
+    // Convert epoch time to milliseconds
+    let date = new Date(epochTime);
+  
+    // Extract the day, month, and year from the Date object
+    let day = date.getDate();
+    let month = date.getMonth() + 1; // Month starts from 0
+    let year = date.getFullYear();
+  
+    // Add leading zeros if needed
+    if (day < 10) {
+      day = '0' + day;
+    }
+    if (month < 10) {
+      month = '0' + month;
+    }
+  
+    // Return the date string in DD/MM/YYYY format
+    return `${day}/${month}/${year}`;
+  }
+  

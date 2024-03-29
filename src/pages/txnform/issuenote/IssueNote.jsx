@@ -25,6 +25,7 @@ import moment from "moment";
 import { handleSearch, handleSelectItem, printOrSaveAsPDF } from "../../../utils/Functions";
 import { primColumn } from "./ItemDetailTableColumn";
 import ItemDetailTable from "./ItemDetailTable";
+import FormInputItem from "../../../components/FormInputItem";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
@@ -210,7 +211,7 @@ const IssueNote = () => {
       key: "itemCode",
     },
     {
-      title: "UOM",
+      title: "UOM DESCRIPTION",
       dataIndex: "uomDtls",
       key: "uomDtls",
       render: (uomDtls) => uomDtls.baseUom
@@ -651,21 +652,39 @@ const IssueNote = () => {
       // Get current date
       const currentDate = dayjs();
       // Update form data with fetched values
-      setFormData({
-        crRegionalCenterCd: organizationDetails.id,
-        crRegionalCenterName: organizationDetails.organizationName,
-        crAddress: organizationDetails.locationAddr,
-        crZipcode: locationDetails.zipcode,
-        genName: userDetails.firstName,
-        userId: "string",
-        type: "",
-        issueNoteNo: "string",
-        genDate: currentDate.format(dateFormat),
-        issueDate: currentDate.format(dateFormat),
-        approvedDate: currentDate.format(dateFormat),
-        issueNoteDt: currentDate.format(dateFormat),
-        demandNoteDt: currentDate.format(dateFormat),
-      });
+      // setFormData({
+      //   crRegionalCenterCd: organizationDetails.id,
+      //   crRegionalCenterName: organizationDetails.organizationName,
+      //   crAddress: organizationDetails.locationAddr,
+      //   crZipcode: locationDetails.zipcode,
+      //   genName: userDetails.firstName,
+      //   userId: "string",
+      //   issueNoteNo: "string",
+      //   genDate: currentDate.format(dateFormat),
+      //   issueDate: currentDate.format(dateFormat),
+      //   approvedDate: currentDate.format(dateFormat),
+      //   issueNoteDt: currentDate.format(dateFormat),
+      //   demandNoteDt: currentDate.format(dateFormat),
+      // }
+      // );
+
+      setFormData(prev=>{
+        return{
+          ...prev,
+          crRegionalCenterCd: organizationDetails.id,
+          crRegionalCenterName: organizationDetails.organizationName,
+          crAddress: organizationDetails.locationAddr,
+          crZipcode: locationDetails.zipcode,
+          genName: userDetails.firstName,
+          userId: "string",
+          issueNoteNo: "string",
+          genDate: currentDate.format(dateFormat),
+          issueDate: currentDate.format(dateFormat),
+          approvedDate: currentDate.format(dateFormat),
+          issueNoteDt: currentDate.format(dateFormat),
+          demandNoteDt: currentDate.format(dateFormat),
+        }
+      })
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -802,14 +821,15 @@ const IssueNote = () => {
           </Col>
 
           <Col span={6} offset={12}>
-            <Form.Item label="ISSUE NOTE NO." name="issueNoteNo">
+            {/* <Form.Item label="ISSUE NOTE NO." name="issueNoteNo">
               <Input
                 value={formData.issueNoteNo}
                 onChange={(e) => handleChange("issueNoteNo", e.target.value)}
                 disabled
               />
               <div style={{ display: "none" }}>{formData.issueNoteNo}</div>
-            </Form.Item>
+            </Form.Item> */}
+            <FormInputItem label="ISSUE NOTE NO. :" value={formData.issueNoteNo  === "string" ? "not defined" : formData.issueNoteNo} disabled={true} />
           </Col>
         </Row>
 
@@ -1016,9 +1036,9 @@ const IssueNote = () => {
                           <Input value={item.uomDesc} />
                         </Form.Item>
 
-                        <Form.Item label="LOCATOR DESCRIPITON">
+                        {/* <Form.Item label="LOCATOR DESCRIPITON">
                           <Input value= {item.locatorDesc}readOnly />
-                        </Form.Item>
+                        </Form.Item> */}
 
                         <Form.Item label="REQUIRED QUANTITY">
                           <Input value={item.quantity} onChange={(e)=>itemHandleChange("quantity", e.target.value, key)} />

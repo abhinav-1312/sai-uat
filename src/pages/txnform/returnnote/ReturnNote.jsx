@@ -9,6 +9,8 @@ import {
   Row,
   Col,
   AutoComplete,
+
+  Typography,
   Modal,
   message,
 } from "antd";
@@ -19,7 +21,7 @@ import FormInputItem from "../../../components/FormInputItem";
 import { printOrSaveAsPDF } from "../../../utils/Functions";
 const dateFormat = "DD/MM/YYYY";
 
-// Hello
+const { Title } = Typography;
 
 const { Option } = Select;
 const RetunNote = () => {
@@ -380,6 +382,9 @@ const RetunNote = () => {
 
         <Row gutter={24}>
           <Col span={8}>
+          <Title strong underline level={2} type="danger">
+              CONSIGNOR DETAIL :-
+            </Title>
             <Form.Item label="REGIONAL CENTER CODE" name="regionalCenterCd">
               <Input value={formData.regionalCenterCd} />
               <div style={{ display: "none" }}>{formData.regionalCenterCd}</div>
@@ -399,6 +404,9 @@ const RetunNote = () => {
           </Col>
 
           <Col span={8}>
+          <Title strong underline level={2} type="danger">
+              CONSIGNEE DETAIL :-
+            </Title>
             <Form.Item
               label="CONSUMER NAME :"
               name="consumerName"
@@ -428,6 +436,7 @@ const RetunNote = () => {
           </Col>
 
           <Col span={8}>
+          <Form.Item></Form.Item>
             <Form.Item label="ISSUE NOTE NO. :" name="issueNoteNo">
               <Input
                 onChange={(e) => handleIssueNoteNoChange(e.target.value)}

@@ -119,7 +119,7 @@ const TransactionDetail = () => {
         <h2>Outward Gate Pass</h2>
         {
           ogpData ?
-          <DetailData data={ogpData?.data} itemList={ogpData?.itemList} /> 
+          <DetailData processType="ogp" data={ogpData?.data} itemList={ogpData?.itemList} /> 
           :
           "No data available."
         }

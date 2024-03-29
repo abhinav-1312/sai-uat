@@ -701,11 +701,12 @@ const GoodsReceiveNoteForm = () => {
             )}
             {(Type === "IOP" || Type === "PO") && (
               <>
-                <Form.Item label="NOA NO." name="noaNo">
+              <FormInputItem label="NOA NO. :" value={formData.noa} />
+                {/* <Form.Item label="NOA NO." name="noaNo">
                   <Input
                     onChange={(e) => handleChange("noaNo", e.target.value)}
                   />
-                </Form.Item>
+                </Form.Item> */}
                 {/* <Form.Item label="NOA DATE" name="noaDate">
                   <DatePicker
                     format={dateFormat}
