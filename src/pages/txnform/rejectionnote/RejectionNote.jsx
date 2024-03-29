@@ -1,5 +1,5 @@
 // RejectionNote.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Form,
   Input,
@@ -17,12 +17,14 @@ import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
 import FormInputItem from "../../../components/FormInputItem";
-import { convertArrayToObject } from "../../../utils/Functions";
+import { convertArrayToObject, printOrSaveAsPDF } from "../../../utils/Functions";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
 
 const RejectionNote = () => {
+  const [buttonVisible, setButtonVisible] = useState(false)
+  const formRef = useRef()
   const [Type, setType] = useState("2");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -289,6 +291,8 @@ const RejectionNote = () => {
             acptRejNoteNo: processId,
           }
         });
+
+        setButtonVisible(true)
         setSuccessMessage(
           `Rejection note saved successfully! Issue Note No : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
@@ -328,7 +332,7 @@ const RejectionNote = () => {
 
 
   return (
-    <div className="goods-receive-note-form-container">
+    <div className="goods-receive-note-form-container" ref={formRef}>
       <h1>Sports Authority of India - Rejection Note</h1>
 
       <Form
@@ -866,12 +870,7 @@ const RejectionNote = () => {
             </Button>
           </Form.Item>
           <Form.Item>
-            <Button
-              type="primary"
-              danger
-              htmlType="save"
-              style={{ width: "200px", margin: 16 }}
-            >
+          <Button disabled={!buttonVisible} onClick={()=> printOrSaveAsPDF(formRef)} type="primary" danger htmlType="save" style={{ width: '200px', margin: 16, alignContent: 'end' }}>
               PRINT
             </Button>
           </Form.Item>

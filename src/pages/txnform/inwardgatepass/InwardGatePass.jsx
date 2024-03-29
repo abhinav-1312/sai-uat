@@ -1157,7 +1157,7 @@
 
 
 // InwardGatePass.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Form,
   Input,
@@ -1178,14 +1178,15 @@ import dayjs from "dayjs";
 import axios from "axios";
 import moment from "moment";
 import ItemSearchFilter from "../../../components/ItemSearchFilter";
-import { handleSearch } from "../../../utils/Functions";
+import { handleSearch, printOrSaveAsPDF } from "../../../utils/Functions";
 import FormInputItem from "../../../components/FormInputItem";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Text, Title } = Typography;
 
 const InwardGatePass = () => {
-
+  const [buttonVisible, setButtonVisible] = useState(false)
+  const formRef = useRef()
   const [Type, setType] = useState("IRP");
   const [selectedOption, setSelectedOption] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -1765,6 +1766,8 @@ const InwardGatePass = () => {
             gatePassNo: processId,
           };
         });
+
+        setButtonVisible(true)
         setSuccessMessage(
           `Inward gate pass successfully! Inward gate pass : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
@@ -1824,7 +1827,7 @@ const InwardGatePass = () => {
   };
 
   return (
-    <div className="goods-receive-note-form-container">
+    <div className="goods-receive-note-form-container" ref={formRef}>
       <h1>Sports Authority of India - Inward Gate Pass</h1>
 
       <Form
@@ -2278,12 +2281,7 @@ const InwardGatePass = () => {
             </Button>
           </Form.Item>
           <Form.Item>
-            <Button
-              type="primary"
-              danger
-              htmlType="save"
-              style={{ width: "200px", margin: 16 }}
-            >
+          <Button disabled={!buttonVisible} onClick={()=> printOrSaveAsPDF(formRef)} type="primary" danger htmlType="save" style={{ width: '200px', margin: 16, alignContent: 'end' }}>
               PRINT
             </Button>
           </Form.Item>

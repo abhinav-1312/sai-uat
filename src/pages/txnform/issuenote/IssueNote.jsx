@@ -1,5 +1,5 @@
 // IssueNote.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Form,
   Input,
@@ -22,7 +22,7 @@ import dayjs from "dayjs";
 import axios from "axios";
 import ItemSearchFilter from "../../../components/ItemSearchFilter";
 import moment from "moment";
-import { handleSearch, handleSelectItem } from "../../../utils/Functions";
+import { handleSearch, handleSelectItem, printOrSaveAsPDF } from "../../../utils/Functions";
 import { primColumn } from "./ItemDetailTableColumn";
 import ItemDetailTable from "./ItemDetailTable";
 const dateFormat = "DD/MM/YYYY";
@@ -31,6 +31,8 @@ const { Title } = Typography;
 const { Search } = Input;
 
 const IssueNote = () => {
+  const [buttonVisible, setButtonVisible] = useState(false)
+  const formRef = useRef()
   const [Type, setType] = useState("IRP");
   const [form] = Form.useForm(); // Create form instance
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -147,8 +149,11 @@ const IssueNote = () => {
   const mergeItemMasterAndOhq = (itemMasterArr, ohqArr) => {
     return itemMasterArr.map(item=>{
       const itemCodeMatch = ohqArr.find(itemOhq=>itemOhq.itemCode === item.itemMasterCd)
-      if(itemCodeMatch)
-        return {...item, qtyList:itemCodeMatch.qtyList, locationId: itemCodeMatch.locationId, locationDesc: itemCodeMatch.locationName}
+      if(itemCodeMatch){
+        const newQtyList = itemCodeMatch.qtyList.filter(obj=>obj.quantity !== 0)
+        if(newQtyList.length > 0)
+          return {...item, qtyList:newQtyList, locationId: itemCodeMatch.locationId, locationDesc: itemCodeMatch.locationName}
+      }
     })
   }
 
@@ -725,6 +730,7 @@ const IssueNote = () => {
             issueNoteNo: processId,
           }
         });
+        setButtonVisible(true)
         setSuccessMessage(
           `Issue note saved successfully! Issue Note No : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
@@ -762,7 +768,7 @@ const IssueNote = () => {
   }
 
   return (
-    <div className="goods-receive-note-form-container">
+    <div className="goods-receive-note-form-container" ref = {formRef}>
       <h1>Sports Authority of India - Issue Note</h1>
 
       <Form
@@ -1164,11 +1170,7 @@ const IssueNote = () => {
             </Button>
           </Form.Item>
           <Form.Item>
-            <Button
-              type="primary"
-              disabled={formSubmitted ? false : true}
-              style={{ width: "200px", margin: 16 }}
-            >
+          <Button disabled={!buttonVisible} onClick={()=> printOrSaveAsPDF(formRef)} type="primary" danger htmlType="save" style={{ width: '200px', margin: 16, alignContent: 'end' }}>
               PRINT
             </Button>
           </Form.Item>

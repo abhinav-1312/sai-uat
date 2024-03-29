@@ -1,5 +1,5 @@
 // InsepctionReport.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Form,
   Input,
@@ -16,7 +16,7 @@ import {
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
-import { convertArrayToObject } from "../../../utils/Functions";
+import { convertArrayToObject, printOrSaveAsPDF } from "../../../utils/Functions";
 import FormInputItem from "../../../components/FormInputItem";
 import FormDatePickerItem from "../../../components/FormDatePickerItem";
 import FormDropdownItem from "../../../components/FormDropdownItem";
@@ -36,6 +36,8 @@ const typeArray = [
 ]
 
 const InsepctionReport = () => {
+  const [buttonVisible, setButtonVisible] = useState(false)
+  const formRef = useRef()
   const [Type, setType] = useState("PO");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -298,6 +300,7 @@ const InsepctionReport = () => {
             inspectionRptNo: processId,
           }
         });
+        setButtonVisible(true)
         setSuccessMessage(
           `Inspection Report : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
@@ -335,7 +338,7 @@ const InsepctionReport = () => {
   }
 
   return (
-    <div className="goods-receive-note-form-container">
+    <div className="goods-receive-note-form-container" ref={formRef}> 
       {Type === "PO" && (
         <h1>Sports Authority of India - Material Inward Slip</h1>
       )}
@@ -657,12 +660,7 @@ const InsepctionReport = () => {
             </Button>
           </Form.Item>
           <Form.Item>
-            <Button
-              type="primary"
-              danger
-              htmlType="save"
-              style={{ width: "200px", margin: 16 }}
-            >
+          <Button disabled={!buttonVisible} onClick={()=> printOrSaveAsPDF(formRef)} type="primary" danger htmlType="save" style={{ width: '200px', margin: 16, alignContent: 'end' }}>
               PRINT
             </Button>
           </Form.Item>

@@ -1,5 +1,5 @@
 // OutwardGatePass.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Form,
   Input,
@@ -29,6 +29,7 @@ import dayjs from "dayjs";
 import axios from "axios";
 import moment from "moment";
 import FormInputItem from "../../../components/FormInputItem";
+import { printOrSaveAsPDF } from "../../../utils/Functions";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Text, Title } = Typography;
@@ -56,6 +57,8 @@ const convertEpochToDateString = (epochTime) => {
 
 
 const OutwardGatePass = () => {
+  const [buttonVisible, setButtonVisible] = useState(false)
+  const formRef = useRef()
   const [Type, setType] = useState("IRP");
   const [selectedOption, setSelectedOption] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -436,6 +439,8 @@ const OutwardGatePass = () => {
             gatePassNo: processId,
           };
         });
+
+        setButtonVisible(true)
         setSuccessMessage(
           `outward gate pass successfully! outward gate pass : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
@@ -495,7 +500,7 @@ const OutwardGatePass = () => {
   };
 
   return (
-    <div className="goods-receive-note-form-container">
+    <div className="goods-receive-note-form-container" ref={formRef}>
       <h1>Sports Authority of India - Outward Gate Pass</h1>
 
       <Form
@@ -1009,13 +1014,8 @@ const OutwardGatePass = () => {
             </Button>
           </Form.Item>
           <Form.Item>
-            <Button
-              type="primary"
-              danger
-              htmlType="save"
-              style={{ width: "200px", margin: 16 }}
-            >
-              Print
+          <Button disabled={!buttonVisible} onClick={()=> printOrSaveAsPDF(formRef)} type="primary" danger htmlType="save" style={{ width: '200px', margin: 16, alignContent: 'end' }}>
+              PRINT
             </Button>
           </Form.Item>
         </div>

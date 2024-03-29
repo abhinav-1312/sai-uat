@@ -1,5 +1,5 @@
 // InspectionNote.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Form,
   Input,
@@ -18,13 +18,15 @@ import dayjs from "dayjs";
 import axios from "axios";
 import FormInputItem from "../../../components/FormInputItem";
 import FormDatePickerItem from "../../../components/FormDatePickerItem";
-import { convertArrayToObject } from "../../../utils/Functions";
+import { convertArrayToObject, printOrSaveAsPDF } from "../../../utils/Functions";
 
-const dateFormat = "YYYY/MM/DD";
+const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
 
 const InspectionNote = () => {
+  const [buttonVisible, setButtonVisible] = useState(false)
+  const formRef = useRef()
   const [Type, setType] = useState("PO");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -92,6 +94,7 @@ const InspectionNote = () => {
   };
 
   const handleChange = (fieldName, value) => {
+    console.log("HandleChange called: ", fieldName, value)
     setFormData((prevValues) => ({
       ...prevValues,
       [fieldName]: value === "" ? null : value,
@@ -313,6 +316,7 @@ const InspectionNote = () => {
             inspectionRptNo: processId,
           }
         });
+        setButtonVisible(true)
         setSuccessMessage(
           `Inspection Note : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
@@ -330,13 +334,15 @@ const InspectionNote = () => {
     }
   };
 
+  console.log("FROMDATAA: ", formData.dateOfInspectionDate)
+
   // ... (other JSX and return statement)
   const handleValuesChange = (_, allValues) => {
     setType(allValues.type);
   };
 
   return (
-    <div className="goods-receive-note-form-container">
+    <div className="goods-receive-note-form-container" ref={formRef}>
       <h1>Sports Authority of India - Inspection Note</h1>
       <Form
         onFinish={onFinish}
@@ -911,12 +917,7 @@ const InspectionNote = () => {
             </Button>
           </Form.Item>
           <Form.Item>
-            <Button
-              type="primary"
-              danger
-              htmlType="save"
-              style={{ width: "200px", margin: 16 }}
-            >
+          <Button disabled={!buttonVisible} onClick={()=> printOrSaveAsPDF(formRef)} type="primary" danger htmlType="save" style={{ width: '200px', margin: 16, alignContent: 'end' }}>
               PRINT
             </Button>
           </Form.Item>

@@ -1,5 +1,5 @@
 // GoodsReceiveNoteForm.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Form,
   Input,
@@ -17,6 +17,7 @@ import "./GoodsReceiveNoteForm.css";
 import dayjs from "dayjs";
 import axios from "axios";
 import FormInputItem from "../../../components/FormInputItem";
+import { printOrSaveAsPDF } from "../../../utils/Functions";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
@@ -44,6 +45,8 @@ const convertEpochToDateString = (epochTime) => {
 }
 
 const GoodsReceiveNoteForm = () => {
+  const [buttonVisible, setButtonVisible] = useState(false)
+  const formRef = useRef()
   const [Type, setType] = useState("IRP");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -236,7 +239,7 @@ const GoodsReceiveNoteForm = () => {
       if (status === 200 && statusText === "OK") {
         try {
           const locatorQuantityArr= await Promise.all(
-            itemList.map(async (item) => {
+            itemList?.map(async (item) => {
               const itemCode  = item.itemCode;
 
               const ohqRes = await axios.post(ohqUrl, {
@@ -289,7 +292,7 @@ const GoodsReceiveNoteForm = () => {
         noaDate: convertEpochToDateString(processData?.noaDate),
         dateOfDelivery: processData?.dateOfDelivery,
 
-        items: itemList.map((item) => ({
+        items: itemList?.map((item) => ({
           srNo: item?.sNo,
           itemId: item?.itemId,
           itemCode: item?.itemCode,
@@ -320,7 +323,7 @@ const GoodsReceiveNoteForm = () => {
   const onFinish = async (values) => {
     let found = false
     const tempFormData = deepClone(formData)
-    tempFormData.items.forEach(item=>{
+    tempFormData.items?.forEach(item=>{
       const {quantity, remQuantity} = item;
       if(quantity-remQuantity > 0){
         message.error("Please locate a locator to all quantity")
@@ -332,21 +335,21 @@ const GoodsReceiveNoteForm = () => {
     if(found) return
 
     const updatedForm = deepClone(formData);
-    const updatedItems = updatedForm.items.map(item=>{
+    const updatedItems = updatedForm.items?.map(item=>{
       const itemObj = item
       const {qtyList} = item
       delete itemObj.quantity
       delete itemObj.remQuantity
       delete itemObj.qtyList
 
-      const insideArray = qtyList.map(qtyObj=>{
+      const insideArray = qtyList?.map(qtyObj=>{
         return {...itemObj, quantity: qtyObj.quantity, locatorId: qtyObj.locatorId}
       })
 
       return insideArray
     })
     
-    const flatItemsArray = updatedItems.flatMap(innerArray => innerArray);
+    const flatItemsArray = updatedItems?.flatMap(innerArray => innerArray);
 
     try {
       const formDataCopy = { ...formData, items: flatItemsArray };
@@ -411,6 +414,7 @@ const GoodsReceiveNoteForm = () => {
             grnNo: processId,
           };
         });
+        setButtonVisible(true)
         setSuccessMessage(
           ` Goods Receive Note NO : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
@@ -469,7 +473,7 @@ const GoodsReceiveNoteForm = () => {
       const updatedItems = prevValues.items;
       updatedItems.splice(index, 1);
 
-      const updatedItems1 = updatedItems.map((item, key) => {
+      const updatedItems1 = updatedItems?.map((item, key) => {
         return { ...item, srNo: key + 1 };
       });
 
@@ -524,7 +528,7 @@ const GoodsReceiveNoteForm = () => {
   };
 
   return (
-    <div className="goods-receive-note-form-container">
+    <div className="goods-receive-note-form-container" ref={formRef}>
       <h1>Sports Authority of India - Goods Receive Note</h1>
 
       <Form
@@ -1078,12 +1082,7 @@ const GoodsReceiveNoteForm = () => {
             </Button>
           </Form.Item>
           <Form.Item>
-            <Button
-              type="primary"
-              danger
-              htmlType="save"
-              style={{ width: "200px", margin: 16 }}
-            >
+          <Button disabled={!buttonVisible} onClick={()=> printOrSaveAsPDF(formRef)} type="primary" danger htmlType="save" style={{ width: '200px', margin: 16, alignContent: 'end' }}>
               PRINT
             </Button>
           </Form.Item>

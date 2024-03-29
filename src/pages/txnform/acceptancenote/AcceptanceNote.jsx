@@ -1,5 +1,5 @@
 // AcceptanceNote.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Form,
   Input,
@@ -18,12 +18,14 @@ import dayjs from "dayjs";
 import axios from "axios";
 import FormInputItem from "../../../components/FormInputItem";
 import { FormItemInputContext } from "antd/es/form/context";
-import { convertArrayToObject } from "../../../utils/Functions";
+import { convertArrayToObject, printOrSaveAsPDF } from "../../../utils/Functions";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
 
 const AcceptanceNote = () => {
+  const [buttonVisible, setButtonVisible] = useState(false)
+  const formRef = useRef()
   const [Type, setType] = useState("PO");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -303,6 +305,7 @@ const AcceptanceNote = () => {
             acptRejNoteNo: processId,
           };
         });
+        setButtonVisible(true)
         setSuccessMessage(
           `Acceptance Note : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
@@ -327,7 +330,7 @@ const AcceptanceNote = () => {
   };
 
   return (
-    <div className="goods-receive-note-form-container">
+    <div className="goods-receive-note-form-container" ref={formRef}>
       <h1>Sports Authority of India - Acceptance Note</h1>
 
       <Form
@@ -900,12 +903,7 @@ const AcceptanceNote = () => {
             </Button>
           </Form.Item>
           <Form.Item>
-            <Button
-              type="primary"
-              danger
-              htmlType="save"
-              style={{ width: "200px", margin: 16 }}
-            >
+          <Button disabled={!buttonVisible} onClick={()=> printOrSaveAsPDF(formRef)} type="primary" danger htmlType="save" style={{ width: '200px', margin: 16, alignContent: 'end' }}>
               PRINT
             </Button>
           </Form.Item>
