@@ -611,7 +611,9 @@ const RetunNote = () => {
                       >
                         <Input
                           value={formData.items?.[key]?.conditionOfGoods}
-                          readOnly
+                          onChange={(e) =>
+                            itemHandleChange(`conditionOfGoods`, e.target.value, key)
+                          }
                         />
                       </Form.Item>
 

@@ -302,19 +302,19 @@ const InsepctionReport = () => {
         });
         setButtonVisible(true)
         setSuccessMessage(
-          `Inspection Report : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
+          `MIS : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
         showModal();
         message.success(
-          `Inspection Report  successfully! Process ID: ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
+          `MIS Submitted Successfully! Process ID: ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
       } else {
         // Display a generic success message if specific data is not available
-        message.error("Failed to Inspection Report . Please try again later.");
+        message.error("Failed to submit MIS . Please try again later.");
       }
     } catch (error) {
-      console.error("Error saving Inspection Report :", error);
-      message.error("Failed to Inspection Report . Please try again later.");
+      console.error("Error saving MIS :", error);
+      message.error("Failed to submit MIS . Please try again later.");
 
       // Handle error response here
     }
@@ -666,7 +666,7 @@ const InsepctionReport = () => {
           </Form.Item>
         </div>
         <Modal
-          title="Insepction Report  saved successfully"
+          title="MIS saved successfully."
           visible={isModalOpen}
           onOk={handleOk}
         >

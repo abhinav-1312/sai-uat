@@ -1268,7 +1268,6 @@ const InwardGatePass = () => {
       const {message, statusCode} = responseStatus
 
       if(message === "Success" && statusCode === 200 && responseData !== null){
-        console.log("INSIDEEEEE")
         setFormData(prev=>{
           return{
             ...prev,
@@ -1285,7 +1284,7 @@ const InwardGatePass = () => {
 
   }
 
-  console.log("FORMDATAAAA: ", formData.crAddress)
+
 
   const handleChange = (fieldName, value) => {
     if(fieldName === "processType"){
@@ -1605,10 +1604,6 @@ const InwardGatePass = () => {
     }
   }
 
-  console.log("UOM master: ",uomMaster)
-  console.log("LOCATOR master: ",locatorMaster)
-
-
   useEffect(() => {
     fetchUomLocatorMaster(setUomMaster, setLocatorMaster)
     populateItemData();
@@ -1713,8 +1708,6 @@ const InwardGatePass = () => {
       // Handle error
     }
   };
-
-  console.log("FORMDATA ITEMS: ", formData.items)
 
   const onFinish = async (values) => {
     try {
@@ -1892,7 +1885,10 @@ const InwardGatePass = () => {
         <Row gutter={24}>
           <Col span={8}>
             <Title strong level={2} underline type="danger">
-              CONSIGNOR DETAIL :-
+              {
+                Type === "IRP" ?
+                "CONSIGNOR DETAIL ;-" : "CONSIGNEE DETAIL :-"
+              }
             </Title>
             <FormInputItem label="REGIONAL CENTER CODE :" value={formData.ceRegionalCenterCd} readOnly={true}/>
             <FormInputItem label="REGIONAL CENTER NAME :" value={formData.ceRegionalCenterName} readOnly={true} />
@@ -1901,7 +1897,10 @@ const InwardGatePass = () => {
           </Col>
           <Col span={8}>
             <Title strong underline level={2} type="danger">
-              CONSIGNEE DETAIL :-
+            {
+                Type === "IRP" ?
+                "CONSIGNEE DETAIL ;-" : "CONSIGNOR DETAIL :-"
+              }
             </Title>
 
             {Type === "PO" && (

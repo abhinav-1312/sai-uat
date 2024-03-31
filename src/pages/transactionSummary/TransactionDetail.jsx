@@ -89,7 +89,7 @@ const TransactionDetail = () => {
         <h2>Inward Gate Pass</h2>
         {
           igpData ?
-          <DetailData data={igpData?.data} itemList={igpData?.itemList} /> 
+          <DetailData processType={"igp"} data={igpData?.data} itemList={igpData?.itemList} /> 
           :
           "No data available."
         }

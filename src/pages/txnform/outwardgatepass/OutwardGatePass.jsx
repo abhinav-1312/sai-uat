@@ -287,6 +287,8 @@ const OutwardGatePass = () => {
           noaDate: convertEpochToDateString(processData?.noaDate),
           noa: processData?.noa,
           conditionOfGoods: processData?.conditionOfGoods,
+          challanNo: processData?.challanNo,
+          modeOfDelivery: processData?.modeOfDelivery,
 
           items: itemList.map(item=>(
             {
@@ -546,7 +548,10 @@ const OutwardGatePass = () => {
         <Row gutter={24}>
           <Col span={8}>
             <Title strong underline level={2} type="danger">
-              CONSIGNOR DETAIL :-
+              {
+                Type === "IRP" ?
+                "CONSIGNOR DETAIL ;-" : "CONSIGNEE DETAIL :-"
+              }
             </Title>
             <Form.Item label="REGIONAL CENTER CODE" name="crRegionalCenterCd">
               <Input value={formData.crRegionalCenterCd} readOnly />
@@ -576,8 +581,10 @@ const OutwardGatePass = () => {
           </Col>
           <Col span={8}>
             <Title strong level={2} underline type="danger">
-              {" "}
-              CONSIGNEE DETAIL :-
+            {
+                Type === "IRP" ?
+                "CONSIGNEE DETAIL ;-" : "CONSIGNOR DETAIL :-"
+              }
             </Title>
 
             {Type === "PO" && (
@@ -716,32 +723,9 @@ const OutwardGatePass = () => {
             )}
             {(Type === "IOP" || Type === "PO") && (
               <>
-                <Form.Item label="NOA NO." name="noaNo">
-                  <Input
-                    onChange={(e) => handleChange("noaNo", e.target.value)}
-                  />
-                </Form.Item>
-
-                {/* <Form.Item label="NOA DATE" name="noaDate">
-                  <DatePicker
-                    format={dateFormat}
-                    style={{ width: "100%" }}
-                    onChange={(date, dateString) =>
-                      handleChange("noaDate", dateString)
-                    }
-                  />
-                </Form.Item> */}
-
-                  <FormInputItem label="NOA DATE" value={formData.noaDate} />
-                <Form.Item label="DATE OF DELIVERY" name="dateOfDelivery">
-                  <DatePicker
-                    format={dateFormat}
-                    style={{ width: "100%" }}
-                    onChange={(date, dateString) =>
-                      handleChange("dateOfDelivery", dateString)
-                    }
-                  />
-                </Form.Item>
+                  <FormInputItem label="NOA NO :" value={formData.noa} />
+                  <FormInputItem label="NOA DATE :" value={formData.noaDate} />
+                  <FormInputItem label="DATE OF DELIVERY :" value={formData.dateOfDelivery} />
               </>
             )}
           </Col>
@@ -749,20 +733,10 @@ const OutwardGatePass = () => {
         {(Type === "IOP" || Type === "PO") && (
           <Row gutter={24}>
             <Col span={8}>
-              <Form.Item label=" CHALLAN / INVOICE NO. :" name="challanNo">
-                <Input
-                  onChange={(e) => handleChange("challanNo", e.target.value)}
-                />
-              </Form.Item>
+            <FormInputItem label="CHALLAN / INVOICE NO. :" value={formData.challanNo} />
             </Col>
             <Col span={8}>
-              <Form.Item label="MODE OF DELIVERY  :" name="modeOfDelivery">
-                <Input
-                  onChange={(e) =>
-                    handleChange("modeOfDelivery", e.target.value)
-                  }
-                />
-              </Form.Item>
+              <FormInputItem label="MODE OF DELIVERY :" value={formData.modeOfDelivery} />
             </Col>
           </Row>
         )}

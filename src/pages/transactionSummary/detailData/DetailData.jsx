@@ -82,9 +82,12 @@ const DetailData = ({
   if (!data) return null;
   const dataColumns = Object.entries(data).map(([key, value]) => {
     if(processType === 'ogp' && (key === 'noaNo' || key === 'dateOfDelivery' || key === "noaDate")){
-      console.log("KJFGHEGFHGWEY")
       return {}
-    }else{
+    }
+    else if(processType === 'igp' && (key === 'ceRegionalCenterCd' || key === 'ceRegionalCenterName'  || key === 'ceAddress' || key === 'ceZipcode')){
+      return {}
+    }
+    else{
 
       if(key === "issueNoteNo"){
         return { title: columnName[key] || key, dataIndex: "processId" };

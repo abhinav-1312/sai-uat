@@ -572,7 +572,11 @@ const GoodsReceiveNoteForm = () => {
           <Col span={8}>
             <Title strong level={2} underline type="danger">
               {" "}
-              CONSIGNEE DETAIL :-
+              {
+                Type === "IRP" ?
+                "CONSIGNOR DETAIL ;-" : "CONSIGNEE DETAIL :-"
+              }
+
             </Title>
 
             <Form.Item label="REGIONAL CENTER CODE" name="crRegionalCenterCd">
@@ -605,7 +609,10 @@ const GoodsReceiveNoteForm = () => {
           </Col>
           <Col span={8}>
             <Title strong underline level={2} type="danger">
-              CONSIGNOR DETAIL :-
+            {
+                Type === "IRP" ?
+                "CONSIGNEE DETAIL ;-" : "CONSIGNOR DETAIL :-"
+              }
             </Title>
 
             {Type === "PO" && (
@@ -879,9 +886,11 @@ const GoodsReceiveNoteForm = () => {
                         <Input value={item.quantity} readOnly />
                       </Form.Item>
 
-                      <Form.Item label="BUDGET HEAD PROCUREMENT">
+                      {/* <Form.Item label="BUDGET HEAD PROCUREMENT">
                         <Input value={item.budgetHeadProcurement} readOnly />
-                      </Form.Item>
+                      </Form.Item> */}
+
+                      <FormInputItem label="BUDGET HEAD PROCUREMENT" name="budgetHeadProcurement" value={item.budgetHeadProcurement} onChange={(name, value)=> itemHandleChange("budgetHeadProcurement", value, key)} />
 
                       <Form.Item
                         label="REMARK"
