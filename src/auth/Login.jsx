@@ -24,11 +24,13 @@ const SignIn = () => {
       );
 
       const { userCd, userType } = response.data.responseData.userDetails;
+      const { token } = response.data.responseData;
 
       // Store user details in local storage
       localStorage.setItem("userCd", userCd);
       localStorage.setItem("userType", userType);
       localStorage.setItem("password", values.password);
+      localStorage.setItem("token", token);
 
       setIsLoggedIn(true);
       console.log(isLoggedIn);

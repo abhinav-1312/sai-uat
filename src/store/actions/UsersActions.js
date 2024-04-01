@@ -1,5 +1,6 @@
 import { BASE_URL } from "../../utils/BaseUrl";
 
+const token = localStorage.getItem("token");
 export const setUsers = (users) => ({
   type: "SET_USERS",
   payload: users,
@@ -7,7 +8,7 @@ export const setUsers = (users) => ({
 
 export const fetchUsers = () => async (dispatch) => {
   try {
-    const response = await fetch(`${BASE_URL}/getUserMaster`);
+    const response = await fetch(`${BASE_URL}/getUserMaster`, {headers: {Authorization : token}});
     const data = await response.json();
 
     dispatch(setUsers(data.responseData));
@@ -22,6 +23,7 @@ export const updateUser = (userId, values) => async (dispatch) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization' : token
       },
       body: JSON.stringify({
         userId,
@@ -47,6 +49,7 @@ export const saveUser = (values) => async (dispatch) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization' : token
       },
       body: JSON.stringify(values),
     });
@@ -69,6 +72,7 @@ export const deleteUser = (userId) => async (dispatch) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization' : token
       },
       body: JSON.stringify({
         userId: "string",

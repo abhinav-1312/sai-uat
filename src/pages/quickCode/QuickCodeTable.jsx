@@ -1,45 +1,65 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Space, Modal, Form, Input, Button, Popconfirm, Select } from 'antd';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import {
+  Table,
+  Space,
+  Modal,
+  Form,
+  Input,
+  Button,
+  Popconfirm,
+  Select,
+} from "antd";
+import axios from "axios";
 
 const QuickCodeTable = () => {
   const [data, setData] = useState([]);
   const [expandedRowKey, setExpandedRowKey] = useState(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editedConfig, setEditedConfig] = useState({});
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     // Fetch data from the API
     axios
-      .get('https://asset-management-service.azurewebsites.net/asset-management/getAllConfig')
+      .get(
+        "https://asset-management-service.azurewebsites.net/asset-management/getAllConfig",
+        { headers: { Authorization: token } }
+      )
       .then((response) => {
         setData(response.data.responseData);
       })
       .catch((error) => {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       });
   }, []);
 
   const { Option } = Select;
 
   const nestedColumns = [
-    { title: 'Config Id', dataIndex: 'configId', key: 'configId' },
-    { title: 'Config Code', dataIndex: 'configCode', key: 'configCode' },
-    { title: 'Config Description', dataIndex: 'configDesc', key: 'configDesc' },
-    { title: 'Config Status', dataIndex: 'configStatus', key: 'configStatus', render: status => status.toString() },
+    { title: "Config Id", dataIndex: "configId", key: "configId" },
+    { title: "Config Code", dataIndex: "configCode", key: "configCode" },
+    { title: "Config Description", dataIndex: "configDesc", key: "configDesc" },
     {
-      title: 'Actions',
-      key: 'actions',
+      title: "Config Status",
+      dataIndex: "configStatus",
+      key: "configStatus",
+      render: (status) => status.toString(),
+    },
+    {
+      title: "Actions",
+      key: "actions",
       render: (_, record) => (
         <Space>
-          <Button type="primary" onClick={() => handleEdit(record)}>Edit</Button>
+          <Button type="primary" onClick={() => handleEdit(record)}>
+            Edit
+          </Button>
           <Popconfirm
             title="Are you sure to delete this config?"
             onConfirm={() => handleDelete(record)}
             okText="Yes"
             cancelText="No"
           >
-            <Button danger >Delete</Button>
+            <Button danger>Delete</Button>
           </Popconfirm>
         </Space>
       ),
@@ -59,12 +79,12 @@ const QuickCodeTable = () => {
 
   const handleDelete = (record) => {
     // Add your delete logic here
-    console.log('Delete config:', record);
+    console.log("Delete config:", record);
   };
 
   const handleEditModalOk = () => {
     // Add your edit logic here
-    console.log('Edited config:', editedConfig);
+    console.log("Edited config:", editedConfig);
     setEditModalVisible(false);
   };
 
@@ -77,7 +97,7 @@ const QuickCodeTable = () => {
       <Table
         dataSource={data.map((record, index) => ({ ...record, key: index }))}
         columns={[
-          { title: 'Config Type', dataIndex: 'configType', key: 'configType' },
+          { title: "Config Type", dataIndex: "configType", key: "configType" },
         ]}
         expandable={{
           expandedRowRender: (record) => (
@@ -87,7 +107,8 @@ const QuickCodeTable = () => {
               pagination={false}
             />
           ),
-          rowExpandable: (record) => record.configDtoList && record.configDtoList.length > 0,
+          rowExpandable: (record) =>
+            record.configDtoList && record.configDtoList.length > 0,
           expandedRowKeys: [expandedRowKey],
           onExpand: (_, record) => handleRowExpand(record),
         }}
@@ -107,7 +128,7 @@ const QuickCodeTable = () => {
             <Input value={editedConfig.configDesc} />
           </Form.Item>
           <Form.Item label="Config Status">
-            <Select value={editedConfig.configStatus} style={{ width: '100%' }}>
+            <Select value={editedConfig.configStatus} style={{ width: "100%" }}>
               <Option value={true}>True</Option>
               <Option value={false}>False</Option>
             </Select>

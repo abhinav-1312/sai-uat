@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Input, Button, Table, Popover } from 'antd';
+import React, { useState, useEffect } from "react";
+import { Input, Button, Table, Popover } from "antd";
 // import 'antd/dist/antd.css';
 
 const { Search } = Input;
@@ -7,27 +7,33 @@ const { Search } = Input;
 const ItemSearchFilter = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [searchValue, setSearchValue] = useState('');
-
+  const [searchValue, setSearchValue] = useState("");
+  const token = localStorage.getItem("token");
   useEffect(() => {
     // Fetch data from the API
-    fetch('https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster')
-      .then(response => response.json())
-      .then(data => {
+    fetch(
+      "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster",
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
         setData(data.responseData);
         setFilteredData(data.responseData); // Initially set filtered data to all data
       })
-      .catch(error => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
-
 
   const handleSearch = (value) => {
     setSearchValue(value);
     // Filter data based on any field
-    const filtered = data.filter(item => {
+    const filtered = data.filter((item) => {
       // Check if any field includes the search value
-      return Object.values(item).some(field => {
-        if (typeof field === 'string') {
+      return Object.values(item).some((field) => {
+        if (typeof field === "string") {
           return field.toLowerCase().includes(value.toLowerCase());
         }
         return false;
@@ -36,20 +42,17 @@ const ItemSearchFilter = () => {
     setFilteredData(filtered);
   };
 
-
   const columns = [
     { title: "S NO.", dataIndex: "id", key: "id", fixed: "left", width: 80 },
     {
       title: "ITEM CODE",
       dataIndex: "itemMasterCd",
       key: "itemCode",
-
     },
     {
       title: "ITEM DESCRIPTION",
       dataIndex: "itemMasterDesc",
       key: "itemMasterDesc",
-
     },
     { title: "UOM", dataIndex: "uom", key: "uom" },
     {
@@ -97,15 +100,15 @@ const ItemSearchFilter = () => {
       key: "actions",
       fixed: "right",
       render: (_, record) => (
-        <Button type="primary" danger>Select</Button>
+        <Button type="primary" danger>
+          Select
+        </Button>
       ),
     },
   ];
 
   return (
-    <div style={{ width: '300px' }}>
-
-
+    <div style={{ width: "300px" }}>
       {/* Popover */}
       <Popover
         content={
@@ -114,16 +117,15 @@ const ItemSearchFilter = () => {
             columns={columns}
             pagination={false}
             scroll={{ x: "max-content" }}
-            style={{ width: '1000px' }}
+            style={{ width: "1000px" }}
           />
         }
         title="Filtered Item Data"
         trigger="click"
-        visible={searchValue !== '' && filteredData.length > 0}
-        style={{ width: '200px' }}
+        visible={searchValue !== "" && filteredData.length > 0}
+        style={{ width: "200px" }}
         placement="right"
       >
-
         <Search
           placeholder="Search Item Data"
           allowClear
@@ -131,9 +133,7 @@ const ItemSearchFilter = () => {
           size="large"
           onSearch={handleSearch}
         />
-
       </Popover>
-
     </div>
   );
 };

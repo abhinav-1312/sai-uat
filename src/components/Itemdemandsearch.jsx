@@ -1,36 +1,53 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Row, Col, DatePicker, AutoComplete, Select, Table, Popover } from 'antd';
-import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
-import axios from 'axios';
-import moment from 'moment';
+import React, { useState, useEffect } from "react";
+import {
+  Form,
+  Input,
+  Button,
+  Row,
+  Col,
+  DatePicker,
+  AutoComplete,
+  Select,
+  Table,
+  Popover,
+} from "antd";
+import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
+import axios from "axios";
+import moment from "moment";
 const { TextArea } = Input;
 const { Search } = Input;
 
 const ItemDemandSearch = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState("");
   const [selectedItems, setSelectedItems] = useState([]); // State to hold selected item data
-
-
+  const token = localStorage.getItem("token");
   useEffect(() => {
     // Fetch data from the API
-    fetch('https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster')
-      .then(response => response.json())
-      .then(data => {
+    fetch(
+      "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getItemMaster",
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
         setData(data.responseData);
         setFilteredData(data.responseData); // Initially set filtered data to all data
       })
-      .catch(error => console.error('Error fetching data:', error));
+      .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   const handleSearch = (value) => {
     setSearchValue(value);
     // Filter data based on any field
-    const filtered = data.filter(item => {
+    const filtered = data.filter((item) => {
       // Check if any field includes the search value
-      return Object.values(item).some(field => {
-        if (typeof field === 'string') {
+      return Object.values(item).some((field) => {
+        if (typeof field === "string") {
           return field.toLowerCase().includes(value.toLowerCase());
         }
         return false;
@@ -41,9 +58,9 @@ const ItemDemandSearch = () => {
 
   const handleSelectItem = (record) => {
     // Check if the item is already selected
-    const index = selectedItems.findIndex(item => item.id === record.id);
+    const index = selectedItems.findIndex((item) => item.id === record.id);
     if (index === -1) {
-      setSelectedItems(prevItems => [...prevItems, record]); // Update selected items state
+      setSelectedItems((prevItems) => [...prevItems, record]); // Update selected items state
     } else {
       // If item is already selected, deselect it
       const updatedItems = [...selectedItems];
@@ -109,21 +126,24 @@ const ItemDemandSearch = () => {
       fixed: "right",
       render: (text, record) => (
         <Button
-          type={selectedItems.some(item => item.id === record.id) ? "warning" : "primary"}
-
+          type={
+            selectedItems.some((item) => item.id === record.id)
+              ? "warning"
+              : "primary"
+          }
           onClick={() => handleSelectItem(record)}
         >
-          {selectedItems.some(item => item.id === record.id) ? "Deselect" : "Select"}
+          {selectedItems.some((item) => item.id === record.id)
+            ? "Deselect"
+            : "Select"}
         </Button>
       ),
     },
   ];
 
-
-
   return (
     <div className="goods-receive-note-form-container">
-      <div style={{ width: '300px' }}>
+      <div style={{ width: "300px" }}>
         <Popover
           content={
             <Table
@@ -131,13 +151,13 @@ const ItemDemandSearch = () => {
               columns={columns}
               pagination={false}
               scroll={{ x: "max-content" }}
-              style={{ width: '1000px' }}
+              style={{ width: "1000px" }}
             />
           }
           title="Filtered Item Data"
           trigger="click"
-          visible={searchValue !== '' && filteredData.length > 0}
-          style={{ width: '200px' }}
+          visible={searchValue !== "" && filteredData.length > 0}
+          style={{ width: "200px" }}
           placement="right"
         >
           <Search

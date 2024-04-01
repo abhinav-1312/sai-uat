@@ -12,10 +12,12 @@ import {
 } from "./KeyValueMapping";
 
 const apiRequest = async (url, method, requestData) => {
+  const token = localStorage.getItem("token");
   const options = {
     method: method,
     headers: {
       "Content-Type": "application/json",
+      Authorization: token,
     },
   };
 
