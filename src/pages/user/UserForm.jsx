@@ -1,13 +1,30 @@
 // UserForm.js
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Select, Row, Col, DatePicker } from "antd";
 import moment from "moment";
+import axios from "axios";
 
+const token = localStorage.getItem("token");
 const { Option } = Select;
 
 const UserForm = ({ onSubmit, initialValues }) => {
   const [form] = Form.useForm();
+  const [departments, setDepartments] = useState([]);
 
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const response = await axios.get(
+          "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getDeptMaster"
+        );
+        const data = response.data.responseData;
+        setDepartments(data);
+      } catch (error) {
+        console.error("Error fetching departments", error);
+      }
+    };
+    fetchDepartments();
+  }, [token]);
   const onFinish = (values) => {
     values.endDate = moment(values.endDate).format("DD/MM/YYYY");
     onSubmit(values);
@@ -105,7 +122,14 @@ const UserForm = ({ onSubmit, initialValues }) => {
             label="Department"
             rules={[{ required: true, message: "Please enter Department" }]}
           >
-            <Input />
+            <Select>
+              {departments &&
+                departments.map((department) => (
+                  <Option key={department.id} value={department.departmentName}>
+                    {department.departmentName}
+                  </Option>
+                ))}
+            </Select>
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -162,24 +186,6 @@ const UserForm = ({ onSubmit, initialValues }) => {
             <Input />
           </Form.Item>
         </Col>
-        {/* <Col span={8}>
-          <Form.Item
-            name="userStatus"
-            label="User Status"
-            rules={[{ required: false, message: "Please enter User Status" }]}
-          >
-            <Input />
-          </Form.Item>
-        </Col>{" "}
-        <Col span={8}>
-          <Form.Item
-            name="privileges"
-            label="Privileges"
-            rules={[{ required: false, message: "Please enter Privileges" }]}
-          >
-            <Input />
-          </Form.Item>
-        </Col> */}
       </Row>
 
       <Form.Item>
