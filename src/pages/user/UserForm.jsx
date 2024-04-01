@@ -10,6 +10,7 @@ const { Option } = Select;
 const UserForm = ({ onSubmit, initialValues }) => {
   const [form] = Form.useForm();
   const [departments, setDepartments] = useState([]);
+  const [employeeId, setEmployeeId] = useState([]);
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -24,6 +25,21 @@ const UserForm = ({ onSubmit, initialValues }) => {
       }
     };
     fetchDepartments();
+  }, [token]);
+
+  useEffect(() => {
+    const fetchEmployeeId = async () => {
+      try {
+        const response = await axios.get(
+          "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getEmpMaster"
+        );
+        const data = response.data.responseData;
+        setEmployeeId(data);
+      } catch (error) {
+        console.error("Error fetching empyloyeeID", error);
+      }
+    };
+    fetchEmployeeId();
   }, [token]);
   const onFinish = (values) => {
     values.endDate = moment(values.endDate).format("DD/MM/YYYY");
@@ -45,7 +61,14 @@ const UserForm = ({ onSubmit, initialValues }) => {
             label="EMPLOYEE ID"
             rules={[{ required: true, message: "Please enter EMPLOYEE ID" }]}
           >
-            <Input />
+            <Select>
+              {employeeId &&
+                employeeId.map((emp) => (
+                  <Option key={emp.id} value={emp.employeeId}>
+                    {emp.employeeId}
+                  </Option>
+                ))}
+            </Select>
           </Form.Item>
         </Col>
         <Col span={8}>
