@@ -8,13 +8,11 @@ import {
   Button,
   Row,
   Col,
-  AutoComplete,
-
   Typography,
   Modal,
   message,
 } from "antd";
-import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
+import { MinusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
 import FormInputItem from "../../../components/FormInputItem";
@@ -23,7 +21,6 @@ const dateFormat = "DD/MM/YYYY";
 
 const { Title } = Typography;
 
-const { Option } = Select;
 const RetunNote = () => {
   const [buttonVisible, setButtonVisible] = useState(false)
   const formRef = useRef()
@@ -442,11 +439,6 @@ const RetunNote = () => {
                 onChange={(e) => handleIssueNoteNoChange(e.target.value)}
               />
             </Form.Item>
-            {/* <Form.Item label="ISSUE DA :" name="issueNoteDt">
-              <Input value={12233} onChange={(e)=>handleIssueNoteDtChange(e.target.value)}/>
-              {/* <DatePicker value={formData.issueNoteDt} format={dateFormat} style={{ width: '100%' }} onChange={(date, dateString) => handleChange("issueNoteDt", dateString)} /> */}
-
-            {/* </Form.Item> */}
 
             <Form.Item label="ISSUE DATE :" name="issueNoteDt">
               <Input value={formData.issueNoteDt} readOnly />
@@ -459,93 +451,12 @@ const RetunNote = () => {
         {/* Item Details */}
         <h2>ITEM DETAILS</h2>
 
-        {/* <Form.List name="itemDetails" initialValue={formData.items || [{}]}>
-          {(fields, { add, remove }) => (
-            <>
-              
-              {fields.map(({ key, name, ...restField }, index) => (
-                <div key={key} style={{ marginBottom: 16, border: '1px solid #d9d9d9', padding: 16, borderRadius: 4 }}>
-                  <Row gutter={24}>
-                    <Col span={6}>
-
-                      <Form.Item {...restField} label="S.NO." name={[name, 'srNo']}  >
-                        <Input value={formData.items?.[index]?.srNo} onChange={(e) => e.target && itemHandleChange(`srNo`, e.target.value, index)} readOnly />
-                        <span style={{ display: 'none' }}>{index + 1}</span>
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item {...restField} label="ITEM CODE" name={[name, 'itemCode']} initialValue={formData.items?.[index]?.itemCode}>
-                        <Input
-                          style={{ width: '100%' }}
-                          value={formData.items?.[index]?.itemCode}
-                          readOnly
-                        />
-                        <span style={{ display: 'none' }}>{index + 1}</span>
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item label="ITEM DESCRIPTION" name={[name, 'itemDesc']}>
-                        <Input
-                          style={{ width: '100%' }}
-                          value={formData.items?.[index]?.itemDesc}
-                          readOnly
-
-                        />
-                        <span style={{ display: 'none' }}>{index + 1}</span>
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item label="UOM" name={[name, 'uom']}>
-                        <Input
-                          style={{ width: '100%' }}
-                          value={findUomName(formData?.items?.[index]?.uom)}
-                          readOnly
-
-                        />
-                        <span style={{ display: 'none' }}>{index + 1}</span>
-                      </Form.Item>
-                    </Col>
-                    
-                    <Col span={6}>
-                      <Form.Item label="RETURN QUANTITY" name={[name, 'quantity']}>
-                        <Input value={formData.items?.[index]?.quantity} onChange={(e) => itemHandleChange(`quantity`, e.target.value, index)} />
-                        <span style={{ display: 'none' }}>{index + 1}</span>
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item label="RETURNED AFTER NO. OF DAYS" name={[name, 'noOfDays']}>
-                        <Input value={formData.issueNoteDt !== undefined ? daysDifference(formData.issueNoteDt) : ""} onChange={(e) => itemHandleChange(`noOfDays`, e.target.value, index)} readOnly />
-                        <span style={{ display: 'none' }}>{index + 1}</span>
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item label="CONDITION OF GOODS" name={[name, 'conditionOfgoods']}>
-                        <Input value={formData.items?.[index]?.conditionOfGoods} readOnly/>
-                      </Form.Item>
-                    </Col>
-                    <Col span={5}>
-                      <Form.Item label="REMARK" name={[name, 'remarks']}>
-                        <Input value={formData.items?.[index]?.remarks} readOnly/>
-                        <span style={{ display: 'none' }}>{index + 1}</span>
-                      </Form.Item>
-                    </Col>
-                    <Col span={1}>
-                      <MinusCircleOutlined onClick={() => remove(name)} style={{ marginTop: 8 }} />
-                    </Col>
-                  </Row>
-                </div>
-              ))}
-            </>
-          )}
-        </Form.List> */}
-
         <Form.List name="items" initialValue={formData.items || [{}]}>
           {(fields, { add, remove }) => (
             <>
               {formData.items?.length > 0 &&
                 formData.items.map((item, key) => {
                   return (
-                    // <div className="xyz" style={{font:"150px", zIndex: "100"}}>xyz</div>
 
                     <div
                       key={key}
