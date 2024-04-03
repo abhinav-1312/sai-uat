@@ -65,10 +65,10 @@ const TransactionDetail = () => {
 
       { objectFromArr["ACT"] &&
         <div>
-        <h2>Approved Transaction</h2>
+        <h2>Acceptance Note</h2>
         {
           acceptData ? 
-          <DetailData data = {acceptData?.data} itemList = {acceptData?.itemList} />
+          <DetailData processType='act' data = {acceptData?.data} itemList = {acceptData?.itemList} />
           :
           "No data available."
         }
@@ -79,7 +79,7 @@ const TransactionDetail = () => {
         <h2>Goods Receive Note</h2>
         {
           grnData ?
-          <DetailData data = {grnData?.data} itemList = {grnData?.itemList} />
+          <DetailData processType='grn' data = {grnData?.data} itemList = {grnData?.itemList} />
           :
           "No data available."
         }
@@ -99,7 +99,7 @@ const TransactionDetail = () => {
         <h2>Inspection Report Data</h2>
         {
           inspectionReportData ?
-          <DetailData data={inspectionReportData?.data} itemList={inspectionReportData?.itemList} /> 
+          <DetailData processType={"ir"} data={inspectionReportData?.data} itemList={inspectionReportData?.itemList} /> 
           :
           "No data available."
         }
@@ -126,10 +126,10 @@ const TransactionDetail = () => {
       </div>}
 
      { objectFromArr["REJ"] && <div>
-        <h2>Reject Data</h2>
+        <h2>Rejection Note</h2>
         {
           rejectData ?
-          <DetailData data={rejectData?.data} itemList={rejectData?.itemList} /> 
+          <DetailData processType='rej' data={rejectData?.data} itemList={rejectData?.itemList} /> 
           :
           "No data available."
         }

@@ -130,6 +130,10 @@ const GoodsReceiveNoteForm = () => {
   };
 
   const handleChange = (fieldName, value) => {
+    if(fieldName === "processType"){
+      fetchUserDetails(value)
+      return;
+    }
     setFormData((prevValues) => ({
       ...prevValues,
       [fieldName]: value === "" ? null : value,
@@ -186,40 +190,71 @@ const GoodsReceiveNoteForm = () => {
     fetchUserDetails();
   }, []);
 
-  const fetchUserDetails = async () => {
+  const fetchUserDetails = async (processType=null) => {
+    console.log("ProcessTypee: ", processType)
     const userCd = localStorage.getItem('userCd');
     const password = localStorage.getItem('password');
     try {
       const apiUrl =
         "https://sai-services.azurewebsites.net/sai-inv-mgmt/login/authenticate";
       const response = await axios.post(apiUrl, {
-        userCd, password
+        userCd,
+        password,
       });
 
       const { responseData } = response.data;
       const { organizationDetails } = responseData;
-      const { userDetails, locationDetails } = responseData;
+      const { userDetails } = responseData;
+      const {locationDetails} = responseData
       const currentDate = dayjs();
       // Update form data with fetched values
-      setFormData({
-        ceRegionalCenterCd: organizationDetails.id,
-        ceRegionalCenterName: organizationDetails.location,
-        ceAddress: organizationDetails.locationAddr,
-        ceZipcode: locationDetails.zipcode,
-        genName: userDetails.firstName,
-        userId: "string",
-        // noaDate: currentDate.format(dateFormat),
-        // dateOfDelivery: currentDate.format(dateFormat),
-        genDate: currentDate.format(dateFormat),
-        issueDate: currentDate.format(dateFormat),
-        approvedDate: currentDate.format(dateFormat),
-        grnDate: currentDate.format(dateFormat),
-        grnNo: "string",
-      });
+      if(processType === "IRP"){
+        setFormData({
+          crRegionalCenterCd: organizationDetails.id,
+          crRegionalCenterName: organizationDetails.location,
+          crAddress: organizationDetails.locationAddr,
+          crZipcode: locationDetails.zipcode,
+          genName: userDetails.firstName,
+          // noaDate: currentDate.format(dateFormat),
+          // dateOfDelivery: currentDate.format(dateFormat),
+          userId: "string",
+          genDate: currentDate.format(dateFormat),
+          issueDate: currentDate.format(dateFormat),
+          approvedDate: currentDate.format(dateFormat),
+          gatePassDate: currentDate.format(dateFormat),
+          gatePassNo: "Not defined",
+          processType: processType,
+          type: processType,
+          processId: "string"
+        });
+      }
+      else{
+        setFormData({
+          ceRegionalCenterCd: organizationDetails.id,
+          ceRegionalCenterName: organizationDetails.location,
+          ceAddress: organizationDetails.locationAddr,
+          ceZipcode: locationDetails.zipcode,
+          genName: userDetails.firstName,
+          noaDate: currentDate.format(dateFormat),
+          dateOfDelivery: currentDate.format(dateFormat),
+          userId: "string",
+          genDate: currentDate.format(dateFormat),
+          issueDate: currentDate.format(dateFormat),
+          approvedDate: currentDate.format(dateFormat),
+          gatePassDate: currentDate.format(dateFormat),
+          gatePassNo: "Not defined",
+          processType: processType,
+          type: processType,
+          processId: "string"
+        });
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
+
+  console.log("Formata: ", formData)
+
   const handleReturnNoteNoChange = async (value) => {
     try {
       const subProcessDtlUrl =
@@ -554,7 +589,7 @@ const GoodsReceiveNoteForm = () => {
           </Col>
           <Col span={6}>
             <Form.Item label="TYPE" name="type">
-              <Select onChange={(value) => handleChange("type", value)}>
+              <Select onChange={(value) => handleChange("processType", value)}>
                 <Option value="IRP">1. Issue/Return</Option>
                 <Option value="PO">2. Purchase Order</Option>
                 <Option value="IOP">3. Inter-Org Transaction</Option>
@@ -571,7 +606,6 @@ const GoodsReceiveNoteForm = () => {
         <Row gutter={24}>
           <Col span={8}>
             <Title strong level={2} underline type="danger">
-              {" "}
               {
                 Type === "IRP" ?
                 "CONSIGNOR DETAIL ;-" : "CONSIGNEE DETAIL :-"
@@ -579,33 +613,11 @@ const GoodsReceiveNoteForm = () => {
 
             </Title>
 
-            <Form.Item label="REGIONAL CENTER CODE" name="crRegionalCenterCd">
-              <Input value={formData.ceRegionalCenterCd} />
-              <div style={{ display: "none" }}>
-                {formData.crRegionalCenterCd}
-              </div>
-            </Form.Item>
-            <Form.Item
-              label="REGIONAL CENTER NAME "
-              name="crRegionalCenterName"
-            >
-              <Input value={formData.ceRegionalCenterName} />
-              <div style={{ display: "none" }}>
-                {formData.crRegionalCenterCd}
-              </div>
-            </Form.Item>
-            <Form.Item label="ADDRESS :" name="crAddress">
-              <Input value={formData.ceAddress} />
-              <div style={{ display: "none" }}>
-                {formData.crRegionalCenterCd}
-              </div>
-            </Form.Item>
-            <Form.Item label="ZIP CODE :" name="crZipcode">
-              <Input value={formData.ceZipcode} />
-              <div style={{ display: "none" }}>
-                {formData.crRegionalCenterCd}
-              </div>
-            </Form.Item>
+            {/* for purchase order */}
+            <FormInputItem label="REGIONAL CENTER CODE :" value={Type==="IRP" ? formData.crRegionalCenterCd : formData.ceRegionalCenterCd} readOnly={true}/>
+            <FormInputItem label="REGIONAL CENTER NAME :" value={Type==="IRP" ? formData.crRegionalCenterName :formData.ceRegionalCenterName} readOnly={true} />
+            <FormInputItem label="ADDRESS :" value={Type==="IRP" ? formData.crAddress : formData.ceAddress} readOnly={true} />
+            <FormInputItem label="ZIPCODE :" value={Type==="IRP" ? formData.crZipcode : formData.ceZipcode} readOnly={true} />
           </Col>
           <Col span={8}>
             <Title strong underline level={2} type="danger">

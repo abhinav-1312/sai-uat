@@ -129,18 +129,6 @@ const InwardGatePass = () => {
     if(fieldName === "processType"){
       console.log(fieldName, value)
       fetchUserDetails(value)
-      // setFormData(prev=>{
-      //   return{
-      //     ...prev,
-      //     processType: value,
-      //     type: value,
-      //     ceAddress: prev.crAddress,
-      //     crAddress: "",
-      //     ceRegionalCenterCd: prev.crRegionalCenterCd,
-      //     ceRegionalCenterName: prev.crRegionalCenterName,
-      //     ceZipcode: prev.crZipcode
-      //   }
-      // })
       return;
     }
     if(fieldName === "supplierCode"){
