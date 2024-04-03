@@ -43,28 +43,60 @@ export const updateUser = (userId, values) => async (dispatch) => {
   }
 };
 
+// export const saveUser = (values) => async (dispatch) => {
+//   try {
+//     const createResponse = await fetch(`${BASE_URL}/saveUserMaster`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         'Authorization' : token
+//       },
+//       body: JSON.stringify(values),
+//     });
+
+//     if (createResponse.ok) {
+//       alert("Users Added Successfully");
+//       dispatch(fetchUsers());
+//     } else {
+//       alert("User Added Failed");
+//       console.error("Create failed:", createResponse.statusText);
+//     }
+//   } catch (error) {
+//     console.error("Error:", error);
+//   }
+// };
+
 export const saveUser = (values) => async (dispatch) => {
   try {
     const createResponse = await fetch(`${BASE_URL}/saveUserMaster`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        'Authorization' : token
+        Authorization: token,
       },
       body: JSON.stringify(values),
     });
 
-    if (createResponse.ok) {
+    const responseData = await createResponse.json();
+
+    if (responseData && responseData.responseStatus && responseData.responseStatus.statusCode === 200) {
       alert("Users Added Successfully");
       dispatch(fetchUsers());
     } else {
-      alert("User Added Failed");
-      console.error("Create failed:", createResponse.statusText);
+      // Handle error based on response body
+      if (responseData && responseData.responseStatus) {
+        alert(responseData.responseStatus.message);
+      } else {
+        alert("User Added Failed");
+      }
     }
   } catch (error) {
     console.error("Error:", error);
+    alert("An error occurred while processing your request");
   }
 };
+
+
 
 export const deleteUser = (userId) => async (dispatch) => {
   try {
