@@ -74,7 +74,7 @@ const UserForm = ({ onSubmit, initialValues }) => {
         <Col span={8}>
           <Form.Item
             name="userCd"
-            label="User Code"
+            label="User ID"
             rules={[{ required: true, message: "Please enter User ID" }]}
           >
             <Input />
@@ -183,6 +183,7 @@ const UserForm = ({ onSubmit, initialValues }) => {
             rules={[{ required: true, message: "Please enter User Type" }]}
           >
             <Select>
+              <Option value="99">Super Admin</Option>
               <Option value="11">Admin</Option>
               <Option value="12">Inventory Manager</Option>
               <Option value="13">Quality Manager</Option>
