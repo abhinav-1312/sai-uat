@@ -1,6 +1,8 @@
 // LocationActions.js
 import { BASE_URL } from "../../utils/BaseUrl";
 
+const token = localStorage.getItem("token");
+
 export const setLocations = (locations) => ({
   type: 'SET_LOCATIONS',
   payload: locations,
@@ -8,7 +10,7 @@ export const setLocations = (locations) => ({
 
 export const fetchLocations = () => async (dispatch) => {
   try {
-    const response = await fetch(`${BASE_URL}/getLocationMaster`);
+    const response = await fetch(`${BASE_URL}/getLocationMaster`, {headers: {Authorization: token}});
     const data = await response.json();
 
     dispatch(setLocations(data.responseData));
@@ -23,6 +25,7 @@ export const updateLocation = (locationId, values) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization' : token
       },
       body: JSON.stringify({
         locationId,
@@ -48,6 +51,7 @@ export const saveLocation = (values) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization' : token
       },
       body: JSON.stringify(values),
     });
@@ -70,6 +74,7 @@ export const deleteLocation = (locationId) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization' : token
       },
       body: JSON.stringify({
         userId: 'string', 

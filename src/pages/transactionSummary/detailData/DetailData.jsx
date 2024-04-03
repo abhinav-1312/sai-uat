@@ -57,10 +57,7 @@ const DetailData = ({
       title: "Inspected Quantity",
       dataIndex: "inspectedQuantity",
     },
-    {
-      title: "Required no. of days",
-      dataIndex: "requiredDays",
-    },
+    (processType === "igp" || processType==='act' || processType === 'grn' || processType === "rej") ? {} : {title: "Required no. of days", dataIndex: "requiredDays",},
     {
       title: "Budget Head Procurement",
       dataIndex: "budgetHeadProcurement",
@@ -84,8 +81,32 @@ const DetailData = ({
     if(processType === 'ogp' && (key === 'noaNo' || key === 'dateOfDelivery' || key === "noaDate")){
       return {}
     }
-    else if(processType === 'igp' && (key === 'ceRegionalCenterCd' || key === 'ceRegionalCenterName'  || key === 'ceAddress' || key === 'ceZipcode')){
+    else if(processType === 'igp' && (key === 'ceRegionalCenterCd' || key === 'ceRegionalCenterName'  || key === 'ceAddress' || key === 'ceZipcode' || key==="approvedDate")){
       return {}
+    }
+    else if(processType === "ir" && (key === "issueName" || key === 'crAddress' || key === "approvedName")){
+      return {}
+    }
+    else if(processType === 'act' && (key === 'issueName' || key === 'issueDate' || key === "crAddress")){
+      return {}
+    }
+    else if(processType === 'grn' && (key === "issueName" || key === 'crAddress')){
+      return {}
+    }
+    else if(processType === "rej" && (key === "issueName" || key === "crAddress")){
+      return {}
+    }
+    else if(processType === "act" && key === "acptRejNoteNo"){
+      return { title: "Acceptance Note No.", dataIndex: "processId" };
+    }
+    else if(processType === "rej" && key === "acptRejNoteNo"){
+      return { title: "Rejection Note No.", dataIndex: "processId" };
+    }
+    else if(processType === "act" && key === "acptRejNoteDate"){
+      return { title: "Acceptance Note Date", dataIndex: key };
+    }
+    else if(processType === "rej" && key === "acptRejNoteDate"){
+      return { title: "Rejection Note Date", dataIndex: key };
     }
     else{
 
@@ -95,6 +116,16 @@ const DetailData = ({
       if(key === 'gatePassNo'){
         return { title: columnName[key] || key, dataIndex: "processId" };
       }
+      if(key === 'inspectionRptNo'){
+        return {title: columnName[key] || key, dataIndex: "processId"}
+      }
+      if(key === 'grnNo'){
+        return { title: columnName[key] || key, dataIndex: "processId" };
+      }
+      if(key === 'acptRejNoteNo'){
+        return { title: columnName[key] || key, dataIndex: "processId" };
+      }
+
       return { title: columnName[key] || key, dataIndex: key };
     }
     });

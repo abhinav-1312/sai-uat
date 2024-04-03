@@ -1,5 +1,7 @@
 import { BASE_URL } from "../../utils/BaseUrl";
 
+const token = localStorage.getItem("token")
+
 export const setEmployees = (employees) => ({
   type: 'SET_EMPLOYEES',
   payload: employees,
@@ -7,7 +9,7 @@ export const setEmployees = (employees) => ({
 
 export const fetchEmployees = () => async (dispatch) => {
   try {
-    const response = await fetch(`${BASE_URL}/getEmpMaster`);
+    const response = await fetch(`${BASE_URL}/getEmpMaster`, {headers: {Authorization:token}});
     const data = await response.json();
 
     dispatch(setEmployees(data.responseData));
@@ -22,6 +24,7 @@ export const updateEmployee = (employeeId, values) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization' : token
       },
       body: JSON.stringify({
         employeeId,
@@ -47,6 +50,7 @@ export const saveEmployee = (values) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization' : token
       },
       body: JSON.stringify(values),
     });
@@ -69,6 +73,7 @@ export const deleteEmployee = (employeeId) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization' : token
       },
       body: JSON.stringify({
         userId: 'string', 

@@ -24,11 +24,13 @@ const SignIn = () => {
       );
 
       const { userCd, userType } = response.data.responseData.userDetails;
+      const { token } = response.data.responseData;
 
       // Store user details in local storage
       localStorage.setItem("userCd", userCd);
       localStorage.setItem("userType", userType);
       localStorage.setItem("password", values.password);
+      localStorage.setItem("token", token);
 
       setIsLoggedIn(true);
 
@@ -56,6 +58,11 @@ const SignIn = () => {
         const userRoles = "VendorAdmin";
         localStorage.setItem("userRoles", userRoles);
         localStorage.setItem("userType", "VendorAdmin");
+      }
+      if (userType === "99") {
+        const userRoles = "SuperAdmin";
+        localStorage.setItem("userRoles", userRoles);
+        localStorage.setItem("userType", "SuperAdmin");
       }
 
       window.location.reload();
@@ -85,12 +92,12 @@ const SignIn = () => {
               message: "Enter User Code",
             },
           ]}
-          label="Employee Id"
+          label="Login Id"
           name="userCd"
         >
           <Input
             prefix={<UserOutlined className="site-form-item-icon" />}
-            placeholder="Enter Employee Id"
+            placeholder="Enter Login Id"
             // value={userCd}
             // onChange={(e) => setUserCd(e.target.value)}
           />

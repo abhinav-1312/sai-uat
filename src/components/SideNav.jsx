@@ -150,6 +150,13 @@ const SideNav = () => {
   const userRole = localStorage.getItem("userRoles");
   const filteredMenuItems = menuItems.filter((item) => {
     switch (userRole) {
+      case "admin":
+        return (
+          item.key !== "13" &&
+          item.key !== "2" &&
+          item.key !== "5" &&
+          item.key !== "4"
+        );
       case "InventoryManager":
         // Only show items accessible to inventory managers
         return (

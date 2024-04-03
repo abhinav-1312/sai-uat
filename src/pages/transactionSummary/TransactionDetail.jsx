@@ -7,27 +7,34 @@ import DetailData from "./detailData/DetailData";
 const TransactionDetail = () => {
   const navigate = useNavigate();
   const { trnno: url } = useParams();
-  const urlArr = url.split("_")
+  const urlArr = url.split("_");
   const trnNo = urlArr[0];
 
-  const arrayToConvert = urlArr.slice(1)
+  const arrayToConvert = urlArr.slice(1);
+  console.log("Array to convert: ", arrayToConvert);
   const objectFromArr = arrayToConvert.reduce((acc, key) => {
     acc[key] = true;
     return acc;
   }, {});
-  
-  const [acceptData, setAcceptData] = useState(null)
-  const [returnData, setReturnData] = useState(null)
-  const [igpData, setIgpData] = useState(null)
-  const [inspectionReportData, setInspectionReportData] = useState(null)
-  const [isnData, setIsnData] = useState(null)
-  const [grnData, setGrnData] = useState(null)
-  const [ogpData, setOgpData] = useState(null)
-  const [rejectData, setRejectData] = useState(null)
+
+  const [acceptData, setAcceptData] = useState(null);
+  const [returnData, setReturnData] = useState(null);
+  const [igpData, setIgpData] = useState(null);
+  const [inspectionReportData, setInspectionReportData] = useState(null);
+  const [isnData, setIsnData] = useState(null);
+  const [grnData, setGrnData] = useState(null);
+  const [ogpData, setOgpData] = useState(null);
+  const [rejectData, setRejectData] = useState(null);
+  const token = localStorage.getItem("token");
+  console.log("Return data: ", igpData);
   const populateData = async () => {
     const trnDetailUrl =
       "https://sai-services.azurewebsites.net/sai-inv-mgmt/txns/getTxnDtls";
-    const { data } = await axios.post(trnDetailUrl, { processId: trnNo });
+    const { data } = await axios.post(
+      trnDetailUrl,
+      { processId: trnNo },
+      { headers: { Authorization: token } }
+    );
     const { responseData } = data;
     const {
       acceptData,
@@ -39,47 +46,53 @@ const TransactionDetail = () => {
       rejectData,
       rndata,
     } = responseData;
-    setAcceptData(acceptData)
-    setReturnData(rndata)
-    setIgpData(igpdata)
-    setInspectionReportData(inspectionRptData)
-    setIsnData(isndata)
-    setOgpData(ogpdata)
-    setGrnData(grndata)
-    setRejectData(rejectData)
+    setAcceptData(acceptData);
+    setReturnData(rndata);
+    setIgpData(igpdata);
+    setInspectionReportData(inspectionRptData);
+    setIsnData(isndata);
+    setOgpData(ogpdata);
+    setGrnData(grndata);
+    setRejectData(rejectData);
   };
   useEffect(() => {
     populateData();
   }, []);
   return (
-    <div style={{display: "flex", flexDirection: "column", gap: "2rem"}}>
-      <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <div>
-            <Button type="primary" onClick={() => navigate("/trnsummary")}>
-              Back
-            </Button>
+          <Button type="primary" onClick={() => navigate("/trnsummary")}>
+            Back
+          </Button>
         </div>
         <h1>Transaction Detail</h1>
         <h1>Transaction No: {trnNo}</h1>
       </div>
 
-      { objectFromArr["ACT"] &&
+      {objectFromArr["ACT"] && (
         <div>
-        <h2>Approved Transaction</h2>
+        <h2>Acceptance Note</h2>
         {
           acceptData ? 
-          <DetailData data = {acceptData?.data} itemList = {acceptData?.itemList} />
+          <DetailData processType='act' data = {acceptData?.data} itemList = {acceptData?.itemList} />
           :
           "No data available."
         }
       </div>
-      }
+      )}
 
       { objectFromArr["GRN"] && <div>
         <h2>Goods Receive Note</h2>
         {
           grnData ?
-          <DetailData data = {grnData?.data} itemList = {grnData?.itemList} />
+          <DetailData processType='grn' data = {grnData?.data} itemList = {grnData?.itemList} />
           :
           "No data available."
         }
@@ -99,7 +112,7 @@ const TransactionDetail = () => {
         <h2>Inspection Report Data</h2>
         {
           inspectionReportData ?
-          <DetailData data={inspectionReportData?.data} itemList={inspectionReportData?.itemList} /> 
+          <DetailData processType={"ir"} data={inspectionReportData?.data} itemList={inspectionReportData?.itemList} /> 
           :
           "No data available."
         }
@@ -126,25 +139,28 @@ const TransactionDetail = () => {
       </div>}
 
      { objectFromArr["REJ"] && <div>
-        <h2>Reject Data</h2>
+        <h2>Rejection Note</h2>
         {
           rejectData ?
-          <DetailData data={rejectData?.data} itemList={rejectData?.itemList} /> 
+          <DetailData processType='rej' data={rejectData?.data} itemList={rejectData?.itemList} /> 
           :
           "No data available."
         }
       </div>}
 
-{     objectFromArr["RN"] && 
-      <div>
-        <h2>Return Note</h2>
-        {
-          returnData ? 
-          <DetailData data={returnData?.data} itemList={returnData?.itemList} />
-          : 
-          "No data available."
-        }
-      </div>}
+      {objectFromArr["RN"] && (
+        <div>
+          <h2>Return Note</h2>
+          {returnData ? (
+            <DetailData
+              data={returnData?.data}
+              itemList={returnData?.itemList}
+            />
+          ) : (
+            "No data available."
+          )}
+        </div>
+      )}
     </div>
   );
 };

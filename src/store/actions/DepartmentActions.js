@@ -1,6 +1,9 @@
 // DepartmentActions.js
 import { BASE_URL } from "../../utils/BaseUrl";
 
+
+const token = localStorage.getItem("token");
+
 export const setDepartments = (departments) => ({
   type: 'SET_DEPARTMENTS',
   payload: departments,
@@ -8,7 +11,7 @@ export const setDepartments = (departments) => ({
 
 export const fetchDepartments = () => async (dispatch) => {
   try {
-    const response = await fetch(`${BASE_URL}/getDeptMaster`);
+    const response = await fetch(`${BASE_URL}/getDeptMaster`, {headers: {Authorization:token}});
     const data = await response.json();
 
     dispatch(setDepartments(data.responseData));
@@ -23,6 +26,7 @@ export const updateDepartment = (departmentId, values) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization' : token
       },
       body: JSON.stringify({
         departmentId,
@@ -48,6 +52,7 @@ export const saveDepartment = (values) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': token
       },
       body: JSON.stringify(values),
     });
@@ -70,6 +75,7 @@ export const deleteDepartment = (departmentId) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization' : token
       },
       body: JSON.stringify({
         userId: 'string', 

@@ -9,6 +9,7 @@ const App = () => {
     localStorage.removeItem("userCd");
     localStorage.removeItem("userType");
     localStorage.removeItem("userRoles");
+    localStorage.removeItem("token");
     window.location.reload();
   };
   const {
