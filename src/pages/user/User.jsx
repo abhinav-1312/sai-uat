@@ -23,8 +23,10 @@ const initialUsers = [
     department: "IT",
     emailId: "john.doe@example.com",
     contactNo: "9876543210",
-    userStatus: "Active",
-    privileges: "Full Access",
+    endDate: "25/05/2024",
+    createUserId: "12345",
+    // userStatus: "Active",
+    // privileges: "Full Access",
   },
   // Add more dummy data as needed
 ];

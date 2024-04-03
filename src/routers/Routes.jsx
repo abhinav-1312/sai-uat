@@ -34,7 +34,7 @@ import SignIn from "../auth/Login";
 const RoutesComponent = () => {
   const userRole = localStorage.getItem("userRoles");
 
-  const adminRoutes = (
+  const superAdminRoutes = (
     <>
       <Route path="/sub-organization" element={<Organization />} />
       <Route path="/location" element={<Location />} />
@@ -45,6 +45,39 @@ const RoutesComponent = () => {
       <Route path="/locator" element={<Locator />} />
       <Route path="/department" element={<DepartmentPage />} />
       <Route path="/user" element={<User />} />
+      <Route path="/employee" element={<Employee />} />
+      <Route path="/tax" element={<Tax />} />
+      <Route path="/transaction" element={<Transaction />} />
+      <Route path="/uom" element={<UOM />} />
+      <Route path="/currency" element={<Currency />} />
+      <Route path="/Vendor" element={<Vendor />} />
+      <Route path="/quickcode" element={<QuickCode />} />
+      <Route path="/trans/grn" element={<GoodsReceiveNoteForm />} />
+      <Route path="/trans/demand" element={<DemandNoteForm />} />
+      <Route path="/trans/ird-demand" element={<IrdDemand />} />
+      <Route path="/trans/issue" element={<IssueNote />} />
+      <Route path="/trans/outward" element={<OutwardGatePass />} />
+      <Route path="/trans/inward" element={<InwardGatePass />} />
+      <Route path="/trans/return" element={<RetunNote />} />
+      <Route path="/trans/inspection" element={<InsepctionReport />} />
+      <Route path="/trans/inspectionNote" element={<InspectionNote />} />
+      <Route path="/trans/acceptance" element={<AcceptanceNote />} />
+      <Route path="/trans/rejection" element={<RejectionNote />} />
+      {<Route path="/itemsearch" element={<Itemdemandsearch />} />}
+    </>
+  );
+
+  const adminRoutes = (
+    <>
+      {/* <Route path="/sub-organization" element={<Organization />} /> */}
+      {/* <Route path="/location" element={<Location />} /> */}
+      <Route path="/items" element={<Items />} />
+      <Route path="/ohq" element={<OHQ />} />
+      <Route path="/trnsummary" element={<TransactionSummary />} />
+      <Route path="/trnsummary/:trnno" element={<TransactionDetail />} />
+      {/* <Route path="/locator" element={<Locator />} /> */}
+      <Route path="/department" element={<DepartmentPage />} />
+      {/* <Route path="/user" element={<User />} /> */}
       <Route path="/employee" element={<Employee />} />
       <Route path="/tax" element={<Tax />} />
       <Route path="/transaction" element={<Transaction />} />
@@ -123,6 +156,7 @@ const RoutesComponent = () => {
 
   return (
     <Routes>
+      {userRole === "SuperAdmin" && superAdminRoutes}
       {userRole === "admin" && adminRoutes}
       {userRole === "InventoryManager" && inventoryManagerRoutes}
       {userRole === "QualityManager" && qualityManagerRoutes}

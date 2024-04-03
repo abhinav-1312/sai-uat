@@ -9,15 +9,15 @@ import {
   types,
   allDisciplines,
   subCategories,
-  categories,
-  usageCategories,
 } from "./KeyValueMapping";
 
 const apiRequest = async (url, method, requestData) => {
+  const token = localStorage.getItem("token");
   const options = {
     method: method,
     headers: {
       "Content-Type": "application/json",
+      Authorization: token,
     },
   };
 
@@ -48,6 +48,7 @@ const ItemsPage = () => {
   const [sizes, setSizes] = useState([]);
   const [colors, setColors] = useState([]);
   const [usageCategories, setUsageCategories] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   const getUoms = async () => {
     const uomResponse = await apiRequest(
@@ -88,6 +89,14 @@ const ItemsPage = () => {
     );
 
     setUsageCategories(usageCategoriesRespone);
+  };
+  const getCategories = async () => {
+    const categoriesRespone = await apiRequest(
+      "https://sai-services.azurewebsites.net/sai-inv-mgmt/genparam/getAllCategories",
+      "GET"
+    );
+
+    setCategories(categoriesRespone);
   };
 
   const getLocations = async () => {
@@ -205,6 +214,7 @@ const ItemsPage = () => {
     getSizes();
     getColors();
     getUsageCategories();
+    getCategories();
   };
 
   useEffect(() => {

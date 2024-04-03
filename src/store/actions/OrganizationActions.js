@@ -1,5 +1,6 @@
 import { BASE_URL } from "../../utils/BaseUrl";
 
+const token = localStorage.getItem("token");
 export const setOrganizations = (organizations) => ({
   type: 'SET_ORGANIZATIONS',
   payload: organizations,
@@ -7,7 +8,7 @@ export const setOrganizations = (organizations) => ({
 
 export const fetchOrganizations = () => async (dispatch) => {
   try {
-    const response = await fetch(`${BASE_URL}/getOrgMaster`);
+    const response = await fetch(`${BASE_URL}/getOrgMaster`, {headers: {Authorization : token}});
     const data = await response.json();
 
     dispatch(setOrganizations(data.responseData));
@@ -22,6 +23,7 @@ export const updateOrganization = (organizationId, values) => async (dispatch) =
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization' : token
       },
       body: JSON.stringify({
         organizationId,
@@ -47,6 +49,7 @@ export const saveOrganization = (values) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization' : token
       },
       body: JSON.stringify(values),
     });
@@ -69,6 +72,7 @@ export const deleteOrganization = (organizationId) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization' : token
       },
       body: JSON.stringify({
         userId: "12345",

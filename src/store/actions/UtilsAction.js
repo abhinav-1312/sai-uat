@@ -1,12 +1,14 @@
 // utilsActions.js
 import { BASE_URL } from "../../utils/BaseUrl";
 
+const token = localStorage.getItem("token");
 export const authenticateUser = (userCd, password) => async (dispatch) => {
   try {
     const response = await fetch(`${BASE_URL}/login/authenticate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization' : token
       },
       body: JSON.stringify({
         userCd,

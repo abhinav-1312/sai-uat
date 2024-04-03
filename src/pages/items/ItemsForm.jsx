@@ -1,5 +1,5 @@
 // ItemsForm.js
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Form,
   Input,
@@ -10,6 +10,7 @@ import {
   Col,
   InputNumber,
 } from "antd";
+import axios from "axios";
 
 const { Option } = Select;
 
@@ -25,12 +26,183 @@ const ItemsForm = ({
   itemNames,
   sizes,
   categories,
-  subCategories,
   usageCategories,
-  types,
-  disciplines,
 }) => {
   const [form] = Form.useForm();
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedSubCategory, setSelectedSubCategory] = useState(null);
+  const [selectedType, setSelectedType] = useState(null);
+  const [selectedDiscipline, setSelectedDiscipline] = useState(null);
+  const [subCategoryOptions, setSubCategoryOptions] = useState([]);
+  const [typeOptions, setTypeOptions] = useState([]);
+  const [disciplineOptions, setDisciplineOptions] = useState([]);
+  const [disciplinesDisabled, setDisciplinesDisabled] = useState(true);
+  const [itemDescriptionOptions, setItemDescriptionOptions] = useState([]);
+  const [itemDescriptionDisabled, setItemDescriptionDisabled] = useState(true);
+
+  const token = localStorage.getItem("token");
+
+  const handleCategoryChange = (value) => {
+    setSelectedCategory(value);
+    setSelectedSubCategory(null);
+    setSelectedType(null);
+    setSelectedDiscipline(null);
+    setDisciplinesDisabled(true);
+    setItemDescriptionDisabled(true);
+  };
+
+  const handleSubCategoryChange = (value) => {
+    setSelectedSubCategory(value);
+    setSelectedType(null);
+    setSelectedDiscipline(null);
+    setDisciplinesDisabled(true);
+    setItemDescriptionDisabled(true);
+  };
+
+  const handleTypeChange = (value) => {
+    setSelectedType(value);
+    setSelectedDiscipline(null);
+    setDisciplinesDisabled(true);
+    setItemDescriptionDisabled(true);
+  };
+
+  const handleDisciplineChange = (value) => {
+    setSelectedDiscipline(value);
+    setItemDescriptionDisabled(true);
+  };
+
+  useEffect(() => {
+    if (selectedCategory) {
+      const fetchSubCategories = async () => {
+        try {
+          const response = await axios.post(
+            "https://sai-services.azurewebsites.net/sai-inv-mgmt/genparam/getAllSubCategoriesByDtls",
+            {
+              categoryCode: selectedCategory,
+            },
+            {
+              headers: {
+                Authorization: token,
+              },
+            }
+          );
+          const data = response.data.responseData;
+          // Assuming the response contains an array of subcategory options
+          const subcategoryOptions = data.map((subcategory) => ({
+            key: subcategory.subCategoryCode,
+            value: subcategory.subCategoryDesc,
+          }));
+          setSubCategoryOptions(subcategoryOptions);
+        } catch (error) {
+          console.error("Error fetching subcategories:", error);
+        }
+      };
+
+      fetchSubCategories();
+    }
+  }, [selectedCategory, token]);
+
+  useEffect(() => {
+    if (selectedSubCategory) {
+      const fetchTypes = async () => {
+        try {
+          const response = await axios.post(
+            "https://sai-services.azurewebsites.net/sai-inv-mgmt/genparam/getAllItemTypeByDtls",
+            {
+              categoryCode: selectedCategory,
+              subCategoryCode: selectedSubCategory,
+            },
+            {
+              headers: {
+                Authorization: token,
+              },
+            }
+          );
+          const data = response.data.responseData;
+          const typeOptions = data.map((type) => ({
+            key: type.typeCode,
+            value: type.typeDesc,
+          }));
+          setTypeOptions(typeOptions);
+        } catch (error) {
+          console.error("Error fetching types:", error);
+        }
+      };
+
+      fetchTypes();
+    }
+  }, [selectedSubCategory, selectedCategory, token]);
+
+  useEffect(() => {
+    if (selectedType) {
+      const fetchDisciplines = async () => {
+        try {
+          const response = await axios.post(
+            "https://sai-services.azurewebsites.net/sai-inv-mgmt/genparam/getAllDisciplineByDtls",
+            {
+              categoryCode: selectedCategory,
+              subCategoryCode: selectedSubCategory,
+              typeCode: selectedType,
+            },
+            {
+              headers: {
+                Authorization: token,
+              },
+            }
+          );
+          const data = response.data.responseData;
+          const disciplineOptions = data.map((discipline) => ({
+            key: discipline.disciplineCode,
+            value: discipline.disciplineName,
+          }));
+          setDisciplineOptions(disciplineOptions);
+          setDisciplinesDisabled(false);
+        } catch (error) {
+          console.error("Error fetching disciplines:", error);
+        }
+      };
+      fetchDisciplines();
+    }
+  }, [selectedType, selectedSubCategory, selectedCategory, token]);
+
+  useEffect(() => {
+    if (selectedDiscipline) {
+      const fetchItemDescriptions = async () => {
+        try {
+          const response = await axios.post(
+            "https://sai-services.azurewebsites.net/sai-inv-mgmt/genparam/getAllItemNamesByDtls",
+            {
+              categoryCode: selectedCategory,
+              subCategoryCode: selectedSubCategory,
+              typeCode: selectedType,
+              disciplineCode: selectedDiscipline,
+            },
+            {
+              headers: {
+                Authorization: token,
+              },
+            }
+          );
+          const data = response.data.responseData;
+          const itemDescriptionOptions = data.map((itemDescription) => ({
+            key: itemDescription.itemName,
+            value: itemDescription.itemNameCode,
+          }));
+          setItemDescriptionOptions(itemDescriptionOptions);
+          setItemDescriptionDisabled(false);
+        } catch (error) {
+          console.error("Error fetching item descriptions:", error);
+        }
+      };
+      fetchItemDescriptions();
+    }
+  }, [
+    selectedDiscipline,
+    selectedType,
+    selectedSubCategory,
+    selectedCategory,
+    token,
+  ]);
 
   const onFinish = (values) => {
     values = { ...values, itemMasterDesc: values.itemMasterDesc[0] };
@@ -72,70 +244,13 @@ const ItemsForm = ({
               { required: true, message: "Please enter Item Description" },
             ]}
           >
-            {/* <Select>
-              {Object.entries(itemNames).map(([key, value]) => {
-                return (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
-                );
-              })}
-            </Select> */}
-
-            {/* <Select
-              showSearch
-              style={{ width: 200 }}
-              placeholder="Select or type"
-              optionFilterProp="children"
-              value={itemDescVal}
-              onChange={handleSelectChange}
-              filterOption={(input, option) =>
-                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            > */}
-            {/* {options.map(option => (
-          <Option key={option} value={option}>{option}</Option>
-        ))} */}
-
-            {/* {Object.entries(itemNames).map(([key, value]) => {
-                return (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
-                );
-              })}
-            </Select> */}
-
-            <Select
-              // showSearch
-              // value={itemDescVal}
-              // onChange={(e)=>handleSelectChange(e.target.val)}
-              // style={{ width: '100%' }}
-              // placeholder="Select or type"
-              // optionFilterProp="children"
-              showSearch
-              mode="tags"
-              style={{ width: "100%" }}
-              placeholder="Select or type"
-            >
-              {/* <Option value="option1">Option 1</Option>
-          <Option value="option2">Option 2</Option>
-          <Option value="option3">Option 3</Option> */}
-
-              {Object.entries(itemNames).map(([key, value]) => {
-                return (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
-                );
-              })}
+            <Select disabled={itemDescriptionDisabled}>
+              {itemDescriptionOptions.map((item) => (
+                <Option key={item.key} value={item.key}>
+                  {item.value}
+                </Option>
+              ))}
             </Select>
-            {/* <Input
-          value={itemDescVal}
-          onChange={(e) => handleInputChange(e.target.val)}
-          style={{ marginTop: '10px' }}
-          placeholder="Or type your own"
-        /> */}
           </Form.Item>
         </Col>
         <Col span={8}>
@@ -240,11 +355,11 @@ const ItemsForm = ({
             label="Category"
             rules={[{ required: true, message: "Please enter Category" }]}
           >
-            <Select>
-              {Object.entries(categories).map(([key, value]) => {
+            <Select onChange={handleCategoryChange}>
+              {categories.map((category, index) => {
                 return (
-                  <Option key={key} value={key}>
-                    {value}
+                  <Option key={index} value={category.paramVal}>
+                    {category.paramDesc}
                   </Option>
                 );
               })}
@@ -260,14 +375,15 @@ const ItemsForm = ({
             label="SUB-CATEGORY"
             rules={[{ required: true, message: "Please enter SUB-CATEGORY" }]}
           >
-            <Select>
-              {Object.entries(subCategories).map(([key, value]) => {
-                return (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
-                );
-              })}
+            <Select
+              disabled={!selectedCategory}
+              onChange={handleSubCategoryChange}
+            >
+              {subCategoryOptions.map((option) => (
+                <Option key={option.key} value={option.key}>
+                  {option.value}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
         </Col>
@@ -277,14 +393,12 @@ const ItemsForm = ({
             label=" Type"
             rules={[{ required: true, message: "Please enter Item Type" }]}
           >
-            <Select>
-              {Object.entries(types).map(([key, value]) => {
-                return (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
-                );
-              })}
+            <Select disabled={!selectedSubCategory} onChange={handleTypeChange}>
+              {typeOptions.map((option) => (
+                <Option key={option.key} value={option.key}>
+                  {option.value}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
         </Col>
@@ -294,14 +408,15 @@ const ItemsForm = ({
             label="Disciplines"
             rules={[{ required: true, message: "Please enter Disciplines" }]}
           >
-            <Select>
-              {Object.entries(disciplines).map(([key, value]) => {
-                return (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
-                );
-              })}
+            <Select
+              disabled={disciplinesDisabled}
+              onChange={handleDisciplineChange}
+            >
+              {disciplineOptions.map((discipline) => (
+                <Option key={discipline.key} value={discipline.key}>
+                  {discipline.value}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
         </Col>

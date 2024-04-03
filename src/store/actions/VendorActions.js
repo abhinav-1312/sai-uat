@@ -1,5 +1,7 @@
 import { BASE_URL } from "../../utils/BaseUrl";
 
+const token = localStorage.getItem("token");
+
 export const setVendors = (vendors) => ({
   type: 'SET_VENDORS',
   payload: vendors,
@@ -7,7 +9,7 @@ export const setVendors = (vendors) => ({
 
 export const fetchVendors = () => async (dispatch) => {
   try {
-    const response = await fetch(`${BASE_URL}/getVendorMaster`);
+    const response = await fetch(`${BASE_URL}/getVendorMaster`, {headers: {Authorization : token}});
     const data = await response.json();
 
     dispatch(setVendors(data.responseData));
@@ -22,6 +24,7 @@ export const updateVendor = (vendorId, values) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization' : token
       },
       body: JSON.stringify({
         vendorId,
@@ -47,6 +50,7 @@ export const saveVendor = (values) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization' : token
       },
       body: JSON.stringify(values),
     });
@@ -69,6 +73,7 @@ export const deleteVendor = (vendorId) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization' : token
       },
       body: JSON.stringify({
         userId: 'string',
