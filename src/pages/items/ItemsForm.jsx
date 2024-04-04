@@ -71,21 +71,25 @@ const ItemsForm = ({
     setItemDescriptionDisabled(true);
   };
 
+  const test = async () => {
+    console.log("Test called")
+    try{
+      const url = "https://sai-services.azurewebsites.net/sai-inv-mgmt/genparam/getAllSubCategoriesByDtls"
+      const url1 = "https://sai-services.azurewebsites.net/sai-inv-mgmt/genparam/getAllSubCategoriesByDtls?categoryCode=2"
+      const response = await axios.post(url1)
+      console.log("Test response: ",response)
+    }catch(error){
+      console.log("Error in test: ", error)
+    }
+  }
+
+  test()
+
   useEffect(() => {
     if (selectedCategory) {
       const fetchSubCategories = async () => {
         try {
-          const response = await axios.post(
-            "https://sai-services.azurewebsites.net/sai-inv-mgmt/genparam/getAllSubCategoriesByDtls",
-            {
-              categoryCode: selectedCategory,
-            },
-            {
-              headers: {
-                Authorization: token,
-              },
-            }
-          );
+          const response = await axios.post(`https://sai-services.azurewebsites.net/sai-inv-mgmt/genparam/getAllSubCategoriesByDtls?categoryCode=${selectedCategory}`)
           const data = response.data.responseData;
           // Assuming the response contains an array of subcategory options
           const subcategoryOptions = data.map((subcategory) => ({
