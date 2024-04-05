@@ -123,7 +123,7 @@ const ItemsForm = ({
             }
           );
           const data = response.data.responseData;
-          const typeOptions = data.map((type) => ({
+          const typeOptions = data?.map((type) => ({
             key: type.typeCode,
             value: type.typeDesc,
           }));
@@ -141,21 +141,24 @@ const ItemsForm = ({
     if (selectedType) {
       const fetchDisciplines = async () => {
         try {
-          const response = await axios.post(
-            "https://sai-services.azurewebsites.net/sai-inv-mgmt/genparam/getAllDisciplineByDtls",
-            {
-              categoryCode: selectedCategory,
-              subCategoryCode: selectedSubCategory,
-              typeCode: selectedType,
-            },
-            {
-              headers: {
-                Authorization: token,
-              },
-            }
-          );
+          const url = "https://sai-services.azurewebsites.net/sai-inv-mgmt/genparam/getAllDisciplineByDtls"
+          const response = await axios.post(`${url}?categoryCode=${selectedCategory}&subCategoryCode=${selectedSubCategory}&typeCode=${selectedType}`)
+          // const response = await axios.post(
+          //   "https://sai-services.azurewebsites.net/sai-inv-mgmt/genparam/getAllDisciplineByDtls",
+          //   {
+          //     categoryCode: selectedCategory,
+          //     subCategoryCode: selectedSubCategory,
+          //     typeCode: selectedType,
+          //   },
+          //   {
+          //     headers: {
+          //       Authorization: token,
+          //     },
+          //   }
+          // );
           const data = response.data.responseData;
-          const disciplineOptions = data.map((discipline) => ({
+          console.log("discipline data: ", data)
+          const disciplineOptions = data?.map((discipline) => ({
             key: discipline.disciplineCode,
             value: discipline.disciplineName,
           }));
@@ -173,6 +176,8 @@ const ItemsForm = ({
     if (selectedDiscipline) {
       const fetchItemDescriptions = async () => {
         try {
+          const url = "https://sai-services.azurewebsites.net/sai-inv-mgmt/genparam/getAllItemNamesByDtls"
+          // const response = await axios.post(`${url}?categoryCode=${selectedCategory}&subCategoryCode=${selectedSubCategory}&typeCode=${selectedType}&disciplineCode=${selectedDiscipline}`)
           const response = await axios.post(
             "https://sai-services.azurewebsites.net/sai-inv-mgmt/genparam/getAllItemNamesByDtls",
             {
@@ -188,7 +193,8 @@ const ItemsForm = ({
             }
           );
           const data = response.data.responseData;
-          const itemDescriptionOptions = data.map((itemDescription) => ({
+          console.log("ITEM DESC DATA: ", data)
+          const itemDescriptionOptions = data?.map((itemDescription) => ({
             key: itemDescription.itemName,
             value: itemDescription.itemNameCode,
           }));
@@ -240,6 +246,81 @@ const ItemsForm = ({
             <Input disabled />
           </Form.Item>
         </Col>
+
+        <Col span={8}>
+          <Form.Item
+            name="category"
+            label="Category"
+            rules={[{ required: true, message: "Please enter Category" }]}
+          >
+            <Select onChange={handleCategoryChange}>
+              {categories?.map((category, index) => {
+                return (
+                  <Option key={index} value={category.paramVal}>
+                    {category.paramDesc}
+                  </Option>
+                );
+              })}
+            </Select>
+          </Form.Item>
+        </Col>
+
+        <Col span={8}>
+          <Form.Item
+            name="subCategory"
+            label="Sub-Category"
+            rules={[{ required: true, message: "Please enter SUB-CATEGORY" }]}
+          >
+            <Select
+              disabled={!selectedCategory}
+              onChange={handleSubCategoryChange}
+            >
+              {subCategoryOptions?.map((option) => (
+                <Option key={option.key} value={option.key}>
+                  {option.value}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+
+        <Col span={8}>
+          <Form.Item
+            name="type"
+            label=" Type"
+            rules={[{ required: true, message: "Please enter Item Type" }]}
+          >
+            <Select disabled={!selectedSubCategory} onChange={handleTypeChange}>
+              {typeOptions?.map((option) => (
+                <Option key={option.key} value={option.key}>
+                  {option.value}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+
+        <Col span={8}>
+          <Form.Item
+            name="disciplines"
+            label="Disciplines"
+            rules={[{ required: true, message: "Please enter Disciplines" }]}
+          >
+            <Select
+              disabled={disciplinesDisabled}
+              onChange={handleDisciplineChange}
+            >
+              {disciplineOptions?.map((discipline) => (
+                <Option key={discipline.key} value={discipline.key}>
+                  {discipline.value}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+
+        
+
         <Col span={8}>
           <Form.Item
             name="itemMasterDesc"
@@ -249,7 +330,7 @@ const ItemsForm = ({
             ]}
           >
             <Select disabled={itemDescriptionDisabled}>
-              {itemDescriptionOptions.map((item) => (
+              {itemDescriptionOptions?.map((item) => (
                 <Option key={item.key} value={item.key}>
                   {item.value}
                 </Option>
@@ -257,14 +338,34 @@ const ItemsForm = ({
             </Select>
           </Form.Item>
         </Col>
-        <Col span={8}>
+        {/* <Col span={8}>
           <Form.Item
             name="uomId"
             label="UOM"
             rules={[{ required: true, message: "Please enter UOM" }]}
           >
             <Select>
-              {uoms.map((uom, index) => {
+              {uoms?.map((uom, index) => {
+                return (
+                  <Option key={index} value={uom.id}>
+                    {uom.uomName}
+                  </Option>
+                );
+              })}
+            </Select>
+          </Form.Item>
+        </Col> */}
+      </Row>
+
+      <Row gutter={16}>
+      <Col span={8}>
+          <Form.Item
+            name="uomId"
+            label="UOM"
+            rules={[{ required: true, message: "Please enter UOM" }]}
+          >
+            <Select>
+              {uoms?.map((uom, index) => {
                 return (
                   <Option key={index} value={uom.id}>
                     {uom.uomName}
@@ -274,9 +375,7 @@ const ItemsForm = ({
             </Select>
           </Form.Item>
         </Col>
-      </Row>
 
-      <Row gutter={16}>
         <Col span={8}>
           <Form.Item
             name="quantity"
@@ -295,7 +394,7 @@ const ItemsForm = ({
             rules={[{ required: true, message: "Please enter Location" }]}
           >
             <Select>
-              {locations.map((location, index) => {
+              {locations?.map((location, index) => {
                 return (
                   <Option key={index} value={location.id}>
                     {location.locationName}
@@ -305,14 +404,35 @@ const ItemsForm = ({
             </Select>
           </Form.Item>
         </Col>
-        <Col span={8}>
+        {/* <Col span={8}>
           <Form.Item
             name="locatorId"
             label="Locator Description"
             rules={[{ required: true, message: "Please enter Locator Code" }]}
           >
             <Select>
-              {locators.map((locator, index) => {
+              {locators?.map((locator, index) => {
+                return (
+                  <Option key={index} value={locator.id}>
+                    {locator.locatorDesc}
+                  </Option>
+                );
+              })}
+            </Select>
+          </Form.Item>
+        </Col> */}
+      </Row>
+
+      <Row gutter={16}>
+
+      <Col span={8}>
+          <Form.Item
+            name="locatorId"
+            label="Locator Desc."
+            rules={[{ required: true, message: "Please enter Locator Code" }]}
+          >
+            <Select>
+              {locators?.map((locator, index) => {
                 return (
                   <Option key={index} value={locator.id}>
                     {locator.locatorDesc}
@@ -322,9 +442,7 @@ const ItemsForm = ({
             </Select>
           </Form.Item>
         </Col>
-      </Row>
 
-      <Row gutter={16}>
         <Col span={8}>
           <Form.Item
             name="price"
@@ -343,7 +461,7 @@ const ItemsForm = ({
             ]}
           >
             <Select>
-              {vendors.map((vendor, index) => {
+              {vendors?.map((vendor, index) => {
                 return (
                   <Option key={index} value={vendor.id}>
                     {vendor.vendorName}
@@ -353,7 +471,7 @@ const ItemsForm = ({
             </Select>
           </Form.Item>
         </Col>
-        <Col span={8}>
+        {/* <Col span={8}>
           <Form.Item
             name="category"
             label="Category"
@@ -369,11 +487,11 @@ const ItemsForm = ({
               })}
             </Select>
           </Form.Item>
-        </Col>
+        </Col> */}
       </Row>
 
       <Row gutter={16}>
-        <Col span={8}>
+        {/* <Col span={8}>
           <Form.Item
             name="subCategory"
             label="SUB-CATEGORY"
@@ -390,23 +508,23 @@ const ItemsForm = ({
               ))}
             </Select>
           </Form.Item>
-        </Col>
-        <Col span={8}>
+        </Col> */}
+        {/* <Col span={8}>
           <Form.Item
             name="type"
             label=" Type"
             rules={[{ required: true, message: "Please enter Item Type" }]}
           >
             <Select disabled={!selectedSubCategory} onChange={handleTypeChange}>
-              {typeOptions.map((option) => (
+              {typeOptions?.map((option) => (
                 <Option key={option.key} value={option.key}>
                   {option.value}
                 </Option>
               ))}
             </Select>
           </Form.Item>
-        </Col>
-        <Col span={8}>
+        </Col> */}
+        {/* <Col span={8}>
           <Form.Item
             name="disciplines"
             label="Disciplines"
@@ -423,7 +541,7 @@ const ItemsForm = ({
               ))}
             </Select>
           </Form.Item>
-        </Col>
+        </Col> */}
       </Row>
 
       <Row gutter={16}>
@@ -434,7 +552,7 @@ const ItemsForm = ({
             rules={[{ required: true, message: "Please enter Brand " }]}
           >
             <Select>
-              {brands.map((brand, index) => {
+              {brands?.map((brand, index) => {
                 return (
                   <Option key={index} value={brand.paramVal}>
                     {brand.paramDesc}
@@ -451,7 +569,7 @@ const ItemsForm = ({
             rules={[{ required: true, message: "Please enter Size" }]}
           >
             <Select>
-              {sizes.map((size, index) => {
+              {sizes?.map((size, index) => {
                 return (
                   <Option key={index} value={size.paramVal}>
                     {size.paramDesc}
@@ -468,7 +586,7 @@ const ItemsForm = ({
             rules={[{ required: true, message: "Please enter Colour" }]}
           >
             <Select>
-              {colors.map((color, index) => {
+              {colors?.map((color, index) => {
                 return (
                   <Option key={index} value={color.paramVal}>
                     {color.paramDesc}
@@ -484,7 +602,7 @@ const ItemsForm = ({
         <Col span={8}>
           <Form.Item
             name="minStockLevel"
-            label="Minimum Stock Level"
+            label="Min. Stock Level"
             rules={[
               { required: true, message: "Please enter Minimum Stock Level" },
             ]}
@@ -495,7 +613,7 @@ const ItemsForm = ({
         <Col span={8}>
           <Form.Item
             name="maxStockLevel"
-            label="Maximum Stock Level"
+            label="Max. Stock Level"
             rules={[
               { required: true, message: "Please enter Maximum Stock Level" },
             ]}
@@ -522,7 +640,7 @@ const ItemsForm = ({
             rules={[{ required: true, message: "Please enter Category" }]}
           >
             <Select>
-              {usageCategories.map((usageCategory, index) => {
+              {usageCategories?.map((usageCategory, index) => {
                 return (
                   <Option key={index} value={usageCategory.paramVal}>
                     {usageCategory.paramDesc}
