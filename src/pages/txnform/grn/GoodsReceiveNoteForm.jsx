@@ -168,11 +168,13 @@ const GoodsReceiveNoteForm = () => {
 
   const fetchUserDetails = async () => {
     try {
+      const userCd = localStorage.getItem("userCd")
+      const password = localStorage.getItem("password")
       const apiUrl =
         "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
       const response = await axios.post(apiUrl, {
-        userCd: "dkg",
-        password: "string",
+        userCd,
+        password,
       });
 
       const { responseData } = response.data;
@@ -839,11 +841,11 @@ const GoodsReceiveNoteForm = () => {
             <>
               {formData.items?.length > 0 &&
                 formData.items.map((item, key) => {
-                  console.log(
-                    "Item: ",
-                    item.itemCode,
-                    locatorQuantity[item.itemCode]
-                  );
+                  // console.log(
+                  //   "Item: ",
+                  //   item.itemCode,
+                  //   locatorQuantity[item.itemCode]
+                  // );
                   return (
                     // <div className="xyz" style={{font:"150px", zIndex: "100"}}>xyz</div>
 
@@ -865,7 +867,7 @@ const GoodsReceiveNoteForm = () => {
                       </Form.Item>
 
                       <Form.Item label="ITEM CODE">
-                        <Input value={item.itemCode} readOnly />
+                        <Input value={item?.itemCode} readOnly />
                       </Form.Item>
 
                       <Form.Item label="ITEM DESCRIPTION">

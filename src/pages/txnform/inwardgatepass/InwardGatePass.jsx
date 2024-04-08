@@ -163,11 +163,13 @@ const InwardGatePass = () => {
   };
   const fetchUserDetails = async () => {
     try {
+      const userCd = localStorage.getItem("userCd")
+      const password = localStorage.getItem("password")
       const apiUrl =
         "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
       const response = await axios.post(apiUrl, {
-        userCd: "dkg",
-        password: "string",
+        userCd,
+        password,
       });
 
       const { responseData } = response.data;
