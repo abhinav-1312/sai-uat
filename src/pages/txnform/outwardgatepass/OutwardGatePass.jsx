@@ -1,5 +1,5 @@
 // OutwardGatePass.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Form,
   Input,
@@ -29,11 +29,37 @@ import dayjs from "dayjs";
 import axios from "axios";
 import moment from "moment";
 import { apiHeader } from "../../../utils/Functions";
+import FormInputItem from "../../../components/FormInputItem";
+import { printOrSaveAsPDF } from "../../../utils/Functions";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Text, Title } = Typography;
 
+const convertEpochToDateString = (epochTime) => {
+  // Convert epoch time to milliseconds
+  let date = new Date(epochTime);
+
+  // Extract the day, month, and year from the Date object
+  let day = date.getDate();
+  let month = date.getMonth() + 1; // Month starts from 0
+  let year = date.getFullYear();
+
+  // Add leading zeros if needed
+  if (day < 10) {
+    day = '0' + day;
+  }
+  if (month < 10) {
+    month = '0' + month;
+  }
+
+  // Return the date string in DD/MM/YYYY format
+  return `${day}/${month}/${year}`;
+}
+
+
 const OutwardGatePass = () => {
+  const [buttonVisible, setButtonVisible] = useState(false)
+  const formRef = useRef()
   const [Type, setType] = useState("IRP");
   const [selectedOption, setSelectedOption] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,7 +96,7 @@ const OutwardGatePass = () => {
     dateOfDelivery: "",
     modeOfDelivery: "",
     challanNo: "",
-    supplierCode: "",
+    supplierCd: "",
     supplierName: "",
     noteType: "",
     rejectionNoteNo: "",
@@ -92,8 +118,6 @@ const OutwardGatePass = () => {
       // }
     ],
   });
-
-  console.log("FormData: ", formData);
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -239,21 +263,21 @@ const OutwardGatePass = () => {
         crRegionalCenterCd: processData?.crRegionalCenterCd,
         crRegionalCenterName: processData?.crRegionalCenterName,
         crAddress: processData?.crAddress,
-        crZipcode: processData.crZipcode,
+        crZipcode: processData?.crZipcode,
 
         issueName: processData?.issueName,
         approvedName: processData?.approvedName,
-        processId: processData?.processId,
-
+        
         ceRegionalCenterCd: processData?.ceRegionalCenterCd,
         ceRegionalCenterName: processData?.ceRegionalCenterName,
         ceAddress: processData?.ceAddress,
         ceZipcode: processData?.ceZipcode,
-
+        consumerName: processData?.consumerName,
+        
+        processId: processData?.processId,
         termsCondition: processData?.termsCondition,
         note: processData?.note,
 
-        consumerName: processData?.consumerName,
         contactNo: processData?.contactNo,
 
         items: itemList.map((item) => ({
@@ -343,6 +367,8 @@ const OutwardGatePass = () => {
             gatePassNo: processId,
           };
         });
+
+        setButtonVisible(true)
         setSuccessMessage(
           `outward gate pass successfully! outward gate pass : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
@@ -372,8 +398,88 @@ const OutwardGatePass = () => {
     setSelectedOption(value);
   };
 
+  const handleReturnNoteNoChange = async (value) => {
+    try{
+      const apiUrl =
+        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
+      const response = await axios.post(apiUrl, {
+        processId: value,
+        processStage: "REJ",
+      }, apiHeader("POST", token));
+      const responseData = response.data.responseData;
+      const { processData, itemList } = responseData;
+
+      setFormData(prev=>{
+        return {
+          ...prev,
+          genName: processData?.genName,
+          genDate: processData?.genDate,
+          issueDate: processData?.issueDate,
+          issueName: processData?.issueName,
+          approvedDate: processData?.approvedDate,
+          approvedName: processData?.approvedName,
+          processId: processData.processId,
+          type: processData?.type,
+          typeOfNote: processData?.typeOfNote,
+
+
+          inspectionRptNo: processData?.inspectionRptNo,
+          acptRejNoteNo: processData?.acptRejNoteNo,
+          acptRejNoteDT: processData?.acptRejNoteDT,
+          dateOfDelivery: processData?.dateOfDelivery,
+          ceRegionalCenterCd: processData?.crRegionalCenterCd,
+          ceRegionalCenterName: processData?.crRegionalCenterName,
+          ceAddress: processData?.crAddress,
+          ceZipcode: processData?.crZipcode,
+          crRegionalCenterCd: processData?.ceRegionalCenterCd,
+          crRegionalCenterName: processData?.ceRegionalCenterName,
+          crAddress: processData?.ceAddress,
+          crZipcode: processData?.ceZipcode,
+          consumerName: processData?.consumerName,
+          supplierName: processData?.supplierName,
+          supplierCd: processData?.supplierCd,
+          address: processData?.address,
+          contactNo: processData?.contactNo,
+          note: processData?.note,
+          noaDate: convertEpochToDateString(processData?.noaDate),
+          noa: processData?.noa,
+          conditionOfGoods: processData?.conditionOfGoods,
+          challanNo: processData?.challanNo,
+          modeOfDelivery: processData?.modeOfDelivery,
+
+          items: itemList.map(item=>(
+            {
+              id: item?.id,
+              itemId: item?.id,
+              srNo: item?.sNo,
+              itemCode: item?.itemCode,
+              itemDesc: item?.itemDesc,
+              uom: item?.uom,
+              quantity: item?.quantity,
+              noOfDays: 12,
+              inspectedQuantity: item?.inspectedQuantity,
+              acceptedQuantity: item?.acceptedQuantity,
+              rejectedQuantity: item?.rejectedQuantity,
+              requiredDays: item?.requiredDays,
+              remarks: item?.remarks,
+              processId: item?.processId,
+              processType: item?.processType,
+              processStage: item?.processStage,
+              conditionOfGoods: item?.conditionOfGoods,
+              budgetHeadProcurement: item?.budgetHeadProcurement,
+              locatorId: item?.locatorId,
+            }
+          ))
+        }
+      } )
+
+    }catch (error) {
+      console.error("Error fetching sub process details:", error);
+    }
+  }
+
   const findColumnValue = (id, dataSource, sourceName) => {
-    const foundObject = dataSource.find((obj) => obj.id === id);
+    const foundObject = dataSource.find((obj) => obj.id === parseInt(id));
 
     if (sourceName === "locationMaster")
       return foundObject ? foundObject["locationName"] : "Undefined";
@@ -401,10 +507,8 @@ const OutwardGatePass = () => {
     });
   };
 
-  console.log("FOrm data: ", formData);
-
   return (
-    <div className="goods-receive-note-form-container">
+    <div className="goods-receive-note-form-container" ref={formRef}>
       <h1>Sports Authority of India - Outward Gate Pass</h1>
 
       <Form
@@ -437,19 +541,23 @@ const OutwardGatePass = () => {
             </Form.Item>
           </Col>
           <Col span={6} offset={12}>
-            <Form.Item label="OUTER GATE PASS NO." name="gatePassNo">
+            {/* <Form.Item label="OUTER GATE PASS NO." name="gatePassNo">
               <Input
                 disabled
                 onChange={(e) => handleChange("gatePassNo", e.target.value)}
               />
-            </Form.Item>
+            </Form.Item> */}
+            <FormInputItem label="OUTER GATE PASS NO." value={formData.gatePassNo==="string" ? "not defined" : formData.gatePassNo} />
           </Col>
         </Row>
 
         <Row gutter={24}>
           <Col span={8}>
             <Title strong underline level={2} type="danger">
-              CONSIGNOR DETAIL :-
+              {
+                Type === "IRP" ?
+                "CONSIGNOR DETAIL ;-" : "CONSIGNEE DETAIL :-"
+              }
             </Title>
             <Form.Item label="REGIONAL CENTER CODE" name="crRegionalCenterCd">
               <Input value={formData.crRegionalCenterCd} readOnly />
@@ -479,33 +587,17 @@ const OutwardGatePass = () => {
           </Col>
           <Col span={8}>
             <Title strong level={2} underline type="danger">
-              {" "}
-              CONSIGNEE DETAIL :-
+            {
+                Type === "IRP" ?
+                "CONSIGNEE DETAIL ;-" : "CONSIGNOR DETAIL :-"
+              }
             </Title>
 
             {Type === "PO" && (
               <>
-                <Form.Item label="SUPPLIER CODE :" name="supplierCode">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierCode", e.target.value)
-                    }
-                  />
-                </Form.Item>
-                <Form.Item label="SUPPLIER NAME :" name="supplierName">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierName", e.target.value)
-                    }
-                  />
-                </Form.Item>
-                <Form.Item label="ADDRESS:" name="supplierAddress">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierAddress", e.target.value)
-                    }
-                  />
-                </Form.Item>
+                <FormInputItem label="SUPPLIER CODE :" value={formData.supplierCd} readOnly={true}/>
+                <FormInputItem label="SUPPLIER NAME :" value={formData.supplierName} readOnly={true}/>
+                <FormInputItem label="ADDRESS :" value={formData.ceAddress} readOnly={true}/>
               </>
             )}
 
@@ -602,7 +694,7 @@ const OutwardGatePass = () => {
               <Form.Item label="REJECTION NOTE NO.  :" name="rejectionNoteNo">
                 <Input
                   onChange={(e) =>
-                    handleChange("rejectionNoteNo", e.target.value)
+                    handleReturnNoteNoChange(e.target.value)
                   }
                 />
               </Form.Item>
@@ -628,7 +720,7 @@ const OutwardGatePass = () => {
                   >
                     <Input
                       onChange={(e) =>
-                        handleChange("rejectionNoteNo", e.target.value)
+                        handleIssueNoteNoChange("rejectionNoteNo", e.target.value)
                       }
                     />
                   </Form.Item>
@@ -637,29 +729,9 @@ const OutwardGatePass = () => {
             )}
             {(Type === "IOP" || Type === "PO") && (
               <>
-                <Form.Item label="NOA NO." name="noaNo">
-                  <Input
-                    onChange={(e) => handleChange("noaNo", e.target.value)}
-                  />
-                </Form.Item>
-                <Form.Item label="NOA DATE" name="noaDate">
-                  <DatePicker
-                    format={dateFormat}
-                    style={{ width: "100%" }}
-                    onChange={(date, dateString) =>
-                      handleChange("noaDate", dateString)
-                    }
-                  />
-                </Form.Item>
-                <Form.Item label="DATE OF DELIVERY" name="dateOfDelivery">
-                  <DatePicker
-                    format={dateFormat}
-                    style={{ width: "100%" }}
-                    onChange={(date, dateString) =>
-                      handleChange("dateOfDelivery", dateString)
-                    }
-                  />
-                </Form.Item>
+                  <FormInputItem label="NOA NO :" value={formData.noa} />
+                  <FormInputItem label="NOA DATE :" value={formData.noaDate} />
+                  <FormInputItem label="DATE OF DELIVERY :" value={formData.dateOfDelivery} />
               </>
             )}
           </Col>
@@ -667,20 +739,10 @@ const OutwardGatePass = () => {
         {(Type === "IOP" || Type === "PO") && (
           <Row gutter={24}>
             <Col span={8}>
-              <Form.Item label=" CHALLAN / INVOICE NO. :" name="challanNo">
-                <Input
-                  onChange={(e) => handleChange("challanNo", e.target.value)}
-                />
-              </Form.Item>
+            <FormInputItem label="CHALLAN / INVOICE NO. :" value={formData.challanNo} />
             </Col>
             <Col span={8}>
-              <Form.Item label="MODE OF DELIVERY  :" name="modeOfDelivery">
-                <Input
-                  onChange={(e) =>
-                    handleChange("modeOfDelivery", e.target.value)
-                  }
-                />
-              </Form.Item>
+              <FormInputItem label="MODE OF DELIVERY :" value={formData.modeOfDelivery} />
             </Col>
           </Row>
         )}
@@ -730,18 +792,23 @@ const OutwardGatePass = () => {
                         />
                       </Form.Item>
 
-                      <Form.Item label="LOCATOR DESCRIPITON">
+                      {
+                        Type === "IRP" &&
+                        
+                        <Form.Item label="LOCATOR DESCRIPITON">
                         <Input
                           value={findColumnValue(
                             item.locatorId,
                             locatorMaster,
                             "locatorMaster"
-                          )}
-                          readOnly
-                        />
+                            )}
+                            readOnly
+                            />
                       </Form.Item>
+                          }
+                    
 
-                      <Form.Item label="REQUIRED QUANTITY">
+                      <Form.Item label={Type === "IRP" ? "REQUIRED QUANTITY" : "QUANTITY"}>
                         <Input
                           value={item.quantity}
                           onChange={(e) =>
@@ -750,14 +817,18 @@ const OutwardGatePass = () => {
                         />
                       </Form.Item>
 
-                      <Form.Item label="REQUIRED FOR NO. OF DAYS">
+                      {
+
+                         Type === "IRP" && 
+                        <Form.Item label="REQUIRED FOR NO. OF DAYS">
                         <Input
                           value={item.noOfDays}
                           onChange={(e) =>
                             itemHandleChange("noOfDays", e.target.value, key)
                           }
-                        />
+                          />
                       </Form.Item>
+                      }
 
                       <Form.Item label="REMARK">
                         <Input
@@ -923,13 +994,8 @@ const OutwardGatePass = () => {
             </Button>
           </Form.Item>
           <Form.Item>
-            <Button
-              type="primary"
-              danger
-              htmlType="save"
-              style={{ width: "200px", margin: 16 }}
-            >
-              Print
+          <Button disabled={!buttonVisible} onClick={()=> printOrSaveAsPDF(formRef)} type="primary" danger htmlType="save" style={{ width: '200px', margin: 16, alignContent: 'end' }}>
+              PRINT
             </Button>
           </Form.Item>
         </div>

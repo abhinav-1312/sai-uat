@@ -1,5 +1,5 @@
 // RetunNote.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Form,
   Input,
@@ -9,19 +9,38 @@ import {
   Row,
   Col,
   AutoComplete,
+  Typography,
   Modal,
   message,
 } from "antd";
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
-import { apiHeader } from "../../../utils/Functions";
+import { apiHeader, printOrSaveAsPDF } from "../../../utils/Functions";
+import FormInputItem from "../../../components/FormInputItem";
 const dateFormat = "DD/MM/YYYY";
+// import {FormInputItem} from "../../../components/FormInputItem";
+// import { printOrSaveAsPDF } from "../../../utils/Functions";
+
 
 // Hello
 
 const { Option } = Select;
+// const RetunNote = () => {
+//   Modal,
+//   message,
+// } from "antd";
+// import { MinusCircleOutlined } from "@ant-design/icons";
+// import dayjs from "dayjs";
+// import axios from "axios";
+
+// const dateFormat = "DD/MM/YYYY";
+
+const { Title } = Typography;
+
 const RetunNote = () => {
+  const [buttonVisible, setButtonVisible] = useState(false)
+  const formRef = useRef()
   const [Type, setType] = useState("1");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -342,7 +361,7 @@ const RetunNote = () => {
   };
 
   return (
-    <div className="goods-receive-note-form-container">
+    <div className="goods-receive-note-form-container" ref={formRef}>
       <h1>Sports Authority of India - Return Note</h1>
 
       <Form
@@ -367,17 +386,21 @@ const RetunNote = () => {
           </Col>
           <Col span={6}></Col>
           <Col span={6} offset={12}>
-            <Form.Item label="RETURN NOTE NO." name="returnNoteNo">
+            {/* <Form.Item label="RETURN NOTE NO." name="returnNoteNo">
               <Input
                 disabled
                 onChange={(e) => handleChange("returnNoteNo", e.target.value)}
               />
-            </Form.Item>
+            </Form.Item> */}
+            <FormInputItem label="RETURN NOTE NO." value={formData.returnNoteNo==="string" ? "not defined" : formData.returnNoteNo} />
           </Col>
         </Row>
 
         <Row gutter={24}>
           <Col span={8}>
+          <Title strong underline level={2} type="danger">
+              CONSIGNOR DETAIL :-
+            </Title>
             <Form.Item label="REGIONAL CENTER CODE" name="regionalCenterCd">
               <Input value={formData.regionalCenterCd} />
               <div style={{ display: "none" }}>{formData.regionalCenterCd}</div>
@@ -397,6 +420,9 @@ const RetunNote = () => {
           </Col>
 
           <Col span={8}>
+          <Title strong underline level={2} type="danger">
+              CONSIGNEE DETAIL :-
+            </Title>
             <Form.Item
               label="CONSUMER NAME :"
               name="consumerName"
@@ -426,16 +452,12 @@ const RetunNote = () => {
           </Col>
 
           <Col span={8}>
+          <Form.Item></Form.Item>
             <Form.Item label="ISSUE NOTE NO. :" name="issueNoteNo">
               <Input
                 onChange={(e) => handleIssueNoteNoChange(e.target.value)}
               />
             </Form.Item>
-            {/* <Form.Item label="ISSUE DA :" name="issueNoteDt">
-              <Input value={12233} onChange={(e)=>handleIssueNoteDtChange(e.target.value)}/>
-              {/* <DatePicker value={formData.issueNoteDt} format={dateFormat} style={{ width: '100%' }} onChange={(date, dateString) => handleChange("issueNoteDt", dateString)} /> */}
-
-            {/* </Form.Item> */}
 
             <Form.Item label="ISSUE DATE :" name="issueNoteDt">
               <Input value={formData.issueNoteDt} readOnly />
@@ -448,93 +470,12 @@ const RetunNote = () => {
         {/* Item Details */}
         <h2>ITEM DETAILS</h2>
 
-        {/* <Form.List name="itemDetails" initialValue={formData.items || [{}]}>
-          {(fields, { add, remove }) => (
-            <>
-              
-              {fields.map(({ key, name, ...restField }, index) => (
-                <div key={key} style={{ marginBottom: 16, border: '1px solid #d9d9d9', padding: 16, borderRadius: 4 }}>
-                  <Row gutter={24}>
-                    <Col span={6}>
-
-                      <Form.Item {...restField} label="S.NO." name={[name, 'srNo']}  >
-                        <Input value={formData.items?.[index]?.srNo} onChange={(e) => e.target && itemHandleChange(`srNo`, e.target.value, index)} readOnly />
-                        <span style={{ display: 'none' }}>{index + 1}</span>
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item {...restField} label="ITEM CODE" name={[name, 'itemCode']} initialValue={formData.items?.[index]?.itemCode}>
-                        <Input
-                          style={{ width: '100%' }}
-                          value={formData.items?.[index]?.itemCode}
-                          readOnly
-                        />
-                        <span style={{ display: 'none' }}>{index + 1}</span>
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item label="ITEM DESCRIPTION" name={[name, 'itemDesc']}>
-                        <Input
-                          style={{ width: '100%' }}
-                          value={formData.items?.[index]?.itemDesc}
-                          readOnly
-
-                        />
-                        <span style={{ display: 'none' }}>{index + 1}</span>
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item label="UOM" name={[name, 'uom']}>
-                        <Input
-                          style={{ width: '100%' }}
-                          value={findUomName(formData?.items?.[index]?.uom)}
-                          readOnly
-
-                        />
-                        <span style={{ display: 'none' }}>{index + 1}</span>
-                      </Form.Item>
-                    </Col>
-                    
-                    <Col span={6}>
-                      <Form.Item label="RETURN QUANTITY" name={[name, 'quantity']}>
-                        <Input value={formData.items?.[index]?.quantity} onChange={(e) => itemHandleChange(`quantity`, e.target.value, index)} />
-                        <span style={{ display: 'none' }}>{index + 1}</span>
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item label="RETURNED AFTER NO. OF DAYS" name={[name, 'noOfDays']}>
-                        <Input value={formData.issueNoteDt !== undefined ? daysDifference(formData.issueNoteDt) : ""} onChange={(e) => itemHandleChange(`noOfDays`, e.target.value, index)} readOnly />
-                        <span style={{ display: 'none' }}>{index + 1}</span>
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item label="CONDITION OF GOODS" name={[name, 'conditionOfgoods']}>
-                        <Input value={formData.items?.[index]?.conditionOfGoods} readOnly/>
-                      </Form.Item>
-                    </Col>
-                    <Col span={5}>
-                      <Form.Item label="REMARK" name={[name, 'remarks']}>
-                        <Input value={formData.items?.[index]?.remarks} readOnly/>
-                        <span style={{ display: 'none' }}>{index + 1}</span>
-                      </Form.Item>
-                    </Col>
-                    <Col span={1}>
-                      <MinusCircleOutlined onClick={() => remove(name)} style={{ marginTop: 8 }} />
-                    </Col>
-                  </Row>
-                </div>
-              ))}
-            </>
-          )}
-        </Form.List> */}
-
         <Form.List name="items" initialValue={formData.items || [{}]}>
           {(fields, { add, remove }) => (
             <>
               {formData.items?.length > 0 &&
                 formData.items.map((item, key) => {
                   return (
-                    // <div className="xyz" style={{font:"150px", zIndex: "100"}}>xyz</div>
 
                     <div
                       key={key}
@@ -600,7 +541,9 @@ const RetunNote = () => {
                       >
                         <Input
                           value={formData.items?.[key]?.conditionOfGoods}
-                          readOnly
+                          onChange={(e) =>
+                            itemHandleChange(`conditionOfGoods`, e.target.value, key)
+                          }
                         />
                       </Form.Item>
 
@@ -741,12 +684,7 @@ const RetunNote = () => {
             </Button>
           </Form.Item>
           <Form.Item>
-            <Button
-              type="primary"
-              danger
-              htmlType="save"
-              style={{ width: "200px", margin: 16 }}
-            >
+          <Button disabled={!buttonVisible} onClick={()=> printOrSaveAsPDF(formRef)} type="primary" danger htmlType="save" style={{ width: '200px', margin: 16, alignContent: 'end' }}>
               PRINT
             </Button>
           </Form.Item>

@@ -1,5 +1,5 @@
 // InwardGatePass.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Form,
   Input,
@@ -12,6 +12,8 @@ import {
   AutoComplete,
   message,
   Modal,
+  Popover,
+  Table
 } from "antd";
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
@@ -19,11 +21,19 @@ import axios from "axios";
 import moment from "moment";
 import ItemSearchFilter from "../../../components/ItemSearchFilter";
 import { apiHeader } from "../../../utils/Functions";
+
+// import { MinusCircleOutlined } from "@ant-design/icons";
+// import dayjs from "dayjs";
+// import axios from "axios";
+import { fetchUomLocatorMaster, handleSearch, printOrSaveAsPDF } from "../../../utils/Functions";
+import FormInputItem from "../../../components/FormInputItem";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Text, Title } = Typography;
 
 const InwardGatePass = () => {
+  const formRef = useRef()
+  const [buttonVisible, setButtonVisible] = useState(false)
   const token = localStorage.getItem("token")
   const [Type, setType] = useState("IRP");
   const [selectedOption, setSelectedOption] = useState(null);
@@ -31,10 +41,15 @@ const InwardGatePass = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [itemData, setItemData] = useState([]);
+  const [searchValue, setSearchValue] = useState("")
+  const [data, setData] = useState([])
   const [uomMaster, setUomMaster] = useState([]);
+  const [filteredData, setFilteredData] = useState([])
+  const [tableOpen, setTableOpen] = useState(false)
   const [locatorMaster, setLocatorMaster] = useState([]);
-  // const [locationMaster, setLocationMaster] = useState([])
-  // const [vendorMaster, setVendorMaster] = useState([])
+  const [selectedItems, setSelectedItems] = useState([])
+  const [locationMaster, setLocationMaster] = useState([])
+  const [vendorMaster, setVendorMaster] = useState([])
   const [formData, setFormData] = useState({
     genDate: "",
     genName: "",
@@ -42,7 +57,7 @@ const InwardGatePass = () => {
     issueName: "",
     approvedDate: "",
     approvedName: "",
-    processId: "",
+    processId: "string",
     type: "",
     gatePassDate: "",
     gatePassNo: "",
@@ -66,18 +81,18 @@ const InwardGatePass = () => {
     noteType: "",
     rejectionNoteNo: "",
     items: [
-      {
-        srNo: 0,
-        itemCode: "",
-        itemDesc: "",
-        uom: "",
-        quantity: 0,
-        noOfDays: 0,
-        remarks: "",
-        conditionOfGoods: "",
-        budgetHeadProcurement: "",
-        locatorId: "",
-      },
+      // {
+      //   srNo: 0,
+      //   itemCode: "",
+      //   itemDesc: "",
+      //   uom: "",
+      //   quantity: 0,
+      //   noOfDays: 0,
+      //   remarks: "",
+      //   conditionOfGoods: "",
+      //   budgetHeadProcurement: "",
+      //   locatorId: "",
+      // },
     ],
     userId: "",
     termsCondition: "",
@@ -93,12 +108,252 @@ const InwardGatePass = () => {
     setIsModalOpen(false);
   };
 
+  const searchVendor = async (value) => {
+    const vendorByIdUrl = "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getVendorMasterById"
+    try{
+      const response = await axios.post(vendorByIdUrl, {userId: "dkg", id: value}, apiHeader("POST", token))
+      const {responseStatus, responseData} = response.data
+      const {message, statusCode} = responseStatus
+
+      if(message === "Success" && statusCode === 200 && responseData !== null){
+        setFormData(prev=>{
+          return{
+            ...prev,
+            supplierName: responseData.vendorName,
+            crAddress: responseData.address,
+            supplierCode: value
+          }
+        })
+      }
+
+    }catch(error){
+      console.log("Not getting vendor", error)
+    }
+
+  }
+
+
+
   const handleChange = (fieldName, value) => {
+    if(fieldName === "processType"){
+      console.log(fieldName, value)
+      fetchUserDetails(value)
+      return;
+    }
+    if(fieldName === "supplierCode"){
+      searchVendor(value)
+      return
+    }
+
     setFormData((prevValues) => ({
       ...prevValues,
       [fieldName]: value === "" ? null : value,
     }));
   };
+
+  const handleSelectItem = (record, subRecord) => {
+    setTableOpen(false);
+
+    const recordCopy = record // delete qtyList array from record
+
+    // Check if the item is already selected
+    const index = selectedItems.findIndex((item) => item.id === record.id && item.locatorId === subRecord.locatorId);
+    if (index === -1) {
+      setSelectedItems((prevItems) => [...prevItems, {...recordCopy, locatorId: subRecord.locatorId}]); // Update selected items state
+    //   // add data to formData hook
+    //   // setItemDetail((prevData) => {
+    //   //   const newItem = {
+    //   //     srNo: prevData.length ? prevData.length + 1 : 1,
+    //   //     itemCode: record.itemMasterCd,
+    //   //     itemId: record.id,
+    //   //     itemDesc: record.itemMasterDesc,
+    //   //     uom: record.uomId,
+    //   //     uomDesc : record.uomDtls.baseUom,
+    //   //     quantity: 1,
+    //   //     noOfDays: 1,
+    //   //     remarks: "",
+    //   //     conditionOfGoods: "",
+    //   //     budgetHeadProcurement: "",
+    //   //     qtyList: record.qtyList
+    //   //   };
+    //   //   const updatedItems = [...(prevData || []), newItem];
+    //   //   return [...updatedItems]
+    //   // });
+
+      setFormData(prevValues=>{
+        const newItem = {
+          srNo: prevValues.items?.length ? prevValues.items.length + 1 : 1,
+          itemCode: record.itemMasterCd,
+          itemId: record.id,
+          itemDesc: record.itemMasterDesc,
+          uom: record.uomId,
+          uomDesc: record.uomDtls.baseUom,
+          quantity: 1,
+          noOfDays: 1,
+          conditionOfGoods: "",
+          budgetHeadProcurement: "",
+          locatorId: subRecord.locatorId,
+          locatorDesc: subRecord.locatorDesc,
+          remarks: "",
+          // qtyList: record.qtyList
+        }
+
+        const updatedItems = [...(prevValues.items || []), newItem]
+        return {...prevValues, items: updatedItems}
+      })
+    } 
+    else {
+      // If item is already selected, deselect it
+      const updatedItems = [...selectedItems];
+      updatedItems.splice(index, 1);
+      setSelectedItems(updatedItems);
+    }
+  };
+
+  const renderLocatorISN = (obj, rowRecord) => {
+    return (
+      <Table 
+        dataSource={obj}
+        pagination={false}
+        columns={[
+          {
+            title: "LOCATOR DESCRIPTION",
+            dataIndex: "locatorDesc",
+            key: "locatorDesc"
+          },
+          {
+            title: "QUANTITY",
+            dataIndex: "quantity",
+            key: "quantity"
+          },
+          {
+            title: "ACTION",
+            fixed: "right",
+            render: (_, record) => (
+              <Button
+                    onClick={() => handleSelectItem(rowRecord, record)}
+                    type= {selectedItems?.some((item) => item.locatorId === record.locatorId && item.id === rowRecord.id) ? "default" : "primary"}
+                  >
+                    {
+                      selectedItems?.some((item) => item.locatorId === record.locatorId && item.id === rowRecord.id)
+                      ? "Deselect"
+                      : "Select"
+                    }
+                    
+                  </Button>
+            )
+          }
+        ]}
+      />
+    )
+  }
+
+  const tableColumns =  [
+    { title: "S NO.", dataIndex: "id", key: "id", fixed: "left", width: 80 },
+    {
+      title: "ITEM DESCRIPTION",
+      dataIndex: "itemMasterDesc",
+      key: "itemMasterDesc",
+      fixed: "left"
+      // render: (itemName) => itemNames[itemName],
+    },
+    {
+      title: "ITEM CODE",
+      dataIndex: "itemMasterCd",
+      key: "itemCode",
+    },
+    {
+      title: "UOM",
+      dataIndex: "uomDtls",
+      key: "uomDtls",
+      render: (uomDtls) => uomDtls.baseUom
+    },
+    {
+      title: "LOCATION",
+      dataIndex: "locationDesc",
+      key: "location"
+    },
+    // {
+    //   title: "LOCATOR CODE",
+    //   dataIndex: "locatorId",
+    //   key: "locatorCode",
+    // },
+    { title: "PRICE", dataIndex: "price", key: "price" },
+    // {
+    //   title: "VENDOR DETAIL",
+    //   dataIndex: "vendorId",
+    //   key: "vendorDetail",
+    //   render: (vendorId) => vendorMaster[vendorId],
+    //   // render: (vendorId) => findColumnValue(vendorId, vendorMaster, "vendorMaster")
+    // },
+    {
+      title: "CATEGORY",
+      dataIndex: "categoryDesc",
+      key: "category",
+      // render: (category) => categories[category],
+    },
+    {
+      title: "SUB-CATEGORY",
+      dataIndex: "subCategoryDesc",
+      key: "subCategory",
+      // render: (subCategory) => subCategories[subCategory],
+    },
+    {
+      title: "Type",
+      dataIndex: "typeDesc",
+      key: "type",
+      // render: (type) => types[type],
+    },
+    {
+      title: "Disciplines",
+      dataIndex: "disciplinesDesc",
+      key: "disciplines",
+      // render: (disciplines) => allDisciplines[disciplines],
+    },
+    {
+      title: "Brand",
+      dataIndex: "brandDesc",
+      key: "brand",
+      // render: (brandId) => brands[brandId],
+    },
+    {
+      title: "Size",
+      dataIndex: "sizeDesc",
+      key: "size",
+      // render: (size) => sizes[size],
+    },
+    {
+      title: "Colour",
+      dataIndex: "colorDesc",
+      key: "colour",
+      // render: (colorId) => colors[colorId],
+    },
+    {
+      title: "Usage Category",
+      dataIndex: "usageCategoryDesc",
+      key: "usageCategory",
+      // render: (usageCategory) => usageCategories[usageCategory],
+    },
+    {
+      title: "MINIMUM STOCK LEVEL",
+      dataIndex: "minStockLevel",
+      key: "minStockLevel",
+    },
+    {
+      title: "MAXIMUM STOCK LEVEL",
+      dataIndex: "maxStockLevel",
+      key: "maxStockLevel",
+    },
+    { title: "RE ORDER POINT", dataIndex: "reOrderPoint", key: "reOrderPoint" },
+    { title: "STATUS", dataIndex: "status", key: "status" },
+    { title: "CREATE DATE", dataIndex: "endDate", key: "endDate" },
+    {
+        title: "LOCATOR QUANTITY DETAILS",
+        dataIndex: "qtyList",
+        key: "qtyList",
+        render: (locatorQuantity, rowRecord) => renderLocatorISN(locatorQuantity, rowRecord)
+    },
+  ];
 
   const itemHandleChange = (fieldName, value, index) => {
     setFormData((prevValues) => {
@@ -106,10 +361,6 @@ const InwardGatePass = () => {
       updatedItems[index] = {
         ...updatedItems[index],
         [fieldName]: value === "" ? null : value,
-        // uom: "string",
-        // conditionOfGoods: "string", // Hard-coded data
-        // budgetHeadProcurement: "string", // Hard-coded data
-        // locatorId: "string", // Hard-coded data
       };
       return {
         ...prevValues,
@@ -161,12 +412,19 @@ const InwardGatePass = () => {
       console.error("Error fetching data:", error);
     }
   };
-  const fetchUserDetails = async () => {
+  // const fetchUserDetails = async () => {
+    // try {
+      // const userCd = localStorage.getItem("userCd")
+      // const password = localStorage.getItem("password")
+      // const apiUrl =
+      //   "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
+  const fetchUserDetails = async (processType=null) => {
+    console.log("ProcessTypee: ", processType)
+    const userCd = localStorage.getItem('userCd');
+    const password = localStorage.getItem('password');
     try {
-      const userCd = localStorage.getItem("userCd")
-      const password = localStorage.getItem("password")
       const apiUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
+      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
       const response = await axios.post(apiUrl, {
         userCd,
         password,
@@ -175,25 +433,49 @@ const InwardGatePass = () => {
       const { responseData } = response.data;
       const { organizationDetails } = responseData;
       const { userDetails } = responseData;
-      console.log("Fetched data:", organizationDetails);
+      const {locationDetails} = responseData
       const currentDate = dayjs();
       // Update form data with fetched values
-      setFormData({
-        ceRegionalCenterCd: organizationDetails.id,
-        ceRegionalCenterName: organizationDetails.location,
-        ceAddress: organizationDetails.locationAddr,
-        ceZipcode: "131021",
-        genName: userDetails.firstName,
-        noaDate: currentDate.format(dateFormat),
-        dateOfDelivery: currentDate.format(dateFormat),
-        userId: "string",
-        genDate: currentDate.format(dateFormat),
-        issueDate: currentDate.format(dateFormat),
-        approvedDate: currentDate.format(dateFormat),
-        gatePassDate: currentDate.format(dateFormat),
-        gatePassNo: "string",
-        type: "string",
-      });
+      if(processType === "IRP"){
+        setFormData({
+          crRegionalCenterCd: organizationDetails.id,
+          crRegionalCenterName: organizationDetails.location,
+          crAddress: organizationDetails.locationAddr,
+          crZipcode: locationDetails.zipcode,
+          genName: userDetails.firstName,
+          // noaDate: currentDate.format(dateFormat),
+          // dateOfDelivery: currentDate.format(dateFormat),
+          userId: "string",
+          genDate: currentDate.format(dateFormat),
+          issueDate: currentDate.format(dateFormat),
+          approvedDate: currentDate.format(dateFormat),
+          gatePassDate: currentDate.format(dateFormat),
+          gatePassNo: "Not defined",
+          processType: processType,
+          type: processType,
+          processId: "string"
+        });
+      }
+      else{
+        setFormData({
+          ceRegionalCenterCd: organizationDetails.id,
+          ceRegionalCenterName: organizationDetails.location,
+          ceAddress: organizationDetails.locationAddr,
+          ceZipcode: locationDetails.zipcode,
+          genName: userDetails.firstName,
+          noaDate: currentDate.format(dateFormat),
+          dateOfDelivery: currentDate.format(dateFormat),
+          userId: "string",
+          genDate: currentDate.format(dateFormat),
+          issueDate: currentDate.format(dateFormat),
+          approvedDate: currentDate.format(dateFormat),
+          gatePassDate: currentDate.format(dateFormat),
+          gatePassNo: "Not defined",
+          processType: processType,
+          type: processType,
+          processId: "string"
+        });
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -209,7 +491,14 @@ const InwardGatePass = () => {
       }, apiHeader("POST", token));
       const responseData = response.data.responseData;
       const { processData, itemList } = responseData;
-      console.log("API Response:", response.data);
+      // console.log("API Response:", response.data);
+      //   "https://sai-services.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
+      // const response = await axios.post(apiUrl, {
+      //   processId: value,
+      //   processStage: "OGP",
+      // });
+      // const responseData = response.data.responseData;
+      // const { processData, itemList } = responseData;
       setFormData((prevFormData) => ({
         ...prevFormData,
 
@@ -217,7 +506,7 @@ const InwardGatePass = () => {
         approvedName: processData?.approvedName,
         processId: processData?.processId,
 
-        crRegionalCenterCd: processData?.crRegionalCenterCd,
+        crRegionalCenterCd: processData?.id,
         crRegionalCenterName: processData?.crRegionalCenterName,
         crAddress: processData?.crAddress,
         crZipcode: processData?.crZipcode,
@@ -227,6 +516,7 @@ const InwardGatePass = () => {
 
         termsCondition: processData?.termsCondition,
         note: processData?.note,
+        type: processData?.type,
 
         items: itemList.map((item) => ({
           srNo: item?.sNo,
@@ -295,10 +585,16 @@ const InwardGatePass = () => {
         }
       });
 
-      const apiUrl =
+      // const apiUrl =
+      //   "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/saveInwardGatePass";
+        // console.log("API Response:", response.data);
+        // in processType PO, we need to pass "NA" in approved name
+        const aprName = formDataCopy.approvedName === "" ? "NA" : formDataCopy.approvedName 
+        
+        const apiUrl =
         "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/saveInwardGatePass";
-      const response = await axios.post(apiUrl, formDataCopy, apiHeader("POST", token));
-      console.log("API Response:", response.data);
+        // const response = await axios.post(apiUrl, formDataCopy, apiHeader("POST", token) );
+      const response = await axios.post(apiUrl, {...formDataCopy, approvedName: aprName}, apiHeader("POST", token));
       if (
         response.status === 200 &&
         response.data &&
@@ -314,6 +610,8 @@ const InwardGatePass = () => {
             gatePassNo: processId,
           };
         });
+
+        setButtonVisible(true)
         setSuccessMessage(
           `Inward gate pass successfully! Inward gate pass : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
@@ -343,26 +641,13 @@ const InwardGatePass = () => {
     setSelectedOption(value);
   };
 
-  const findColumnValue = (id, dataSource, sourceName) => {
-    const foundObject = dataSource.find((obj) => obj.id === id);
-
-    if (sourceName === "locationMaster")
-      return foundObject ? foundObject["locationName"] : "Undefined";
-    if (sourceName === "locatorMaster")
-      return foundObject ? foundObject["locatorDesc"] : "Undefined";
-    if (sourceName === "vendorMaster")
-      return foundObject ? foundObject["vendorName"] : "Undefined";
-    if (sourceName === "uomMaster")
-      return foundObject ? foundObject["uomName"] : "Undefined";
-  };
-
   const removeItem = (index) => {
     setFormData((prevValues) => {
       const updatedItems = prevValues.items;
       updatedItems.splice(index, 1);
 
       const updatedItems1 = updatedItems.map((item, key) => {
-        return { ...item, srNo: key };
+        return { ...item, srNo: key+1 };
       });
 
       return {
@@ -373,7 +658,7 @@ const InwardGatePass = () => {
   };
 
   return (
-    <div className="goods-receive-note-form-container">
+    <div className="goods-receive-note-form-container" ref={formRef}>
       <h1>Sports Authority of India - Inward Gate Pass</h1>
 
       <Form
@@ -381,6 +666,7 @@ const InwardGatePass = () => {
         className="goods-receive-note-form"
         onValuesChange={handleValuesChange}
         layout="vertical"
+        initialValues={{fieldName: formData}}
       >
         <Row>
           <Col span={6} offset={18}>
@@ -406,78 +692,46 @@ const InwardGatePass = () => {
             </Form.Item>
           </Col>
           <Col span={6} offset={12}>
-            <Form.Item label="INWARD GATE PASS NO." name="gatePassDate">
+            {/* <Form.Item label="INWARD GATE PASS NO." name="gatePassDate">
               <Input
                 disabled
                 onChange={(e) => handleChange("gatePassNo", e.target.value)}
               />
-            </Form.Item>
+            </Form.Item> */}
+
+            <FormInputItem label="INWARD GATE PASS NO." value={formData.gatePassNo ? formData.gatePassNo : ""} readOnly={true}/>
           </Col>
         </Row>
 
         <Row gutter={24}>
           <Col span={8}>
             <Title strong level={2} underline type="danger">
-              {" "}
-              CONSIGNEE DETAIL :-
+              {
+                Type === "IRP" ?
+                "CONSIGNOR DETAIL :-" : "CONSIGNEE DETAIL :-"
+              }
             </Title>
 
-            <Form.Item label="REGIONAL CENTER CODE" name="crRegionalCenterCd">
-              <Input value={formData.crRegionalCenterCd} />
-              <div style={{ display: "none" }}>
-                {formData.crRegionalCenterCd}
-              </div>
-            </Form.Item>
-            <Form.Item
-              label="REGIONAL CENTER NAME "
-              name="crRegionalCenterName"
-            >
-              <Input value={formData.crRegionalCenterName} />
-              <div style={{ display: "none" }}>
-                {formData.crRegionalCenterName}
-              </div>
-            </Form.Item>
-            <Form.Item label="ADDRESS :" name="crRegionalCenterCd">
-              <Input value={formData.crAddress} />
-              <div style={{ display: "none" }}>
-                {formData.crRegionalCenterCd}
-              </div>
-            </Form.Item>
-            <Form.Item label="ZIP CODE :" name="crZipcode">
-              <Input value={formData.crZipcode} />
-              <div style={{ display: "none" }}>
-                {formData.crRegionalCenterCd}
-              </div>
-            </Form.Item>
+            {/* for purchase order */}
+
+            <FormInputItem label="REGIONAL CENTER CODE :" value={Type==="IRP" ? formData.crRegionalCenterCd : formData.ceRegionalCenterCd} readOnly={true}/>
+            <FormInputItem label="REGIONAL CENTER NAME :" value={Type==="IRP" ? formData.crRegionalCenterName :formData.ceRegionalCenterName} readOnly={true} />
+            <FormInputItem label="ADDRESS :" value={Type==="IRP" ? formData.crAddress : formData.ceAddress} readOnly={true} />
+            <FormInputItem label="ZIPCODE :" value={Type==="IRP" ? formData.crZipcode : formData.ceZipcode} readOnly={true} />
           </Col>
           <Col span={8}>
             <Title strong underline level={2} type="danger">
-              CONSIGNOR DETAIL :-
+            {
+                Type === "IRP" ?
+                "CONSIGNEE DETAIL ;-" : "CONSIGNOR DETAIL :-"
+              }
             </Title>
 
             {Type === "PO" && (
               <>
-                <Form.Item label="SUPPLIER CODE :" name="supplierCode">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierCode", e.target.value)
-                    }
-                  />
-                </Form.Item>
-                <Form.Item label="SUPPLIER NAME :" name="supplierName">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierName", e.target.value)
-                    }
-                  />
-                </Form.Item>
-                <Form.Item label="ADDRESS:" name="supplierAddress">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierAddress", e.target.value)
-                    }
-                  />
-                </Form.Item>
+                <FormInputItem label="SUPPLIER CODE :" name="supplierCode" onChange={handleChange} />
+                <FormInputItem label="SUPPLIER NAME :" value={formData.supplierName} />
+                <FormInputItem label="ADDRESS :" value={formData.crAddress} readOnly={true} />
               </>
             )}
 
@@ -514,7 +768,7 @@ const InwardGatePass = () => {
               <>
                 <Form.Item
                   label="REGIONAL CENTER CODE"
-                  name="crRegionalCenterCd"
+                  name="ceRegionalCenterCd"
                 >
                   <Input
                     onChange={(e) =>
@@ -522,23 +776,12 @@ const InwardGatePass = () => {
                     }
                   />
                 </Form.Item>
-                <Form.Item
-                  label="REGIONAL CENTER NAME "
-                  name="crRegionalCenterName"
-                >
-                  <Input
-                    onChange={(e) =>
-                      handleChange("crRegionalCenterName", e.target.value)
-                    }
-                  />
-                </Form.Item>
-                <Form.Item label="ADDRESS :" name="crAddress">
-                  <Input
-                    onChange={(e) => handleChange("crAddress", e.target.value)}
-                  />
-                </Form.Item>
+
+                <FormInputItem label="REGIONAL CENTER CODE :" value={formData.ceRegionalCenterCd} readOnly={true}/>
+                <FormInputItem label="REGIONAL CENTER NAME :" value={formData.ceRegionalCenterName} readOnly={true} />
+                <FormInputItem label="ADDRESS :" value={formData.ceAddress} readOnly={true} />
                 <Form.Item label="ZIP CODE :" name="crZipcode">
-                  <Input
+                  <Input value={1234}
                     onChange={(e) => handleChange("crZipcode", e.target.value)}
                   />
                 </Form.Item>
@@ -634,6 +877,33 @@ const InwardGatePass = () => {
         {/* Item Details */}
         <h2>ITEM DETAILS</h2>
 
+        {
+          Type === "PO" &&
+          <div style={{ width: "300px" }}>
+          <Popover
+            onClick={() => setTableOpen(true)}
+            content={
+              <Table pagination={{pageSize: 3}} dataSource={filteredData} columns={tableColumns} scroll={{ x: "max-content" }} style={{width: "600px", display: tableOpen? "block": "none"}}/>
+            }
+            title="Filtered Item Data"
+            trigger="click"
+            // open={true}
+            open={searchValue !== "" && filteredData.length > 0}
+            style={{ width: "200px" }}
+            placement="right"
+          >
+            <Input.Search
+              placeholder="Search Item Data"
+              allowClear
+              enterButton="Search"
+              size="large"
+              onSearch={(e)=>handleSearch(e.target?.value || "", data, setFilteredData, setSearchValue )}
+              onChange={(e)=>handleSearch(e.target?.value || "", data, setFilteredData, setSearchValue )}
+            />
+          </Popover>
+        </div>
+        }
+
         <Form.List name="items" initialValue={formData.items || [{}]}>
           {(fields, { add, remove }) => (
             <>
@@ -669,26 +939,18 @@ const InwardGatePass = () => {
 
                       <Form.Item label="UOM">
                         <Input
-                          value={findColumnValue(
-                            item.uom,
-                            uomMaster,
-                            "uomMaster"
-                          )}
+                          value={item.uomDesc || uomMaster[item.uom]}
                         />
                       </Form.Item>
 
                       <Form.Item label="LOCATOR DESCRIPITON">
                         <Input
-                          value={findColumnValue(
-                            item.locatorId,
-                            locatorMaster,
-                            "locatorMaster"
-                          )}
+                          value={item.locatorDesc || locatorMaster[item.locatorId]}
                           readOnly
                         />
                       </Form.Item>
 
-                      <Form.Item label="REQUIRED QUANTITY">
+                      <Form.Item label="QUANTITY">
                         <Input
                           value={item.quantity}
                           onChange={(e) =>
@@ -696,15 +958,18 @@ const InwardGatePass = () => {
                           }
                         />
                       </Form.Item>
-
+                    
+                    {
+                      Type === "IRP" &&
                       <Form.Item label="REQUIRED FOR NO. OF DAYS">
                         <Input
                           value={item.noOfDays}
                           onChange={(e) =>
                             itemHandleChange("noOfDays", e.target.value, key)
                           }
-                        />
+                          />
                       </Form.Item>
+                      }
 
                       <Form.Item label="REMARK">
                         <Input
@@ -736,7 +1001,8 @@ const InwardGatePass = () => {
               <Input.TextArea
                 value={formData.termsCondition}
                 autoSize={{ minRows: 3, maxRows: 6 }}
-                readOnly
+                readOnly = {Type === "PO" ? false : true}
+                onChange={(e) => handleChange("termsCondition", e.target.value)}
               />
               <Input style={{ display: "none" }} />
             </Form.Item>
@@ -842,12 +1108,7 @@ const InwardGatePass = () => {
             </Button>
           </Form.Item>
           <Form.Item>
-            <Button
-              type="primary"
-              danger
-              htmlType="save"
-              style={{ width: "200px", margin: 16 }}
-            >
+          <Button disabled={!buttonVisible} onClick={()=> printOrSaveAsPDF(formRef)} type="primary" danger htmlType="save" style={{ width: '200px', margin: 16, alignContent: 'end' }}>
               PRINT
             </Button>
           </Form.Item>

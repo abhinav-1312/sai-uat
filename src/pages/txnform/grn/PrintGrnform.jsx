@@ -8,7 +8,6 @@ const { Option } = Select;
 const PrintGrnform = forwardRef((props, ref) => {
   const [Type, setType] = useState('1');
   const onFinish = (values) => {
-    console.log('Received values:', values);
   };
 
   const handleValuesChange = (_, allValues) => {

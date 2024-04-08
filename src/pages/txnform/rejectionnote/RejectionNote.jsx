@@ -1,5 +1,5 @@
 // RejectionNote.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Form,
   Input,
@@ -17,16 +17,22 @@ import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
 import { apiHeader } from "../../../utils/Functions";
+import FormInputItem from "../../../components/FormInputItem";
+import { convertArrayToObject, convertEpochToDateString, fetchUomLocatorMaster, printOrSaveAsPDF } from "../../../utils/Functions";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
 
 const RejectionNote = () => {
+  const [buttonVisible, setButtonVisible] = useState(false)
+  const formRef = useRef()
   const [Type, setType] = useState("2");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [itemData, setItemData] = useState([]);
+  const [uomMaster, setUomMaster] = useState({})
+  const [locatorMaster, setLocatorMaster] = useState({})
   const [formData, setFormData] = useState({
     genDate: "",
     genName: "",
@@ -94,10 +100,10 @@ const RejectionNote = () => {
       updatedItems[index] = {
         ...updatedItems[index],
         [fieldName]: value === "" ? null : value,
-        uom: "string",
-        conditionOfGoods: "string", // Hard-coded data
-        budgetHeadProcurement: "string", // Hard-coded data
-        locatorId: "string", // Hard-coded data
+        // uom: "string",
+        // conditionOfGoods: "string", // Hard-coded data
+        // budgetHeadProcurement: "string", // Hard-coded data
+        // locatorId: "string", // Hard-coded data
       };
       return {
         ...prevValues,
@@ -135,7 +141,7 @@ const RejectionNote = () => {
       });
 
       const { responseData } = response.data;
-      const { organizationDetails } = responseData;
+      const { organizationDetails, locationDetails } = responseData;
       const { userDetails } = responseData;
       console.log("Fetched data:", organizationDetails);
       const currentDate = dayjs();
@@ -144,7 +150,7 @@ const RejectionNote = () => {
         ceRegionalCenterCd: organizationDetails.location,
         ceRegionalCenterName: organizationDetails.organizationName,
         ceAddress: organizationDetails.locationAddr,
-        ceZipcode: "",
+        ceZipcode: locationDetails.zipcode,
         genName: userDetails.firstName,
         userId: "string",
         genDate: currentDate.format(dateFormat),
@@ -184,17 +190,26 @@ const RejectionNote = () => {
         consumerName: processData?.consumerName,
         contactNo: processData?.contactNo,
 
+        supplierCd: processData?.supplierCd,
+        supplierName: processData?.supplierName,
+        crAddress: processData?.crAddress,
+
+        noa: processData?.noa,
+        noaDate: convertEpochToDateString(processData?.noaDate),
+        dateOfDelivery: processData?.dateOfDelivery,
+
         items: itemList.map((item) => ({
           srNo: item.sNo,
           itemCode: item.itemCode,
           itemDesc: item.itemDesc,
           uom: item?.uom,
-          quantity: item.quantity,
+          quantity: item.rejectedQuantity,
           noOfDays: item.requiredDays,
           remarks: item.remarks,
           conditionOfGoods: item.conditionOfGoods,
           budgetHeadProcurement: item.budgetHeadProcurement,
           locatorId: item.locatorId,
+          rejectedQuantity: item.rejectedQuantity
         })),
       }));
       // Handle response data as needed
@@ -258,9 +273,14 @@ const RejectionNote = () => {
         // Access the specific success message data if available
         const { processId, processType, subProcessId } =
           response.data.responseData;
-        setFormData({
-          acptRejNoteNo: processId,
+        setFormData(prev=>{
+          return{
+            ...prev,
+            acptRejNoteNo: processId,
+          }
         });
+
+        setButtonVisible(true)
         setSuccessMessage(
           `Rejection note saved successfully! Issue Note No : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
@@ -282,8 +302,25 @@ const RejectionNote = () => {
     setType(allValues.type);
   };
 
+  const removeItem = (index) => {
+    setFormData((prevValues) => {
+      const updatedItems = prevValues.items;
+      updatedItems.splice(index, 1);
+
+      const updatedItems1 = updatedItems.map((item, key) => {
+        return { ...item, srNo: key + 1 };
+      });
+
+      return {
+        ...prevValues,
+        items: updatedItems1,
+      };
+    });
+  };
+
+
   return (
-    <div className="goods-receive-note-form-container">
+    <div className="goods-receive-note-form-container" ref={formRef}>
       <h1>Sports Authority of India - Rejection Note</h1>
 
       <Form
@@ -315,12 +352,14 @@ const RejectionNote = () => {
             </Form.Item>
           </Col>
           <Col span={6} offset={12}>
-            <Form.Item label="REJECTION NOTE NO ." name="acptRejNoteNo">
+            {/* <Form.Item label="REJECTION NOTE NO ." name="acptRejNoteNo">
               <Input
                 disabled
                 onChange={(e) => handleChange("acptRejNoteNo", e.target.value)}
               />
-            </Form.Item>
+            </Form.Item> */}
+
+            <FormInputItem label="REJECTION NOTE NO." value={formData.acptRejNoteNo === "string" ? "not defined" : formData.acptRejNoteNo} />
           </Col>
         </Row>
 
@@ -355,7 +394,7 @@ const RejectionNote = () => {
             <Form.Item label="ZIP CODE :" name="ceZipcode">
               <Input value={formData.ceZipcode} />
               <div style={{ display: "none" }}>
-                {formData.ceRegionalCenterCd}
+                {formData.ceZipcode}
               </div>
             </Form.Item>
           </Col>
@@ -366,29 +405,11 @@ const RejectionNote = () => {
             </Title>
 
             {Type === "PO" && (
-              <>
-                <Form.Item label="SUPPLIER CODE :" name="supplierCode">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierCode", e.target.value)
-                    }
-                  />
-                </Form.Item>
-                <Form.Item label="SUPPLIER NAME :" name="supplierName">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierName", e.target.value)
-                    }
-                  />
-                </Form.Item>
-                <Form.Item label="ADDRESS:" name="supplierAddress">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierAddress", e.target.value)
-                    }
-                  />
-                </Form.Item>
-              </>
+              <> 
+              <FormInputItem label="SUPPLIER CODE :" value={formData.supplierCd} />
+              <FormInputItem label="SUPPLIER NAME :" value={formData.supplierName} />
+              <FormInputItem label="ADDRESS :" value={formData.crAddress || "Not defined"} />
+            </>
             )}
 
             {Type === "IOP" && (
@@ -441,10 +462,10 @@ const RejectionNote = () => {
                 onChange={(e) => handleInspectionNOChange(e.target.value)}
               />
             </Form.Item>
-            <Form.Item label="NOA NO." name="noaNo">
+            {/* <Form.Item label="NOA NO." name="noaNo">
               <Input onChange={(e) => handleChange("noaNo", e.target.value)} />
-            </Form.Item>
-            <Form.Item label="NOA DATE" name="noaDate">
+            </Form.Item> */}
+            {/* <Form.Item label="NOA DATE" name="noaDate">
               <DatePicker
                 format={dateFormat}
                 style={{ width: "100%" }}
@@ -452,16 +473,10 @@ const RejectionNote = () => {
                   handleChange("noaDate", dateString)
                 }
               />
-            </Form.Item>
-            <Form.Item label="DATE OF DELIVERY" name="dateOfDelivery">
-              <DatePicker
-                format={dateFormat}
-                style={{ width: "100%" }}
-                onChange={(date, dateString) =>
-                  handleChange("dateOfDelivery", dateString)
-                }
-              />
-            </Form.Item>
+            </Form.Item> */}
+            <FormInputItem label="NOA :" value={formData.noa} />
+            <FormInputItem label="NOA DATE :" value={formData.noaDate} />
+            <FormInputItem label="DATE OF DELIVERY :" value={formData.dateOfDelivery} />
           </Col>
         </Row>
 
@@ -470,155 +485,215 @@ const RejectionNote = () => {
 
         <Form.List name="itemDetails" initialValue={formData.items || [{}]}>
           {(fields, { add, remove }) => (
-            <>
-              <Form.Item style={{ textAlign: "right" }}>
-                <Button
-                  type="dashed"
-                  onClick={() => add()}
-                  style={{ marginBottom: 8 }}
-                  icon={<PlusOutlined />}
-                >
-                  ADD ITEM
-                </Button>
-              </Form.Item>
-              {fields.map(({ key, name, ...restField }, index) => (
-                <div
-                  key={key}
-                  style={{
-                    marginBottom: 16,
-                    border: "1px solid #d9d9d9",
-                    padding: 16,
-                    borderRadius: 4,
-                  }}
-                >
-                  <Row gutter={24}>
-                    <Col span={6}>
-                      <Form.Item
-                        {...restField}
-                        label="S.NO."
-                        name={[name, "sNo"]}
-                      >
-                        <Input value={index + 1} />
-                        <span style={{ display: "none" }}>{index + 1}</span>
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item
-                        {...restField}
-                        label="ITEM CODE"
-                        name={[name, "itemCode"]}
-                      >
-                        <AutoComplete
-                          style={{ width: "100%" }}
-                          options={itemData.map((item) => ({
-                            value: item.itemMasterCd,
-                          }))}
-                          placeholder="Enter item code"
-                          filterOption={(inputValue, option) =>
-                            option.value
-                              .toUpperCase()
-                              .indexOf(inputValue.toUpperCase()) !== -1
-                          }
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={6}>
-                      <Form.Item
-                        {...restField}
-                        label="ITEM DESCRIPTION"
-                        name={[name, "itemDescription"]}
-                      >
-                        <AutoComplete
-                          style={{ width: "100%" }}
-                          options={itemData.map((item) => ({
-                            value: item.itemMasterDesc,
-                          }))}
-                          placeholder="Enter item description"
-                          filterOption={(inputValue, option) =>
-                            option.value
-                              .toUpperCase()
-                              .indexOf(inputValue.toUpperCase()) !== -1
-                          }
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={5}>
-                      <Form.Item
-                        {...restField}
-                        label="UOM"
-                        name={[name, "uom"]}
-                      >
-                        <AutoComplete
-                          style={{ width: "100%" }}
-                          options={itemData.map((item) => ({
-                            value: item.uom,
-                          }))}
-                          placeholder="Enter UOM"
-                          filterOption={(inputValue, option) =>
-                            option.value
-                              .toUpperCase()
-                              .indexOf(inputValue.toUpperCase()) !== -1
-                          }
-                        />
-                      </Form.Item>
-                    </Col>
-                    {Type !== "PO" && (
-                      <Col span={6}>
-                        <Form.Item
-                          {...restField}
-                          label="INSPECTED QUANTITY "
-                          name={[name, "inspectionquantity"]}
-                        >
-                          <Input
-                            value={formData.items?.[index]?.quantity}
-                            onChange={(e) =>
-                              itemHandleChange(
-                                `inspectionquantity`,
-                                e.target.value,
-                                index
-                              )
-                            }
-                          />
-                          <span style={{ display: "none" }}>{index + 1}</span>
-                        </Form.Item>
-                      </Col>
-                    )}
-                    <Col span={6}>
-                      <Form.Item
-                        {...restField}
-                        label="REJECTED QUANTITY "
-                        name={[name, "quantity"]}
-                      >
-                        <Input
-                          onChange={(e) =>
-                            itemHandleChange(`quantity`, e.target.value, index)
-                          }
-                        />
-                      </Form.Item>
-                    </Col>
+            // <>
+            //   <Form.Item style={{ textAlign: "right" }}>
+            //     <Button
+            //       type="dashed"
+            //       onClick={() => add()}
+            //       style={{ marginBottom: 8 }}
+            //       icon={<PlusOutlined />}
+            //     >
+            //       ADD ITEM
+            //     </Button>
+            //   </Form.Item>
+            //   {fields.map(({ key, name, ...restField }, index) => (
+            //     <div
+            //       key={key}
+            //       style={{
+            //         marginBottom: 16,
+            //         border: "1px solid #d9d9d9",
+            //         padding: 16,
+            //         borderRadius: 4,
+            //       }}
+            //     >
+            //       <Row gutter={24}>
+            //         <Col span={6}>
+            //           <Form.Item
+            //             {...restField}
+            //             label="S.NO."
+            //             name={[name, "sNo"]}
+            //           >
+            //             <Input value={index + 1} />
+            //             <span style={{ display: "none" }}>{index + 1}</span>
+            //           </Form.Item>
+            //         </Col>
+            //         <Col span={6}>
+            //           <Form.Item
+            //             {...restField}
+            //             label="ITEM CODE"
+            //             name={[name, "itemCode"]}
+            //           >
+            //             <AutoComplete
+            //               style={{ width: "100%" }}
+            //               options={itemData.map((item) => ({
+            //                 value: item.itemMasterCd,
+            //               }))}
+            //               placeholder="Enter item code"
+            //               filterOption={(inputValue, option) =>
+            //                 option.value
+            //                   .toUpperCase()
+            //                   .indexOf(inputValue.toUpperCase()) !== -1
+            //               }
+            //             />
+            //           </Form.Item>
+            //         </Col>
+            //         <Col span={6}>
+            //           <Form.Item
+            //             {...restField}
+            //             label="ITEM DESCRIPTION"
+            //             name={[name, "itemDescription"]}
+            //           >
+            //             <AutoComplete
+            //               style={{ width: "100%" }}
+            //               options={itemData.map((item) => ({
+            //                 value: item.itemMasterDesc,
+            //               }))}
+            //               placeholder="Enter item description"
+            //               filterOption={(inputValue, option) =>
+            //                 option.value
+            //                   .toUpperCase()
+            //                   .indexOf(inputValue.toUpperCase()) !== -1
+            //               }
+            //             />
+            //           </Form.Item>
+            //         </Col>
+            //         <Col span={5}>
+            //           <Form.Item
+            //             {...restField}
+            //             label="UOM"
+            //             name={[name, "uom"]}
+            //           >
+            //             <AutoComplete
+            //               style={{ width: "100%" }}
+            //               options={itemData.map((item) => ({
+            //                 value: item.uom,
+            //               }))}
+            //               placeholder="Enter UOM"
+            //               filterOption={(inputValue, option) =>
+            //                 option.value
+            //                   .toUpperCase()
+            //                   .indexOf(inputValue.toUpperCase()) !== -1
+            //               }
+            //             />
+            //           </Form.Item>
+            //         </Col>
+            //         {Type !== "PO" && (
+            //           <Col span={6}>
+            //             <Form.Item
+            //               {...restField}
+            //               label="INSPECTED QUANTITY "
+            //               name={[name, "inspectionquantity"]}
+            //             >
+            //               <Input
+            //                 value={formData.items?.[index]?.quantity}
+            //                 onChange={(e) =>
+            //                   itemHandleChange(
+            //                     `inspectionquantity`,
+            //                     e.target.value,
+            //                     index
+            //                   )
+            //                 }
+            //               />
+            //               <span style={{ display: "none" }}>{index + 1}</span>
+            //             </Form.Item>
+            //           </Col>
+            //         )}
+            //         <Col span={6}>
+            //           <Form.Item
+            //             {...restField}
+            //             label="REJECTED QUANTITY "
+            //             name={[name, "quantity"]}
+            //           >
+            //             <Input
+            //               onChange={(e) =>
+            //                 itemHandleChange(`quantity`, e.target.value, index)
+            //               }
+            //             />
+            //           </Form.Item>
+            //         </Col>
 
-                    <Col span={5}>
-                      <Form.Item
-                        {...restField}
-                        label="REMARK"
-                        name={[name, "remarks"]}
-                      >
-                        <Input
-                          onChange={(e) =>
-                            itemHandleChange(`remarks`, e.target.value, index)
-                          }
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={1}>
-                      <MinusCircleOutlined
-                        onClick={() => remove(name)}
-                        style={{ marginTop: 8 }}
-                      />
-                    </Col>
-                  </Row>
-                </div>
-              ))}
+            //         <Col span={5}>
+            //           <Form.Item
+            //             {...restField}
+            //             label="REMARK"
+            //             name={[name, "remarks"]}
+            //           >
+            //             <Input
+            //               onChange={(e) =>
+            //                 itemHandleChange(`remarks`, e.target.value, index)
+            //               }
+            //             />
+            //           </Form.Item>
+            //         </Col>
+            //         <Col span={1}>
+            //           <MinusCircleOutlined
+            //             onClick={() => remove(name)}
+            //             style={{ marginTop: 8 }}
+            //           />
+            //         </Col>
+            //       </Row>
+            //     </div>
+            //   ))}
+            // </>
+            <>
+              {formData?.items?.length > 0 &&
+                formData.items.map((item, key) => {
+                  return (
+
+                    <div key={key} style={{ marginBottom: 16, border: '1px solid #d9d9d9', padding: 16, borderRadius: 4, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',gap:'20px' }}>
+                      
+                      <FormInputItem label="Serial No. :" value={item.srNo} readOnly={true}/>
+                      <FormInputItem label="ITEM CODE :" value={item.itemCode} readOnly={true}/>
+                      <FormInputItem label="ITEM DESCRIPTION :" value={item.itemDesc} readOnly={true}/>
+                      <FormInputItem label="UOM :" value={uomMaster[item.uom]} readOnly={true}/>
+                      {/* <FormInputItem label="RECIEVED QUANTITY :" name="quantity" value={formData.items[key].quantity} onChange={(fieldName, value) => itemHandleChange("quantity", value, key)} />
+                      <FormInputItem label="BUDGET HEAD PROCUREMENT :" name="budgetHeadProcurement" value={item.budgetHeadProcurement} onChange={(fieldName, value) => itemHandleChange("budgetHeadProcurement", value, key)}/> */}
+
+{/* 
+                        <Form.Item label="Serial No.">
+                          <Input value={item.srNo} readOnly />
+                        </Form.Item>
+                      
+                        <Form.Item label="ITEM CODE">
+                          <Input value={item.itemCode} readOnly />
+                        </Form.Item>
+                        
+                        <Form.Item label="ITEM DESCRIPTION">
+                          <Input value={item.itemDesc} readOnly />
+                        </Form.Item>
+
+                        <Form.Item label="UOM">
+                          <Input value={uomMaster[item.uom]} />
+                        </Form.Item> */}
+
+                        <Form.Item label="REJECTED QUANTITY">
+                          <Input value={item.rejectedQuantity} onChange={(e)=>itemHandleChange("quantity", e.target.value, key)} />
+                        </Form.Item>
+
+                        {/* <Form.Item label="BUDGET HEAD PROCUREMENT">
+                          <Input value={item.budgetHeadProcurement} onChange={(e)=>itemHandleChange("budgetHeadProcurement", e.target.value, key)} />
+                        </Form.Item>  */}
+
+                        {
+                          Type !== "PO" && 
+                          // <Form.Item label="LOCATOR DESCRIPTION">
+                          //   <Input value={locatorMaster[item.locatorId]} />
+                          // </Form.Item>
+                          <FormInputItem label="LOCATOR DESCRPTION" value={locatorMaster[item.locatorId]} />
+                        }
+
+                        {/* <FormInputItem label="REMARK" name="remarks" value={item.remarks} onChange={(fieldName, value) => itemHandleChange("remarks", value, key)} /> */}
+
+                        <Form.Item label="REMARK">
+                          <Input value={item.remarks} onChange={(e)=>itemHandleChange("remarks", e.target.value, key)} />
+                        </Form.Item>
+
+                        <Col span={1}>
+                          <MinusCircleOutlined onClick={() => removeItem(key)} style={{ marginTop: 8 }} />
+                        </Col>
+                    </div>
+                  );
+                })}
             </>
           )}
         </Form.List>
@@ -777,19 +852,14 @@ const RejectionNote = () => {
             </Button>
           </Form.Item>
           <Form.Item>
-            <Button
-              type="primary"
-              danger
-              htmlType="save"
-              style={{ width: "200px", margin: 16 }}
-            >
+          <Button disabled={!buttonVisible} onClick={()=> printOrSaveAsPDF(formRef)} type="primary" danger htmlType="save" style={{ width: '200px', margin: 16, alignContent: 'end' }}>
               PRINT
             </Button>
           </Form.Item>
         </div>
         <Modal
           title="Rejection Note saved successfully"
-          visible={isModalOpen}
+          open={isModalOpen}
           onOk={handleOk}
         >
           {successMessage && <p>{successMessage}</p>}

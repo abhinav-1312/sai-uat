@@ -1,12 +1,14 @@
-import { BASE_URL } from "../../utils/BaseUrl";
-import { apiHeader } from "../../utils/Functions";
+// import { BASE_URL } from "../../utils/BaseUrl";
+import {BASE_URL} from "../../utils/BaseUrl"
+import {apiHeader} from "../../utils/Functions"
+import axios from "axios"
 
-const token = localStorage.getItem("token");
 export const setUsers = (users) => ({
   type: "SET_USERS",
   payload: users,
 });
 
+const token = localStorage.getItem("token");
 export const fetchUsers = () => async (dispatch) => {
   try {
     const response = await fetch(`${BASE_URL}/getUserMaster`, apiHeader("GET", token));

@@ -79,88 +79,75 @@ const TransactionDetail = () => {
 
       {objectFromArr["ACT"] && (
         <div>
-          <h2>Approved Transaction</h2>
-          {acceptData ? (
-            <DetailData
-              data={acceptData?.data}
-              itemList={acceptData?.itemList}
-            />
-          ) : (
-            "No data available."
-          )}
-        </div>
+        <h2>Acceptance Note</h2>
+        {
+          acceptData ? 
+          <DetailData processType='act' data = {acceptData?.data} itemList = {acceptData?.itemList} />
+          :
+          "No data available."
+        }
+      </div>
       )}
 
-      {objectFromArr["GRN"] && (
-        <div>
-          <h2>Goods Receive Note</h2>
-          {grnData ? (
-            <DetailData data={grnData?.data} itemList={grnData?.itemList} />
-          ) : (
-            "No data available."
-          )}
-        </div>
-      )}
+      { objectFromArr["GRN"] && <div>
+        <h2>Goods Receive Note</h2>
+        {
+          grnData ?
+          <DetailData processType='grn' data = {grnData?.data} itemList = {grnData?.itemList} />
+          :
+          "No data available."
+        }
+      </div>}
 
-      {objectFromArr["IGP"] && (
-        <div>
-          <h2>Inward Gate Pass</h2>
-          {igpData ? (
-            <DetailData data={igpData?.data} itemList={igpData?.itemList} />
-          ) : (
-            "No data available."
-          )}
-        </div>
-      )}
+      {objectFromArr["IGP"] && <div>
+        <h2>Inward Gate Pass</h2>
+        {
+          igpData ?
+          <DetailData processType={"igp"} data={igpData?.data} itemList={igpData?.itemList} /> 
+          :
+          "No data available."
+        }
+      </div>}
 
-      {objectFromArr["IR"] && (
-        <div>
-          <h2>Inspection Report Data</h2>
-          {inspectionReportData ? (
-            <DetailData
-              data={inspectionReportData?.data}
-              itemList={inspectionReportData?.itemList}
-            />
-          ) : (
-            "No data available."
-          )}
-        </div>
-      )}
+      {objectFromArr["IR"] && <div>
+        <h2>Inspection Report Data</h2>
+        {
+          inspectionReportData ?
+          <DetailData processType={"ir"} data={inspectionReportData?.data} itemList={inspectionReportData?.itemList} /> 
+          :
+          "No data available."
+        }
+      </div>}
 
-      {objectFromArr["ISN"] && (
-        <div>
-          <h2>Issue Note</h2>
-          {isnData ? (
-            <DetailData data={isnData?.data} itemList={isnData?.itemList} />
-          ) : (
-            "No data available."
-          )}
-        </div>
-      )}
-      {objectFromArr["OGP"] && (
-        <div>
-          <h2>Outward Gate Pass</h2>
-          {ogpData ? (
-            <DetailData data={ogpData?.data} itemList={ogpData?.itemList} />
-          ) : (
-            "No data available."
-          )}
-        </div>
-      )}
+      {objectFromArr["ISN"] && <div>
+        <h2>Issue Note</h2>
+        {
+          isnData ?
+          <DetailData data={isnData?.data} itemList={isnData?.itemList} /> 
+          :
+          "No data available."
+        }
+      </div>
+}
+      {objectFromArr["OGP"] && <div>
+        <h2>Outward Gate Pass</h2>
+        {
+          ogpData ?
+          <DetailData processType="ogp" data={ogpData?.data} itemList={ogpData?.itemList} /> 
+          :
+          "No data available."
+        }
+      </div>}
 
-      {objectFromArr["REJ"] && (
-        <div>
-          <h2>Reject Data</h2>
-          {rejectData ? (
-            <DetailData
-              data={rejectData?.data}
-              itemList={rejectData?.itemList}
-            />
-          ) : (
-            "No data available."
-          )}
-        </div>
-      )}
+     { objectFromArr["REJ"] && <div>
+        <h2>Rejection Note</h2>
+        {
+          rejectData ?
+          <DetailData processType='rej' data={rejectData?.data} itemList={rejectData?.itemList} /> 
+          :
+          "No data available."
+        }
+      </div>}
 
       {objectFromArr["RN"] && (
         <div>

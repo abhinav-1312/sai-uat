@@ -88,7 +88,7 @@ const UserPage = ({ users, fetchUsers, updateUser, saveUser, deleteUser }) => {
         </Button>
       </div>
       <UserTable
-        users={users?.filter((user) =>
+        users={users.filter((user) =>
           Object.values(user).some(
             (value) =>
               typeof value === "string" &&

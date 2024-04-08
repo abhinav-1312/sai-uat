@@ -253,6 +253,7 @@ const ItemsPage = () => {
     setVisible(true);
   };
 
+  const userCd = localStorage.getItem("userCd")
   const handleDelete = async (itemId) => {
     // Implement delete logic here
     await apiRequest(
@@ -260,7 +261,7 @@ const ItemsPage = () => {
       "POST",
       {
         id: itemId,
-        userId: "12345",
+        userId: userCd,
       }
     );
     getItems();

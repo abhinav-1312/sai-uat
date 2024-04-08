@@ -1,5 +1,5 @@
 // GoodsReceiveNoteForm.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Form,
   Input,
@@ -16,12 +16,37 @@ import { MinusCircleOutlined } from "@ant-design/icons";
 import "./GoodsReceiveNoteForm.css";
 import dayjs from "dayjs";
 import axios from "axios";
-import { apiHeader } from "../../../utils/Functions";
+import { apiHeader, printOrSaveAsPDF } from "../../../utils/Functions";
+import FormInputItem from "../../../components/FormInputItem";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
 
+
+const convertEpochToDateString = (epochTime) => {
+  // Convert epoch time to milliseconds
+  let date = new Date(epochTime);
+
+  // Extract the day, month, and year from the Date object
+  let day = date.getDate();
+  let month = date.getMonth() + 1; // Month starts from 0
+  let year = date.getFullYear();
+
+  // Add leading zeros if needed
+  if (day < 10) {
+    day = '0' + day;
+  }
+  if (month < 10) {
+    month = '0' + month;
+  }
+
+  // Return the date string in DD/MM/YYYY format
+  return `${day}/${month}/${year}`;
+}
+
 const GoodsReceiveNoteForm = () => {
+  const [buttonVisible, setButtonVisible] = useState(false)
+  const formRef = useRef()
   const [Type, setType] = useState("IRP");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -95,9 +120,6 @@ const GoodsReceiveNoteForm = () => {
     return clone;
   }
   
-  
-
-  console.log("Form data: ", formData.items)
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -108,6 +130,10 @@ const GoodsReceiveNoteForm = () => {
   };
 
   const handleChange = (fieldName, value) => {
+    if(fieldName === "processType"){
+      fetchUserDetails(value)
+      return;
+    }
     setFormData((prevValues) => ({
       ...prevValues,
       [fieldName]: value === "" ? null : value,
@@ -166,7 +192,7 @@ const GoodsReceiveNoteForm = () => {
     fetchUserDetails();
   }, []);
 
-  const fetchUserDetails = async () => {
+  const fetchUserDetails = async (processType = null) => {
     try {
       const userCd = localStorage.getItem("userCd")
       const password = localStorage.getItem("password")
@@ -180,23 +206,49 @@ const GoodsReceiveNoteForm = () => {
       const { responseData } = response.data;
       const { organizationDetails } = responseData;
       const { userDetails } = responseData;
+      const {locationDetails} = responseData
       const currentDate = dayjs();
       // Update form data with fetched values
-      setFormData({
-        // ceRegionalCenterCd: "20",
-        // ceRegionalCenterName: organizationDetails.location,
-        // ceAddress: organizationDetails.locationAddr,
-        // ceZipcode: "131021",
-        genName: userDetails.firstName,
-        userId: "string",
-        noaDate: currentDate.format(dateFormat),
-        dateOfDelivery: currentDate.format(dateFormat),
-        genDate: currentDate.format(dateFormat),
-        issueDate: currentDate.format(dateFormat),
-        approvedDate: currentDate.format(dateFormat),
-        grnDate: currentDate.format(dateFormat),
-        grnNo: "string",
-      });
+      if(processType === "IRP"){
+        setFormData({
+          crRegionalCenterCd: organizationDetails.id,
+          crRegionalCenterName: organizationDetails.location,
+          crAddress: organizationDetails.locationAddr,
+          crZipcode: locationDetails.zipcode,
+          genName: userDetails.firstName,
+          // noaDate: currentDate.format(dateFormat),
+          // dateOfDelivery: currentDate.format(dateFormat),
+          userId: "string",
+          genDate: currentDate.format(dateFormat),
+          issueDate: currentDate.format(dateFormat),
+          approvedDate: currentDate.format(dateFormat),
+          gatePassDate: currentDate.format(dateFormat),
+          gatePassNo: "Not defined",
+          processType: processType,
+          type: processType,
+          processId: "string"
+        });
+      }
+      else{
+        setFormData({
+          ceRegionalCenterCd: organizationDetails.id,
+          ceRegionalCenterName: organizationDetails.location,
+          ceAddress: organizationDetails.locationAddr,
+          ceZipcode: locationDetails.zipcode,
+          genName: userDetails.firstName,
+          noaDate: currentDate.format(dateFormat),
+          dateOfDelivery: currentDate.format(dateFormat),
+          userId: "string",
+          genDate: currentDate.format(dateFormat),
+          issueDate: currentDate.format(dateFormat),
+          approvedDate: currentDate.format(dateFormat),
+          gatePassDate: currentDate.format(dateFormat),
+          gatePassNo: "Not defined",
+          processType: processType,
+          type: processType,
+          processId: "string"
+        });
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -219,17 +271,16 @@ const GoodsReceiveNoteForm = () => {
 
       if (status === 200 && statusText === "OK") {
         try {
-          const locatorQuantityArr = await Promise.all(
-            itemList.map(async (item) => {
-              const { itemCode } = item;
+          const locatorQuantityArr= await Promise.all(
+            itemList?.map(async (item) => {
+              const itemCode  = item.itemCode;
 
               const ohqRes = await axios.post(ohqUrl, {
-                itemCode,
+                itemCode: itemCode,
                 userId: "string",
               });
               const { data: ohqProcess } = ohqRes;
               const { responseData: ohqData } = ohqProcess;
-              console.log("Qhq data: ", ohqData);
               return {
                 itemCode: ohqData[0].itemCode,
                 qtyList: ohqData[0].qtyList,
@@ -242,12 +293,11 @@ const GoodsReceiveNoteForm = () => {
             return acc;
           }, {});
 
-          console.log("Locator Quan arr", locatorQuantityObj);
-
           setLocatorQuantity({ ...locatorQuantityObj });
         } catch (error) {
           console.log("Error: ", error);
         }
+      }else{
       }
 
       setFormData((prevFormData) => ({
@@ -257,9 +307,9 @@ const GoodsReceiveNoteForm = () => {
         approvedName: processData?.approvedName,
         processId: processData?.processId,
 
-        crRegionalCenterCd: processData?.regionalCenterCd,
-        crRegionalCenterName: processData?.regionalCenterName,
-        crAddress: processData?.address,
+        crRegionalCenterCd: processData?.crRegionalCenterCd,
+        crRegionalCenterName: processData?.crRegionalCenterName,
+        // crAddress: processData?.address,
         crZipcode: processData?.zipcode,
 
         consumerName: processData?.consumerName,
@@ -268,14 +318,21 @@ const GoodsReceiveNoteForm = () => {
         termsCondition: processData?.termsCondition,
         note: processData?.note,
 
-        items: itemList.map((item) => ({
+        supplierCode: processData?.supplierCd,
+        supplierName: processData?.supplierName,
+        crAddress: processData?.crAddress,
+        noa: processData?.noa,
+        noaDate: convertEpochToDateString(processData?.noaDate),
+        dateOfDelivery: processData?.dateOfDelivery,
+
+        items: itemList?.map((item) => ({
           srNo: item?.sNo,
           itemId: item?.itemId,
           itemCode: item?.itemCode,
           itemDesc: item?.itemDesc,
           uom: parseInt(item?.uom),
           quantity: item?.quantity,
-          remQuantity: item?.quantity,
+          remQuantity:item?.quantity,
           noOfDays: item?.requiredDays,
           remarks: item?.remarks,
           conditionOfGoods: item?.conditionOfGoods,
@@ -296,13 +353,10 @@ const GoodsReceiveNoteForm = () => {
     }
   };
 
-  console.log("FormData: ", formData.items);
-
   const onFinish = async (values) => {
-    console.log("Form data abve foud", formData)
     let found = false
     const tempFormData = deepClone(formData)
-    tempFormData.items.forEach(item=>{
+    tempFormData.items?.forEach(item=>{
       const {quantity, remQuantity} = item;
       if(quantity-remQuantity > 0){
         message.error("Please locate a locator to all quantity")
@@ -314,22 +368,21 @@ const GoodsReceiveNoteForm = () => {
     if(found) return
 
     const updatedForm = deepClone(formData);
-    const updatedItems = updatedForm.items.map(item=>{
+    const updatedItems = updatedForm.items?.map(item=>{
       const itemObj = item
       const {qtyList} = item
       delete itemObj.quantity
       delete itemObj.remQuantity
       delete itemObj.qtyList
 
-      const insideArray = qtyList.map(qtyObj=>{
+      const insideArray = qtyList?.map(qtyObj=>{
         return {...itemObj, quantity: qtyObj.quantity, locatorId: qtyObj.locatorId}
       })
 
       return insideArray
     })
     
-    const flatItemsArray = updatedItems.flatMap(innerArray => innerArray);
-    console.log("Form data above try: ", formData)
+    const flatItemsArray = updatedItems?.flatMap(innerArray => innerArray);
 
     try {
       const formDataCopy = { ...formData, items: flatItemsArray };
@@ -394,6 +447,7 @@ const GoodsReceiveNoteForm = () => {
             grnNo: processId,
           };
         });
+        setButtonVisible(true)
         setSuccessMessage(
           ` Goods Receive Note NO : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
@@ -401,20 +455,16 @@ const GoodsReceiveNoteForm = () => {
         message.success(
           `Goods Receive Note successfully! Process ID: ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
-        console.log("FOrm data onfinisg try: ",formData)
-        console.log("locatorMaster data onfinisg try: ",locatorMaster)
+
       } else {
         // Display a generic success message if specific data is not available
         message.error("Failed to Goods Receive Note. Please try again later.");
-        console.log("FOrm data onfinisg else: ",formData)
-        console.log("locatorMaster data onfinisg else: ",locatorMaster)
+
       }
       // Handle success response here
     } catch (error) {
       console.log("Error saving Goods Receive Note:", error);
       message.error("Failed to Goods Receive Note. Please try again later.");
-      console.log("FOrm data onfinisg catch: ",formData)
-      console.log("locatorMaster data onfinisg catch: ",locatorMaster)
     }
   };
 
@@ -456,7 +506,7 @@ const GoodsReceiveNoteForm = () => {
       const updatedItems = prevValues.items;
       updatedItems.splice(index, 1);
 
-      const updatedItems1 = updatedItems.map((item, key) => {
+      const updatedItems1 = updatedItems?.map((item, key) => {
         return { ...item, srNo: key + 1 };
       });
 
@@ -469,7 +519,6 @@ const GoodsReceiveNoteForm = () => {
 
   const handleLocatorChange = (fieldName, itemIndex, qtyListIndex, value) => {
     // if(quantity-remQuantity-prevVal + val)
-    console.log("ItemIndex: ", itemIndex, value);
     if (fieldName === "quantity") {
       const { remQuantity, quantity, qtyList } = formData.items[itemIndex];
       const val = value === "" ? 0 : parseInt(value);
@@ -500,9 +549,6 @@ const GoodsReceiveNoteForm = () => {
       }
     } else {
       setFormData((prevValues) => {
-        console.log("setForm data locatorId called");
-        console.log("Item array: ", prevValues.items, itemIndex, qtyListIndex)
-        console.log("Form data setForm", formData.items)
         const itemArray = [...prevValues.items];
         itemArray[itemIndex].qtyList[qtyListIndex].locatorId = parseInt(value);
 
@@ -514,10 +560,8 @@ const GoodsReceiveNoteForm = () => {
     }
   };
 
-  console.log("Locator quantity: ", locatorQuantity);
-
   return (
-    <div className="goods-receive-note-form-container">
+    <div className="goods-receive-note-form-container" ref={formRef}>
       <h1>Sports Authority of India - Goods Receive Note</h1>
 
       <Form
@@ -525,6 +569,7 @@ const GoodsReceiveNoteForm = () => {
         className="goods-receive-note-form"
         onValuesChange={handleValuesChange}
         layout="vertical"
+        initialValues={formData}
       >
         <Row>
           <Col span={6} offset={18}>
@@ -542,7 +587,7 @@ const GoodsReceiveNoteForm = () => {
           </Col>
           <Col span={6}>
             <Form.Item label="TYPE" name="type">
-              <Select onChange={(value) => handleChange("type", value)}>
+              <Select onChange={(value) => handleChange("processType", value)}>
                 <Option value="IRP">1. Issue/Return</Option>
                 <Option value="PO">2. Purchase Order</Option>
                 <Option value="IOP">3. Inter-Org Transaction</Option>
@@ -550,79 +595,42 @@ const GoodsReceiveNoteForm = () => {
             </Form.Item>
           </Col>
           <Col span={6} offset={12}>
-            <Form.Item label="GRN NO." name="grnNo">
-              <Input
-                disabled
-                onChange={(e) => handleChange("grnNo", e.target.value)}
-              />
-            </Form.Item>
+    
+
+            <FormInputItem label="GRN No." value={formData.grnNo === "string" ? "not defined" : formData.grnNo} />
           </Col>
         </Row>
 
         <Row gutter={24}>
           <Col span={8}>
             <Title strong level={2} underline type="danger">
-              {" "}
-              CONSIGNEE DETAIL :-
+              {
+                Type === "IRP" ?
+                "CONSIGNOR DETAIL ;-" : "CONSIGNEE DETAIL :-"
+              }
+
             </Title>
 
-            <Form.Item label="REGIONAL CENTER CODE" name="crRegionalCenterCd">
-              <Input value={formData.crRegionalCenterCd} />
-              <div style={{ display: "none" }}>
-                {formData.crRegionalCenterCd}
-              </div>
-            </Form.Item>
-            <Form.Item
-              label="REGIONAL CENTER NAME "
-              name="crRegionalCenterName"
-            >
-              <Input value={formData.crRegionalCenterName} />
-              <div style={{ display: "none" }}>
-                {formData.crRegionalCenterCd}
-              </div>
-            </Form.Item>
-            <Form.Item label="ADDRESS :" name="crAddress">
-              <Input value={formData.crAddress} />
-              <div style={{ display: "none" }}>
-                {formData.crRegionalCenterCd}
-              </div>
-            </Form.Item>
-            <Form.Item label="ZIP CODE :" name="crZipcode">
-              <Input value={formData.crZipcode} />
-              <div style={{ display: "none" }}>
-                {formData.crRegionalCenterCd}
-              </div>
-            </Form.Item>
+            {/* for purchase order */}
+            <FormInputItem label="REGIONAL CENTER CODE :" value={Type==="IRP" ? formData.crRegionalCenterCd : formData.ceRegionalCenterCd} readOnly={true}/>
+            <FormInputItem label="REGIONAL CENTER NAME :" value={Type==="IRP" ? formData.crRegionalCenterName :formData.ceRegionalCenterName} readOnly={true} />
+            <FormInputItem label="ADDRESS :" value={Type==="IRP" ? formData.crAddress : formData.ceAddress} readOnly={true} />
+            <FormInputItem label="ZIPCODE :" value={Type==="IRP" ? formData.crZipcode : formData.ceZipcode} readOnly={true} />
           </Col>
           <Col span={8}>
             <Title strong underline level={2} type="danger">
-              CONSIGNOR DETAIL :-
+            {
+                Type === "IRP" ?
+                "CONSIGNEE DETAIL ;-" : "CONSIGNOR DETAIL :-"
+              }
             </Title>
 
             {Type === "PO" && (
-              <>
-                <Form.Item label="SUPPLIER CODE :" name="supplierCode">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierCode", e.target.value)
-                    }
-                  />
-                </Form.Item>
-                <Form.Item label="SUPPLIER NAME :" name="supplierName">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierName", e.target.value)
-                    }
-                  />
-                </Form.Item>
-                <Form.Item label="ADDRESS:" name="supplierAddress">
-                  <Input
-                    onChange={(e) =>
-                      handleChange("supplierAddress", e.target.value)
-                    }
-                  />
-                </Form.Item>
-              </>
+              <> 
+              <FormInputItem label="SUPPLIER CODE :" value={formData.supplierCode} />
+              <FormInputItem label="SUPPLIER NAME :" value={formData.supplierName} />
+              <FormInputItem label="ADDRESS :" value={formData.crAddress || "Not defined"} />
+            </>
             )}
 
             {Type === "IRP" && (
@@ -700,7 +708,7 @@ const GoodsReceiveNoteForm = () => {
             )}
             {Type === "PO" && (
               <Form.Item label="ACCEPTANCE NOTE NO." name="acceptanceNoteNo">
-                <Input />
+                <Input onChange={(e) => handleReturnNoteNoChange(e.target.value)} />
               </Form.Item>
             )}
             {Type === "IOP" && (
@@ -710,12 +718,13 @@ const GoodsReceiveNoteForm = () => {
             )}
             {(Type === "IOP" || Type === "PO") && (
               <>
-                <Form.Item label="NOA NO." name="noaNo">
+              <FormInputItem label="NOA NO. :" value={formData.noa} />
+                {/* <Form.Item label="NOA NO." name="noaNo">
                   <Input
                     onChange={(e) => handleChange("noaNo", e.target.value)}
                   />
-                </Form.Item>
-                <Form.Item label="NOA DATE" name="noaDate">
+                </Form.Item> */}
+                {/* <Form.Item label="NOA DATE" name="noaDate">
                   <DatePicker
                     format={dateFormat}
                     style={{ width: "100%" }}
@@ -723,8 +732,11 @@ const GoodsReceiveNoteForm = () => {
                       handleChange("noaDate", dateString)
                     }
                   />
-                </Form.Item>
-                <Form.Item label="DATE OF DELIVERY" name="dateOfDelivery">
+                </Form.Item> */}
+
+                <FormInputItem label="NOA DATE" value={formData.noaDate} />
+
+                {/* <Form.Item label="DATE OF DELIVERY" name="dateOfDelivery">
                   <DatePicker
                     format={dateFormat}
                     style={{ width: "100%" }}
@@ -732,7 +744,9 @@ const GoodsReceiveNoteForm = () => {
                       handleChange("dateOfDelivery", dateString)
                     }
                   />
-                </Form.Item>
+                </Form.Item> */}
+
+                <FormInputItem label="DATE OF DELIVERY" value={formData.dateOfDelivery} />
               </>
             )}
           </Col>
@@ -841,13 +855,7 @@ const GoodsReceiveNoteForm = () => {
             <>
               {formData.items?.length > 0 &&
                 formData.items.map((item, key) => {
-                  // console.log(
-                  //   "Item: ",
-                  //   item.itemCode,
-                  //   locatorQuantity[item.itemCode]
-                  // );
                   return (
-                    // <div className="xyz" style={{font:"150px", zIndex: "100"}}>xyz</div>
 
                     <div
                       key={key}
@@ -883,14 +891,16 @@ const GoodsReceiveNoteForm = () => {
                           )}
                         />
                       </Form.Item>
-
-                      <Form.Item label="RECEIVED QUANTITY">
+                      
+                        <Form.Item label="RECEIVED QUANTITY">
                         <Input value={item.quantity} readOnly />
                       </Form.Item>
 
-                      <Form.Item label="BUDGET HEAD PROCUREMENT">
+                      {/* <Form.Item label="BUDGET HEAD PROCUREMENT">
                         <Input value={item.budgetHeadProcurement} readOnly />
-                      </Form.Item>
+                      </Form.Item> */}
+
+                      <FormInputItem label="BUDGET HEAD PROCUREMENT" name="budgetHeadProcurement" value={item.budgetHeadProcurement} onChange={(name, value)=> itemHandleChange("budgetHeadProcurement", value, key)} />
 
                       <Form.Item
                         label="REMARK"
@@ -1092,12 +1102,7 @@ const GoodsReceiveNoteForm = () => {
             </Button>
           </Form.Item>
           <Form.Item>
-            <Button
-              type="primary"
-              danger
-              htmlType="save"
-              style={{ width: "200px", margin: 16 }}
-            >
+          <Button disabled={!buttonVisible} onClick={()=> printOrSaveAsPDF(formRef)} type="primary" danger htmlType="save" style={{ width: '200px', margin: 16, alignContent: 'end' }}>
               PRINT
             </Button>
           </Form.Item>
