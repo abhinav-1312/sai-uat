@@ -52,7 +52,7 @@ export const saveLocation = (values) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization' : token
+        'Authorization' : `Bearer ${token}`
       },
       body: JSON.stringify(values),
     });
@@ -75,7 +75,7 @@ export const deleteLocation = (locationId) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization' : token
+        'Authorization' :`Bearer ${token}`
       },
       body: JSON.stringify({
         userId: 'string', 

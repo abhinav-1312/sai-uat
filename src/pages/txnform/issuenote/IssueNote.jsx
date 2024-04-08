@@ -353,6 +353,7 @@ const IssueNote = () => {
 
   const token = localStorage.getItem("token")
   const userCd = localStorage.getItem("userCd")
+  const password = localStorage.getItem("password")
   const populateItemData = async() => {
     const itemMasterUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMaster"
     const ohqUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getOHQ"
@@ -636,17 +637,20 @@ const IssueNote = () => {
     },
   ];
 
+  
+
   const fetchUserDetails = async () => {
     try {
       const apiUrl =
         "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
       const response = await axios.post(apiUrl, {
-        userCd: "dkg",
-        password: "string",
+        userCd,
+        password
       });
 
       const { responseData } = response.data;
       const { organizationDetails, userDetails, locationDetails } = responseData;
+      console.log("RESPONSE: ", responseData)
       // Get current date
       const currentDate = dayjs();
       // Update form data with fetched values

@@ -1,5 +1,6 @@
 // DepartmentActions.js
 import { BASE_URL } from "../../utils/BaseUrl";
+import { apiHeader } from "../../utils/Functions";
 
 
 const token = localStorage.getItem("token");
@@ -11,7 +12,7 @@ export const setDepartments = (departments) => ({
 
 export const fetchDepartments = () => async (dispatch) => {
   try {
-    const response = await fetch(`${BASE_URL}/getDeptMaster`, {headers: {Authorization:token}});
+    const response = await fetch(`${BASE_URL}/getDeptMaster`, apiHeader("GET", token));
     const data = await response.json();
 
     dispatch(setDepartments(data.responseData));
