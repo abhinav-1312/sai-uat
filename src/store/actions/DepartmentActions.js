@@ -27,7 +27,7 @@ export const updateDepartment = (departmentId, values) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization' : token
+        'Authorization' : `Bearer ${token}`
       },
       body: JSON.stringify({
         departmentId,
@@ -53,7 +53,7 @@ export const saveDepartment = (values) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': token
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(values),
     });
@@ -76,7 +76,7 @@ export const deleteDepartment = (departmentId) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization' : token
+        'Authorization' : `Bearer ${token}`
       },
       body: JSON.stringify({
         userId: 'string', 

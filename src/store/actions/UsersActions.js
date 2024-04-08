@@ -105,7 +105,7 @@ export const deleteUser = (userId) => async (dispatch) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        'Authorization' : token
+        'Authorization' : `Bearer ${token}`
       },
       body: JSON.stringify({
         userId: "string",

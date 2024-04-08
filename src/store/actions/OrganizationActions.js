@@ -24,7 +24,7 @@ export const updateOrganization = (organizationId, values) => async (dispatch) =
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization' : token
+        'Authorization' : `Bearer ${token}`
       },
       body: JSON.stringify({
         organizationId,
@@ -50,7 +50,7 @@ export const saveOrganization = (values) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization' : token
+        'Authorization' : `Bearer ${token}`
       },
       body: JSON.stringify(values),
     });
@@ -73,7 +73,7 @@ export const deleteOrganization = (organizationId) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization' : token
+        'Authorization' : `Bearer ${token}`
       },
       body: JSON.stringify({
         userId: "12345",

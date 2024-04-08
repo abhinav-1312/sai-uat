@@ -1,4 +1,5 @@
 import { BASE_URL } from "../../utils/BaseUrl";
+import { apiHeader } from "../../utils/Functions";
 
 const token = localStorage.getItem("token")
 
@@ -9,7 +10,7 @@ export const setUOM = (UOMs) => ({
 
 export const fetchUOM = () => async (dispatch) => {
   try {
-    const response = await fetch(`${BASE_URL}/getUOMMaster`, {headers: {Authorization : token}});
+    const response = await fetch(`${BASE_URL}/getUOMMaster`, apiHeader("GET", token));
     const data = await response.json();
 
     dispatch(setUOM(data.responseData));
@@ -24,7 +25,7 @@ export const updateUOM = (uomId, values) => async (dispatch) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        'Authorization' : token
+        'Authorization' : `Bearer ${token}`
       },
       body: JSON.stringify({
         uomId,
@@ -50,7 +51,7 @@ export const saveUOM = (values) => async (dispatch) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        'Authorization' : token
+        'Authorization' : `Bearer ${token}`
       },
       body: JSON.stringify(values),
     });
@@ -73,7 +74,7 @@ export const deleteUOM = (uomId) => async (dispatch) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        'Authorization' : token
+        'Authorization' : `Bearer ${token}`
       },
       body: JSON.stringify({
         userId: "string",

@@ -1,4 +1,5 @@
 import { BASE_URL } from "../../utils/BaseUrl";
+import { apiHeader } from "../../utils/Functions";
 
 const token = localStorage.getItem("token");
 
@@ -9,7 +10,7 @@ export const setVendors = (vendors) => ({
 
 export const fetchVendors = () => async (dispatch) => {
   try {
-    const response = await fetch(`${BASE_URL}/getVendorMaster`, {headers: {Authorization : token}});
+    const response = await fetch(`${BASE_URL}/getVendorMaster`, apiHeader("GET", token));
     const data = await response.json();
 
     dispatch(setVendors(data.responseData));
@@ -24,7 +25,7 @@ export const updateVendor = (vendorId, values) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization' : token
+        'Authorization' : `Bearer ${token}`
       },
       body: JSON.stringify({
         vendorId,
@@ -50,7 +51,7 @@ export const saveVendor = (values) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization' : token
+        'Authorization' : `Bearer ${token}`
       },
       body: JSON.stringify(values),
     });
@@ -73,7 +74,7 @@ export const deleteVendor = (vendorId) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization' : token
+        'Authorization' : `Bearer ${token}`
       },
       body: JSON.stringify({
         userId: 'string',

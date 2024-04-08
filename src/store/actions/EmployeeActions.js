@@ -1,4 +1,5 @@
 import { BASE_URL } from "../../utils/BaseUrl";
+import { apiHeader } from "../../utils/Functions";
 
 const token = localStorage.getItem("token")
 
@@ -9,7 +10,7 @@ export const setEmployees = (employees) => ({
 
 export const fetchEmployees = () => async (dispatch) => {
   try {
-    const response = await fetch(`${BASE_URL}/getEmpMaster`, {headers: {Authorization:token}});
+    const response = await fetch(`${BASE_URL}/getEmpMaster`, apiHeader("GET", token));
     const data = await response.json();
 
     dispatch(setEmployees(data.responseData));
@@ -24,7 +25,7 @@ export const updateEmployee = (employeeId, values) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization' : token
+        'Authorization' : `Bearer ${token}`
       },
       body: JSON.stringify({
         employeeId,
@@ -50,7 +51,7 @@ export const saveEmployee = (values) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization' : token
+        'Authorization' : `Bearer ${token}`
       },
       body: JSON.stringify(values),
     });
@@ -73,7 +74,7 @@ export const deleteEmployee = (employeeId) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization' : token
+        'Authorization' : `Bearer ${token}`
       },
       body: JSON.stringify({
         userId: 'string', 
