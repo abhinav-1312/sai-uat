@@ -1,4 +1,5 @@
 import { BASE_URL } from "../../utils/BaseUrl";
+import { apiHeader } from "../../utils/Functions";
 
 const token = localStorage.getItem("token");
 export const setUsers = (users) => ({
@@ -8,7 +9,7 @@ export const setUsers = (users) => ({
 
 export const fetchUsers = () => async (dispatch) => {
   try {
-    const response = await fetch(`${BASE_URL}/getUserMaster`, {headers: {Authorization : token}});
+    const response = await fetch(`${BASE_URL}/getUserMaster`, apiHeader("GET", token));
     const data = await response.json();
 
     dispatch(setUsers(data.responseData));
