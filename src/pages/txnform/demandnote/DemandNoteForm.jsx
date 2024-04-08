@@ -19,8 +19,8 @@ const DemandNoteForm = () => {
   });
   useEffect(() => {
     // Fetch data from API to prefill form fields
-    fetchItemData()
-    fetchData();
+    // fetchItemData()
+    // fetchData();
   }, []);
 
   const fetchItemData = async () => {

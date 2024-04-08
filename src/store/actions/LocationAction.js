@@ -48,7 +48,7 @@ export const updateLocation = (locationId, values) => async (dispatch) => {
 
 export const saveLocation = (values) => async (dispatch) => {
   try {
-    const createResponse = await fetch(`https://sai-services.azurewebsites.net/sai-inv-mgmt/master/saveLocationMaster`, {
+    const createResponse = await fetch(`https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/saveLocationMaster`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
