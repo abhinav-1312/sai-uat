@@ -1,5 +1,6 @@
 // LocatorActions.js
 import { BASE_URL } from "../../utils/BaseUrl";
+import { apiHeader } from "../../utils/Functions";
 const token = localStorage.getItem("token");
 
 export const setLocators = (locators) => ({
@@ -9,7 +10,7 @@ export const setLocators = (locators) => ({
 
 export const fetchLocators = () => async (dispatch) => {
   try {
-    const response = await fetch(`${BASE_URL}/getLocatorMaster`, {headers: {Authorization : token}});
+    const response = await fetch(`${BASE_URL}/getLocatorMaster`, apiHeader("GET", token));
     const data = await response.json();
 
     dispatch(setLocators(data.responseData));
@@ -24,7 +25,7 @@ export const updateLocator = (locatorId, values) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization' : token
+        'Authorization' : `Bearer ${token}`
       },
       body: JSON.stringify({
         locatorMasterId: locatorId,
@@ -50,7 +51,7 @@ export const saveLocator = (values) => async (dispatch) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization' : token
+        'Authorization' : `Bearer ${token}`
       },
       body: JSON.stringify(values),
     });

@@ -1,4 +1,5 @@
 import { BASE_URL } from "../../utils/BaseUrl";
+import { apiHeader } from "../../utils/Functions";
 
 const token = localStorage.getItem("token");
 export const setOrganizations = (organizations) => ({
@@ -8,7 +9,7 @@ export const setOrganizations = (organizations) => ({
 
 export const fetchOrganizations = () => async (dispatch) => {
   try {
-    const response = await fetch(`${BASE_URL}/getOrgMaster`, {headers: {Authorization : token}});
+    const response = await fetch(`${BASE_URL}/getOrgMaster`, apiHeader("GET", token) );
     const data = await response.json();
 
     dispatch(setOrganizations(data.responseData));
