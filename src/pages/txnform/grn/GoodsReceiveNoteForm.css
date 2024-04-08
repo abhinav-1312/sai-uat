@@ -1,0 +1,45 @@
+/* GoodsReceiveNoteForm.css */
+.goods-receive-note-form-container {
+  max-width: 90%;
+  margin: auto;
+  padding: 20px;
+  background-color: #e5f2f2;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+}
+.goods-receive-note-form-container h1 {
+  text-align: center;
+}
+.goods-receive-note-form h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.goods-receive-note-form h2 {
+  font-size: 20px;
+  margin-top: 20px;
+}
+
+.goods-receive-note-button-container{
+  display: flex;
+  justify-content: space-around;
+
+}
+
+
+.goods-receive-note-footer-container{
+  display: flex;
+  justify-content: space-between;
+}
+
+.goods-receive-note-signature{
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem;
+}
+
+/* Add more custom styles as needed */
+.print-agreement {
+  margin: 40px;
+}
