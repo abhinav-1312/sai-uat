@@ -27,7 +27,7 @@ const DemandNoteForm = () => {
   useEffect(() => {
     // Fetch data from API to prefill form fields
     // fetchItemData()
-    // fetchData();
+    fetchData();
   }, []);
 
   const fetchItemData = async () => {
@@ -63,7 +63,7 @@ const DemandNoteForm = () => {
         regionalCenterName: organizationDetails.organizationName,
         consignorAddress: organizationDetails.locationAddr,
         consignorZipCode: locationDetails.zipcode,
-        // firstName: userDetails.firstName,
+        firstName: userDetails.firstName,
         // lastName: userDetails.lastName
 
       });
@@ -72,9 +72,10 @@ const DemandNoteForm = () => {
     }
   };
 
+  const token = localStorage.getItem("token")
 
   const onFinish = async (values) => {
-    const apiUrl = 'https://sai-services.azurewebsites.net/sai-inv-mgmt/saveDemand';
+    const apiUrl = 'https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/saveDemand';
 
     try {
       // Transforming form data to match API payload
@@ -106,7 +107,8 @@ const DemandNoteForm = () => {
       // Making a POST request to the API endpoint using Axios
       const response = await axios.post(apiUrl, payload, {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         }
       });
       // Handle successful response here, if needed

@@ -174,11 +174,11 @@ const InspectionNote = () => {
   const handleInwardGatePassChange = async (_fieldName, value) => {
     try {
       const apiUrl =
-        "https://sai-services.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
+        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
       const response = await axios.post(apiUrl, {
         processId: value,
         processStage: "IGP",
-      });
+      },  apiHeader("POST", token));
       const {responseData} = response.data;
       const { processData, itemList } = responseData;
       setFormData((prevFormData) => ({
@@ -231,10 +231,10 @@ const InspectionNote = () => {
   const fetchUomLocatorMaster = async () => {
     try {
       const uomMasterUrl =
-        "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster";
+        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster";
       const locatorMasterUrl =
-        "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster";
-      const [uomMaster, locatorMaster] = await Promise.all([axios.get(uomMasterUrl), axios.get(locatorMasterUrl)]);
+        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster";
+      const [uomMaster, locatorMaster] = await Promise.all([axios.get(uomMasterUrl, apiHeader("GET", token)), axios.get(locatorMasterUrl, apiHeader("GET", token))]);
       const { responseData: uomMasterData } = uomMaster.data;
       const { responseData: locatorMasterData } = locatorMaster.data;
       const uomObject = convertArrayToObject(uomMasterData, "id", "uomName" )

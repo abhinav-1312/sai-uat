@@ -647,7 +647,7 @@ const IssueNote = () => {
     const password = localStorage.getItem('password');
     try {
       const apiUrl =
-        "https://sai-services.azurewebsites.net/sai-inv-mgmt/login/authenticate";
+        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
       const response = await axios.post(apiUrl, {
         userCd,
         password
