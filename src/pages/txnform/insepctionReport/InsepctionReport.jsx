@@ -16,7 +16,7 @@ import {
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
-import { apiHeader } from "../../../utils/Functions";
+import { apiHeader, fetchUomLocatorMaster } from "../../../utils/Functions";
 import { convertArrayToObject, printOrSaveAsPDF } from "../../../utils/Functions";
 import FormInputItem from "../../../components/FormInputItem";
 import FormDatePickerItem from "../../../components/FormDatePickerItem";
@@ -127,6 +127,7 @@ const InsepctionReport = () => {
   useEffect(() => {
     fetchItemData();
     fetchUserDetails();
+    fetchUomLocatorMaster(setUomMaster, setLocatorMaster)
   }, []);
 
   const fetchItemData = async () => {
@@ -176,7 +177,8 @@ const InsepctionReport = () => {
     }
   };
 
-  const handleInwardGatePassChange = async (value) => {
+  const handleInwardGatePassChange = async (_, value) => {
+    console.log("VALUE: ", value)
     try {
       const apiUrl =
         "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
@@ -229,7 +231,9 @@ const InsepctionReport = () => {
       console.error("Error fetching sub process details:", error);
       // Handle error
     }
+
   };
+  console.log("FOrmdata item: ", formData.items)
 
   const onFinish = async (values) => {
     try {
