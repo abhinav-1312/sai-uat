@@ -335,6 +335,8 @@ const InsepctionReport = () => {
     })
   }
 
+  console.log("Form data: ", formData)
+
   return (
     <div className="goods-receive-note-form-container" ref={formRef}> 
       {Type === "PO" && (
@@ -351,15 +353,9 @@ const InsepctionReport = () => {
 
         <Row>
           <Col span={6} offset={18}>
-            <FormDatePickerItem label="DATE :" defaultValue={dayjs()} name="inspectionRptDate" onChange={handleChange} />
+            <FormInputItem label="DATE :" value={formData.inspectionRptDate} />
           </Col>
           <Col span={6}>
-            {/* <Form.Item label="TYPE" name="type">
-              <Select onChange={(value) => handleChange("type", value)}>
-                <Option value="PO">1. Purchase Order</Option>
-                <Option value="IOP">2. Inter-Org Transaction</Option>
-              </Select>
-            </Form.Item> */}
             <FormDropdownItem label="TYPE" name="type" onChange={handleChange} dropdownArray={typeArray} valueField="valueField" visibleField="visibleField" />
           </Col>
           <Col span={6} offset={12}>

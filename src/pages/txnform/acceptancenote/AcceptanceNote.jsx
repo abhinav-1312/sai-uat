@@ -16,7 +16,7 @@ import {
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
-import { apiHeader, convertEpochToDateString, printOrSaveAsPDF } from "../../../utils/Functions";
+import { apiHeader, convertEpochToDateString, fetchUomLocatorMaster, printOrSaveAsPDF } from "../../../utils/Functions";
 import FormInputItem from "../../../components/FormInputItem";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
@@ -128,6 +128,7 @@ const AcceptanceNote = () => {
   };
 
   useEffect(() => {
+    fetchUomLocatorMaster(setUomMaster, setLocatorMaster)
     fetchItemData();
     fetchUserDetails();
   }, []);
@@ -481,31 +482,7 @@ const AcceptanceNote = () => {
             </Form.Item>
 
             <FormInputItem label="NOA NO. :" value={formData.noa} />
-
-            {/* <Form.Item label="NOA NO." name="noaNo">
-              <Input onChange={(e) => handleChange("noaNo", e.target.value)} />
-            </Form.Item> */}
-
-            {/* <Form.Item label="NOA DATE" name="noaDate">
-              <DatePicker
-                format={dateFormat}
-                style={{ width: "100%" }}
-                onChange={(date, dateString) =>
-                  handleChange("noaDate", dateString)
-                }
-              />
-            </Form.Item> */}
             <FormInputItem label="NOA DATE :" value={formData.noaDate} />
-            {/* <Form.Item label="DATE OF DELIVERY" name="dateOfDelivery">
-              <DatePicker
-                format={dateFormat}
-                style={{ width: "100%" }}
-                onChange={(date, dateString) =>
-                  handleChange("dateOfDelivery", dateString)
-                }
-              />
-            </Form.Item> */}
-
             <FormInputItem label="DATE OF DELIVERY" value={formData.dateOfDelivery} />
           </Col>
         </Row>
