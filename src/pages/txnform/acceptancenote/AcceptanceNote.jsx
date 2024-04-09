@@ -93,26 +93,6 @@ const AcceptanceNote = () => {
     }));
   };
 
-  // const fetchUomLocatorMaster = async () => {
-  //   try {
-  //     const uomMasterUrl =
-  //       "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster";
-  //     const locatorMasterUrl =
-  //       "https://sai-services.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster";
-  //     const uomMaster = await axios.get(uomMasterUrl);
-  //     const { responseData: uomMasterData } = uomMaster.data;
-  //     // const { responseData: locatorMasterData } = locatorMaster.data;
-  //     const uomObject = convertArrayToObject(uomMasterData, "id", "uomName");
-  //     // const locatorObj = convertArrayToObject(locatorMasterData, "id", "locatorDesc")
-  //     setUomMaster({ ...uomObject });
-  //     // setLocatorMaster({...locatorObj})
-  //   } catch (error) {
-  //     console.log("Error fetching Uom master details.", error);
-  //   }
-  // };
-
-  
-
   const itemHandleChange = (fieldName, value, index) => {
     setFormData((prevValues) => {
       const updatedItems = [...(prevValues.items || [])];
