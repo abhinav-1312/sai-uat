@@ -399,6 +399,7 @@ const OutwardGatePass = () => {
   };
 
   const handleReturnNoteNoChange = async (value) => {
+    console.log("VALUEEE: ", value)
     try{
       const apiUrl =
         "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
@@ -406,72 +407,76 @@ const OutwardGatePass = () => {
         processId: value,
         processStage: "REJ",
       }, apiHeader("POST", token));
-      const responseData = response.data.responseData;
+      const {responseData} = response.data;
       const { processData, itemList } = responseData;
 
-      setFormData(prev=>{
-        return {
-          ...prev,
-          genName: processData?.genName,
-          genDate: processData?.genDate,
-          issueDate: processData?.issueDate,
-          issueName: processData?.issueName,
-          approvedDate: processData?.approvedDate,
-          approvedName: processData?.approvedName,
-          processId: processData.processId,
-          type: processData?.type,
-          typeOfNote: processData?.typeOfNote,
+      console.log("PRocess dataaa: ", responseData)
 
-
-          inspectionRptNo: processData?.inspectionRptNo,
-          acptRejNoteNo: processData?.acptRejNoteNo,
-          acptRejNoteDT: processData?.acptRejNoteDT,
-          dateOfDelivery: processData?.dateOfDelivery,
-          ceRegionalCenterCd: processData?.crRegionalCenterCd,
-          ceRegionalCenterName: processData?.crRegionalCenterName,
-          ceAddress: processData?.crAddress,
-          ceZipcode: processData?.crZipcode,
-          crRegionalCenterCd: processData?.ceRegionalCenterCd,
-          crRegionalCenterName: processData?.ceRegionalCenterName,
-          crAddress: processData?.ceAddress,
-          crZipcode: processData?.ceZipcode,
-          consumerName: processData?.consumerName,
-          supplierName: processData?.supplierName,
-          supplierCd: processData?.supplierCd,
-          address: processData?.address,
-          contactNo: processData?.contactNo,
-          note: processData?.note,
-          noaDate: convertEpochToDateString(processData?.noaDate),
-          noa: processData?.noa,
-          conditionOfGoods: processData?.conditionOfGoods,
-          challanNo: processData?.challanNo,
-          modeOfDelivery: processData?.modeOfDelivery,
-
-          items: itemList.map(item=>(
-            {
-              id: item?.id,
-              itemId: item?.id,
-              srNo: item?.sNo,
-              itemCode: item?.itemCode,
-              itemDesc: item?.itemDesc,
-              uom: item?.uom,
-              quantity: item?.quantity,
-              noOfDays: 12,
-              inspectedQuantity: item?.inspectedQuantity,
-              acceptedQuantity: item?.acceptedQuantity,
-              rejectedQuantity: item?.rejectedQuantity,
-              requiredDays: item?.requiredDays,
-              remarks: item?.remarks,
-              processId: item?.processId,
-              processType: item?.processType,
-              processStage: item?.processStage,
-              conditionOfGoods: item?.conditionOfGoods,
-              budgetHeadProcurement: item?.budgetHeadProcurement,
-              locatorId: item?.locatorId,
-            }
-          ))
-        }
-      } )
+      if(responseData !== null){
+        setFormData(prev=>{
+          return {
+            ...prev,
+            genName: processData?.genName,
+            genDate: processData?.genDate,
+            issueDate: processData?.issueDate,
+            issueName: processData?.issueName,
+            approvedDate: processData?.approvedDate,
+            approvedName: processData?.approvedName,
+            processId: processData?.processId,
+            type: processData?.type,
+            typeOfNote: processData?.typeOfNote,
+  
+  
+            inspectionRptNo: processData?.inspectionRptNo,
+            acptRejNoteNo: processData?.acptRejNoteNo,
+            acptRejNoteDT: processData?.acptRejNoteDT,
+            dateOfDelivery: processData?.dateOfDelivery,
+            ceRegionalCenterCd: processData?.crRegionalCenterCd,
+            ceRegionalCenterName: processData?.crRegionalCenterName,
+            ceAddress: processData?.crAddress,
+            ceZipcode: processData?.crZipcode,
+            crRegionalCenterCd: processData?.ceRegionalCenterCd,
+            crRegionalCenterName: processData?.ceRegionalCenterName,
+            crAddress: processData?.ceAddress,
+            crZipcode: processData?.ceZipcode,
+            consumerName: processData?.consumerName,
+            supplierName: processData?.supplierName,
+            supplierCd: processData?.supplierCd,
+            address: processData?.address,
+            contactNo: processData?.contactNo,
+            note: processData?.note,
+            noaDate: convertEpochToDateString(processData?.noaDate),
+            noa: processData?.noa,
+            conditionOfGoods: processData?.conditionOfGoods,
+            challanNo: processData?.challanNo,
+            modeOfDelivery: processData?.modeOfDelivery,
+  
+            items: itemList.map(item=>(
+              {
+                id: item?.id,
+                itemId: item?.id,
+                srNo: item?.sNo,
+                itemCode: item?.itemCode,
+                itemDesc: item?.itemDesc,
+                uom: item?.uom,
+                quantity: item?.quantity,
+                noOfDays: 12,
+                inspectedQuantity: item?.inspectedQuantity,
+                acceptedQuantity: item?.acceptedQuantity,
+                rejectedQuantity: item?.rejectedQuantity,
+                requiredDays: item?.requiredDays,
+                remarks: item?.remarks,
+                processId: item?.processId,
+                processType: item?.processType,
+                processStage: item?.processStage,
+                conditionOfGoods: item?.conditionOfGoods,
+                budgetHeadProcurement: item?.budgetHeadProcurement,
+                locatorId: item?.locatorId,
+              }
+            ))
+          }
+        })
+      }
 
     }catch (error) {
       console.error("Error fetching sub process details:", error);
