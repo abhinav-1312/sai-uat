@@ -207,7 +207,7 @@ const IssueNote = () => {
       title: "UOM DESCRIPTION",
       dataIndex: "uomDtls",
       key: "uomDtls",
-      render: (uomDtls) => uomDtls.baseUom
+      render: (uomDtls) => uomDtls?.baseUom
     },
     {
       title: "LOCATION",
@@ -763,6 +763,9 @@ const IssueNote = () => {
       return {...prevValues, items: updatedItems1}
     })
   }
+
+  console.log("ITEMDATAA: ", data)
+  console.log("FILTEREDDATAA: ", filteredData)
 
   return (
     <div className="goods-receive-note-form-container" ref = {formRef}>

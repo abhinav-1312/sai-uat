@@ -327,8 +327,8 @@ const GoodsReceiveNoteForm = () => {
         supplierCode: processData?.supplierCd,
         supplierName: processData?.supplierName,
         crAddress: processData?.crAddress,
-        noa: processData?.noa,
-        noaDate: convertEpochToDateString(processData?.noaDate),
+        noaDate:processData?.noaDate ? convertEpochToDateString(processData.noaDate) : "",
+        noa: processData?.noa ? processData.noa : "",
         dateOfDelivery: processData?.dateOfDelivery,
 
         items: itemList?.map((item) => ({
