@@ -88,6 +88,8 @@ const IssueNote = () => {
     processType: "IRP",
     interRdDemandNote: "",
   });
+
+  console.log("FORMdATA ISSUE NOTE: ", formData)
   
   const showModal = () => {
     setIsModalOpen(true);
@@ -98,6 +100,15 @@ const IssueNote = () => {
   };
 
   const handleChange = (fieldName, value) => {
+    if(fieldName === "interRdDemandNote"){
+      setFormData(prevValues=>{
+        return {
+          ...prevValues,
+          interRdDemandNote: value,
+          demandNoteNo: value
+        }
+      })
+    }
     if(fieldName === "processType"){
       setFormData(prevValues=>{
         return {
@@ -668,6 +679,26 @@ const IssueNote = () => {
     }
   };
 
+  const handleCeRccChange = async (value) => {
+    const url = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getOrgMasterById"
+    const {data} = await axios.post(url, {id: value, userId: userCd}, apiHeader("POST", token))
+
+    console.log("RESPONSE RCC: ", data)
+    const {responseStatus, responseData} = data
+
+    if(responseStatus.message === "Success" && responseStatus.statusCode === 200){
+      setFormData(prev=>{
+        return {
+          ...prev,
+          ceRegionalCenterCd: responseData.id,
+          ceRegionalCenterName: responseData.organizationName,
+          ceAddress: responseData.locationAddr,
+
+        }
+      })
+    }
+  }
+
   const onFinish = async () => {
 
     try {
@@ -764,9 +795,6 @@ const IssueNote = () => {
     })
   }
 
-  console.log("ITEMDATAA: ", data)
-  console.log("FILTEREDDATAA: ", filteredData)
-
   return (
     <div className="goods-receive-note-form-container" ref = {formRef}>
       <h1>Sports Authority of India - Issue Note</h1>
@@ -802,14 +830,6 @@ const IssueNote = () => {
           </Col>
 
           <Col span={6} offset={12}>
-            {/* <Form.Item label="ISSUE NOTE NO." name="issueNoteNo">
-              <Input
-                value={formData.issueNoteNo}
-                onChange={(e) => handleChange("issueNoteNo", e.target.value)}
-                disabled
-              />
-              <div style={{ display: "none" }}>{formData.issueNoteNo}</div>
-            </Form.Item> */}
             <FormInputItem label="ISSUE NOTE NO. :" value={formData.issueNoteNo  === "string" ? "not defined" : formData.issueNoteNo} disabled={true} />
           </Col>
         </Row>
@@ -882,32 +902,26 @@ const IssueNote = () => {
                   label="REGIONAL CENTER CODE :"
                   name="ceRegionalCenterCd"
                 >
-                  <Input
+                  <Input value={formData?.ceRegionalCenterCd}
                     onChange={(e) =>
-                      handleChange("ceRegionalCenterCd", e.target.value)
+                      // handleChange("ceRegionalCenterCd", e.target.value)
+                      handleCeRccChange(e.target.value)
                     }
                   />
                 </Form.Item>
-                <Form.Item
+                {/* <Form.Item
                   label="REGIONAL CENTER NAME  :"
                   name="ceRegionalCenterName"
                 >
-                  <Input
+                  <Input value={formData?.ceRegionalCenterName}
                     onChange={(e) =>
                       handleChange("ceRegionalCenterName", e.target.value)
                     }
                   />
-                </Form.Item>
-                <Form.Item label="ADDRESS :" name="ceAddress">
-                  <Input
-                    onChange={(e) => handleChange("ceAddress", e.target.value)}
-                  />
-                </Form.Item>
-                <Form.Item label="ZIP CODE :" name="ceZipcode">
-                  <Input
-                    onChange={(e) => handleChange("ceZipcode", e.target.value)}
-                  />
-                </Form.Item>
+                </Form.Item> */}
+                <FormInputItem label="REGIONAL CENTER NAME" value={formData.ceRegionalCenterName} />
+                <FormInputItem label="ADDRESS" value={formData.ceAddress} />
+                <FormInputItem label="ZIPCODE" value={formData.ceZipcode} />
               </>
             )}
           </Col>

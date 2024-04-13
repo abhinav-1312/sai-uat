@@ -13,6 +13,7 @@ export const setDepartments = (departments) => ({
 export const fetchDepartments = () => async (dispatch) => {
   try {
     const response = await fetch(`${BASE_URL}/getDeptMaster`, apiHeader("GET", token));
+    console.log("Response: ", response)
     const data = await response.json();
 
     dispatch(setDepartments(data.responseData));
@@ -20,6 +21,7 @@ export const fetchDepartments = () => async (dispatch) => {
     console.error('Error fetching data:', error);
   }
 };
+
 
 export const updateDepartment = (departmentId, values) => async (dispatch) => {
   try {

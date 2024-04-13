@@ -107,7 +107,7 @@ const menuItems = [
       { key: "8.4", label: "Issue Note", path: "/trans/issue" },
       { key: "8.5", label: "Outward Gate Pass", path: "/trans/outward" },
       { key: "8.6", label: "Inward Gate Pass", path: "/trans/inward" },
-      { key: "8.8", label: "Inspection Report", path: "/trans/inspection" },
+      { key: "8.8", label: "Inspection Note", path: "/trans/inspectionNote" },
       { key: "8.9", label: "Acceptance Note", path: "/trans/acceptance" },
       { key: "8.1", label: "GRN", path: "/trans/grn" },
       { key: "8.10", label: "Rejection Note", path: "/trans/rejection" },

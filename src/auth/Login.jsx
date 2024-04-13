@@ -70,7 +70,7 @@ const SignIn = () => {
 
       window.location.reload();
     } catch (error) {
-      console.log(error);
+      console.log("Error while login.", error);
       setError("Invalid User Code or Password");
     }
   };

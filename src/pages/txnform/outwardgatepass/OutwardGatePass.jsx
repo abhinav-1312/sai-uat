@@ -225,7 +225,6 @@ const OutwardGatePass = () => {
       console.log("Response data: ", responseData);
       const { organizationDetails, userDetails, locationDetails } = responseData;
       const currentDate = dayjs();
-      console.log("Fetched data:", organizationDetails);
       // Update form data with fetched values
       setFormData({
         // crRegionalCenterCd: organizationDetails.crRegionalCenterCd,
@@ -233,8 +232,6 @@ const OutwardGatePass = () => {
         // crAddress: organizationDetails.locationAddr,
         // crZipcode: "131021",
         genName: userDetails.firstName,
-        // noaDate: currentDate.format(dateFormat),
-        // dateOfDelivery: currentDate.format(dateFormat),
         userId: "string",
         genDate: currentDate.format(dateFormat),
         issueDate: currentDate.format(dateFormat),
@@ -824,7 +821,7 @@ const OutwardGatePass = () => {
 
                       {
 
-                         Type === "IRP" && 
+                        (Type === "IRP" || Type === "IOP" ) && 
                         <Form.Item label="REQUIRED FOR NO. OF DAYS">
                         <Input
                           value={item.noOfDays}

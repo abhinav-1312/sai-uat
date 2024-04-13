@@ -57,7 +57,10 @@ const DetailData = ({
       title: "Inspected Quantity",
       dataIndex: "inspectedQuantity",
     },
-    (processType === "igp" || processType==='act' || processType === 'grn' || processType === "rej") ? {} : {title: "Required no. of days", dataIndex: "requiredDays",},
+    (processType === "igp" || processType==='act' || processType === 'grn' || processType === "rej") ? {} : {title: "Required for no. of days", dataIndex: "requiredDays",},
+    // {title: "Required no. of days", dataIndex: "requiredDays",
+      // render: (text, record) => (processType === "igp" || processType==='act' || processType === 'grn' || processType === "rej") ? null : record
+    // },
     {
       title: "Budget Head Procurement",
       dataIndex: "budgetHeadProcurement",

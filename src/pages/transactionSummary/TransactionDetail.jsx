@@ -123,7 +123,7 @@ const TransactionDetail = () => {
         <h2>Issue Note</h2>
         {
           isnData ?
-          <DetailData data={isnData?.data} itemList={isnData?.itemList} /> 
+          <DetailData processType={"isn"} data={isnData?.data} itemList={isnData?.itemList} /> 
           :
           "No data available."
         }
