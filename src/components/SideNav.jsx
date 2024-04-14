@@ -47,7 +47,7 @@ const menuItems = [
   },
   { key: "4", icon: <SearchOutlined />, label: "Locators", path: "/locator" },
   {
-    key: "14",
+    key: "18",
     icon: <AccountBookOutlined />,
     label: "Department",
     path: "/department",
@@ -164,7 +164,7 @@ const SideNav = () => {
           item.key !== "13" &&
           item.key !== "5" &&
           item.key !== "6" &&
-          item.key !== "14" &&
+          item.key !== "18" &&
           item.key !== "7" &&
           item.key !== "10" &&
           // item.key !== "11" &&
@@ -196,6 +196,7 @@ const SideNav = () => {
           item.key !== "17" &&
           item.key !== "4" &&
           item.key !== "14" &&
+          item.key !== "18" &&
           item.key !== "5" &&
           item.key !== "6" &&
           item.key !== "7" &&
@@ -215,6 +216,7 @@ const SideNav = () => {
           item.key !== "17" &&
           item.key !== "4" &&
           item.key !== "14" &&
+          item.key !== "18" &&
           item.key !== "5" &&
           item.key !== "6" &&
           item.key !== "7" &&
