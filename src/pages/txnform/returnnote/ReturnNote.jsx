@@ -292,6 +292,7 @@ const RetunNote = () => {
         message.success(
           `Return Note successfully! Process ID: ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
+        setButtonVisible(true)
       } else {
         // Display a generic success message if specific data is not available
         message.error("Failed to Return Note. Please try again later.");
