@@ -109,6 +109,7 @@ const RoutesComponent = () => {
       <Route path="/trnsummary/:trnno" element={<TransactionDetail />} />
       <Route path="/locator" element={<Locator />} />
       <Route path="/uom" element={<UOM />} />
+      <Route path="/Vendor" element={<Vendor />} />
       <Route path="/trans/grn" element={<GoodsReceiveNoteForm />} />
       <Route path="/trans/demand" element={<DemandNoteForm />} />
       <Route path="/trans/ird-demand" element={<IrdDemand />} />

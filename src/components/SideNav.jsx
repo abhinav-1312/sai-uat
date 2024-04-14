@@ -164,9 +164,10 @@ const SideNav = () => {
           item.key !== "13" &&
           item.key !== "5" &&
           item.key !== "6" &&
+          item.key !== "14" &&
           item.key !== "7" &&
           item.key !== "10" &&
-          item.key !== "11" &&
+          // item.key !== "11" &&
           item.key !== "12" &&
           item.key !== "21"
         ); // Hide these menus
