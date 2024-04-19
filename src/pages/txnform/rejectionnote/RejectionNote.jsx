@@ -514,9 +514,14 @@ const RejectionNote = () => {
                 }
               />
             </Form.Item> */}
-            <FormInputItem label="NOA :" value={formData.noa} />
-            <FormInputItem label="NOA DATE :" value={formData.noaDate} />
-            <FormInputItem label="DATE OF DELIVERY :" value={formData.dateOfDelivery} />
+            {
+              Type === "PO" &&
+              <>
+                <FormInputItem label="NOA :" value={formData.noa} />
+                <FormInputItem label="NOA DATE :" value={formData.noaDate} />
+                <FormInputItem label="DATE OF DELIVERY :" value={formData.dateOfDelivery} />
+              </>
+            }
           </Col>
         </Row>
 

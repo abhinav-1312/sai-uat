@@ -486,10 +486,16 @@ const AcceptanceNote = () => {
                 onChange={(e) => handleInspectionNOChange(e.target.value)}
               />
             </Form.Item>
-
-            <FormInputItem label="NOA NO. :" value={formData.noa} />
-            <FormInputItem label="NOA DATE :" value={formData.noaDate} />
-            <FormInputItem label="DATE OF DELIVERY" value={formData.dateOfDelivery} />
+            
+            {
+              Type === "PO" &&
+              <>
+                <FormInputItem label="NOA NO. :" value={formData.noa} />
+                <FormInputItem label="NOA DATE :" value={formData.noaDate} />
+                <FormInputItem label="DATE OF DELIVERY" value={formData.dateOfDelivery} />
+              
+              </>
+            }
           </Col>
         </Row>
 

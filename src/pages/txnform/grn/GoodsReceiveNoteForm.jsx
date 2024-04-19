@@ -868,7 +868,7 @@ const GoodsReceiveNoteForm = () => {
               </>
             )}  
 
-            {(Type === "IOP" || Type === "PO") && (
+            {(Type === "PO") && (
               <>
                 <FormInputItem label="NOA NO. :" value={formData.noa} />
                 <FormInputItem label="NOA DATE" value={formData.noaDate} />
