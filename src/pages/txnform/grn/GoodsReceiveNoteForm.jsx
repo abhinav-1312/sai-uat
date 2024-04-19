@@ -46,6 +46,7 @@ const convertEpochToDateString = (epochTime) => {
 
 const GoodsReceiveNoteForm = () => {
   const [buttonVisible, setButtonVisible] = useState(false)
+  const [selectedOption, setSelectedOption] = useState("")
   const formRef = useRef()
   const [Type, setType] = useState("IRP");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -256,7 +257,6 @@ const GoodsReceiveNoteForm = () => {
     }
   };
 
-  console.log("Formata: ", formData)
   const userCd = localStorage.getItem("userCd")
 
   const handleReturnNoteNoChange = async (value) => {
@@ -315,8 +315,15 @@ const GoodsReceiveNoteForm = () => {
 
         crRegionalCenterCd: processData?.crRegionalCenterCd,
         crRegionalCenterName: processData?.crRegionalCenterName,
-        // crAddress: processData?.address,
+        // crAddress: processData?.crAddress,
         crZipcode: processData?.crZipcode,
+
+        ceRegionalCenterCd: processData?.ceRegionalCenterCd,
+        ceRegionalCenterName: processData?.ceRegionalCenterName,
+        ceAddress: processData?.ceAddress,
+        ceZipcode: processData?.ceZipcode,
+
+
 
         consumerName: processData?.consumerName,
         contactNo: processData?.contactNo,
@@ -358,6 +365,114 @@ const GoodsReceiveNoteForm = () => {
       // Handle error
     }
   };
+
+  const handleInwardGatePassNoChange = async (value) => {
+    try {
+      const subProcessDtlUrl =
+        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
+      const ohqUrl =
+        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getOHQ";
+
+      const subProcessRes = await axios.post(subProcessDtlUrl, {
+        processId: value,
+        processStage: "IGP",
+      }, apiHeader("POST", token));
+
+      const { data: subProcess, status, statusText } = subProcessRes;
+      const { responseData: subProcessData } = subProcess;
+      const { processData, itemList } = subProcessData;
+
+      if (status === 200 && statusText === "OK") {
+        try {
+          const locatorQuantityArr= await Promise.all(
+            itemList?.map(async (item) => {
+              const itemCode  = item.itemCode;
+
+              const ohqRes = await axios.post(ohqUrl, {
+                itemCode: itemCode,
+                userId: userCd,
+              }, apiHeader("POST", token));
+              const { data: ohqProcess } = ohqRes;
+              const { responseData: ohqData } = ohqProcess;
+              console.log("OHQDATA: ", ohqData)
+              return {
+                itemCode: ohqData[0].itemCode,
+                qtyList: ohqData[0].qtyList,
+              };
+            })
+          );
+
+          const locatorQuantityObj = locatorQuantityArr.reduce((acc, item) => {
+            acc[item.itemCode] = item.qtyList;
+            return acc;
+          }, {});
+
+          setLocatorQuantity({ ...locatorQuantityObj });
+        } catch (error) {
+          console.log("Error: ", error);
+        }
+      }else{
+      }
+
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+
+        issueName: processData?.issueName,
+        approvedName: processData?.approvedName,
+        processId: processData?.processId,
+
+        crRegionalCenterCd: processData?.crRegionalCenterCd,
+        crRegionalCenterName: processData?.crRegionalCenterName,
+        // crAddress: processData?.crAddress,
+        crZipcode: processData?.crZipcode,
+
+        ceRegionalCenterCd: processData?.ceRegionalCenterCd,
+        ceRegionalCenterName: processData?.ceRegionalCenterName,
+        ceAddress: processData?.ceAddress,
+        ceZipcode: processData?.ceZipcode,
+
+
+
+        consumerName: processData?.consumerName,
+        contactNo: processData?.contactNo,
+
+        termsCondition: processData?.termsCondition,
+        note: processData?.note,
+
+        supplierCode: processData?.supplierCd,
+        supplierName: processData?.supplierName,
+        crAddress: processData?.crAddress,
+        noaDate:processData?.noaDate ? convertEpochToDateString(processData.noaDate) : "",
+        noa: processData?.noa ? processData.noa : "",
+        dateOfDelivery: processData?.dateOfDelivery,
+
+        items: itemList?.map((item) => ({
+          srNo: item?.sNo,
+          itemId: item?.itemId,
+          itemCode: item?.itemCode,
+          itemDesc: item?.itemDesc,
+          uom: parseInt(item?.uom),
+          quantity: item?.quantity,
+          remQuantity:item?.quantity,
+          noOfDays: item?.requiredDays,
+          remarks: item?.remarks,
+          conditionOfGoods: item?.conditionOfGoods,
+          budgetHeadProcurement: item?.budgetHeadProcurement,
+          locatorId: parseInt(item?.locatorId),
+          qtyList: [
+            {
+              locatorId: parseInt(item?.locatorId),
+              quantity: item?.quantity,
+            },
+          ],
+        })),
+      }));
+      // Handle response data as needed
+    } catch (error) {
+      console.error("Error fetching sub process details:", error);
+      // Handle error
+    }
+  }
 
   const onFinish = async (values) => {
     let found = false
@@ -566,7 +681,10 @@ const GoodsReceiveNoteForm = () => {
     }
   };
 
-  console.log("FORM DATAA: ", formData)
+  const handleSelectChange = (value) => {
+    setSelectedOption(value);
+    console.log("VSEECT VALUE: ", value)
+  };
 
   return (
     <div className="goods-receive-note-form-container" ref={formRef}>
@@ -603,23 +721,23 @@ const GoodsReceiveNoteForm = () => {
           <Col span={8}>
             <Title strong level={2} underline type="danger">
               {
-                Type === "IRP" ?
+                Type === "IRP" || Type === "IOP" ?
                 "CONSIGNOR DETAIL ;-" : "CONSIGNEE DETAIL :-"
               }
 
             </Title>
 
             {/* for purchase order */}
-            <FormInputItem label="REGIONAL CENTER CODE :" value={Type==="IRP" ? formData.crRegionalCenterCd : formData.ceRegionalCenterCd} readOnly={true}/>
-            <FormInputItem label="REGIONAL CENTER NAME :" value={Type==="IRP" ? formData.crRegionalCenterName :formData.ceRegionalCenterName} readOnly={true} />
-            <FormInputItem label="ADDRESS :" value={Type==="IRP" ? formData.crAddress : formData.ceAddress} readOnly={true} />
-            <FormInputItem label="ZIPCODE :" value={Type==="IRP" ? formData.crZipcode : formData.ceZipcode} readOnly={true} />
+            <FormInputItem label="REGIONAL CENTER CODE :" value={Type==="IRP" || Type==="IOP" ? formData.crRegionalCenterCd : formData.ceRegionalCenterCd} readOnly={true}/>
+            <FormInputItem label="REGIONAL CENTER NAME :" value={Type==="IRP" || Type==="IOP" ? formData.crRegionalCenterName :formData.ceRegionalCenterName} readOnly={true} />
+            <FormInputItem label="ADDRESS :" value={Type==="IRP" || Type==="IOP" ? formData.crAddress : formData.ceAddress} readOnly={true} />
+            <FormInputItem label="ZIPCODE :" value={Type==="IRP" || Type==="IOP" ? formData.crZipcode : formData.ceZipcode} readOnly={true} />
           </Col>
           <Col span={8}>
             <Title strong underline level={2} type="danger">
             {
-                Type === "IRP" ?
-                "CONSIGNEE DETAIL ;-" : "CONSIGNOR DETAIL :-"
+                Type === "IRP" || Type==="IOP" ?
+                "CONSIGNEE DETAIL :-" : "CONSIGNOR DETAIL :-"
               }
             </Title>
 
@@ -662,7 +780,7 @@ const GoodsReceiveNoteForm = () => {
 
             {Type === "IOP" && (
               <>
-                <Form.Item
+                {/* <Form.Item
                   label="REGIONAL CENTER CODE"
                   name="crRegionalCenterCd"
                 >
@@ -691,7 +809,12 @@ const GoodsReceiveNoteForm = () => {
                   <Input
                     onChange={(e) => handleChange("crZipcode", e.target.value)}
                   />
-                </Form.Item>
+                </Form.Item> */}
+
+            <FormInputItem label="REGIONAL CENTER CODE :" value={formData.ceRegionalCenterCd} readOnly={true}/>
+            <FormInputItem label="REGIONAL CENTER NAME :" value={formData.ceRegionalCenterName} readOnly={true} />
+            <FormInputItem label="ADDRESS :" value={formData.ceAddress} readOnly={true} />
+            <FormInputItem label="ZIPCODE :" value={formData.ceZipcode} readOnly={true} />
               </>
             )}
           </Col>
@@ -709,11 +832,42 @@ const GoodsReceiveNoteForm = () => {
                 <Input onChange={(e) => handleReturnNoteNoChange(e.target.value)} />
               </Form.Item>
             )}
-            {Type === "IOP" && (
-              <Form.Item label="INWARD GATE PASS" name="inwardGatePass">
-                <Input />
+            {/* {Type === "IOP" && (
+              // <Form.Item label="INWARD GATE PASS" name="inwardGatePass">
+              //   <Input />
+              // </Form.Item>
+              <Form.Item label="ACCEPTANCE NOTE NO." name="acceptanceNoteNo">
+                <Input onChange={(e) => handleReturnNoteNoChange(e.target.value)} />
               </Form.Item>
-            )}
+            )} */}
+
+            {Type === "IOP" && (
+              <>
+                <Form.Item label="SELECT TYPE" name="noteType">
+                  <Select onChange={handleSelectChange}>
+                    <Option value="acceptedItems">ACCEPTED ITEMS</Option>
+                    <Option value="rejectedItems">REJECTED ITEMS</Option>
+                  </Select>
+                </Form.Item>
+                {selectedOption === "acceptedItems" ? (
+                  <Form.Item label="ACCEPTANCE NOTE NO. :" name="acceptanceNoteNo">
+                    <Input onChange={(e) => handleReturnNoteNoChange(e.target.value)} />
+                  </Form.Item>
+                ) : (
+                  <Form.Item
+                    label="INWARD GATE PASS NO.  :"
+                    name="inwardGatePassNo"
+                  >
+                    <Input
+                      onChange={(e) =>
+                        handleInwardGatePassNoChange(e.target.value)
+                      }
+                    />
+                  </Form.Item>
+                )}
+              </>
+            )}  
+
             {(Type === "IOP" || Type === "PO") && (
               <>
                 <FormInputItem label="NOA NO. :" value={formData.noa} />

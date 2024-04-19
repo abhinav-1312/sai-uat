@@ -31,6 +31,7 @@ import moment from "moment";
 import { apiHeader } from "../../../utils/Functions";
 import FormInputItem from "../../../components/FormInputItem";
 import { printOrSaveAsPDF } from "../../../utils/Functions";
+import FormDatePickerItem from "../../../components/FormDatePickerItem";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Text, Title } = Typography;
@@ -395,6 +396,8 @@ const OutwardGatePass = () => {
     setSelectedOption(value);
   };
 
+  console.log("FOrmData: ", formData)
+
   const handleReturnNoteNoChange = async (value) => {
     console.log("VALUEEE: ", value)
     try{
@@ -722,29 +725,48 @@ const OutwardGatePass = () => {
                   >
                     <Input
                       onChange={(e) =>
-                        handleIssueNoteNoChange("rejectionNoteNo", e.target.value)
+                        handleReturnNoteNoChange(e.target.value)
                       }
                     />
                   </Form.Item>
                 )}
               </>
             )}
-            {(Type === "IOP" || Type === "PO") && (
+            {(Type === "PO") && (
               <>
                   <FormInputItem label="NOA NO :" value={formData.noa} />
                   <FormInputItem label="NOA DATE :" value={formData.noaDate} />
                   <FormInputItem label="DATE OF DELIVERY :" value={formData.dateOfDelivery} />
               </>
             )}
+
+            {
+              Type === "IOP" && 
+              <>
+                <FormInputItem label="NOA NO :" name="noa" onChange={handleChange} />
+                <FormDatePickerItem label="NOA DATE :" name="noaDate" onChange={handleChange} />
+                <FormDatePickerItem label="DATE OF DELIVERY :" name="dateOfDelivery" onChange={handleChange} />
+              </>
+            }
           </Col>
         </Row>
-        {(Type === "IOP" || Type === "PO") && (
+        {(Type === "PO") && (
           <Row gutter={24}>
             <Col span={8}>
             <FormInputItem label="CHALLAN / INVOICE NO. :" value={formData.challanNo} />
             </Col>
             <Col span={8}>
               <FormInputItem label="MODE OF DELIVERY :" value={formData.modeOfDelivery} />
+            </Col>
+          </Row>
+        )}
+        {(Type === "IOP") && (
+          <Row gutter={24}>
+            <Col span={8}>
+            <FormInputItem label="CHALLAN / INVOICE NO. :" name="challanNo" onChange={handleChange} />
+            </Col>
+            <Col span={8}>
+              <FormInputItem label="MODE OF DELIVERY :" name="modeOfDelivery" onChange={handleChange} />
             </Col>
           </Row>
         )}

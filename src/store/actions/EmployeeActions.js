@@ -56,15 +56,17 @@ export const saveEmployee = (values) => async (dispatch) => {
       body: JSON.stringify(values),
     });
 
-    if (createResponse.ok) {
-      alert("Employee Added successfully")
-      dispatch(fetchEmployees()); 
-    } else {
-      alert("something went wrong")
-      console.error('Create failed:', createResponse.statusText);
-    }
+    console.log("Created response: ", createResponse)
+    // if (createResponse.ok) {
+    //   alert("Employee Added successfully")
+    //   dispatch(fetchEmployees()); 
+    // } else {
+    //   alert("something went wrong")
+    //   console.error('Create failed:', createResponse.statusText);
+    // }
   } catch (error) {
-    console.error('Error:', error);
+
+    console.error('Error occured creating employee:', error);
   }
 };
 

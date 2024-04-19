@@ -187,6 +187,9 @@ const AcceptanceNote = () => {
         supplierCd: processData?.supplierCd,
         supplierName: processData?.supplierName,
         crAddress: processData?.crAddress,
+        crRegionalCenterCd: processData?.crRegionalCenterCd,
+        crRegionalCenterName: processData?.crRegionalCenterName,
+        crZipcode: processData?.crZipcode,
 
         dateOfDelivery: processData?.dateOfDelivery,
         noaDate:processData?.noaDate ? convertEpochToDateString(processData.noaDate) : "",
@@ -356,11 +359,31 @@ const AcceptanceNote = () => {
         <Row gutter={24}>
           <Col span={8}>
             <Title strong level={2} underline type="danger">
-              {" "}
-              CONSIGNEE DETAIL :-
+              {Type === "IOP" ? "CONSIGNOR DETAIL :-" : "CONSIGNEE DETAIL :-"}
             </Title>
 
-            <Form.Item label="REGIONAL CENTER CODE" name="ceRegionalCenterCd">
+            {
+              Type === "IOP" && 
+              <>
+                <FormInputItem label="REGIONAL CENTER CODE" value={formData.crRegionalCenterCd} />
+                <FormInputItem label="REGIONAL CENTER NAME" value={formData.crRegionalCenterName} />
+                <FormInputItem label="ADDRESS" value={formData.crAddress} />
+                <FormInputItem label="ZIPCODE" value={formData.crZipcode} />
+              </>
+            }
+
+            {
+              Type === "PO" &&
+              <>
+                <FormInputItem label="REGIONAL CENTER CODE" value={formData.ceRegionalCenterCd} />
+                <FormInputItem label="REGIONAL CENTER NAME" value={formData.ceRegionalCenterName} />
+                <FormInputItem label="ADDRESS" value={formData.ceAddress} />
+                <FormInputItem label="ZIPCODE" value={formData.ceZipcode} />
+              </>
+
+            }
+
+            {/* <Form.Item label="REGIONAL CENTER CODE" name="ceRegionalCenterCd">
               <Input value={formData.ceRegionalCenterCd} />
               <div style={{ display: "none" }}>
                 {formData.ceRegionalCenterCd}
@@ -386,12 +409,12 @@ const AcceptanceNote = () => {
               <div style={{ display: "none" }}>
                 {formData.ceRegionalCenterCd}
               </div>
-            </Form.Item>
+            </Form.Item> */}
           </Col>
 
           <Col span={8}>
             <Title strong underline level={2} type="danger">
-              CONSIGNOR DETAIL :-
+            {Type === "IOP" ? "CONSIGNEE DETAIL :-" : "CONSIGNOR DETAIL :-"}
             </Title>
 
             {Type === "PO" && (
@@ -413,7 +436,7 @@ const AcceptanceNote = () => {
 
             {Type === "IOP" && (
               <>
-                <Form.Item
+                {/* <Form.Item
                   label="REGIONAL CENTER CODE"
                   name="crRegionalCenterCd"
                 >
@@ -442,7 +465,11 @@ const AcceptanceNote = () => {
                   <Input
                     onChange={(e) => handleChange("crZipcode", e.target.value)}
                   />
-                </Form.Item>
+                </Form.Item> */}
+                 <FormInputItem label="REGIONAL CENTER CODE" value={formData.ceRegionalCenterCd} />
+                <FormInputItem label="REGIONAL CENTER NAME" value={formData.ceRegionalCenterName} />
+                <FormInputItem label="ADDRESS" value={formData.ceAddress} />
+                <FormInputItem label="ZIPCODE" value={formData.ceZipcode} />
               </>
             )}
           </Col>

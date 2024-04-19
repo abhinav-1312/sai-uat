@@ -1634,7 +1634,8 @@ const InwardGatePass = () => {
     }
   };
 
-  const handleInwardGatePassChange = async (value) => {
+  const handleInwardGatePassChange = async (_, value) => {
+    console.log("VALUE: ", value, "Inward gate pass")
     try {
       const apiUrl =
         "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
@@ -1651,10 +1652,14 @@ const InwardGatePass = () => {
         approvedName: processData?.approvedName,
         processId: processData?.processId,
 
-        crRegionalCenterCd: processData?.id,
+        crRegionalCenterCd: processData?.crRegionalCenterCd,
         crRegionalCenterName: processData?.crRegionalCenterName,
         crAddress: processData?.crAddress,
         crZipcode: processData?.crZipcode,
+        ceRegionalCenterCd: processData?.ceRegionalCenterCd,
+        ceRegionalCenterName: processData?.ceRegionalCenterName,
+        ceAddress: processData?.ceAddress,
+        ceZipcode: processData?.ceZipcode,
 
         consumerName: processData?.consumerName,
         contactNo: processData?.contactNo,
@@ -1804,7 +1809,7 @@ const InwardGatePass = () => {
         try{
         const {data} = await axios.post(apiUrl, {
           processId: value,
-          processStage: "OGP",
+          processStage: Type === "IOP" ? "ISN" : "OGP",
         },  apiHeader("POST", token));
 
         console.log("RESPONSE ISN: ", data)
@@ -1956,11 +1961,12 @@ const InwardGatePass = () => {
                 <FormInputItem label="REGIONAL CENTER CODE :" value={formData.ceRegionalCenterCd} readOnly={true}/>
                 <FormInputItem label="REGIONAL CENTER NAME :" value={formData.ceRegionalCenterName} readOnly={true} />
                 <FormInputItem label="ADDRESS :" value={formData.ceAddress} readOnly={true} />
-                <Form.Item label="ZIP CODE :" name="crZipcode">
+                <FormInputItem label="ZIPCODE :" value={formData.ceZipcode} readOnly={true} />
+                {/* <Form.Item label="ZIP CODE :" name="crZipcode">
                   <Input value={1234}
                     onChange={(e) => handleChange("crZipcode", e.target.value)}
                   />
-                </Form.Item>
+                </Form.Item> */}
               </>
             )}
           </Col>
@@ -1968,11 +1974,12 @@ const InwardGatePass = () => {
           <Col span={8}>
             <Form.Item></Form.Item>
             {Type === "IRP" && (
-              <Form.Item label="OUTWARD GATE PASS." name="outwardgatepass">
-                <Input
-                  onChange={(e) => handleInwardGatePassChange(e.target.value)}
-                />
-              </Form.Item>
+              // <Form.Item label="OUTWARD GATE PASS." name="outwardgatepass">
+              //   <Input
+              //     onChange={(e) => handleInwardGatePassChange(_, e.target.value)}
+              //   />
+              // </Form.Item>
+              <FormInputItem name="outwardgatepass" label="OUTWARD GATE PASS." onChange={handleInwardGatePassChange} />
             )}
             {/*Type === 'PO' && (
               <Form.Item label="PURCHASE ORDER NO." name="purchaseorderno">
@@ -1999,10 +2006,10 @@ const InwardGatePass = () => {
                   <Input value={1234} />
                 </Form.Item> */}
 
-                <FormInputItem label={selectedOption === "ISSUE" ? "ISSUE NOTE NO." : "REJECTION NOTE NO."} name="inwardGatePass" onChange={selectedOption==="ISSUE" ? handleIssueNoteNoChange : handleRejNoteNoChange} />
+                <FormInputItem label={selectedOption === "ISSUE" ? "ISSUE NOTE NO." : "REJECTION NOTE NO."} name="inwardGatePass" onChange={selectedOption==="ISSUE" ? handleIssueNoteNoChange : handleInwardGatePassChange} />
               </>
             )}
-            {(Type === "IOP" || Type === "PO") && (
+            {(Type === "PO") && (
               <>
                 <Form.Item label="NOA NO." name="noaNo">
                   <Input
@@ -2031,7 +2038,7 @@ const InwardGatePass = () => {
             )}
           </Col>
         </Row>
-        {(Type === "IOP" || Type === "PO") && (
+        {(Type === "PO") && (
           <Row gutter={24}>
             <Col span={8}>
               <Form.Item label=" CHALLAN / INVOICE NO. :" name="challanNo">

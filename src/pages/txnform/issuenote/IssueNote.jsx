@@ -665,7 +665,7 @@ const IssueNote = () => {
           crAddress: organizationDetails.locationAddr,
           crZipcode: locationDetails.zipcode,
           genName: userDetails.firstName,
-          userId: "string",
+          userId: userCd,
           issueNoteNo: "string",
           genDate: currentDate.format(dateFormat),
           issueDate: currentDate.format(dateFormat),
