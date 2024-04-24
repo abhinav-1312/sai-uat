@@ -9,6 +9,7 @@ import {
   Row,
   Col,
   InputNumber,
+  message,
 } from "antd";
 import axios from "axios";
 import { apiHeader } from "../../utils/Functions";
@@ -170,13 +171,14 @@ const ItemsForm = ({
           );
           const data = response.data.responseData;
           const itemDescriptionOptions = data.map((itemDescription) => ({
-            key: itemDescription.itemName,
-            value: itemDescription.itemNameCode,
+            value: itemDescription.itemName,
+            key: itemDescription.itemNameCode,
           }));
           setItemDescriptionOptions(itemDescriptionOptions);
           setItemDescriptionDisabled(false);
         } catch (error) {
           console.error("Error fetching item descriptions:", error);
+          message.error("Error fetching item descriptions")
         }
       };
       fetchItemDescriptions();
@@ -190,10 +192,26 @@ const ItemsForm = ({
   ]);
 
   const onFinish = (values) => {
-    values = { ...values, itemMasterDesc: values.itemMasterDesc[0] };
+    const itemMasterDescCopy = values.itemMasterDesc[0]
+    // if(typeof(itemMasterDescCopy === "string")){
+      const combinedCodeAndDesc = itemMasterDescCopy.split("$#")
+      if(combinedCodeAndDesc.length === 1){
+        values = { ...values, itemName: null, itemMasterDesc: itemMasterDescCopy };
+      }
+      else{
+        const itemName= parseInt(combinedCodeAndDesc[0]);
+        const itemMasterDesc = combinedCodeAndDesc[1];
+        values = { ...values, itemName, itemMasterDesc };
+      }
+      onSubmit(values);
+    // }
+    // else{
+    //   values = {...values, itemMasterCd: null, itemMasterDesc: itemMasterDescCopy[0]}
+    //   onSubmit(values)
+    // }
+    console.log("ITemmaster desc: ", values.itemMasterDesc)
     console.log("Values: ", values);
-    onSubmit(values);
-    form.resetFields();
+    // form.resetFields();
   };
 
   // const handleInputChange = (value) => {
@@ -305,9 +323,9 @@ const ItemsForm = ({
               { required: true, message: "Please enter Item Description" },
             ]}
           >
-            <Select disabled={itemDescriptionDisabled}>
+            <Select disabled={itemDescriptionDisabled} mode="tags">
               {itemDescriptionOptions?.map((item) => (
-                <Option key={item.key} value={item.key}>
+                <Option key={item.key} value={item.key+"$#"+item.value}>
                   {item.value}
                 </Option>
               ))}

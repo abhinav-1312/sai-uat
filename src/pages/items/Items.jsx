@@ -283,22 +283,25 @@ const ItemsPage = () => {
   };
 
   const handleFormSubmit = async (values) => {
+    const userCd = localStorage.getItem("userCd")
     setEditingItem(null);
     const tempItem = {
       ...values,
 
       uomId: Number(values.uomId),
-      createUserId: "12345",
+      createUserId: userCd,
       endDate: values.endDate.format("DD/MM/YYYY"),
-      itemName: itemNames[values.itemMasterDesc]
-        ? values.itemMasterDesc
-        : generate3DigitRandString(),
-      itemMasterDesc: itemNames[values.itemMasterDesc] || values.itemMasterDesc,
+      // itemName: itemNames[values.itemMasterDesc]
+      //   ? values.itemMasterDesc
+      //   : generate3DigitRandString(),
+      // itemMasterDesc: itemNames[values.itemMasterDesc] || values.itemMasterDesc,
     };
 
     if (!tempItem.itemMasterCd) {
       delete tempItem.itemMasterCd;
     }
+
+    console.log('Teimitem: ', tempItem)
 
     if (editingItem) {
       if (selectedId) {
