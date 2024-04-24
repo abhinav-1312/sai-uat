@@ -151,87 +151,50 @@ export const convertArrayToObject = (array, _makeKey, valueKey ) => {
 
  export  const printOrSaveAsPDF = async (formRef) => {
 
-    const input = formRef.current;
-    if (input === null) {
-      return;
-    }
-    // Apply custom styles for Ant Design components to ensure proper rendering
-    const styleSheet = document.createElement("style");
-    styleSheet.type = "text/css";
-    styleSheet.innerText = `
-      .ant-input {
-        width: 100%;
-      }
-    `;
-    document.head.appendChild(styleSheet);
-
+  window.print()
+    // const input = formRef.current;
+    // if (input === null) {
+    //   return;
+    // }
+    // // Apply custom styles for Ant Design components to ensure proper rendering
+    // const styleSheet = document.createElement("style");
+    // styleSheet.type = "text/css";
+    // styleSheet.innerText = `
+    //   .ant-input {width: 100%;}`;
+    // document.head.appendChild(styleSheet);
     // const options = {
-    //   margin: 5,
-    //   filename: 'form.pdf',
-    //   // html2canvas: { scale: 2},
-    // };
-
-    // const options = {
-    //   margin: 5,
+    //   margin: [5, 5],
     //   filename: 'form.pdf',
     //   image: { type: 'jpeg', quality: 0.98 },
     //   html2canvas: { scale: 2 },
-    //   jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    //   jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
     // };
+    // // Apply temporary styles for PDF generation
+    // const originalStyles = window.getComputedStyle(input);
+    // // input.style.transform = 'scale(0.8)'
+    // input.style.transform = 'scaleY(0.7)'
+    // input.style.position = 'static';
+    // // input.style.transform = 'none';
+    // input.style.maxWidth = '100%';
+    // input.style.margin = '-16rem 0 0 0'; // Adjust the negative margin as needed to shift the content upward
+    // input.style.overflow = "hidden"
 
-
-    // // / Apply CSS transformation to scale down the content
-    // input.style.transform = 'scale(0.75)'; // Adjust the scale factor as needed
-
-    // html2pdf(input, options).then(() => {
-    //   input.style.transform = 'scale(1)';
-      // const blob = pdf.output('bloburl');
+    // html2pdf(input, options).then((pdf) => {
+    //   input.style.cssText = originalStyles.cssText;
+    //   const blob = pdf.output('bloburl');
       
-      // Create a link element for downloading the PDF
-      // const link = document.createElement('a');
-      // link.href = blob;
-      // link.download = options.filename;
+    //   // Create a link element for downloading the PDF
+    //   const link = document.createElement('a');
+    //   link.href = blob;
+    //   link.download = options.filename;
 
-      // // Trigger the download
-      // document.body.appendChild(link);
-      // link.click();
+    //   // Trigger the download
+    //   document.body.appendChild(link);
+    //   link.click();
 
-      // Reset the scale after generating the PDF
+    //   // Reset the styles after generating the PDF
+    //   input.style.cssText = originalStyles.cssText;
     // });
-
-    const options = {
-      margin: [5, 5],
-      filename: 'form.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    };
-
-    // Apply temporary styles for PDF generation
-    const originalStyles = window.getComputedStyle(input);
-    input.style.transform = 'scale(0.8)'
-    input.style.position = 'static';
-    // input.style.transform = 'none';
-    input.style.maxWidth = '100%';
-    input.style.marginTop = '-7rem'; // Adjust the negative margin as needed to shift the content upward
-
-    html2pdf(input, options).then((pdf) => {
-      input.style.cssText = originalStyles.cssText;
-      const blob = pdf.output('bloburl');
-      
-      // Create a link element for downloading the PDF
-      const link = document.createElement('a');
-      link.href = blob;
-      link.download = options.filename;
-
-      // Trigger the download
-      document.body.appendChild(link);
-      link.click();
-
-      // Reset the styles after generating the PDF
-      input.style.cssText = originalStyles.cssText;
-    });
-
   };
 
   const token = localStorage.getItem("token")

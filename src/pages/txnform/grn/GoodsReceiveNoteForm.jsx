@@ -315,7 +315,7 @@ const GoodsReceiveNoteForm = () => {
 
         crRegionalCenterCd: processData?.crRegionalCenterCd,
         crRegionalCenterName: processData?.crRegionalCenterName,
-        // crAddress: processData?.crAddress,
+        crAddress: processData?.crAddress,
         crZipcode: processData?.crZipcode,
 
         ceRegionalCenterCd: processData?.ceRegionalCenterCd,
@@ -333,7 +333,7 @@ const GoodsReceiveNoteForm = () => {
 
         supplierCode: processData?.supplierCd,
         supplierName: processData?.supplierName,
-        crAddress: processData?.crAddress,
+        // crAddress: processData?.crAddress,
         noaDate:processData?.noaDate ? convertEpochToDateString(processData.noaDate) : "",
         noa: processData?.noa ? processData.noa : "",
         dateOfDelivery: processData?.dateOfDelivery,

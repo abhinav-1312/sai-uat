@@ -147,7 +147,7 @@ const DemandNoteForm = () => {
     <div className="goods-receive-note-form-container" id="formContainer" ref={formRef} >
       <h1>Sports Authority of India - Demand Note</h1>
 
-      <Form onFinish={onFinish} className="goods-receive-note-form" layout="vertical">
+      <Form onFinish={onFinish} className="goods-receive-note-form formInsideContainer" layout="vertical">
         <Row>
           <Col span={6}>
             <FormInputItem label="REGIONAL CENTER CODE :" value={formData.regionalCenterCode} />

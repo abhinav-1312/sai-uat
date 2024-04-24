@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Form, Input, Table, Button } from "antd";
 import { columnName } from "./ColumnNameKeyVal";
-import { fetchUomLocatorMaster } from "../../../utils/Functions";
+import { convertEpochToDateString, fetchUomLocatorMaster } from "../../../utils/Functions";
 
 const DetailData = ({
   data,
@@ -127,6 +127,12 @@ const DetailData = ({
       }
       if(key === 'acptRejNoteNo'){
         return { title: columnName[key] || key, dataIndex: "processId" };
+      }
+      if(key === 'address'){
+        return { title: columnName[key] || key, dataIndex: "crAddress" };
+      }
+      if(key === "noaDate"){
+        return { title: columnName[key] || key, dataIndex: "noaDate", render: date => convertEpochToDateString(date) };
       }
 
       return { title: columnName[key] || key, dataIndex: key };

@@ -19,3 +19,46 @@ code {
 .print-agreement {
   margin: 40px;
 }
+
+/* @media print { */
+  /* header { */
+    /* display: none !important;
+  }
+
+  aside {
+    display: none !important;
+  }
+
+  nav {
+    display: none !important;
+  } */
+
+  /* #formContainer {
+    transform : scaleY(0.2); 
+    margin: 0;
+    position: absolute !important;
+    top: -26rem !important  */
+    /* transform : scaleY(0.7); */
+    /* position : static; */
+    /* transform : none; */
+    /* max-width: 100%; */
+    /* margin-top : -12rem; */
+
+    /* Set dimensions to match A4 paper size */
+  /* width: 250mm; */
+  /* height: 297mm; */
+
+  /* Scale the div to fit within A4 dimensions */
+  /* transform-origin: top left;  Set the origin of the scaling */
+  /* transform: scale(0.7);  Adjust scale as needed */
+
+
+   /* }
+  .formInsideContainer {  */
+    
+      /* Scale the div to fit within A4 dimensions */
+     /* transform-origin: top left;  Set the origin of the scaling */
+      /*transform: scale(0.7); Adjust scale as needed */
+      /* page-break-inside: avoid; */
+ /* }  */
+/* } */

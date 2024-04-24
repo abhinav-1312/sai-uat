@@ -18,7 +18,7 @@ const apiRequest = async (url, method, requestData) => {
     method: method,
     headers: {
       "Content-Type": "application/json",
-      Authorization: token,
+      "Authorization": token,
     },
   };
 
@@ -53,20 +53,23 @@ const LocationPage = ({
   console.log(editingLocation);
 
   const getLocation = async (id) => {
+    const userCd = localStorage.getItem("userCd")
     const itemResponse = await apiRequest(
       "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocationMasterById",
       "POST",
       {
         locationId: id,
-        userId: "12345",
+        userId: userCd,
       }
     );
     return itemResponse;
-  };
+  }
 
   const handleEdit = async (location) => {
+    console.log("LOcation: ", location)
     const locationObject = await getLocation(location);
-    const dateObject = new Date(locationObject.endDate);
+    console.log("LOcationObj: ", locationObject)
+    const dateObject = new Date(locationObject?.endDate);
     const year = dateObject.getFullYear();
     const month = dateObject.getMonth(); // Months are zero-based, so add 1
     const date = dateObject.getDate();
@@ -141,6 +144,7 @@ const LocationPage = ({
         onCancel={() => {
           setEditingLocation(null);
           setVisible(false);
+          console.log("Clicked")
         }}
         footer={null}
       >

@@ -142,7 +142,7 @@ const AcceptanceNote = () => {
       const currentDate = dayjs();
       // Update form data with fetched values
       setFormData({
-        ceRegionalCenterCd: organizationDetails.location,
+        ceRegionalCenterCd: organizationDetails.id,
         ceRegionalCenterName: organizationDetails.organizationName,
         ceAddress: organizationDetails.locationAddr,
         ceZipcode: locationDetails.zipcode,

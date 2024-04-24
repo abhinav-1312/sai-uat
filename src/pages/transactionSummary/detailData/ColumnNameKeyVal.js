@@ -1,6 +1,6 @@
 export const columnName = {
-    "genDate": "Generated Date",
-    "genName": "Generated Name",
+    "genDate": "Issue Date",
+    "genName": "Issue Name",
     "issueDate": "Receiving Date",
     "issueName": "Received By",
     "approvedDate": "Approved Date",
