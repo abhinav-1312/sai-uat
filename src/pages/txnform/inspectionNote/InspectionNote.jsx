@@ -177,7 +177,7 @@ const InspectionNote = () => {
         "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
       const response = await axios.post(apiUrl, {
         processId: value,
-        processStage: "IGP",
+        processStage: "IR",
       },  apiHeader("POST", token));
       const {responseData} = response.data;
       const { processData, itemList } = responseData;
@@ -202,7 +202,7 @@ const InspectionNote = () => {
         consumerName: processData?.consumerName,
         contactNo: processData?.contactNo,
 
-        supplierCd: processData?.supplierCode,
+        supplierCd: processData?.supplierCd,
         supplierName: processData?.supplierName,
         address: processData?.crAddress,
 
