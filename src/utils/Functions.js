@@ -151,50 +151,50 @@ export const convertArrayToObject = (array, _makeKey, valueKey ) => {
 
  export  const printOrSaveAsPDF = async (formRef) => {
 
-  window.print()
-    // const input = formRef.current;
-    // if (input === null) {
-    //   return;
-    // }
-    // // Apply custom styles for Ant Design components to ensure proper rendering
-    // const styleSheet = document.createElement("style");
-    // styleSheet.type = "text/css";
-    // styleSheet.innerText = `
-    //   .ant-input {width: 100%;}`;
-    // document.head.appendChild(styleSheet);
-    // const options = {
-    //   margin: [5, 5],
-    //   filename: 'form.pdf',
-    //   image: { type: 'jpeg', quality: 0.98 },
-    //   html2canvas: { scale: 2 },
-    //   jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    // };
-    // // Apply temporary styles for PDF generation
-    // const originalStyles = window.getComputedStyle(input);
-    // // input.style.transform = 'scale(0.8)'
+  // window.print()
+    const input = formRef.current;
+    if (input === null) {
+      return;
+    }
+    // Apply custom styles for Ant Design components to ensure proper rendering
+    const styleSheet = document.createElement("style");
+    styleSheet.type = "text/css";
+    styleSheet.innerText = `
+      .ant-input {width: 100%;}`;
+    document.head.appendChild(styleSheet);
+    const options = {
+      margin: [5, 5],
+      filename: 'form.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    };
+    // Apply temporary styles for PDF generation
+    const originalStyles = window.getComputedStyle(input);
+    input.style.transform = 'scaleY(0.7)'
     // input.style.transform = 'scaleY(0.7)'
-    // input.style.position = 'static';
-    // // input.style.transform = 'none';
-    // input.style.maxWidth = '100%';
-    // input.style.margin = '-16rem 0 0 0'; // Adjust the negative margin as needed to shift the content upward
-    // input.style.overflow = "hidden"
+    input.style.position = 'static';
+    // input.style.transform = 'none';
+    input.style.maxWidth = '100%';
+    input.style.margin = '-10rem 0 0 0'; // Adjust the negative margin as needed to shift the content upward
+    input.style.overflow = "hidden"
 
-    // html2pdf(input, options).then((pdf) => {
-    //   input.style.cssText = originalStyles.cssText;
-    //   const blob = pdf.output('bloburl');
+    html2pdf(input, options).then((pdf) => {
+      input.style.cssText = originalStyles.cssText;
+      const blob = pdf.output('bloburl');
       
-    //   // Create a link element for downloading the PDF
-    //   const link = document.createElement('a');
-    //   link.href = blob;
-    //   link.download = options.filename;
+      // Create a link element for downloading the PDF
+      const link = document.createElement('a');
+      link.href = blob;
+      link.download = options.filename;
 
-    //   // Trigger the download
-    //   document.body.appendChild(link);
-    //   link.click();
+      // Trigger the download
+      document.body.appendChild(link);
+      link.click();
 
-    //   // Reset the styles after generating the PDF
-    //   input.style.cssText = originalStyles.cssText;
-    // });
+      // Reset the styles after generating the PDF
+      input.style.cssText = originalStyles.cssText;
+    });
   };
 
   const token = localStorage.getItem("token")
