@@ -693,7 +693,7 @@ const IssueNote = () => {
           ceRegionalCenterCd: responseData.id,
           ceRegionalCenterName: responseData.organizationName,
           ceAddress: responseData.locationAddr,
-
+          ceZipcode: responseData.locationDetails.zipcode
         }
       })
     }
