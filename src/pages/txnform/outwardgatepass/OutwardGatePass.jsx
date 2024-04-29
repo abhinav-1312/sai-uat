@@ -560,7 +560,7 @@ const OutwardGatePass = () => {
           <Col span={8}>
             <Title strong underline level={2} type="danger">
               {
-                Type === "IRP" ?
+                Type === "IRP" || Type === "IOP"?
                 "CONSIGNOR DETAIL ;-" : "CONSIGNEE DETAIL :-"
               }
             </Title>
@@ -593,7 +593,7 @@ const OutwardGatePass = () => {
           <Col span={8}>
             <Title strong level={2} underline type="danger">
             {
-                Type === "IRP" ?
+                Type === "IRP" || Type === "IOP" ?
                 "CONSIGNEE DETAIL ;-" : "CONSIGNOR DETAIL :-"
               }
             </Title>

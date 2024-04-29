@@ -4,7 +4,8 @@ import { Form, Input, Button, Row, Col, DatePicker, Typography, AutoComplete } f
 import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import axios from 'axios';
-import { printOrSaveAsPDF } from '../../../utils/Functions';
+import { apiHeader, printOrSaveAsPDF } from '../../../utils/Functions';
+import FormInputItem from '../../../components/FormInputItem';
 const dateFormat = 'DD/MM/YYYY';
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -14,10 +15,14 @@ const DemandNoteForm = () => {
   const formRef = useRef()
   const [itemData, setItemData] = useState([]);
   const [formData, setFormData] = useState({
-    regionalCenterCode: '',
-    regionalCenterName: '',
-    consigneeAddress: '',
-    consigneeZipCode: ''
+    ceRegionalCenterCode: '',
+    ceRegionalCenterName: '',
+    ceAddress: '',
+    ceZipcode: '',
+    crRegionalCenterCd: "",
+    crRegionalCenterName: "",
+    crZipcode: "",
+    crAddress: ""
   });
   useEffect(() => {
 
@@ -46,14 +51,14 @@ const DemandNoteForm = () => {
       });
 
       const { responseData } = response.data;
-      const { organizationDetails } = responseData;
+      const { organizationDetails, locationDetails } = responseData;
       const { userDetails } = responseData;
       // Update form data with fetched values
       setFormData({
-        regionalCenterCode: "20",
-        regionalCenterName: organizationDetails.location,
-        consigneeAddress: organizationDetails.locationAddr,
-        consigneeZipCode: "131021",
+        crRegionalCenterCd: organizationDetails.id,
+        crRegionalCenterName: organizationDetails.location,
+        crAddress: organizationDetails.locationAddr,
+        crZipcode: locationDetails.zipcode,
         firstName: userDetails.firstName,
         lastName: userDetails.lastName
 
@@ -62,6 +67,28 @@ const DemandNoteForm = () => {
       console.error('Error fetching data:', error);
     }
   };
+
+  const userCd = localStorage.getItem("userCd")
+  const token = localStorage.getItem("token")
+
+
+  const handleCeRccChange = async (value) => {
+    const url = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getOrgMasterById"
+    const {data} = await axios.post(url, {id: value, userId: userCd}, apiHeader("POST", token))
+    const {responseStatus, responseData} = data
+
+    if(responseStatus.message === "Success" && responseStatus.statusCode === 200){
+      setFormData(prev=>{
+        return {
+          ...prev,
+          ceRegionalCenterCd: responseData.id,
+          ceRegionalCenterName: responseData.organizationName,
+          ceAddress: responseData.locationAddr,
+          ceZipcode: responseData.locationDetails.zipcode
+        }
+      })
+    }
+  }
 
 
   const onFinish = (values) => {
@@ -90,32 +117,12 @@ const DemandNoteForm = () => {
 
         <Row gutter={24}>
           <Col span={8}>
-            <Title strong level={2} underline type='danger' > CONSIGNEE DETAIL :-</Title>
+            <Title strong level={2} underline type='danger' > CONSIGNOR DETAIL :-</Title>
 
-            <Form.Item label="REGIONAL CENTER CODE" name="regionalCenterCode">
-              <Input value={formData.regionalCenterCode} />
-              <div style={{ display: 'none' }}>
-                {formData.regionalCenterCode}
-              </div>
-            </Form.Item>
-            <Form.Item label="REGIONAL CENTER NAME " name="regionalCenterNameConsignee">
-              <Input value={formData.regionalCenterName} />
-              <div style={{ display: 'none' }}>
-                {formData.regionalCenterCode}
-              </div>
-            </Form.Item>
-            <Form.Item label="ADDRESS :" name="consigneeAddress">
-              <Input value={formData.consigneeAddress} />
-              <div style={{ display: 'none' }}>
-                {formData.regionalCenterCode}
-              </div>
-            </Form.Item>
-            <Form.Item label="ZIP CODE :" name="consigneeZipCode">
-              <Input value={formData.consigneeZipCode} />
-              <div style={{ display: 'none' }}>
-                {formData.regionalCenterCode}
-              </div>
-            </Form.Item>
+            <FormInputItem label="REGIONAL CENTER CODE" value={formData.crRegionalCenterCd} />
+            <FormInputItem label="REGIONAL CENTER NAME" value={formData.crRegionalCenterName} />
+            <FormInputItem label="ADDRESS" value={formData.crAddress} />
+            <FormInputItem label="ZIPCODE" value={formData.crZipcode} />
 
           </Col>
 
@@ -124,12 +131,16 @@ const DemandNoteForm = () => {
           </Col>
 
           <Col span={8}>
-            <Title strong underline level={2} type="danger" >CONSIGNOR DETAIL :-</Title>
+            <Title strong underline level={2} type="danger" >CONSIGNEE DETAIL :-</Title>
 
             <Form.Item label="SUPPLIER CODE :" name="supplierCode">
-              <Input />
+              <Input onChange={(e) => handleCeRccChange(e.target.value)} />
             </Form.Item>
-            <Form.Item label="SUPPLIER NAME :" name="supplierName">
+
+            <FormInputItem label="REGIONAL CENTER NAME" value={formData.ceRegionalCenterName} />
+            <FormInputItem label="ADDRESS" value={formData.ceAddress} />
+            <FormInputItem label="ZIPCODE" value={formData.ceZipcode} />
+            {/* <Form.Item label="SUPPLIER NAME :" name="supplierName">
               <Input />
             </Form.Item>
             <Form.Item label="ADDRESS:" name="supplierAddress">
@@ -137,7 +148,7 @@ const DemandNoteForm = () => {
             </Form.Item>
             <Form.Item label="ZIP CODE :" name="consigneeZipCode">
               <Input />
-            </Form.Item>
+            </Form.Item> */}
           </Col>
         </Row>
 
@@ -281,18 +292,7 @@ const DemandNoteForm = () => {
       <div className='goods-receive-note-button-container'>
 
         <Form.Item >
-          <Button type="primary" htmlType="save" style={{ width: '200px', margin: 16 }}>
-            Save
-          </Button>
-        </Form.Item>
-
-        <Form.Item >
-          <Button type="primary" htmlType="submit" style={{ backgroundColor: '#4CAF50', borderColor: '#4CAF50', width: '200px', margin: 16 }}>
-            Submit
-          </Button>
-        </Form.Item>
-        <Form.Item >
-        <Button disabled={!buttonVisible} onClick={()=> printOrSaveAsPDF(formRef)} type="primary" danger style={{ width: '200px', margin: 16, alignContent: 'end' }}>
+        <Button onClick={()=> printOrSaveAsPDF(formRef)} type="primary" danger style={{ width: '200px', margin: 16, alignContent: 'end' }}>
               PRINT
             </Button>
         </Form.Item>

@@ -176,7 +176,7 @@ export const convertArrayToObject = (array, _makeKey, valueKey ) => {
     input.style.position = 'static';
     // input.style.transform = 'none';
     input.style.maxWidth = '100%';
-    input.style.margin = '-10rem 0 0 0'; // Adjust the negative margin as needed to shift the content upward
+    input.style.margin = '-14rem 0 0 0'; // Adjust the negative margin as needed to shift the content upward
     input.style.overflow = "hidden"
 
     html2pdf(input, options).then((pdf) => {
