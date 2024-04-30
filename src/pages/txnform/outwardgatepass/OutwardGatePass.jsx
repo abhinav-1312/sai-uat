@@ -729,6 +729,7 @@ const OutwardGatePass = () => {
                 <FormDatePickerItem label="NOA DATE :" name="noaDate" onChange={handleChange} />
                 <FormInputItem label="MODE OF DELIVERY :" name="modeOfDelivery" onChange={handleChange} />
                 <FormDatePickerItem label="DATE OF DELIVERY :" name="dateOfDelivery" onChange={handleChange} />
+                <FormInputItem label="CHALLAN / INVOICE NO. :" name="challanNo" onChange={handleChange} />
               </>
             }
           </Col>
@@ -743,7 +744,7 @@ const OutwardGatePass = () => {
             </Col>
           </Row>
         )}
-        {(Type === "IOP") && (
+        {/* {(Type === "IOP") && ( 
           <Row gutter={24}>
             <Col span={8}>
             <FormInputItem label="CHALLAN / INVOICE NO. :" name="challanNo" onChange={handleChange} />
@@ -752,7 +753,7 @@ const OutwardGatePass = () => {
               <FormInputItem label="MODE OF DELIVERY :" name="modeOfDelivery" onChange={handleChange} />
             </Col>
           </Row>
-        )}
+        )} */}
         {/* Item Details */}
         <h2>ITEM DETAILS</h2>
 
