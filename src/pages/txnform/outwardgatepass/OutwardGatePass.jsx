@@ -9,32 +9,20 @@ import {
   Row,
   Col,
   Typography,
-  AutoComplete,
   message,
   Modal,
 } from "antd";
-import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
-import {
-  itemNames,
-  types,
-  allDisciplines,
-  subCategories,
-  categories,
-  sizes,
-  usageCategories,
-  brands,
-  colors,
-} from "../../items/KeyValueMapping";
+import { MinusCircleOutlined } from "@ant-design/icons";
+
 import dayjs from "dayjs";
 import axios from "axios";
-import moment from "moment";
 import { apiHeader } from "../../../utils/Functions";
 import FormInputItem from "../../../components/FormInputItem";
 import { printOrSaveAsPDF } from "../../../utils/Functions";
 import FormDatePickerItem from "../../../components/FormDatePickerItem";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
-const { Text, Title } = Typography;
+const { Title } = Typography;
 
 const convertEpochToDateString = (epochTime) => {
   // Convert epoch time to milliseconds
@@ -102,7 +90,7 @@ const OutwardGatePass = () => {
     noteType: "",
     rejectionNoteNo: "",
     userId: "string",
-    termsCondition: "12345",
+    termsCondition: "",
     note: "",
     items: [
       // {
@@ -196,7 +184,6 @@ const OutwardGatePass = () => {
 
   useEffect(() => {
     populateItemData();
-    // fetchItemData()
     fetchUserDetails();
   }, []);
 
@@ -224,14 +211,10 @@ const OutwardGatePass = () => {
 
       const { responseData } = response.data;
       console.log("Response data: ", responseData);
-      const { organizationDetails, userDetails, locationDetails } = responseData;
+      const { userDetails } = responseData;
       const currentDate = dayjs();
       // Update form data with fetched values
       setFormData({
-        // crRegionalCenterCd: organizationDetails.crRegionalCenterCd,
-        // crRegionalCenterName: organizationDetails.location,
-        // crAddress: organizationDetails.locationAddr,
-        // crZipcode: "131021",
         genName: userDetails.firstName,
         userId: "string",
         genDate: currentDate.format(dateFormat),
@@ -282,7 +265,6 @@ const OutwardGatePass = () => {
           srNo: item?.sNo,
           itemId: item?.itemId,
           itemCode: item?.itemCode,
-          // itemName: item?.itemName,
           itemDesc: item?.itemDesc,
           uom: parseInt(item?.uom),
           quantity: item?.quantity,
@@ -561,17 +543,17 @@ const OutwardGatePass = () => {
             <Title strong underline level={2} type="danger">
               {
                 Type === "IRP" || Type === "IOP"?
-                "CONSIGNOR DETAIL ;-" : "CONSIGNEE DETAIL :-"
+                "CONSIGNOR DETAIL :-" : "CONSIGNEE DETAIL :-"
               }
             </Title>
-            <Form.Item label="REGIONAL CENTER CODE" name="crRegionalCenterCd">
+            <Form.Item label="REGIONAL CENTER CODE :" name="crRegionalCenterCd">
               <Input value={formData.crRegionalCenterCd} readOnly />
               <div style={{ display: "none" }}>
                 {formData.crRegionalCenterCd}
               </div>
             </Form.Item>
             <Form.Item
-              label="REGIONAL CENTER NAME "
+              label="REGIONAL CENTER NAME :"
               name="crRegionalCenterName"
             >
               <Input value={formData.crRegionalCenterName} />
@@ -594,7 +576,7 @@ const OutwardGatePass = () => {
             <Title strong level={2} underline type="danger">
             {
                 Type === "IRP" || Type === "IOP" ?
-                "CONSIGNEE DETAIL ;-" : "CONSIGNOR DETAIL :-"
+                "CONSIGNEE DETAIL :-" : "CONSIGNOR DETAIL :-"
               }
             </Title>
 
@@ -652,7 +634,7 @@ const OutwardGatePass = () => {
                   </div>
                 </Form.Item>
                 <Form.Item
-                  label="REGIONAL CENTER NAME  :"
+                  label="REGIONAL CENTER NAME :"
                   name="ceRegionalCenterName"
                 >
                   <Input
@@ -696,7 +678,7 @@ const OutwardGatePass = () => {
               </Form.Item>
             )}
             {Type === "PO" && (
-              <Form.Item label="REJECTION NOTE NO.  :" name="rejectionNoteNo">
+              <Form.Item label="REJECTION NOTE NO. :" name="rejectionNoteNo">
                 <Input
                   onChange={(e) =>
                     handleReturnNoteNoChange(e.target.value)
@@ -706,7 +688,7 @@ const OutwardGatePass = () => {
             )}
             {Type === "IOP" && (
               <>
-                <Form.Item label="SELECT NOTE TYPE" name="noteType">
+                <Form.Item label="SELECT NOTE TYPE :" name="noteType">
                   <Select onChange={handleSelectChange}>
                     <Option value="ISSUE">ISSUE NOTE NO.</Option>
                     <Option value="REJECTION">REJECTION NOTE NO.</Option>
@@ -740,14 +722,15 @@ const OutwardGatePass = () => {
               </>
             )}
 
-            {/* {
+            {
               Type === "IOP" && 
               <>
-                <FormInputItem label="NOA NO :" name="noa" onChange={handleChange} />
+                <FormInputItem label="NOA NO :" name="noaNo" onChange={handleChange} />
                 <FormDatePickerItem label="NOA DATE :" name="noaDate" onChange={handleChange} />
+                <FormInputItem label="MODE OF DELIVERY :" name="modeOfDelivery" onChange={handleChange} />
                 <FormDatePickerItem label="DATE OF DELIVERY :" name="dateOfDelivery" onChange={handleChange} />
               </>
-            } */}
+            }
           </Col>
         </Row>
         {(Type === "PO") && (
@@ -760,7 +743,7 @@ const OutwardGatePass = () => {
             </Col>
           </Row>
         )}
-        {/* {(Type === "IOP") && (
+        {(Type === "IOP") && (
           <Row gutter={24}>
             <Col span={8}>
             <FormInputItem label="CHALLAN / INVOICE NO. :" name="challanNo" onChange={handleChange} />
@@ -769,7 +752,7 @@ const OutwardGatePass = () => {
               <FormInputItem label="MODE OF DELIVERY :" name="modeOfDelivery" onChange={handleChange} />
             </Col>
           </Row>
-        )} */}
+        )}
         {/* Item Details */}
         <h2>ITEM DETAILS</h2>
 
@@ -891,7 +874,7 @@ const OutwardGatePass = () => {
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item label="NOTE" name="note">
+              <Form.Item label="NOTE :" name="note">
                 <Input.TextArea
                   value={formData.note}
                   autoSize={{ minRows: 3, maxRows: 6 }}

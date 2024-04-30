@@ -1,5 +1,4 @@
-// routes.js
-import React, { useState } from "react";
+import React from "react";
 import { Route, Routes } from "react-router-dom";
 import Organization from "../pages/organization/Organization";
 import Location from "../pages/location/Location";
@@ -29,7 +28,6 @@ import Itemdemandsearch from "../components/Itemdemandsearch";
 import OHQ from "../pages/ohq/ohq";
 import TransactionSummary from "../pages/transactionSummary/TransactionSummary";
 import TransactionDetail from "../pages/transactionSummary/TransactionDetail";
-import SignIn from "../auth/Login";
 
 const RoutesComponent = () => {
   const userRole = localStorage.getItem("userRoles");
@@ -69,15 +67,11 @@ const RoutesComponent = () => {
 
   const adminRoutes = (
     <>
-      {/* <Route path="/sub-organization" element={<Organization />} /> */}
-      {/* <Route path="/location" element={<Location />} /> */}
       <Route path="/items" element={<Items />} />
       <Route path="/ohq" element={<OHQ />} />
       <Route path="/trnsummary" element={<TransactionSummary />} />
       <Route path="/trnsummary/:trnno" element={<TransactionDetail />} />
-      {/* <Route path="/locator" element={<Locator />} /> */}
       <Route path="/department" element={<DepartmentPage />} />
-      {/* <Route path="/user" element={<User />} /> */}
       <Route path="/employee" element={<Employee />} />
       <Route path="/tax" element={<Tax />} />
       <Route path="/transaction" element={<Transaction />} />

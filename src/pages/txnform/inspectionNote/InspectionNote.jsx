@@ -177,7 +177,7 @@ const InspectionNote = () => {
         "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
       const response = await axios.post(apiUrl, {
         processId: value,
-        processStage: "IR",
+        processStage: Type === "PO" ? "IR" : "IGP",
       },  apiHeader("POST", token));
       const {responseData} = response.data;
       const { processData, itemList } = responseData;
@@ -427,14 +427,9 @@ const InspectionNote = () => {
 
 
             <FormInputItem label={Type === "PO" ? "MIS NO. :" : "Inward Gate Pass No. :"} name="inwardGatePass" onChange={handleInwardGatePassChange} />
-            {
-              Type === "PO" &&
-              <>
-                <FormInputItem label = "CHALLAN / INVOICE NO. :" value={formData.challanNo} readOnly={true} />
-                <FormInputItem label = "MODE OF DELIVERY :" value={formData.modeOfDelivery} readOnly={true} />
-                <FormInputItem label = "DATE OF DELIVERY :" value={formData.dateOfDeliveryDate} readOnly={true} />
-              </>
-            }
+            <FormInputItem label = "CHALLAN / INVOICE NO. :" value={formData.challanNo} readOnly={true} />
+            <FormInputItem label = "MODE OF DELIVERY :" value={formData.modeOfDelivery} readOnly={true} />
+            <FormInputItem label = "DATE OF DELIVERY :" value={formData.dateOfDeliveryDate} readOnly={true} />
             <FormDatePickerItem label="DATE OF INSPECTION :" name="dateOfInspectionDate" onChange={handleChange} />
             <FormInputItem label="TYPE OF INSPECTION :" name="typeOfInspection" onChange={handleChange} />
           </Col>

@@ -108,23 +108,11 @@ const AcceptanceNote = () => {
 
   useEffect(() => {
     fetchUomLocatorMaster(setUomMaster, setLocatorMaster)
-    fetchItemData();
     fetchUserDetails();
   }, []);
 
   const token = localStorage.getItem("token")
 
-  const fetchItemData = async () => {
-    try {
-      const apiUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMaster";
-      const response = await axios.get(apiUrl, apiHeader("GET", token));
-      const { responseData } = response.data;
-      setItemData(responseData);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
   const fetchUserDetails = async () => {
     try {
       const userCd = localStorage.getItem("userCd")
@@ -137,8 +125,7 @@ const AcceptanceNote = () => {
       });
 
       const { responseData } = response.data;
-      const { organizationDetails, locationDetails } = responseData;
-      const { userDetails } = responseData;
+      const { organizationDetails, locationDetails, userDetails } = responseData;
       const currentDate = dayjs();
       // Update form data with fetched values
       setFormData({
@@ -147,7 +134,7 @@ const AcceptanceNote = () => {
         ceAddress: organizationDetails.locationAddr,
         ceZipcode: locationDetails.zipcode,
         genName: userDetails.firstName,
-        userId: "string",
+        userId: userCd,
         genDate: currentDate.format(dateFormat),
         issueDate: currentDate.format(dateFormat),
         approvedDate: currentDate.format(dateFormat),
@@ -275,10 +262,8 @@ const AcceptanceNote = () => {
         }
       });
 
-      
-
       const apiUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/saveAcceptanceNote";
+      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/saveAcceptanceNote";
       const response = await axios.post(apiUrl, formDataCopy, apiHeader("POST", token));
       if (
         response.status === 200 &&
@@ -436,37 +421,7 @@ const AcceptanceNote = () => {
 
             {Type === "IOP" && (
               <>
-                {/* <Form.Item
-                  label="REGIONAL CENTER CODE"
-                  name="crRegionalCenterCd"
-                >
-                  <Input
-                    onChange={(e) =>
-                      handleChange("crRegionalCenterCd", e.target.value)
-                    }
-                  />
-                </Form.Item>
-                <Form.Item
-                  label="REGIONAL CENTER NAME "
-                  name="crRegionalCenterName"
-                >
-                  <Input
-                    onChange={(e) =>
-                      handleChange("crRegionalCenterName", e.target.value)
-                    }
-                  />
-                </Form.Item>
-                <Form.Item label="ADDRESS :" name="crAddress">
-                  <Input
-                    onChange={(e) => handleChange("crAddress", e.target.value)}
-                  />
-                </Form.Item>
-                <Form.Item label="ZIP CODE :" name="crZipcode">
-                  <Input
-                    onChange={(e) => handleChange("crZipcode", e.target.value)}
-                  />
-                </Form.Item> */}
-                 <FormInputItem label="REGIONAL CENTER CODE" value={formData.ceRegionalCenterCd} />
+                <FormInputItem label="REGIONAL CENTER CODE" value={formData.ceRegionalCenterCd} />
                 <FormInputItem label="REGIONAL CENTER NAME" value={formData.ceRegionalCenterName} />
                 <FormInputItem label="ADDRESS" value={formData.ceAddress} />
                 <FormInputItem label="ZIPCODE" value={formData.ceZipcode} />
@@ -493,7 +448,6 @@ const AcceptanceNote = () => {
                 <FormInputItem label="NOA NO. :" value={formData.noa} />
                 <FormInputItem label="NOA DATE :" value={formData.noaDate} />
                 <FormInputItem label="DATE OF DELIVERY" value={formData.dateOfDelivery} />
-              
               </>
             }
           </Col>
@@ -505,16 +459,6 @@ const AcceptanceNote = () => {
         <Form.List name="itemDetails" initialValue={formData.items || [{}]}>
           {(fields, { add, remove }) => (
             <>
-              {/* <Form.Item style={{ textAlign: "right" }}>
-                <Button
-                  type="dashed"
-                  onClick={() => add()}
-                  style={{ marginBottom: 8 }}
-                  icon={<PlusOutlined />}
-                >
-                  ADD ITEM
-                </Button>
-              </Form.Item> */}
               {formData?.items?.length > 0 &&
                 formData.items.map((item, key) => (
                   <div style={{
