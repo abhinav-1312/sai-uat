@@ -491,7 +491,7 @@ const AcceptanceNote = () => {
                       value={uomMaster[item.uom]}
                     />
 
-                    {Type !== "PO" && (
+                    {Type !== "PO" && Type !== "IOP" && (
                       <>
                         <FormInputItem label="INSPECTED QUANTITY" value = {item.inspectedQuantity} />
                       </>
@@ -579,7 +579,7 @@ const AcceptanceNote = () => {
               />
             </div>
           </div>
-          {Type !== "PO" && (
+          {Type !== "PO" && Type !== "IOP" && (
             <div>
               <div className="goods-receive-note-signature">APPROVED BY</div>
               <div className="goods-receive-note-signature">
@@ -608,7 +608,7 @@ const AcceptanceNote = () => {
               </div>
             </div>
           )}
-          {Type !== "PO" && (
+          {Type !== "PO" && Type !== "IOP" && (
             <div>
               <div className="goods-receive-note-signature">RECEIVED BY</div>
               <div className="goods-receive-note-signature">

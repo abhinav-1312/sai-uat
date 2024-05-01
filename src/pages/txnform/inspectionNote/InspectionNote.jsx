@@ -391,7 +391,7 @@ const InspectionNote = () => {
 
         <Row gutter={24}>
           <Col span={8}>
-            <Title strong level={2} underline type="danger">
+            <Title strong level={3} underline type="danger">
               {Type === "PO" ? "CONSIGNEE DETAIL :-" : "CONSIGNOR DETAIL :-" }
             </Title>
 
@@ -402,7 +402,7 @@ const InspectionNote = () => {
 
           </Col>
           <Col span={8}>
-            <Title strong underline level={2} type="danger">
+            <Title strong underline level={3} type="danger">
             {Type === "PO" ? "CONSIGNOR DETAIL :-" : "CONSIGNEE DETAIL :-" }
             </Title>
             {Type === "PO" && (
@@ -462,7 +462,7 @@ const InspectionNote = () => {
                         </Form.Item>
 
                         {
-                          Type !== "PO" && 
+                          Type !== "PO" && Type !== "IOP" && 
                           <FormInputItem label="LOCATOR DESCRPTION" value={locatorMaster[item.locatorId]} />
                         }
 

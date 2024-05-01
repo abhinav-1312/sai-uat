@@ -1111,12 +1111,13 @@ const IssueNote = () => {
             <div className="goods-receive-note-signature">APPROVED BY</div>
             <div className="goods-receive-note-signature">
               NAME & DESIGNATION :
-              <Form>
+              <Form.Item rules={[{ required: true}]}>
                 <Input
                   name="approvedName"
                   onChange={(e) => handleChange("approvedName", e.target.value)}
+                  required={true}
                 />
-              </Form>
+              </Form.Item>
             </div>
             <div className="goods-receive-note-signature">
               DATE & TIME :
@@ -1135,12 +1136,13 @@ const IssueNote = () => {
             <div className="goods-receive-note-signature">RECEIVED BY</div>
             <div className="goods-receive-note-signature">
               NAME & SIGNATURE :
-              <Form>
+              <Form.Item rules={[{ required: true}]}>
                 <Input
                   name="issueName"
                   onChange={(e) => handleChange("issueName", e.target.value)}
+                  required={true}
                 />
-              </Form>
+              </Form.Item>
             </div>
             <div className="goods-receive-note-signature">
               DATE & TIME :

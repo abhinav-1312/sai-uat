@@ -2128,12 +2128,15 @@ const InwardGatePass = () => {
                         />
                       </Form.Item>
 
+                      {
+                        Type !== "IOP" &&
                       <Form.Item label="LOCATOR DESCRIPITON">
                         <Input
                           value={item.locatorDesc || locatorMaster[item.locatorId]}
                           readOnly
-                        />
+                          />
                       </Form.Item>
+                        }
 
                       <Form.Item label="QUANTITY">
                         <Input

@@ -965,7 +965,7 @@ const GoodsReceiveNoteForm = () => {
                                       value
                                     )
                                   }
-                                  defaultValue={qtyObj.locatorId}
+                                  defaultValue={Type !== "IOP" ? qtyObj.locatorId : ""}
                                 >
                                   {locatorMaster ?
                                     locatorMaster.map(

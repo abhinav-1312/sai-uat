@@ -720,7 +720,7 @@ const RejectionNote = () => {
                         </Form.Item>  */}
 
                         {
-                          Type !== "PO" && 
+                          Type !== "PO" && Type !== "IOP" && 
                           // <Form.Item label="LOCATOR DESCRIPTION">
                           //   <Input value={locatorMaster[item.locatorId]} />
                           // </Form.Item>
@@ -813,7 +813,7 @@ const RejectionNote = () => {
               />
             </div>
           </div>
-          {Type !== "PO" && (
+          {Type !== "PO" && Type !== "IOP" && (
             <div>
               <div className="goods-receive-note-signature">APPROVED BY</div>
               <div className="goods-receive-note-signature">
@@ -842,7 +842,7 @@ const RejectionNote = () => {
               </div>
             </div>
           )}
-          {Type !== "PO" && (
+          {Type !== "PO" && Type !== "IOP" && (
             <div>
               <div className="goods-receive-note-signature">RECEIVED BY</div>
               <div className="goods-receive-note-signature">

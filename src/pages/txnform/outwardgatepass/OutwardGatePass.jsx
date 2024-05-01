@@ -442,7 +442,7 @@ const OutwardGatePass = () => {
                 itemDesc: item?.itemDesc,
                 uom: item?.uom,
                 quantity: item?.quantity,
-                noOfDays: 12,
+                noOfDays: 1,
                 inspectedQuantity: item?.inspectedQuantity,
                 acceptedQuantity: item?.acceptedQuantity,
                 rejectedQuantity: item?.rejectedQuantity,
