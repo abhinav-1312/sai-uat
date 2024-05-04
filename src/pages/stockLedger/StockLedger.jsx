@@ -4,44 +4,11 @@ import { apiHeader } from "../../utils/Functions";
 import { ExportOutlined } from "@ant-design/icons";
 import axios from "axios";
 import dayjs from "dayjs";
+import { CSVLink } from 'react-csv';
 
 const { Option } = Select;
 const dateFormat = "DD/MM/YYYY";
 
-const columns = [
-  {
-    title: "Process ID",
-    dataIndex: "processId",
-  },
-  {
-    title: "Item Code",
-    dataIndex: "itemMasterCd",
-  },
-  {
-    title: "Item Description",
-    dataIndex: "itemMasterDesc",
-  },
-  {
-    title: "Post Quantity",
-    dataIndex: "postQuantity",
-  },
-  {
-    title: "Previous Quantity",
-    dataIndex: "preQuantity",
-  },
-  {
-    title: "Process Stage",
-    dataIndex: "processStage",
-  },
-  {
-    title: "Location ID",
-    dataIndex: "locationId",
-  },
-  {
-    title: "Locator ID",
-    dataIndex: "locatorId",
-  },
-];
 
 const StockLedger = () => {
   const token = localStorage.getItem("token");
@@ -54,6 +21,9 @@ const StockLedger = () => {
 
   const [itemData, setItemData] = useState([]);
   const [ledger, setLedger] = useState(null);
+  const [csvData, setCsvData] = useState(null)
+  const [locator, setLocator] = useState([])
+  const [location, setLocation] = useState([])
 
   const populateItemData = async () => {
     const { data } = await axios.get(
@@ -83,12 +53,59 @@ const StockLedger = () => {
       axios.get(locationUrl, apiHeader("GET", token)),
     ]);
 
-    console.log("Locator Data: ", locatorData.data.res);
-    console.log("Location Data: ", locationData);
+    console.log("Locator Data: ", locatorData.data.responseData);
+    console.log("Location Data: ", locationData.data.responseData);
 
-    const locatorObj = {};
-    const locationObj = {};
+    const locatorObj = locatorData.data.responseData.reduce((acc, curr) => {
+      acc[curr.id] = curr.locatorDesc;
+      return acc;
+    }, {});
+    const locationObj = locationData.data.responseData.reduce((acc, curr) => {
+      acc[curr.id] = curr.locationName;
+      return acc;
+    }, {});
+
+    setLocator({...locatorObj})
+    setLocation({...locationObj})
   };
+
+  const columns = [
+    {
+      title: "Transaction ID",
+      dataIndex: "processId",
+    },
+    {
+      title: "Item Code",
+      dataIndex: "itemMasterCd",
+    },
+    {
+      title: "Item Description",
+      dataIndex: "itemMasterDesc",
+    },
+    {
+      title: "Post Quantity",
+      dataIndex: "postQuantity",
+    },
+    {
+      title: "Previous Quantity",
+      dataIndex: "preQuantity",
+    },
+    {
+      title: "Process Stage",
+      dataIndex: "processStage",
+    },
+    {
+      title: "Location ID",
+      dataIndex: "locationId",
+      render: (id) => location[id]
+    },
+    {
+      title: "Locator ID",
+      dataIndex: "locatorId",
+      render: (id) => locator[id]
+    },
+  ];
+  
 
   useEffect(() => {
     populateItemData();
@@ -114,7 +131,16 @@ const StockLedger = () => {
   };
 
   const handleExportClick = () => {
-    alert("Function under construction.")
+    // const csvContent = "data:text/csv;charset=utf-8," 
+    //   + ledger.txns.map(row => Object.values(row).join(",")).join("\n");
+    // setCsvData(encodeURI(csvContent));
+    const csvContent = [ ['Opening Stock', ledger.initQuantity],
+    ['Closing Stock', ledger.finalQuantity],
+      ['Transaction ID', 'Item Code', 'Item Description', "Previous Quantity", "Post Quantity", "Process Stage", "Location Description", "Locator Description"], // Header row
+      ...ledger.txns.map(item => [item.processId, item.itemMasterCd, item.itemMasterDesc, item.preQuantity, item.postQuantity, item.processStage, location[item.locationId], locator[item.locatorId]]) // Data rows
+    ];
+
+    setCsvData(csvContent)
   }
 
   const handleSearch = async () => {
@@ -267,6 +293,7 @@ const StockLedger = () => {
                   <ExportOutlined />
                 </span>
               </Button>
+              {csvData && <CSVLink data={csvData} filename={"table-data.csv"}>Download CSV</CSVLink>}
             </div>
           </div>
 
