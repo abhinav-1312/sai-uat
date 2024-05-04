@@ -110,6 +110,7 @@ const StockLedger = () => {
       toDate: null,
       itemCode: null,
     });
+    setLedger(null)
   };
 
   const handleExportClick = () => {
