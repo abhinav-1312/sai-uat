@@ -17,6 +17,7 @@ import {
 } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import RoutesComponent from "../routers/Routes";
+import StockLedger from "../pages/stockLedger/StockLedger";
 
 const { Content, Sider } = Layout;
 
@@ -39,6 +40,7 @@ const menuItems = [
   },
   { key: "3", icon: <AppstoreAddOutlined />, label: "Items", path: "/items" },
   { key: "16", icon: <AccountBookOutlined />, label: "OHQ", path: "/ohq" },
+  { key: "20", icon: <AppstoreAddOutlined />, label: "Stock Ledger", path: "/stockLedger" },
   {
     key: "17",
     icon: <AccountBookOutlined />,
@@ -169,6 +171,7 @@ const SideNav = () => {
           item.key !== "10" &&
           // item.key !== "11" &&
           item.key !== "12" &&
+          item.key !== "20" &&
           item.key !== "21"
         ); // Hide these menus
       case "QualityManager":
@@ -184,6 +187,7 @@ const SideNav = () => {
           item.key !== "7" &&
           item.key !== "9" &&
           item.key !== "10" &&
+          item.key !== "20" &&
           item.key !== "11" &&
           item.key !== "12" &&
           item.key !== "21"
@@ -202,6 +206,7 @@ const SideNav = () => {
           item.key !== "7" &&
           item.key !== "9" &&
           item.key !== "10" &&
+          item.key !== "20" &&
           item.key !== "11" &&
           item.key !== "12" &&
           item.key !== "15" &&
@@ -223,6 +228,7 @@ const SideNav = () => {
           item.key !== "9" &&
           item.key !== "10" &&
           item.key !== "3" &&
+          item.key !== "20" &&
           item.key !== "12" &&
           item.key !== "15" &&
           item.key !== "8" &&

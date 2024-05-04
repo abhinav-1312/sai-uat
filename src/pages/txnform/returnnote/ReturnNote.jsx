@@ -187,11 +187,10 @@ const RetunNote = () => {
         "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
       const response = await axios.post(apiUrl, {
         processId: value,
-        processStage: "ISN",
+        processStage: "IGP",
       }, apiHeader("POST", token));
       const responseData = response.data.responseData;
       const { processData, itemList } = responseData;
-      const issueNoteDt = processData?.issueNoteDt;
       setFormData((prevFormData) => ({
         ...prevFormData,
 
@@ -201,7 +200,7 @@ const RetunNote = () => {
         zipcode: processData?.crZipcode,
 
         processId: processData?.processId,
-        issueNoteDt: issueNoteDt,
+        issueNoteDt: processData.issueDate,
         consumerName: processData?.consumerName,
         contactNo: processData?.contactNo,
 

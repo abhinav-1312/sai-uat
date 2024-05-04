@@ -29,11 +29,9 @@ const IssueNote = () => {
   const [buttonVisible, setButtonVisible] = useState(false)
   const formRef = useRef()
   const [Type, setType] = useState("IRP");
-  const [form] = Form.useForm(); // Create form instance
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [itemData, setItemData] = useState([]);
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchValue, setSearchValue] = useState("");
@@ -287,62 +285,10 @@ const IssueNote = () => {
         key: "qtyList",
         render: (locatorQuantity, rowRecord) => renderLocatorISN(locatorQuantity, rowRecord)
     },
-
-
-    // {
-    //   title: "Actions",
-    //   key: "actions",
-    //   fixed: "right",
-    //   render: (text, record) => (
-    //     <Button
-    //       type={
-    //         selectedItems.some((item) => item.id === record.id)
-    //           ? "warning"
-    //           : "primary"
-    //       }
-    //       onClick={() => handleSelectItem(record, selectedItems, selectedItems, setFormData)}
-    //     >
-    //       {selectedItems.some((item) => item.id === record.id)
-    //         ? "Deselect"
-    //         : "Select"}
-    //     </Button>
-    //   ),
-    // },
   ];
-  // const actionColumn = {
-  //   title: "Actions",
-  //   key: "actions",
-  //   fixed: "right",
-  //   render: (text, record) => (
-  //     <Button
-  //       type={
-  //         selectedItems.some((item) => item.id === record.id)
-  //           ? "warning"
-  //           : "primary"
-  //       }
-  //       onClick={() => handleSelectItem(record, selectedItems, selectedItems, setFormData)}
-  //     >
-  //       {selectedItems.some((item) => item.id === record.id)
-  //         ? "Deselect"
-  //         : "Select"}
-  //     </Button>
-  //   ),
-  // }
-
-  const newColumn = [
-    {
-      title: "ID",
-      dataIndex: "id"
-    },
-    {
-      title: "Item description",
-      dataIndex: "itemMasterDesc"
-    }
-  ]
 
   const token = localStorage.getItem("token")
   const userCd = localStorage.getItem("userCd")
-  const password = localStorage.getItem("password")
   const populateItemData = async() => {
     const itemMasterUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMaster"
     const ohqUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getOHQ"
@@ -393,37 +339,6 @@ const IssueNote = () => {
     fetchUserDetails();
   }, []);
 
-// const handleOnSearch = (value) => {
-//     setSearchValue(value);
-//     // Filter data based on any field
-//     const filtered = data.filter((item) => {
-//       // Check if any field includes the search value
-//       return Object.values(item).some((field) => {
-//         if (typeof field === "string") {
-//           return field.toLowerCase().includes(value.toLowerCase());
-//         }
-//         return false;
-//       });
-//     });
-//     setFilteredData(filtered);
-//   };
-
-  // const handleOnChange = (e) => {
-  //   const { value } = e.target;
-  //   setSearchValue(value);
-  //   // Filter data based on any field
-  //   const filtered = data.filter((item) => {
-  //     // Check if any field includes the search value
-  //     return Object.values(item).some((field) => {
-  //       if (typeof field === "string") {
-  //         return field.toLowerCase().includes(value.toLowerCase());
-  //       }
-  //       return false;
-  //     });
-  //   });
-  //   setFilteredData(filtered);
-  // };
-
   const handleSelectItem = (record, subRecord) => {
     setTableOpen(false);
 
@@ -433,26 +348,6 @@ const IssueNote = () => {
     const index = selectedItems.findIndex((item) => item.id === record.id && item.locatorId === subRecord.locatorId);
     if (index === -1) {
       setSelectedItems((prevItems) => [...prevItems, {...recordCopy, locatorId: subRecord.locatorId}]); // Update selected items state
-    //   // add data to formData hook
-    //   // setItemDetail((prevData) => {
-    //   //   const newItem = {
-    //   //     srNo: prevData.length ? prevData.length + 1 : 1,
-    //   //     itemCode: record.itemMasterCd,
-    //   //     itemId: record.id,
-    //   //     itemDesc: record.itemMasterDesc,
-    //   //     uom: record.uomId,
-    //   //     uomDesc : record.uomDtls.baseUom,
-    //   //     quantity: 1,
-    //   //     noOfDays: 1,
-    //   //     remarks: "",
-    //   //     conditionOfGoods: "",
-    //   //     budgetHeadProcurement: "",
-    //   //     qtyList: record.qtyList
-    //   //   };
-    //   //   const updatedItems = [...(prevData || []), newItem];
-    //   //   return [...updatedItems]
-    //   // });
-
       setFormData(prevValues=>{
         const newItem = {
           srNo: prevValues.items?.length ? prevValues.items.length + 1 : 1,
@@ -483,148 +378,6 @@ const IssueNote = () => {
     }
   };
 
-  const findColumnValue = (id, dataSource, sourceName) => {
-    const foundObject = dataSource.find(obj => obj.id === id);
-
-    if(sourceName === "locationMaster")
-      return foundObject ? foundObject['locationName'] : 'Undefined';
-    if(sourceName === "locatorMaster")
-      return foundObject ? foundObject['locatorDesc'] : 'Undefined';
-    if(sourceName === "vendorMaster")
-      return foundObject ? foundObject['vendorName'] : 'Undefined';
-    if(sourceName === 'uomMaster')
-      return foundObject ? foundObject['uomName'] : 'Undefined';
-  }
-
-  // const columns = [
-  //   { title: "S NO.", dataIndex: "id", key: "id", fixed: "left", width: 80 },
-  //   {
-  //     title: "ITEM CODE",
-  //     dataIndex: "itemMasterCd",
-  //     key: "itemCode",
-  //   },
-  //   {
-  //     title: "ITEM DESCRIPTION",
-  //     dataIndex: "itemName",
-  //     key: "itemMasterDesc",
-  //     render: (itemName) => itemNames[itemName]
-  //   },
-  //   { 
-  //     title: "UOM", 
-  //     dataIndex: "uomDesc", 
-  //     key: "uom", 
-  //   },
-  //   {
-  //     title: "QUANTITY ON HAND",
-  //     dataIndex: "quantity",
-  //     key: "quantity",
-  //   },
-  //   { 
-  //     title: "LOCATION",
-  //     dataIndex: "locationId",
-  //     key: "location",
-  //     render: (locationId) => locationMaster[locationId] 
-  //     // render: (locationId) => locationMaster[locationId] findColumnValue(locationId, locationMaster, "locationMaster")
-  //   },
-  //   {
-  //     title: "LOCATOR CODE",
-  //     dataIndex: "locatorId",
-  //     key: "locatorCode",
-  //   },
-  //   { title: "PRICE", dataIndex: "price", key: "price" },
-  //   { 
-  //     title: "VENDOR DETAIL", 
-  //     dataIndex: "vendorId", 
-  //     key: "vendorDetail",
-  //     render: (vendorId) => vendorMaster[vendorId]
-  //     // render: (vendorId) => findColumnValue(vendorId, vendorMaster, "vendorMaster")
-
-  //   },
-  //   { 
-  //     title: "CATEGORY", 
-  //     dataIndex: "category", 
-  //     key: "category",
-  //     render: (category) => categories[category]
-
-  //   },
-  //   { 
-  //     title: "SUB-CATEGORY", 
-  //     dataIndex: "subCategory", 
-  //     key: "subCategory",
-  //     render: (subCategory) => subCategories[subCategory]
-  //   },
-  //   { 
-  //     title: "Type", 
-  //     dataIndex: "type", 
-  //     key: "type", 
-  //     render: (type) => types[type]
-  //   },
-  //   { 
-  //     title: "Disciplines", 
-  //     dataIndex: "disciplines", 
-  //     key: "disciplines",
-  //     render: (disciplines) => allDisciplines[disciplines]
-  //   },
-  //   { 
-  //     title: "Brand", 
-  //     dataIndex: "brandId", 
-  //     key: "brand",
-  //     render: (brandId) => brands[brandId]
-  //   },
-  //   { 
-  //     title: "Size", 
-  //     dataIndex: "size", 
-  //     key: "size",
-  //     render: (size) => sizes[size]
-  //   },
-  //   { 
-  //     title: "Colour", 
-  //     dataIndex: "colorId", 
-  //     key: "colour",
-  //     render: (colorId) => colors[colorId]
-  //   },
-  //   {
-  //     title: "Usage Category",
-  //     dataIndex: "usageCategory",
-  //     key: "usageCategory",
-  //     render: (usageCategory) => usageCategories[usageCategory]
-  //   },
-  //   {
-  //     title: "MINIMUM STOCK LEVEL",
-  //     dataIndex: "minStockLevel",
-  //     key: "minStockLevel",
-  //   },
-  //   {
-  //     title: "MAXIMUM STOCK LEVEL",
-  //     dataIndex: "maxStockLevel",
-  //     key: "maxStockLevel",
-  //   },
-  //   { title: "RE ORDER POINT", dataIndex: "reOrderPoint", key: "reOrderPoint" },
-  //   { title: "STATUS", dataIndex: "status", key: "status" },
-  //   { title: "CREATE DATE", dataIndex: "endDate", key: "endDate" },
-  //   {
-  //     title: "Actions",
-  //     key: "actions",
-  //     fixed: "right",
-  //     render: (text, record) => (
-  //       <Button
-  //         // type={
-  //         //   selectedItems.some((item) => item.id === record.id)
-  //         //     ? "warning"
-  //         //     : "primary"
-  //         // }
-  //         onClick={() => handleSelectItem(record)}
-  //       >
-  //         {
-  //           selectedItems.some((item) => item.locatorId === record.locatorId)
-  //             ? "Deselect"
-  //             : "Select"
-  //         }
-  //       </Button>
-  //     ),
-  //   },
-  // ];
-
   const fetchUserDetails = async () => {
     const userCd = localStorage.getItem('userCd');
     const password = localStorage.getItem('password');
@@ -640,23 +393,6 @@ const IssueNote = () => {
       const { organizationDetails, userDetails, locationDetails } = responseData;
       // Get current date
       const currentDate = dayjs();
-      // Update form data with fetched values
-      // setFormData({
-      //   crRegionalCenterCd: organizationDetails.id,
-      //   crRegionalCenterName: organizationDetails.organizationName,
-      //   crAddress: organizationDetails.locationAddr,
-      //   crZipcode: locationDetails.zipcode,
-      //   genName: userDetails.firstName,
-      //   userId: "string",
-      //   issueNoteNo: "string",
-      //   genDate: currentDate.format(dateFormat),
-      //   issueDate: currentDate.format(dateFormat),
-      //   approvedDate: currentDate.format(dateFormat),
-      //   issueNoteDt: currentDate.format(dateFormat),
-      //   demandNoteDt: currentDate.format(dateFormat),
-      // }
-      // );
-
       setFormData(prev=>{
         return{
           ...prev,
@@ -671,7 +407,7 @@ const IssueNote = () => {
           issueDate: currentDate.format(dateFormat),
           approvedDate: currentDate.format(dateFormat),
           issueNoteDt: currentDate.format(dateFormat),
-          demandNoteDt: currentDate.format(dateFormat),
+          demandNoteDt: currentDate.format(dateFormat)
         }
       })
     } catch (error) {

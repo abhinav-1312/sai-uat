@@ -7,6 +7,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+*{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -18,6 +24,11 @@ code {
 
 .print-agreement {
   margin: 40px;
+}
+
+.ant-table-thead th{
+  background-color: #003566 !important;
+  color: white !important;
 }
 
 /* @media print { */

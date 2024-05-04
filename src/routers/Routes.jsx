@@ -28,6 +28,7 @@ import Itemdemandsearch from "../components/Itemdemandsearch";
 import OHQ from "../pages/ohq/ohq";
 import TransactionSummary from "../pages/transactionSummary/TransactionSummary";
 import TransactionDetail from "../pages/transactionSummary/TransactionDetail";
+import StockLedger from "../pages/stockLedger/StockLedger";
 
 const RoutesComponent = () => {
   const userRole = localStorage.getItem("userRoles");
@@ -40,6 +41,7 @@ const RoutesComponent = () => {
       <Route path="/ohq" element={<OHQ />} />
       <Route path="/trnsummary" element={<TransactionSummary />} />
       <Route path="/trnsummary/:trnno" element={<TransactionDetail />} />
+      <Route path="/stockLedger" element={<StockLedger />} />
       <Route path="/locator" element={<Locator />} />
       <Route path="/department" element={<DepartmentPage />} />
       <Route path="/user" element={<User />} />
@@ -71,6 +73,7 @@ const RoutesComponent = () => {
       <Route path="/ohq" element={<OHQ />} />
       <Route path="/trnsummary" element={<TransactionSummary />} />
       <Route path="/trnsummary/:trnno" element={<TransactionDetail />} />
+      <Route path="/stockLedger" element={<StockLedger />} />
       <Route path="/department" element={<DepartmentPage />} />
       <Route path="/employee" element={<Employee />} />
       <Route path="/tax" element={<Tax />} />

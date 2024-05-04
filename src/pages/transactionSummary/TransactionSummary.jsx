@@ -62,7 +62,6 @@ const TransactionSummary = () => {
   };
 
   const handlePrintClick = (trnNo) => {
-    console.log("View button called: ", trnNo);
   };
 
   const trnSumColumn = trnSummaryColumn(handleViewClick, handlePrintClick);
@@ -93,7 +92,6 @@ const TransactionSummary = () => {
     }
   };
 
-  console.log("Show txn: ", showTxn);
 
   const [itemData, setItemData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -126,7 +124,6 @@ const TransactionSummary = () => {
       if (writingTxnType) {
         delete formDataCopy.itemCode;
       }
-      console.log("Form data copy: ", formDataCopy);
 
       const { data } = await axios.post(
         "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/txns/getTxnSummary",
@@ -134,7 +131,6 @@ const TransactionSummary = () => {
         apiHeader("POST", token)
       );
       const { responseData } = data;
-      console.log("resposnedata: ", responseData);
       setFilteredData([...responseData]);
     } catch (error) {
       message.error("Some error occured. Please try again.");
