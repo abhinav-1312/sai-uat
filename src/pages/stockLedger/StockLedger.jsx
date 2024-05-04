@@ -95,12 +95,12 @@ const StockLedger = () => {
       dataIndex: "processStage",
     },
     {
-      title: "Location ID",
+      title: "Location Description",
       dataIndex: "locationId",
       render: (id) => location[id]
     },
     {
-      title: "Locator ID",
+      title: "Locator Description",
       dataIndex: "locatorId",
       render: (id) => locator[id]
     },
