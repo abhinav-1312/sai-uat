@@ -181,6 +181,11 @@ const StockLedger = () => {
             <Select
               value={filterOption.itemCode}
               onChange={(value) => handleFormValueChange("itemCode", value)}
+              showSearch
+          optionFilterProp="children"
+          filterOption={(input, option) =>
+            option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
             >
               {itemData.map((item) => {
                 return (
