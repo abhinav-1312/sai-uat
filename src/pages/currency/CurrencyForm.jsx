@@ -16,7 +16,7 @@ const CurrencyForm = ({ onSubmit, initialValues }) => {
     <Form form={form} onFinish={onFinish} initialValues={initialValues} layout="vertical">
       <Row gutter={16}>
         <Col span={8}>
-          <Form.Item name="currencyCode" label="Currency Code" rules={[{ required: true, message: 'Please enter Currency Code' }]}>
+          <Form.Item name="currencyCode" label="Currency Code" rules={[{ required: true, message: 'Please enter Currency Code' }]} >
             <Input />
           </Form.Item>
         </Col>

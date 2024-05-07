@@ -14,7 +14,7 @@ const StockLedger = () => {
   const token = localStorage.getItem("token");
 
   const [filterOption, setFilterOption] = useState({
-    fromData: null,
+    fromDate: null,
     toDate: null,
     itemCode: null,
   });
@@ -26,6 +26,7 @@ const StockLedger = () => {
   const [location, setLocation] = useState([])
 
   const populateItemData = async () => {
+
     const { data } = await axios.get(
       "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMaster",
       apiHeader("GET", token)
@@ -144,16 +145,26 @@ const StockLedger = () => {
   }
 
   const handleSearch = async () => {
+    if(filterOption.itemCode === null || filterOption.fromDate === null || filterOption.toDate === null){
+      alert("Please enter all the fields.")
+      return
+    }
     const url =
       "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/txns/getStockLedger";
-    const { data } = await axios.post(
-      url,
-      filterOption,
-      apiHeader("POST", token)
-    );
-    const { responseData } = data;
-    console.log("resposnedaata: ", responseData);
-    setLedger(responseData);
+    try{
+
+      const { data } = await axios.post(
+        url,
+        filterOption,
+        apiHeader("POST", token)
+      );
+      const { responseData } = data;
+      console.log("resposnedaata: ", responseData);
+      setLedger(responseData);
+    }catch(error){
+      console.log("Error: ", error)
+      alert("Error occured while fetching stock ledger. Please try again.")
+    }
   };
 
   return (
@@ -175,7 +186,7 @@ const StockLedger = () => {
             gap: "0rem 1rem",
           }}
         >
-          <Form.Item label="Item Description" style={{ gridColumn: "span 2" }}>
+          <Form.Item label="Item Description" style={{ gridColumn: "span 2" }} rules={[{ required: true, message: 'Please enter Item Code' }]} >
             <Select
               value={filterOption.itemCode}
               onChange={(value) => handleFormValueChange("itemCode", value)}
@@ -195,7 +206,7 @@ const StockLedger = () => {
             </Select>
           </Form.Item>
 
-          <Form.Item label="From Date" name="fromDate">
+          <Form.Item label="From Date" name="fromDate" rules={[{ required: true, message: 'Please enter start date' }]}>
             <DatePicker
               format={dateFormat}
               style={{ width: "100%" }}
