@@ -1,9 +1,114 @@
-import React from 'react'
-import { consumerDetails, itemDetails, orgConsignorDetails, supplierDetails } from './../CommonColumns'
+import React, { useEffect, useState } from 'react'
+// import { consumerDetails, itemDetails, orgConsignorDetails, supplierDetails } from './../CommonColumns'
 import DetailData from './DetailData'
-import { convertEpochToDateString } from '../../../utils/Functions'
+import { apiHeader, convertArrayToObject, convertEpochToDateString } from '../../../utils/Functions'
+import axios from 'axios'
 
 const GrnTable = ({type, data, itemList}) => {
+    const token = localStorage.getItem("token")
+    const [uomObj, setUomObj] = useState({})
+
+    const fetchUom = async () => {
+        // console.log("Fetch uom called")
+        const uomMasterUrl =
+            "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster";
+    
+        try{
+            const {data} = await axios.get(uomMasterUrl, apiHeader("GET", token))
+            const {responseData} = data
+            // console.log("Response data: ", responseData)
+            
+            const uomMod =  convertArrayToObject(responseData, "id", "uomName")
+
+            setUomObj({...uomMod})
+    
+        }
+        catch(error){
+            console.log("Error")
+        }
+    }
+
+    useEffect(()=>{
+        fetchUom()
+    }, [])
+    const orgConsignorDetails = [
+        {
+            title: "Consignor Regional Center Code",
+            dataIndex: "crRegionalCenterCd"
+        },
+        {
+            title: "Consignor Regional Center Name",
+            dataIndex: "crRegionalCenterName"
+        },
+        {
+            title: "Consignor Address",
+            dataIndex: "crAddress"
+        },
+        {
+            crZipcode: "Consignor Zipcode",
+            dataIndex: "crZipcode"
+        }
+    ]
+    const orgConsigneeDetails = [
+        {
+            title: "Consignee Regional Center Code",
+            dataIndex: "ceRegionalCenterCd"
+        },
+        {
+            title: "Consignee Regional Center Name",
+            dataIndex: "ceRegionalCenterName"
+        },
+        {
+            title: "Consignee Address",
+            dataIndex: "ceAddress"
+        },
+        {
+            title: "Consignee Zipcode",
+            dataIndex: "ceZipcode"
+        }
+    ]
+    
+    const consumerDetails = [
+        {
+            title: "Consumer Name",
+            dataIndex: "consumerName"
+        },
+        {
+            title: "Consumer Name",
+            dataIndex: "address"
+        }
+    ]
+    
+    const itemDetails = [
+        {
+            title: "Item Code",
+            dataIndex: "itemCode"
+        },
+        {
+            title: "Item Description",
+            dataIndex: "itemDesc"
+        },
+        {
+            title: "Uom Description",
+            dataIndex: "uom",
+            render: (uom) => uomObj[parseInt(uom)]
+        },
+    ]  
+    
+    const supplierDetails = [
+        {
+            title: "Supplier Code",
+            dataIndex: "supplierCd" || "supplierCode"
+        },
+        {
+            title: "Supplier Name",
+            dataIndex: "supplierName"
+        },
+        {
+            title: "Supplier Address",
+            dataIndex: "crAddress"
+        }
+    ]
     const poExtraColumns = [
         {
             title: "Acceptance Note No.",
