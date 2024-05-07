@@ -215,8 +215,8 @@ const OutwardGatePass = () => {
       const currentDate = dayjs();
       // Update form data with fetched values
       setFormData({
-        genName: userDetails.firstName,
-        userId: "string",
+        genName: userDetails.firstName + " " + userDetails.lastName,
+        userId: userCd,
         genDate: currentDate.format(dateFormat),
         issueDate: currentDate.format(dateFormat),
         approvedDate: currentDate.format(dateFormat),

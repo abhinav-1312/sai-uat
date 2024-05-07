@@ -10,7 +10,6 @@ export const handleSearch = (searchText, itemData, setHook, setSearch=null) => {
   const filtered = itemData.filter((parentObject) =>
     recursiveSearch(parentObject, searchText)
   );
-  console.log("FILTEREDDDD: ", filtered)
   setHook([...filtered]);
 };
 
@@ -211,7 +210,6 @@ export const convertArrayToObject = (array, _makeKey, valueKey ) => {
       const locatorObj = convertArrayToObject(locatorMasterData, "id", "locatorDesc")
       setUomHook({ ...uomObject });
       setLocatorHook({...locatorObj})
-      // return {uomObject, locatorObj}
     } catch (error) {
       console.log("Error fetching Uom master details.", error);
     }
@@ -237,4 +235,11 @@ export const convertArrayToObject = (array, _makeKey, valueKey ) => {
     // Return the date string in DD/MM/YYYY format
     return `${day}/${month}/${year}`;
   }
+
   
+  export const generateColumn = (columnArray) => {
+    return columnArray.map(column=>({
+      title: column.title,
+      dataIndex: column.dataIndex
+    }))
+  }

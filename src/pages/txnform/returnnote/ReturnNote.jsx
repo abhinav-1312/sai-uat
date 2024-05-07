@@ -169,8 +169,8 @@ const RetunNote = () => {
         // regionalCenterName: organizationDetails.location,
         // address: organizationDetails.locationAddr,
         // zipcode: "131021",
-        genName: userDetails.firstName,
-        userId: "string",
+        genName: userDetails.firstName + " " + userDetails.lastName,
+        userId: userCd,
         genDate: currentDate.format(dateFormat),
         issueDate: currentDate.format(dateFormat),
         approvedDate: currentDate.format(dateFormat),
@@ -191,37 +191,80 @@ const RetunNote = () => {
       }, apiHeader("POST", token));
       const responseData = response.data.responseData;
       const { processData, itemList } = responseData;
-      setFormData((prevFormData) => ({
-        ...prevFormData,
 
-         regionalCenterCd: processData?.crRegionalCenterCd,
-        regionalCenterName: processData?.crRegionalCenterName,
-        address: processData?.crAddress,
-        zipcode: processData?.crZipcode,
+      if(processData !== null){
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+  
+           regionalCenterCd: processData?.crRegionalCenterCd,
+          regionalCenterName: processData?.crRegionalCenterName,
+          address: processData?.crAddress,
+          zipcode: processData?.crZipcode,
+  
+          processId: processData?.processId,
+          issueNoteDt: processData?.issueDate,
+          consumerName: processData?.consumerName,
+          contactNo: processData?.contactNo,
+  
+          termsCondition: processData?.termsCondition,
+          note: processData?.note,
+  
+          items: itemList.map((item) => ({
+            srNo: item?.sNo,
+            id: item?.id || "Null",
+            itemId: item?.itemId,
+            itemCode: item?.itemCode,
+            itemDesc: item?.itemDesc,
+            uom: parseInt(item?.uom),
+            quantity: item?.quantity,
+            noOfDays: item?.requiredDays,
+            remarks: item?.remarks,
+            conditionOfGoods: item?.conditionOfGoods,
+            budgetHeadProcurement: item?.budgetHeadProcurement,
+            locatorId: item?.locatorId,
+          })),
+        }));
+      }
+      else{
+        const response = await axios.post(apiUrl, {
+          processId: value,
+          processStage: "ISN",
+        }, apiHeader("POST", token));
+        const responseData = response.data.responseData;
+        const { processData, itemList } = responseData;
 
-        processId: processData?.processId,
-        issueNoteDt: processData.issueDate,
-        consumerName: processData?.consumerName,
-        contactNo: processData?.contactNo,
-
-        termsCondition: processData?.termsCondition,
-        note: processData?.note,
-
-        items: itemList.map((item) => ({
-          srNo: item?.sNo,
-          id: item?.id || "Null",
-          itemId: item?.itemId,
-          itemCode: item?.itemCode,
-          itemDesc: item?.itemDesc,
-          uom: parseInt(item?.uom),
-          quantity: item?.quantity,
-          noOfDays: item?.requiredDays,
-          remarks: item?.remarks,
-          conditionOfGoods: item?.conditionOfGoods,
-          budgetHeadProcurement: item?.budgetHeadProcurement,
-          locatorId: item?.locatorId,
-        })),
-      }));
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+  
+           regionalCenterCd: processData?.crRegionalCenterCd,
+          regionalCenterName: processData?.crRegionalCenterName,
+          address: processData?.crAddress,
+          zipcode: processData?.crZipcode,
+  
+          processId: processData?.processId,
+          issueNoteDt: processData?.issueDate,
+          consumerName: processData?.consumerName,
+          contactNo: processData?.contactNo,
+  
+          termsCondition: processData?.termsCondition,
+          note: processData?.note,
+  
+          items: itemList.map((item) => ({
+            srNo: item?.sNo,
+            id: item?.id || "Null",
+            itemId: item?.itemId,
+            itemCode: item?.itemCode,
+            itemDesc: item?.itemDesc,
+            uom: parseInt(item?.uom),
+            quantity: item?.quantity,
+            noOfDays: item?.requiredDays,
+            remarks: item?.remarks,
+            conditionOfGoods: item?.conditionOfGoods,
+            budgetHeadProcurement: item?.budgetHeadProcurement,
+            locatorId: item?.locatorId,
+          })),
+        }));
+      }
       // Handle response data as needed
     } catch (error) {
       console.error("Error fetching sub process details:", error);

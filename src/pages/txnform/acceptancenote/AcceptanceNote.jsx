@@ -133,7 +133,7 @@ const AcceptanceNote = () => {
         ceRegionalCenterName: organizationDetails.organizationName,
         ceAddress: organizationDetails.locationAddr,
         ceZipcode: locationDetails.zipcode,
-        genName: userDetails.firstName,
+        genName: userDetails.firstName + " " + userDetails.lastName,
         userId: userCd,
         genDate: currentDate.format(dateFormat),
         issueDate: currentDate.format(dateFormat),
@@ -203,6 +203,8 @@ const AcceptanceNote = () => {
       // Handle error
     }
   };
+
+  console.log("FOrmdata: ", formData)
 
   const removeItem = (index) => {
     setFormData((prevValues) => {

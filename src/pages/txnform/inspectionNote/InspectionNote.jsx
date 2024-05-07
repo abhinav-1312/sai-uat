@@ -9,15 +9,13 @@ import {
   Row,
   Col,
   Typography,
-  AutoComplete,
   Modal,
   message,
 } from "antd";
-import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
+import { MinusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
 import { apiHeader } from "../../../utils/Functions";
-
 import FormInputItem from "../../../components/FormInputItem";
 import FormDatePickerItem from "../../../components/FormDatePickerItem";
 import { convertArrayToObject, printOrSaveAsPDF } from "../../../utils/Functions";
@@ -158,8 +156,8 @@ const InspectionNote = () => {
         ceRegionalCenterName: organizationDetails.organizationName,
         ceAddress: organizationDetails.locationAddr,
         ceZipcode: locationDetails.zipcode,
-        genName: userDetails.firstName,
-        userId: "string",
+        genName: userDetails.firstName + " " + userDetails.lastName,
+        userId: userCd,
         genDate: currentDate.format(dateFormat),
         issueDate: currentDate.format(dateFormat),
         approvedDate: currentDate.format(dateFormat),

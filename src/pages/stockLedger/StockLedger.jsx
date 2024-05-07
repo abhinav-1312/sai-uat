@@ -156,8 +156,6 @@ const StockLedger = () => {
     setLedger(responseData);
   };
 
-  console.log(";edger: ", ledger)
-
   return (
     <>
       <h1>Stock Ledger</h1>
@@ -298,7 +296,7 @@ const StockLedger = () => {
                   <ExportOutlined />
                 </span>
               </Button>
-              {csvData && <CSVLink data={csvData} filename={"table-data.csv"}>Download CSV</CSVLink>}
+              {csvData && <CSVLink data={csvData} filename={`StockLedger.csv`}>Download CSV</CSVLink>}
             </div>
           </div>
 

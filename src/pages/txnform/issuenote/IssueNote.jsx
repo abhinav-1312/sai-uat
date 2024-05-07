@@ -400,7 +400,7 @@ const IssueNote = () => {
           crRegionalCenterName: organizationDetails.organizationName,
           crAddress: organizationDetails.locationAddr,
           crZipcode: locationDetails.zipcode,
-          genName: userDetails.firstName,
+          genName: userDetails.firstName + " " + userDetails.lastName,
           userId: userCd,
           issueNoteNo: "string",
           genDate: currentDate.format(dateFormat),

@@ -163,7 +163,7 @@ const InsepctionReport = () => {
         ceRegionalCenterName: organizationDetails.organizationName,
         ceAddress: organizationDetails.locationAddr,
         ceZipcode: locationDetails.zipcode,
-        genName: userDetails.firstName,
+        genName: userDetails.firstName + " " + userDetails.lastName,
         userId: "string",
         genDate: currentDate.format(dateFormat),
         issueDate: currentDate.format(dateFormat),
@@ -212,6 +212,8 @@ const InsepctionReport = () => {
         modeOfDelivery: processData?.modeOfDelivery,
         challanNo: processData?.challanNo,
         dateOfDeliveryDate: processData?.dateOfDelivery,
+        note: processData?.note,
+        termsCondition: processData?.termsCondition,
 
         items: itemList.map((item) => ({
           srNo: item?.sNo,
@@ -494,9 +496,12 @@ const InsepctionReport = () => {
           </Col>
           <Col span={12}>
             <Form.Item label="NOTE" name="note">
-              <Input.TextArea
-                onChange={(e) => handleChange("note", e.target.value)}
-              />
+            <Input.TextArea
+                  value={formData.note}
+                  autoSize={{ minRows: 3, maxRows: 6 }}
+                  onChange={(e) => handleChange("note", e.target.value)}
+                />
+                <Input style={{ display: "none" }} />
             </Form.Item>
           </Col>
         </Row>

@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import DetailData from "./detailData/DetailData";
 import { apiHeader } from "../../utils/Functions";
+import AcceptanceNoteTable from "./detailData/AcceptanceNoteTable";
 
 const TransactionDetail = () => {
   const navigate = useNavigate();
@@ -54,6 +55,8 @@ const TransactionDetail = () => {
     setGrnData(grndata);
     setRejectData(rejectData);
   };
+
+  console.log("Accept data", acceptData?.data.type)
   useEffect(() => {
     populateData();
   }, []);
@@ -80,14 +83,26 @@ const TransactionDetail = () => {
         <h2>Acceptance Note</h2>
         {
           acceptData ? 
-          <DetailData processType='act' data = {acceptData?.data} itemList = {acceptData?.itemList} />
+          <AcceptanceNoteTable type = {acceptData?.data.type}  processType='act' data = {acceptData?.data} itemList = {acceptData?.itemList} />
           :
           "No data available."
         }
       </div>
       )}
 
-      { objectFromArr["GRN"] && <div>
+      {objectFromArr["GRN"] && (
+        <div>
+        <h2>Goods Receive Note</h2>
+        {
+          grnData ? 
+          <AcceptanceNoteTable type = {grnData?.data.type}  processType='grn' data = {grnData?.data} itemList = {grnData?.itemList} />
+          :
+          "No data available."
+        }
+      </div>
+      )}
+
+      {/* { objectFromArr["GRN"] && <div>
         <h2>Goods Receive Note</h2>
         {
           grnData ?
@@ -108,7 +123,7 @@ const TransactionDetail = () => {
       </div>}
 
       {objectFromArr["IR"] && <div>
-        <h2>Inspection Report Data</h2>
+        <h2>Material Inward Slip</h2>
         {
           inspectionReportData ?
           <DetailData processType={"ir"} data={inspectionReportData?.data} itemList={inspectionReportData?.itemList} /> 
@@ -152,6 +167,7 @@ const TransactionDetail = () => {
           <h2>Return Note</h2>
           {returnData ? (
             <DetailData
+              processType="rn"
               data={returnData?.data}
               itemList={returnData?.itemList}
             />
@@ -159,7 +175,7 @@ const TransactionDetail = () => {
             "No data available."
           )}
         </div>
-      )}
+      )} */}
     </div>
   );
 };
