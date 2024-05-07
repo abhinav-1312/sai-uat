@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-// import { consumerDetails, itemDetails, orgConsignorDetails, supplierDetails } from './../CommonColumns'
-import DetailData from './DetailData'
 import { apiHeader, convertArrayToObject, convertEpochToDateString } from '../../../utils/Functions'
 import axios from 'axios'
+import DetailData from './DetailData'
 
-const GrnTable = ({type, data, itemList}) => {
+const IgpTable = ({type, data, itemList}) => {
+
     const token = localStorage.getItem("token")
     const [uomObj, setUomObj] = useState({})
     const [locatorObj, setLocatorObj] = useState({})
@@ -132,7 +132,7 @@ const GrnTable = ({type, data, itemList}) => {
         },
         {
             title: "Noa No",
-            dataIndex: "noa"
+            dataIndex: "noaNo"
         },
         {
             title: "Noa Date",
@@ -147,18 +147,29 @@ const GrnTable = ({type, data, itemList}) => {
 
     const irpExtraColumn = [
         {
-            title: "Return Note No.",
+            title: "Outward Gate Pass No.",
             dataIndex: "processId"
-        }
+        },
+        ...orgConsignorDetails,
+        ...consumerDetails
+    ]
+
+    const interOrgExtraColumn = [
+        {
+            title: "Rejection Note No.",
+            dataIndex: "processId"
+        },
+        ...orgConsignorDetails,
+        ...orgConsigneeDetails
     ]
     const dataColumn = [
         {
-            title: "GRN Date",
-            dataIndex: "grnDate"
+            title: "Inward Gate Pass Date",
+            dataIndex: "gatePassDate"
         },
         {
-            title: "GRN No.",
-            dataIndex: "processId"
+            title: "Inward Gate Pass No.",
+            dataIndex: "gatePassNo"
         },
         {
             title: "Process Type",
@@ -173,14 +184,6 @@ const GrnTable = ({type, data, itemList}) => {
             dataIndex: "genDate"
         },
         {
-            title: "Verified By",
-            dataIndex: "issueName"
-        },
-        {
-            title: 'Verification Date',
-            dataIndex: "issueDate"
-        },
-        {
             title: "Terms and Condition",
             dataIndex: "termsCondition"
         },
@@ -193,12 +196,8 @@ const GrnTable = ({type, data, itemList}) => {
     const itemListColumn = [
         ...itemDetails,
         {
-            title: "Received Quantity",
+            title: "Quantity",
             dataIndex: "quantity"
-        },
-        {
-            title: "Budget Head Procurement",
-            dataIndex: "budgetHeadProcurement"
         },
         {
             title: "Remarks",
@@ -210,9 +209,12 @@ const GrnTable = ({type, data, itemList}) => {
             render : (id) => locatorObj[parseInt(id)]
         }
     ]
+
+
+
   return (
-    <DetailData dataColumn={type === "PO" ? [...dataColumn, ...supplierDetails, ...poExtraColumns, ...orgConsigneeDetails] :(type === "IRP" ? [...dataColumn, ...consumerDetails, irpExtraColumn, ...orgConsignorDetails] : [...dataColumn, ...orgConsignorDetails, ...orgConsigneeDetails] )} itemListColumn={itemListColumn} data={data} itemList={itemList}/>
+    <DetailData dataColumn={type === "PO" ? [...dataColumn, ...supplierDetails, ...poExtraColumns, ...orgConsigneeDetails] :(type === "IRP" ? [...dataColumn, irpExtraColumn] : [...dataColumn, ...interOrgExtraColumn] )} itemListColumn={itemListColumn} data={data} itemList={itemList}/>
   )
 }
 
-export default GrnTable
+export default IgpTable

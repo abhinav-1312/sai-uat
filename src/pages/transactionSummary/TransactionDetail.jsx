@@ -5,6 +5,8 @@ import axios from "axios";
 import DetailData from "./detailData/DetailData";
 import { apiHeader } from "../../utils/Functions";
 import AcceptanceNoteTable from "./detailData/AcceptanceNoteTable";
+import GrnTable from "./detailData/GrnTable";
+import IgpTable from "./detailData/IgpTable";
 
 const TransactionDetail = () => {
   const navigate = useNavigate();
@@ -56,7 +58,7 @@ const TransactionDetail = () => {
     setRejectData(rejectData);
   };
 
-  console.log("Accept data", acceptData?.data.type)
+  console.log("Accept data", acceptData?.data.type);
   useEffect(() => {
     populateData();
   }, []);
@@ -80,26 +82,66 @@ const TransactionDetail = () => {
 
       {objectFromArr["ACT"] && (
         <div>
-        <h2>Acceptance Note</h2>
-        {
-          acceptData ? 
-          <AcceptanceNoteTable type = {acceptData?.data.type}  processType='act' data = {acceptData?.data} itemList = {acceptData?.itemList} />
-          :
-          "No data available."
-        }
-      </div>
+          <h2>Acceptance Note</h2>
+          {acceptData ? (
+            <AcceptanceNoteTable
+              type={acceptData?.data.type}
+              processType="act"
+              data={acceptData?.data}
+              itemList={acceptData?.itemList}
+            />
+          ) : (
+            "No data available."
+          )}
+        </div>
       )}
 
       {objectFromArr["GRN"] && (
         <div>
-        <h2>Goods Receive Note</h2>
-        {
-          grnData ? 
-          <AcceptanceNoteTable type = {grnData?.data.type}  processType='grn' data = {grnData?.data} itemList = {grnData?.itemList} />
-          :
-          "No data available."
-        }
-      </div>
+          <h2>Goods Receive Note</h2>
+          {grnData ? (
+            <GrnTable
+              type={grnData?.data.type}
+              processType="grn"
+              data={grnData?.data}
+              itemList={acceptData?.itemList}
+            />
+          ) : (
+            "No data available."
+          )}
+        </div>
+      )}
+
+      {objectFromArr["IGP"] && (
+        <div>
+          <h2>Inward Gate Pass</h2>
+          {igpData ? (
+            <IgpTable
+              type={igpData?.data.type}
+              processType="igp"
+              data={igpData?.data}
+              itemList={igpData?.itemList}
+            />
+          ) : (
+            "No data available."
+          )}
+        </div>
+      )}
+
+      {objectFromArr["IR"] && (
+        <div>
+          <h2>Material Inward Slip</h2>
+          {igpData ? (
+            <IgpTable
+              type={igpData?.data.type}
+              processType="igp"
+              data={igpData?.data}
+              itemList={igpData?.itemList}
+            />
+          ) : (
+            "No data available."
+          )}
+        </div>
       )}
 
       {/* { objectFromArr["GRN"] && <div>
