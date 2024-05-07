@@ -1,5 +1,5 @@
 import React from 'react'
-import { consumerDetails, itemDetails, orgConsignorDetails, supplierDetails } from '../CommonColumns'
+import { consumerDetails, itemDetails, orgConsignorDetails, supplierDetails } from './../CommonColumns'
 import DetailData from './DetailData'
 import { convertEpochToDateString } from '../../../utils/Functions'
 
