@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form, Input } from "antd";
+import { Button } from "antd";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import DetailData from "./detailData/DetailData";
 import { apiHeader } from "../../utils/Functions";
 import AcceptanceNoteTable from "./detailData/AcceptanceNoteTable";
 import GrnTable from "./detailData/GrnTable";
 import IgpTable from "./detailData/IgpTable";
+import MisTable from "./detailData/MisTable";
+import RejNoteTable from "./detailData/RejNoteTable";
+import OgpTable from "./detailData/OgpTable";
+import IsnTable from "./detailData/IsnTable";
+import ReturnTable from "./detailData/ReturnTable";
 
 const TransactionDetail = () => {
   const navigate = useNavigate();
@@ -58,7 +62,6 @@ const TransactionDetail = () => {
     setRejectData(rejectData);
   };
 
-  console.log("Accept data", acceptData?.data.type);
   useEffect(() => {
     populateData();
   }, []);
@@ -104,7 +107,7 @@ const TransactionDetail = () => {
               type={grnData?.data.type}
               processType="grn"
               data={grnData?.data}
-              itemList={acceptData?.itemList}
+              itemList={grnData?.itemList}
             />
           ) : (
             "No data available."
@@ -131,12 +134,75 @@ const TransactionDetail = () => {
       {objectFromArr["IR"] && (
         <div>
           <h2>Material Inward Slip</h2>
-          {igpData ? (
-            <IgpTable
-              type={igpData?.data.type}
+          {inspectionReportData ? (
+            <MisTable
+              type={inspectionReportData?.data?.type }
               processType="igp"
-              data={igpData?.data}
-              itemList={igpData?.itemList}
+              data={inspectionReportData?.data}
+              itemList={inspectionReportData?.itemList}
+            />
+          ) : (
+            "No data available."
+          )}
+        </div>
+      )}
+
+      {objectFromArr["REJ"] && (
+        <div>
+          <h2>Rejection Note</h2>
+          {rejectData ? (
+            <RejNoteTable
+              type={rejectData?.data?.type }
+              processType="rej"
+              data={rejectData?.data}
+              itemList={rejectData?.itemList}
+            />
+          ) : (
+            "No data available."
+          )}
+        </div>
+      )}
+
+      {objectFromArr["OGP"] && (
+        <div>
+          <h2>Outward Gate Pass</h2>
+          {ogpData ? (
+            <OgpTable
+              type={ogpData?.data?.type }
+              processType="ogp"
+              data={ogpData?.data}
+              itemList={ogpData?.itemList}
+            />
+          ) : (
+            "No data available."
+          )}
+        </div>
+      )}
+
+      {objectFromArr["ISN"] && (
+        <div>
+          <h2>Issue Note</h2>
+          {isnData ? (
+            <IsnTable
+              type={isnData?.data?.type }
+              processType="isn"
+              data={isnData?.data}
+              itemList={isnData?.itemList}
+            />
+          ) : (
+            "No data available."
+          )}
+        </div>
+      )}
+      {objectFromArr["RN"] && (
+        <div>
+          <h2>Return Note</h2>
+          {returnData ? (
+            <ReturnTable
+              type={returnData?.data?.type }
+              processType="rn"
+              data={returnData?.data}
+              itemList={returnData?.itemList}
             />
           ) : (
             "No data available."

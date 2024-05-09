@@ -84,8 +84,8 @@ const IgpTable = ({type, data, itemList}) => {
             dataIndex: "consumerName"
         },
         {
-            title: "Consumer Name",
-            dataIndex: "address"
+            title: "Contact No.",
+            dataIndex: "contactNo"
         }
     ]
     
