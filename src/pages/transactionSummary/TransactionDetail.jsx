@@ -53,7 +53,7 @@ const TransactionDetail = () => {
       ogpdata,
       rejectData,
       rndata,
-      inspectionNewRptData
+      inspectionNewRptData,
     } = responseData;
     setAcceptData(acceptData);
     setReturnData(rndata);
@@ -63,7 +63,7 @@ const TransactionDetail = () => {
     setOgpData(ogpdata);
     setGrnData(grndata);
     setRejectData(rejectData);
-    setInspectionNoteData(inspectionNewRptData)
+    setInspectionNoteData(inspectionNewRptData);
   };
 
   useEffect(() => {
@@ -87,15 +87,63 @@ const TransactionDetail = () => {
         <h1>Transaction No: {trnNo}</h1>
       </div>
 
-      {objectFromArr["ACT"] && (
+      {objectFromArr["ISN"] && (
         <div>
-          <h2>Acceptance Note</h2>
-          {acceptData?.data ? (
-            <AcceptanceNoteTable
-              type={acceptData?.data?.type}
-              processType="act"
-              data={acceptData?.data}
-              itemList={acceptData?.itemList}
+          <h2>Issue Note</h2>
+          {isnData?.data ? (
+            <IsnTable
+              type={isnData?.data?.type}
+              processType="isn"
+              data={isnData?.data}
+              itemList={isnData?.itemList}
+            />
+          ) : (
+            "No data available."
+          )}
+        </div>
+      )}
+
+      {objectFromArr["OGP"] && (
+        <div>
+          <h2>Outward Gate Pass</h2>
+          {ogpData?.data ? (
+            <OgpTable
+              type={ogpData?.data?.type}
+              processType="ogp"
+              data={ogpData?.data}
+              itemList={ogpData?.itemList}
+            />
+          ) : (
+            "No data available."
+          )}
+        </div>
+      )}
+
+      {objectFromArr["IGP"] && (
+        <div>
+          <h2>Inward Gate Pass</h2>
+          {igpData?.data ? (
+            <IgpTable
+              type={igpData?.data.type}
+              processType="igp"
+              data={igpData?.data}
+              itemList={igpData?.itemList}
+            />
+          ) : (
+            "No data available."
+          )}
+        </div>
+      )}
+
+      {objectFromArr["RN"] && (
+        <div>
+          <h2>Return Note</h2>
+          {returnData?.data ? (
+            <ReturnTable
+              type={returnData?.data?.type}
+              processType="rn"
+              data={returnData?.data}
+              itemList={returnData?.itemList}
             />
           ) : (
             "No data available."
@@ -119,15 +167,31 @@ const TransactionDetail = () => {
         </div>
       )}
 
-      {objectFromArr["IGP"] && (
+      {objectFromArr["ACT"] && (
         <div>
-          <h2>Inward Gate Pass</h2>
-          {igpData?.data ? (
-            <IgpTable
-              type={igpData?.data.type }
-              processType="igp"
-              data={igpData?.data}
-              itemList={igpData?.itemList}
+          <h2>Acceptance Note</h2>
+          {acceptData?.data ? (
+            <AcceptanceNoteTable
+              type={acceptData?.data?.type}
+              processType="act"
+              data={acceptData?.data}
+              itemList={acceptData?.itemList}
+            />
+          ) : (
+            "No data available."
+          )}
+        </div>
+      )}
+
+      {objectFromArr["IR"] && (
+        <div>
+          <h2>Material Inward Slip</h2>
+          {misData?.data ? (
+            <MisTable
+              type={misData?.data?.type}
+              processType="ir"
+              data={misData?.data}
+              itemList={misData?.itemList}
             />
           ) : (
             "No data available."
@@ -140,7 +204,7 @@ const TransactionDetail = () => {
           <h2>Inspection Note</h2>
           {inspectionNoteData?.data ? (
             <InspectionNoteTable
-              type={inspectionNoteData?.data?.type }
+              type={inspectionNoteData?.data?.type}
               processType="irn"
               data={inspectionNoteData?.data}
               itemList={inspectionNoteData?.itemList}
@@ -156,7 +220,7 @@ const TransactionDetail = () => {
           <h2>Rejection Note</h2>
           {rejectData?.data ? (
             <RejNoteTable
-              type={rejectData?.data?.type }
+              type={rejectData?.data?.type}
               processType="rej"
               data={rejectData?.data}
               itemList={rejectData?.itemList}
@@ -166,150 +230,6 @@ const TransactionDetail = () => {
           )}
         </div>
       )}
-
-      {objectFromArr["OGP"] && (
-        <div>
-          <h2>Outward Gate Pass</h2>
-          {ogpData?.data ? (
-            <OgpTable
-              type={ogpData?.data?.type }
-              processType="ogp"
-              data={ogpData?.data}
-              itemList={ogpData?.itemList}
-            />
-          ) : (
-            "No data available."
-          )}
-        </div>
-      )}
-
-      {objectFromArr["ISN"] && (
-        <div>
-          <h2>Issue Note</h2>
-          {isnData?.data ? (
-            <IsnTable
-              type={isnData?.data?.type }
-              processType="isn"
-              data={isnData?.data}
-              itemList={isnData?.itemList}
-            />
-          ) : (
-            "No data available."
-          )}
-        </div>
-      )}
-
-      
-      {objectFromArr["RN"] && (
-        <div>
-          <h2>Return Note</h2>
-          {returnData?.data ? (
-            <ReturnTable
-              type={returnData?.data?.type }
-              processType="rn"
-              data={returnData?.data}
-              itemList={returnData?.itemList}
-            />
-          ) : (
-            "No data available."
-          )}
-        </div>
-      )}
-
-      
-      {objectFromArr["IR"] && (
-        <div>
-          <h2>Material Inward Slip</h2>
-          {misData?.data ? (
-            <MisTable
-              type={misData?.data?.type }
-              processType="ir"
-              data={misData?.data}
-              itemList={misData?.itemList}
-            />
-          ) : (
-            "No data available."
-          )}
-        </div>
-      )}
-
-
-      {/* ---------------- */}
-
-      {/* { objectFromArr["GRN"] && <div>
-        <h2>Goods Receive Note</h2>
-        {
-          grnData ?
-          <DetailData processType='grn' data = {grnData?.data} itemList = {grnData?.itemList} />
-          :
-          "No data available."
-        }
-      </div>}
-
-      {objectFromArr["IGP"] && <div>
-        <h2>Inward Gate Pass</h2>
-        {
-          igpData ?
-          <DetailData processType={"igp"} data={igpData?.data} itemList={igpData?.itemList} /> 
-          :
-          "No data available."
-        }
-      </div>}
-
-      {objectFromArr["IR"] && <div>
-        <h2>Material Inward Slip</h2>
-        {
-          inspectionReportData ?
-          <DetailData processType={"ir"} data={inspectionReportData?.data} itemList={inspectionReportData?.itemList} /> 
-          :
-          "No data available."
-        }
-      </div>}
-
-      {objectFromArr["ISN"] && <div>
-        <h2>Issue Note</h2>
-        {
-          isnData ?
-          <DetailData processType={"isn"} data={isnData?.data} itemList={isnData?.itemList} /> 
-          :
-          "No data available."
-        }
-      </div>
-}
-      {objectFromArr["OGP"] && <div>
-        <h2>Outward Gate Pass</h2>
-        {
-          ogpData ?
-          <DetailData processType="ogp" data={ogpData?.data} itemList={ogpData?.itemList} /> 
-          :
-          "No data available."
-        }
-      </div>}
-
-     { objectFromArr["REJ"] && <div>
-        <h2>Rejection Note</h2>
-        {
-          rejectData ?
-          <DetailData processType='rej' data={rejectData?.data} itemList={rejectData?.itemList} /> 
-          :
-          "No data available."
-        }
-      </div>}
-
-      {objectFromArr["RN"] && (
-        <div>
-          <h2>Return Note</h2>
-          {returnData ? (
-            <DetailData
-              processType="rn"
-              data={returnData?.data}
-              itemList={returnData?.itemList}
-            />
-          ) : (
-            "No data available."
-          )}
-        </div>
-      )} */}
     </div>
   );
 };
