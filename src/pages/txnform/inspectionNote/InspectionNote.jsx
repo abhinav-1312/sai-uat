@@ -519,8 +519,8 @@ const InspectionNote = () => {
               NAME & SIGNATURE :
               <Form>
                 <Input
-                  name="issueName"
-                  onChange={(e) => handleChange("issueName", e.target.value)}
+                  name="approvedName"
+                  onChange={(e) => handleChange("approvedName", e.target.value)}
                 />
               </Form>
             </div>
@@ -530,7 +530,7 @@ const InspectionNote = () => {
                 defaultValue={dayjs()}
                 format={dateFormat}
                 style={{ width: "58%" }}
-                name="issueDate"
+                name="approveDate"
                 onChange={(date, dateString) =>
                   handleChange("issueDate", dateString)
                 }

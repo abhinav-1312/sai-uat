@@ -41,7 +41,7 @@ export const orgConsignorDetails = [
         dataIndex: "crAddress"
     },
     {
-        crZipcode: "Consignor Zipcode",
+        title: "Consignor Zipcode",
         dataIndex: "crZipcode"
     }
 ]

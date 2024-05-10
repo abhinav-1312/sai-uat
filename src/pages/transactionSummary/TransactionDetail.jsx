@@ -6,11 +6,12 @@ import { apiHeader } from "../../utils/Functions";
 import AcceptanceNoteTable from "./detailData/AcceptanceNoteTable";
 import GrnTable from "./detailData/GrnTable";
 import IgpTable from "./detailData/IgpTable";
-import MisTable from "./detailData/MisTable";
+import InspectionNoteTable from "./detailData/InspectionNoteTable";
 import RejNoteTable from "./detailData/RejNoteTable";
 import OgpTable from "./detailData/OgpTable";
 import IsnTable from "./detailData/IsnTable";
 import ReturnTable from "./detailData/ReturnTable";
+import MisTable from "./detailData/MisTable";
 
 const TransactionDetail = () => {
   const navigate = useNavigate();
@@ -27,7 +28,8 @@ const TransactionDetail = () => {
   const [acceptData, setAcceptData] = useState(null);
   const [returnData, setReturnData] = useState(null);
   const [igpData, setIgpData] = useState(null);
-  const [inspectionReportData, setInspectionReportData] = useState(null);
+  const [misData, setMisData] = useState(null);
+  const [inspectionNoteData, setInspectionNoteData] = useState(null);
   const [isnData, setIsnData] = useState(null);
   const [grnData, setGrnData] = useState(null);
   const [ogpData, setOgpData] = useState(null);
@@ -51,15 +53,17 @@ const TransactionDetail = () => {
       ogpdata,
       rejectData,
       rndata,
+      inspectionNewRptData
     } = responseData;
     setAcceptData(acceptData);
     setReturnData(rndata);
     setIgpData(igpdata);
-    setInspectionReportData(inspectionRptData);
+    setMisData(inspectionRptData);
     setIsnData(isndata);
     setOgpData(ogpdata);
     setGrnData(grndata);
     setRejectData(rejectData);
+    setInspectionNoteData(inspectionNewRptData)
   };
 
   useEffect(() => {
@@ -120,7 +124,7 @@ const TransactionDetail = () => {
           <h2>Inward Gate Pass</h2>
           {igpData ? (
             <IgpTable
-              type={igpData?.data.type}
+              type={igpData?.data.type }
               processType="igp"
               data={igpData?.data}
               itemList={igpData?.itemList}
@@ -131,15 +135,15 @@ const TransactionDetail = () => {
         </div>
       )}
 
-      {objectFromArr["IR"] && (
+      {objectFromArr["IRN"] && (
         <div>
-          <h2>Material Inward Slip</h2>
-          {inspectionReportData ? (
-            <MisTable
-              type={inspectionReportData?.data?.type }
-              processType="igp"
-              data={inspectionReportData?.data}
-              itemList={inspectionReportData?.itemList}
+          <h2>Inspection Note</h2>
+          {inspectionNoteData ? (
+            <InspectionNoteTable
+              type={inspectionNoteData?.data?.type }
+              processType="irn"
+              data={inspectionNoteData?.data}
+              itemList={inspectionNoteData?.itemList}
             />
           ) : (
             "No data available."
@@ -203,6 +207,21 @@ const TransactionDetail = () => {
               processType="rn"
               data={returnData?.data}
               itemList={returnData?.itemList}
+            />
+          ) : (
+            "No data available."
+          )}
+        </div>
+      )}
+      {objectFromArr["IR"] && (
+        <div>
+          <h2>Material Inward Slip</h2>
+          {misData ? (
+            <MisTable
+              type={misData?.data?.type }
+              processType="ir"
+              data={misData?.data}
+              itemList={misData?.itemList}
             />
           ) : (
             "No data available."

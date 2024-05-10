@@ -77,7 +77,7 @@ const RejNoteTable = ({data, type, itemList}) => {
             dataIndex: "crAddress"
         },
         {
-            crZipcode: "Consignor Zipcode",
+            title: "Consignor Zipcode",
             dataIndex: "crZipcode"
         }
     ]

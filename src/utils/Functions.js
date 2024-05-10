@@ -215,6 +215,29 @@ export const convertArrayToObject = (array, _makeKey, valueKey ) => {
     }
   };
 
+  export const daysDifference = (issueDate, receivingDate) => {
+    const issueDtparts = issueDate.split("/");
+    const receivingDtparts = issueDate.split("/");
+    const issueDay = parseInt(issueDtparts[0], 10);
+    const issueMonth = parseInt(issueDtparts[1], 10);
+    const issueYear = parseInt(issueDtparts[2], 10);
+    const receivingDay = parseInt(issueDtparts[0], 10);
+    const receivingMonth = parseInt(issueDtparts[1], 10);
+    const receivingYear = parseInt(issueDtparts[2], 10);
+    const issueDateMod = new Date(issueYear, issueMonth - 1, issueDay); // JavaScript months are 0-indexed
+    const receivingDateMod = new Date(receivingYear, receivingMonth - 1, receivingDay); // JavaScript months are 0-indexed
+    // constGet the current date
+    // const currentDate = new Date();
+
+    // constCalculate the difference in milliseconds
+    const differenceMs = Math.abs(receivingDateMod.getTime() - issueDateMod.getTime());
+
+    // constConvert the difference to days
+    const differenceDays = Math.floor(differenceMs / (1000 * 60 * 60 * 24));
+    // const difference_days = 1
+    return differenceDays;
+  };
+
   export const convertEpochToDateString = (epochTime) => {
     // Convert epoch time to milliseconds
     let date = new Date(epochTime);

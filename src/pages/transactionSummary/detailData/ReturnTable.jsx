@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import DetailData from './DetailData'
 import axios from 'axios'
-import { apiHeader, convertArrayToObject } from '../../../utils/Functions'
+import { apiHeader, convertArrayToObject, daysDifference } from '../../../utils/Functions'
 
 const ReturnTable = ({data, itemList}) => {
 
@@ -167,7 +167,8 @@ const itemDetails = [
         },
         {
             title: "Returned After No. Of Days",
-            dataIndex: "requiredDays"
+            dataIndex: "requiredDays",
+            render: (_, record) => daysDifference(data.issueNoteDt, data.genDate)
         },
         {
             title: "Condition Of Goods",

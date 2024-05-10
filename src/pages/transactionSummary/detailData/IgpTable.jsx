@@ -55,7 +55,7 @@ const IgpTable = ({type, data, itemList}) => {
             dataIndex: "crAddress"
         },
         {
-            crZipcode: "Consignor Zipcode",
+            title: "Consignor Zipcode",
             dataIndex: "crZipcode"
         }
     ]
@@ -75,6 +75,18 @@ const IgpTable = ({type, data, itemList}) => {
         {
             title: "Consignee Zipcode",
             dataIndex: "ceZipcode"
+        }
+    ]
+    const irpItemListExtra = [
+        {
+            title: "Locator Description",
+            dataIndex: "locatorId",
+            render: (id) => locatorObj[parseInt(id)]
+        },
+        {
+            title: "Required For No Of Days",
+            dataIndex: "requiredDays",
+
         }
     ]
     
@@ -122,33 +134,40 @@ const IgpTable = ({type, data, itemList}) => {
     ]
     const poExtraColumns = [
         {
-            title: "Acceptance Note No.",
-            dataIndex: "processId"
-        },
-        {
-            title: "Acceptance Note Date",
-            dataIndex: "issueDate"
-
-        },
-        {
             title: "Noa No",
             dataIndex: "noaNo"
         },
         {
             title: "Noa Date",
             dataIndex: "noaDate",
-            render: (date) => convertEpochToDateString(date)
         },
         {
             title: "Date of Delivery",
             dataIndex: "dateOfDelivery",
         },
+        {
+            title: "Mode Of Delivery",
+            dataIndex: "modeOfDelivery",
+        },
+        {
+            title: "Challan / Invoice No.",
+            dataIndex: "challanNo",
+        },
+        ...orgConsigneeDetails, ...supplierDetails
     ]
 
     const irpExtraColumn = [
         {
             title: "Outward Gate Pass No.",
             dataIndex: "processId"
+        },
+        {
+            title: "Received By",
+            dataIndex: "issueName"
+        },
+        {
+            title: "Receiving Date",
+            dataIndex: "issueDate"
         },
         ...orgConsignorDetails,
         ...consumerDetails
@@ -159,17 +178,26 @@ const IgpTable = ({type, data, itemList}) => {
             title: "Rejection Note No.",
             dataIndex: "processId"
         },
+        {
+            title: "Acceptance Note No.",
+            dataIndex: "processId"
+        },
+        {
+            title: "Acceptance Note Date",
+            dataIndex: "issueDate"
+
+        },
         ...orgConsignorDetails,
         ...orgConsigneeDetails
     ]
     const dataColumn = [
         {
-            title: "Inward Gate Pass Date",
-            dataIndex: "gatePassDate"
+            title: "Inward Gate Pass No.",
+            dataIndex: "processId"
         },
         {
-            title: "Inward Gate Pass No.",
-            dataIndex: "gatePassNo"
+            title: "Inward Gate Pass Date",
+            dataIndex: "gatePassDate"
         },
         {
             title: "Process Type",
@@ -213,7 +241,7 @@ const IgpTable = ({type, data, itemList}) => {
 
 
   return (
-    <DetailData dataColumn={type === "PO" ? [...dataColumn, ...supplierDetails, ...poExtraColumns, ...orgConsigneeDetails] :(type === "IRP" ? [...dataColumn, irpExtraColumn] : [...dataColumn, ...interOrgExtraColumn] )} itemListColumn={itemListColumn} data={data} itemList={itemList}/>
+    <DetailData dataColumn={type === "PO" ? [...dataColumn, ...poExtraColumns] :(type === "IOP" ? [...dataColumn, ...interOrgExtraColumn] : [...dataColumn, ...irpExtraColumn] )} itemListColumn={type === "PO" ? itemListColumn : (type === "IOP" ? itemListColumn : [...itemListColumn, ...irpItemListExtra])} data={data} itemList={itemList}/>
   )
 }
 

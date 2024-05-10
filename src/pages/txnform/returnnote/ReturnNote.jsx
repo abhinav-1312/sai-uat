@@ -16,7 +16,7 @@ import {
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
-import { apiHeader, printOrSaveAsPDF } from "../../../utils/Functions";
+import { apiHeader, daysDifference, printOrSaveAsPDF } from "../../../utils/Functions";
 import FormInputItem from "../../../components/FormInputItem";
 const dateFormat = "DD/MM/YYYY";
 // import {FormInputItem} from "../../../components/FormInputItem";
@@ -352,24 +352,24 @@ const RetunNote = () => {
     setType(allValues.type);
   };
 
-  const daysDifference = (issueDate) => {
-    const parts = issueDate.split("/");
-    const day = parseInt(parts[0], 10);
-    const month = parseInt(parts[1], 10);
-    const year = parseInt(parts[2], 10);
-    const givenDate = new Date(year, month - 1, day); // JavaScript months are 0-indexed
+  // const daysDifference = (issueDate) => {
+  //   const parts = issueDate.split("/");
+  //   const day = parseInt(parts[0], 10);
+  //   const month = parseInt(parts[1], 10);
+  //   const year = parseInt(parts[2], 10);
+  //   const givenDate = new Date(year, month - 1, day); // JavaScript months are 0-indexed
 
-    // constGet the current date
-    const currentDate = new Date();
+  //   // constGet the current date
+  //   const currentDate = new Date();
 
-    // constCalculate the difference in milliseconds
-    const differenceMs = Math.abs(currentDate.getTime() - givenDate.getTime());
+  //   // constCalculate the difference in milliseconds
+  //   const differenceMs = Math.abs(currentDate.getTime() - givenDate.getTime());
 
-    // constConvert the difference to days
-    const differenceDays = Math.floor(differenceMs / (1000 * 60 * 60 * 24));
-    // const difference_days = 1
-    return differenceDays;
-  };
+  //   // constConvert the difference to days
+  //   const differenceDays = Math.floor(differenceMs / (1000 * 60 * 60 * 24));
+  //   // const difference_days = 1
+  //   return differenceDays;
+  // };
 
   // const findUomName = (uomId) => {
   //   const foundObj = uomMaster.find((obj) => uomId === obj.id);
@@ -570,7 +570,7 @@ const RetunNote = () => {
                         <Input
                           value={
                             formData.issueNoteDt !== undefined
-                              ? daysDifference(formData.issueNoteDt)
+                              ? daysDifference(formData.issueNoteDt, formData.returnNoteDt)
                               : ""
                           }
                           onChange={(e) =>

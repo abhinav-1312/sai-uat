@@ -55,7 +55,7 @@ const GrnTable = ({type, data, itemList}) => {
             dataIndex: "crAddress"
         },
         {
-            crZipcode: "Consignor Zipcode",
+            title: "Consignor Zipcode",
             dataIndex: "crZipcode"
         }
     ]
@@ -143,6 +143,8 @@ const GrnTable = ({type, data, itemList}) => {
             title: "Date of Delivery",
             dataIndex: "dateOfDelivery",
         },
+        ...orgConsigneeDetails,
+        ...supplierDetails
     ]
 
     const irpExtraColumn = [
@@ -211,7 +213,7 @@ const GrnTable = ({type, data, itemList}) => {
         }
     ]
   return (
-    <DetailData dataColumn={type === "PO" ? [...dataColumn, ...supplierDetails, ...poExtraColumns, ...orgConsigneeDetails] :(type === "IRP" ? [...dataColumn, ...consumerDetails, irpExtraColumn, ...orgConsignorDetails] : [...dataColumn, ...orgConsignorDetails, ...orgConsigneeDetails] )} itemListColumn={itemListColumn} data={data} itemList={itemList}/>
+    <DetailData dataColumn={type === "PO" ? [...dataColumn,...poExtraColumns, ] :(type === "IRP" ? [...dataColumn, ...consumerDetails, ...irpExtraColumn, ...orgConsignorDetails] : [...dataColumn, ...orgConsignorDetails, ...orgConsigneeDetails] )} itemListColumn={itemListColumn} data={data} itemList={itemList}/>
   )
 }
 

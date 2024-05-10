@@ -45,7 +45,7 @@ const AcceptanceNoteTable = ({type, data, itemList}) => {
             dataIndex: "crAddress"
         },
         {
-            crZipcode: "Consignor Zipcode",
+            title: "Consignor Zipcode",
             dataIndex: "crZipcode"
         }
     ]
@@ -119,6 +119,10 @@ const AcceptanceNoteTable = ({type, data, itemList}) => {
             dataIndex: "acptRejNoteDT"
         },
         {
+            title: "Process Type",
+            dataIndex: "type"
+        },
+        {
             title: "Generated Date",
             dataIndex: "genDate"
         },
@@ -127,22 +131,9 @@ const AcceptanceNoteTable = ({type, data, itemList}) => {
             dataIndex: "genName"
         },
         {
-            title: "Detail ID",
-            dataIndex: "id"
-        },
-        {
             title: "Process ID",
             dataIndex: "processId"
         },
-        {
-            title: "Process Type",
-            dataIndex: "type"
-        },
-        {
-            title: "Note Type",
-            dataIndex: "typeOfNote"
-        },
-
         ...orgConsigneeDetails,
 
         {

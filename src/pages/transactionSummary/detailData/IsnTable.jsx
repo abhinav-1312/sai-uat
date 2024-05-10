@@ -100,7 +100,7 @@ const itemDetails = [
     const dataColumns = [
         {
             title: "Issue Note No.",
-            dataIndex: "issueNoteNo"
+            dataIndex: "processId"
         },
         {
             title: "Issue Note Date",

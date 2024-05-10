@@ -1,36 +1,27 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { apiHeader, convertArrayToObject, convertEpochToDateString } from '../../../utils/Functions'
+import { apiHeader, convertArrayToObject, convertEpochToDateString, fetchUomLocatorMaster } from '../../../utils/Functions'
 import DetailData from './DetailData'
 
 
 const OgpTable = ({type, data, itemList}) => {
-    const token = localStorage.getItem("token")
     const [uomObj, setUomObj] = useState({})
-
-    const fetchUom = async () => {
-        // console.log("Fetch uom called")
-        const uomMasterUrl =
-            "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster";
-    
-        try{
-            const {data} = await axios.get(uomMasterUrl, apiHeader("GET", token))
-            const {responseData} = data
-            // console.log("Response data: ", responseData)
-            
-            const uomMod =  convertArrayToObject(responseData, "id", "uomName")
-
-            setUomObj({...uomMod})
-    
-        }
-        catch(error){
-            console.log("Error")
-        }
-    }
+    const [locatorObj, setLocatorObj] = useState({})
 
     useEffect(()=>{
-        fetchUom()
+        fetchUomLocatorMaster(setUomObj, setLocatorObj)
     }, [])
+
+    const consumerDetails = [
+        {
+            title: "Consumer Name",
+            dataIndex: "consumerName"
+        },
+        {
+            title: "Contact No",
+            dataIndex: "contactNo"
+        }
+    ]
 
     const itemDetails = [
         {
@@ -77,8 +68,21 @@ const OgpTable = ({type, data, itemList}) => {
             dataIndex: "crAddress"
         },
         {
-            crZipcode: "Consignor Zipcode",
+            title: "Consignor Zipcode",
             dataIndex: "crZipcode"
+        }
+    ]
+
+    const irpItemListExtra = [
+        {
+            title: "Locator Description",
+            dataIndex: "locatorId",
+            render: (id) => locatorObj[parseInt(id)]
+        },
+        {
+            title: "Required For No Of Days",
+            dataIndex: "requiredDays",
+
         }
     ]
     const orgConsigneeDetails = [
@@ -144,6 +148,9 @@ const OgpTable = ({type, data, itemList}) => {
             title: "Note",
             dataIndex: "note"
         },
+        ...orgConsignorDetails, 
+        ...consumerDetails
+        
     ]
 
     const poExtraColumns = [
@@ -172,7 +179,7 @@ const OgpTable = ({type, data, itemList}) => {
             title: "Challan/Invoice No.",
             dataIndex: "challanNo"
         },
-        ...orgConsigneeDetails,
+        ...orgConsignorDetails,
         ...supplierDetails
     ]
 
@@ -224,6 +231,7 @@ const OgpTable = ({type, data, itemList}) => {
             title: "Remarks",
             dataIndex: "remarks"
         },
+        ...irpItemListExtra
     ]
 
   return (

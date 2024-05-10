@@ -578,9 +578,9 @@ const InsepctionReport = () => {
                   NAME & SIGNATURE :
                   <Form>
                     <Input
-                      name="issueName"
+                      name="approvedName"
                       onChange={(e) =>
-                        handleChange("issueName", e.target.value)
+                        handleChange("approvedName", e.target.value)
                       }
                     />
                   </Form>
@@ -591,9 +591,9 @@ const InsepctionReport = () => {
                     defaultValue={dayjs()}
                     format={dateFormat}
                     style={{ width: "58%" }}
-                    name="issueDate"
+                    name="approvedDate"
                     onChange={(date, dateString) =>
-                      handleChange("issueDate", dateString)
+                      handleChange("approvedDate", dateString)
                     }
                   />
                 </div>
