@@ -90,9 +90,9 @@ const TransactionDetail = () => {
       {objectFromArr["ACT"] && (
         <div>
           <h2>Acceptance Note</h2>
-          {acceptData ? (
+          {acceptData?.data ? (
             <AcceptanceNoteTable
-              type={acceptData?.data.type}
+              type={acceptData?.data?.type}
               processType="act"
               data={acceptData?.data}
               itemList={acceptData?.itemList}
@@ -106,9 +106,9 @@ const TransactionDetail = () => {
       {objectFromArr["GRN"] && (
         <div>
           <h2>Goods Receive Note</h2>
-          {grnData ? (
+          {grnData?.data ? (
             <GrnTable
-              type={grnData?.data.type}
+              type={grnData?.data?.type}
               processType="grn"
               data={grnData?.data}
               itemList={grnData?.itemList}
@@ -122,7 +122,7 @@ const TransactionDetail = () => {
       {objectFromArr["IGP"] && (
         <div>
           <h2>Inward Gate Pass</h2>
-          {igpData ? (
+          {igpData?.data ? (
             <IgpTable
               type={igpData?.data.type }
               processType="igp"
@@ -138,7 +138,7 @@ const TransactionDetail = () => {
       {objectFromArr["IRN"] && (
         <div>
           <h2>Inspection Note</h2>
-          {inspectionNoteData ? (
+          {inspectionNoteData?.data ? (
             <InspectionNoteTable
               type={inspectionNoteData?.data?.type }
               processType="irn"
@@ -154,7 +154,7 @@ const TransactionDetail = () => {
       {objectFromArr["REJ"] && (
         <div>
           <h2>Rejection Note</h2>
-          {rejectData ? (
+          {rejectData?.data ? (
             <RejNoteTable
               type={rejectData?.data?.type }
               processType="rej"
@@ -170,7 +170,7 @@ const TransactionDetail = () => {
       {objectFromArr["OGP"] && (
         <div>
           <h2>Outward Gate Pass</h2>
-          {ogpData ? (
+          {ogpData?.data ? (
             <OgpTable
               type={ogpData?.data?.type }
               processType="ogp"
@@ -186,7 +186,7 @@ const TransactionDetail = () => {
       {objectFromArr["ISN"] && (
         <div>
           <h2>Issue Note</h2>
-          {isnData ? (
+          {isnData?.data ? (
             <IsnTable
               type={isnData?.data?.type }
               processType="isn"
@@ -198,10 +198,12 @@ const TransactionDetail = () => {
           )}
         </div>
       )}
+
+      
       {objectFromArr["RN"] && (
         <div>
           <h2>Return Note</h2>
-          {returnData ? (
+          {returnData?.data ? (
             <ReturnTable
               type={returnData?.data?.type }
               processType="rn"
@@ -213,10 +215,12 @@ const TransactionDetail = () => {
           )}
         </div>
       )}
+
+      
       {objectFromArr["IR"] && (
         <div>
           <h2>Material Inward Slip</h2>
-          {misData ? (
+          {misData?.data ? (
             <MisTable
               type={misData?.data?.type }
               processType="ir"
@@ -228,6 +232,9 @@ const TransactionDetail = () => {
           )}
         </div>
       )}
+
+
+      {/* ---------------- */}
 
       {/* { objectFromArr["GRN"] && <div>
         <h2>Goods Receive Note</h2>

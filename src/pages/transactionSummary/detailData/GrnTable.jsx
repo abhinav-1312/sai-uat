@@ -132,7 +132,7 @@ const GrnTable = ({type, data, itemList}) => {
         },
         {
             title: "Noa No",
-            dataIndex: "noa"
+            dataIndex: "noaNo"
         },
         {
             title: "Noa Date",

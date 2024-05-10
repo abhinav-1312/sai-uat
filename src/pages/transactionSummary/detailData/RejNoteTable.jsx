@@ -131,7 +131,7 @@ const RejNoteTable = ({data, type, itemList}) => {
     const poExtraColumns = [
         {
             title: "NOA No.",
-            dataIndex: "noaNo"
+            dataIndex: "noa"
         },
         {
             title: "NOA Date",

@@ -150,11 +150,11 @@ const MisTable = ({type, data, itemList}) => {
       },
       {
         title: "Approved By",
-        dataIndex: "issueName",
+        dataIndex: "approvedName",
       },
       {
         title: "Approval Date",
-        dataIndex: "issueDate",
+        dataIndex: "approvedDate",
       },
       {
         title: "Condition Of Goods",

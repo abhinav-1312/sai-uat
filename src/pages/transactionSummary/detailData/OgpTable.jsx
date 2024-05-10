@@ -190,7 +190,7 @@ const OgpTable = ({type, data, itemList}) => {
         },
         {
             title: "Noa no.",
-            dataIndex: "noaNo"
+            dataIndex: "noa"
         },
         {
             title: "Noa Date",

@@ -673,7 +673,7 @@ const InwardGatePass = () => {
         try{
         const {data} = await axios.post(apiUrl, {
           processId: value,
-          processStage: Type === "IOP" ? "ISN" : "OGP",
+          processStage: "OGP",
         },  apiHeader("POST", token));
 
         console.log("RESPONSE ISN: ", data)
