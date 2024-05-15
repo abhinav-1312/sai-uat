@@ -26,22 +26,54 @@ const StockLedger = ({orgId}) => {
   const [location, setLocation] = useState([])
 
   const populateItemData = async () => {
-
-    const { data } = await axios.get(
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMaster",
-      apiHeader("GET", token)
-    );
-    const { responseData } = data;
-
-    const modData = responseData.map((item) => {
-      return {
-        itemMasterCd: item.itemMasterCd,
-        itemMasterDesc: item.itemMasterDesc,
-      };
-    });
-
-    setItemData([...modData]);
+    try{
+      const { data } = await axios.get(
+        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMaster",
+        apiHeader("GET", token)
+      );
+      const { responseData } = data;
+  
+      const modData = responseData.map((item) => {
+        return {
+          itemMasterCd: item.itemMasterCd,
+          itemMasterDesc: item.itemMasterDesc,
+        };
+      });
+  
+      setItemData([...modData]);
+    }
+    catch(error){
+      console.log("error", error)
+      alert("Some error occured. Please try again")
+    }
   };
+
+  const populateByOrgId = async () => {
+    const url = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMasterByOrgId"
+
+    try{
+      const { data } = await axios.post(url, {orgId}, apiHeader("POST", token));
+      const { responseData } = data;
+
+
+      console.log("response data: ", responseData)
+  
+      const modData = responseData.map((item) => {
+        return {
+          itemMasterCd: item.itemMasterCd,
+          itemMasterDesc: item.itemMasterDesc,
+        };
+      });
+  
+      setItemData([...modData]);
+    }
+    catch(error){
+      console.log("error", error)
+      alert("Some error occured. Please try again")
+    }
+  }
+
+
 
   const fetchLocatorLocationDtls = async () => {
     const locatorUrl =
@@ -115,10 +147,14 @@ const StockLedger = ({orgId}) => {
   
 
   useEffect(() => {
-
-    populateItemData();
+    if(orgId){
+      populateByOrgId()
+    }
+    else{
+      populateItemData();
+    }
     fetchLocatorLocationDtls();
-  }, []);
+  }, [orgId]);
 
   const handleFormValueChange = (fieldName, value) => {
     setFilterOption((prev) => {
