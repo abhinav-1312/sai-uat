@@ -138,13 +138,14 @@ const TransactionSummary = ({orgId}) => {
   }
 
   useEffect(() => {
+    console.log("Useffect called txn summary")
     if(orgId){
       populateHqData(orgId)
     }
     else{
       populateData();
     }
-  }, []);
+  }, [orgId]);
 
   const handleSearch = async () => {
     try {

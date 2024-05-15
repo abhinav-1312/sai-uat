@@ -10,6 +10,8 @@ const HqTxnSummary = () => {
     const handleChange = (orgId) => {
         setOrgId(orgId)
     }
+
+    console.log("Org id txn summary: ", orgId)
   return (
     <>
         <div>
