@@ -36,6 +36,11 @@ const SignIn = () => {
       setIsLoggedIn(true);
       console.log(isLoggedIn);
 
+      if (userType === "01") {
+        const userRoles = "ssadmin";
+        localStorage.setItem("userRoles", userRoles);
+        localStorage.setItem("userType", "ssadmin");
+      }
       if (userType === "11") {
         const userRoles = "admin";
         localStorage.setItem("userRoles", userRoles);

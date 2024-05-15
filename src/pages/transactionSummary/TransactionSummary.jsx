@@ -12,7 +12,7 @@ import { apiHeader } from "../../utils/Functions";
 const { Option } = Select;
 const dateFormat = "DD/MM/YYYY";
 
-const TransactionSummary = () => {
+const TransactionSummary = ({orgId}) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const txnType = {
@@ -50,15 +50,26 @@ const TransactionSummary = () => {
 
   const handleViewClick = (trnNo) => {
     const arr = [];
-    arr.push(trnNo);
+    if(orgId){
+      const trnOrgCombined = trnNo + "-" + orgId
+      arr.push(trnOrgCombined)
+    }
+    else{
+      arr.push(trnNo);
+    }
     for (const [key, value] of Object.entries(showTxn)) {
       if (value === true) {
         arr.push(key);
       }
     }
     const url = arr.join("_");
+    if(orgId){
+      navigate(`/hqTxnSummary/${url}`);
+    }
+    else{
+      navigate(`/trnsummary/${url}`);
+    }
     // console.log("URL: ", url)
-    navigate(`/trnsummary/${url}`);
   };
 
   const handlePrintClick = (trnNo) => {
@@ -111,8 +122,28 @@ const TransactionSummary = () => {
     }
   };
 
+  const populateHqData = async (orgId) => {
+    try {
+      const { data } = await axios.post(
+        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/txns/getTxnSummary",
+        { startDate: null, endDate: null, itemCode: null, txnType: null, orgId },
+        apiHeader("POST", token)
+      );
+      const { responseData } = data;
+      setFilteredData([...responseData]);
+    } catch (error) {
+      message.error("Error occured while fetching data. Please try again.");
+      console.log("Populate data error.", error);
+    }
+  }
+
   useEffect(() => {
-    populateData();
+    if(orgId){
+      populateHqData(orgId)
+    }
+    else{
+      populateData();
+    }
   }, []);
 
   const handleSearch = async () => {
@@ -124,14 +155,24 @@ const TransactionSummary = () => {
       if (writingTxnType) {
         delete formDataCopy.itemCode;
       }
-
-      const { data } = await axios.post(
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/txns/getTxnSummary",
-        formDataCopy,
-        apiHeader("POST", token)
-      );
-      const { responseData } = data;
-      setFilteredData([...responseData]);
+      if(orgId){
+        const { data } = await axios.post(
+          "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/txns/getTxnSummary",
+          {...formDataCopy, orgId},
+          apiHeader("POST", token)
+        );
+        const { responseData } = data;
+        setFilteredData([...responseData]);
+      }
+      else{
+        const { data } = await axios.post(
+          "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/txns/getTxnSummary",
+          formDataCopy,
+          apiHeader("POST", token)
+        );
+        const { responseData } = data;
+        setFilteredData([...responseData]);
+      }
     } catch (error) {
       message.error("Some error occured. Please try again.");
       console.log("Some error orrcured.", error);

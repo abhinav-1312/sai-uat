@@ -17,7 +17,9 @@ const TransactionDetail = () => {
   const navigate = useNavigate();
   const { trnno: url } = useParams();
   const urlArr = url.split("_");
-  const trnNo = urlArr[0];
+  const trnOrgIdCombined = urlArr[0].split("-")
+  const orgId = trnOrgIdCombined.length === 2 ? trnOrgIdCombined[1] : null
+  const trnNo = trnOrgIdCombined[0];
 
   const arrayToConvert = urlArr.slice(1);
   const objectFromArr = arrayToConvert.reduce((acc, key) => {
@@ -35,6 +37,38 @@ const TransactionDetail = () => {
   const [ogpData, setOgpData] = useState(null);
   const [rejectData, setRejectData] = useState(null);
   const token = localStorage.getItem("token");
+
+  const populateHqData = async (orgId)=> {
+    const trnDetailUrl =
+      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/txns/getTxnDtls";
+    const { data } = await axios.post(
+      trnDetailUrl,
+      { processId: trnNo, orgId },
+      apiHeader("POST", token)
+    );
+    const { responseData } = data;
+    const {
+      acceptData,
+      grndata,
+      igpdata,
+      inspectionRptData,
+      isndata,
+      ogpdata,
+      rejectData,
+      rndata,
+      inspectionNewRptData,
+    } = responseData;
+    setAcceptData(acceptData);
+    setReturnData(rndata);
+    setIgpData(igpdata);
+    setMisData(inspectionRptData);
+    setIsnData(isndata);
+    setOgpData(ogpdata);
+    setGrnData(grndata);
+    setRejectData(rejectData);
+    setInspectionNoteData(inspectionNewRptData);
+  }
+
   const populateData = async () => {
     const trnDetailUrl =
       "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/txns/getTxnDtls";
@@ -67,7 +101,12 @@ const TransactionDetail = () => {
   };
 
   useEffect(() => {
-    populateData();
+    if(orgId){
+      populateHqData(orgId)
+    }
+    else{
+      populateData();
+    }
   }, []);
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>

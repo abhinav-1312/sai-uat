@@ -161,7 +161,7 @@ const InspectionNoteTable = ({type, data, itemList}) => {
     //   dataIndex: "processId",
     // },
     {
-      title: "Challan / invoice No.",
+      title: "Challan / Invoice No.",
       dataIndex: "challanNo",
     },
     {

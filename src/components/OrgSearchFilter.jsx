@@ -1,0 +1,59 @@
+import { Form, Select, Input } from "antd";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { apiHeader } from "../utils/Functions";
+
+const { Option } = Select;
+
+const OrgSearchFilter = ({handleChange}) => {
+    const token = localStorage.getItem("token")
+    const [orgData, setOrgData] = useState(null)
+    const getOrgMaster = async () => {
+        const orgIdUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getOrgMaster"
+        try{
+            const {data} = await axios.get(orgIdUrl, apiHeader("GET", token))
+            const {responseData} = data
+            const modRes = responseData.map(item=>{
+                return {id: item.id, name: item.organizationName}
+            })
+
+            setOrgData([...modRes])
+        }catch(error){
+            console.log("Error", error)
+            alert("Error occured while fetching organization details. Please try again.")
+        }
+
+    }
+
+    useEffect(()=>{
+        getOrgMaster()
+
+    }, [])
+  return (
+    <>
+      <Form>
+        <Form.Item>
+          <Select placeholder="Please select an organization."
+            style={{ width: 200 }}
+            onChange={(value) =>
+                handleChange(value)
+            }
+            allowClear
+          >
+            {orgData ? (
+              orgData.map((option, index) => (
+                <Option key={option.id} value={option.id}>
+                  {option.name}
+                </Option>
+              ))
+            ) : (
+              <Input />
+            )}
+          </Select>
+        </Form.Item>
+      </Form>
+    </>
+  );
+};
+
+export default OrgSearchFilter;

@@ -10,7 +10,7 @@ const { Option } = Select;
 const dateFormat = "DD/MM/YYYY";
 
 
-const StockLedger = () => {
+const StockLedger = ({orgId}) => {
   const token = localStorage.getItem("token");
 
   const [filterOption, setFilterOption] = useState({
@@ -48,26 +48,32 @@ const StockLedger = () => {
       "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster";
     const locationUrl =
       "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocationMaster";
+    try{
+      const [locatorData, locationData] = await Promise.all([
+        axios.get(locatorUrl, apiHeader("GET", token)),
+        axios.get(locationUrl, apiHeader("GET", token)),
+      ]);
+  
+      console.log("Locator Data: ", locatorData.data.responseData);
+      console.log("Location Data: ", locationData.data.responseData);
+  
+      const locatorObj = locatorData.data.responseData.reduce((acc, curr) => {
+        acc[curr.id] = curr.locatorDesc;
+        return acc;
+      }, {});
+      const locationObj = locationData.data.responseData.reduce((acc, curr) => {
+        acc[curr.id] = curr.locationName;
+        return acc;
+      }, {});
+  
+      setLocator({...locatorObj})
+      setLocation({...locationObj})
 
-    const [locatorData, locationData] = await Promise.all([
-      axios.get(locatorUrl, apiHeader("GET", token)),
-      axios.get(locationUrl, apiHeader("GET", token)),
-    ]);
-
-    console.log("Locator Data: ", locatorData.data.responseData);
-    console.log("Location Data: ", locationData.data.responseData);
-
-    const locatorObj = locatorData.data.responseData.reduce((acc, curr) => {
-      acc[curr.id] = curr.locatorDesc;
-      return acc;
-    }, {});
-    const locationObj = locationData.data.responseData.reduce((acc, curr) => {
-      acc[curr.id] = curr.locationName;
-      return acc;
-    }, {});
-
-    setLocator({...locatorObj})
-    setLocation({...locationObj})
+    }
+    catch(error){
+      console.log("Error occured: ", error)
+      alert("Error occured. Please try again.")
+    }
   };
 
   const columns = [
@@ -109,6 +115,7 @@ const StockLedger = () => {
   
 
   useEffect(() => {
+
     populateItemData();
     fetchLocatorLocationDtls();
   }, []);
@@ -152,15 +159,28 @@ const StockLedger = () => {
     const url =
       "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/txns/getStockLedger";
     try{
+      if(orgId){
+        const { data } = await axios.post(
+          url,
+          {...filterOption, orgId},
+          apiHeader("POST", token)
+        );
+        const { responseData } = data;
+        console.log("resposnedaata: ", responseData);
+        setLedger(responseData);
 
-      const { data } = await axios.post(
-        url,
-        filterOption,
-        apiHeader("POST", token)
-      );
-      const { responseData } = data;
-      console.log("resposnedaata: ", responseData);
-      setLedger(responseData);
+      }
+      else{
+        const { data } = await axios.post(
+          url,
+          filterOption,
+          apiHeader("POST", token)
+        );
+        const { responseData } = data;
+        console.log("resposnedaata: ", responseData);
+        setLedger(responseData);
+
+      }
     }catch(error){
       console.log("Error: ", error)
       alert("Error occured while fetching stock ledger. Please try again.")

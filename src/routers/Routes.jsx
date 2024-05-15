@@ -29,9 +29,22 @@ import OHQ from "../pages/ohq/ohq";
 import TransactionSummary from "../pages/transactionSummary/TransactionSummary";
 import TransactionDetail from "../pages/transactionSummary/TransactionDetail";
 import StockLedger from "../pages/stockLedger/StockLedger";
+import HqOhq from '../pages/hqRoutes/HqOhq'
+import HqTxnSummary from "../pages/hqRoutes/HqTxnSummary";
+import HqStockLedger from "../pages/hqRoutes/HqStockLedger";
+
 
 const RoutesComponent = () => {
   const userRole = localStorage.getItem("userRoles");
+
+  const headquarterRoutes = (
+    <>
+      <Route path = '/hqOhq' element={<HqOhq />} />
+      <Route path = '/hqTxnSummary' element={<HqTxnSummary />} />
+      <Route path = '/hqStockLedger' element={<HqStockLedger />} />
+      <Route path="/hqTxnSummary/:trnno" element={<TransactionDetail />} />
+    </>
+  )
 
   const superAdminRoutes = (
     <>
@@ -154,6 +167,7 @@ const RoutesComponent = () => {
 
   return (
     <Routes>
+      {userRole === "ssadmin" && headquarterRoutes}
       {userRole === "SuperAdmin" && superAdminRoutes}
       {userRole === "admin" && adminRoutes}
       {userRole === "InventoryManager" && inventoryManagerRoutes}

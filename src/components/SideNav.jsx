@@ -140,6 +140,24 @@ const menuItems = [
     label: "ItemDemandSearch",
     path: "/itemsearch",
   },
+  {
+    key: "22",
+    icon: <EnvironmentOutlined />,
+    label: "OHQ",
+    path: "/hqOhq",
+  },
+  {
+    key: "23",
+    icon: <EnvironmentOutlined />,
+    label: "Stock Ledger",
+    path: "/hqStockLedger",
+  },
+  {
+    key: "24",
+    icon: <EnvironmentOutlined />,
+    label: "Transaction Summary",
+    path: "/hqTxnSummary",
+  },
 ];
 
 const SideNav = () => {
@@ -152,16 +170,45 @@ const SideNav = () => {
   const userRole = localStorage.getItem("userRoles");
   const filteredMenuItems = menuItems.filter((item) => {
     switch (userRole) {
+      case "ssadmin" : 
+        return (
+          item.key !== "2" &&
+          item.key !== "1" &&
+          item.key !== "14" &&
+          item.key !== "15" &&
+          item.key !== "8" &&
+          item.key !== "18" &&
+          item.key !== "13" &&
+          item.key !== "3" &&
+          item.key !== "16" &&
+          item.key !== "17" &&
+          item.key !== "4" &&
+          item.key !== "5" &&
+          item.key !== "6" &&
+          item.key !== "7" &&
+          item.key !== "9" &&
+          item.key !== "10" &&
+          item.key !== "20" &&
+          item.key !== "11" &&
+          item.key !== "12" &&
+          item.key !== "21"
+        )
       case "admin":
         return (
           item.key !== "13" &&
           item.key !== "2" &&
           item.key !== "5" &&
+          item.key !== "22" &&
+          item.key !== "23" &&
+          item.key !== "24" &&
           item.key !== "4"
         );
       case "InventoryManager":
         // Only show items accessible to inventory managers
         return (
+          item.key !== "22" &&
+          item.key !== "23" &&
+          item.key !== "24" &&
           item.key !== "2" &&
           item.key !== "13" &&
           item.key !== "5" &&
@@ -176,6 +223,9 @@ const SideNav = () => {
         ); // Hide these menus
       case "QualityManager":
         return (
+          item.key !== "22" &&
+          item.key !== "23" &&
+          item.key !== "24" &&
           item.key !== "2" &&
           item.key !== "13" &&
           item.key !== "3" &&
@@ -194,6 +244,9 @@ const SideNav = () => {
         );
       case "ItemAdmin":
         return (
+          item.key !== "22" &&
+          item.key !== "23" &&
+          item.key !== "24" &&
           item.key !== "2" &&
           item.key !== "13" &&
           item.key !== "16" &&
@@ -215,6 +268,9 @@ const SideNav = () => {
         );
       case "VendorAdmin":
         return (
+          item.key !== "22" &&
+          item.key !== "23" &&
+          item.key !== "24" &&
           item.key !== "2" &&
           item.key !== "13" &&
           item.key !== "16" &&

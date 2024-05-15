@@ -3,7 +3,7 @@ import { Input, Table } from "antd";
 import axios from "axios";
 import { apiHeader, handleSearch, renderLocatorOHQ } from "../../utils/Functions";
 
-const Ohq = () => {
+const Ohq = ({orgId}) => {
   const [itemData, setItemData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const token = localStorage.getItem("token");
@@ -12,19 +12,51 @@ const Ohq = () => {
   // const [itemMasterData, setItemMasterData] = useState([])
 
   const populateItemData = async () => {
-    const { data } = await axios.post(
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getOHQ",
-      { itemCode: null, userId },
-      apiHeader("POST", token)
-    ); // sending itemCode 'null' gives all available data
-    const { responseData } = data;
-    setItemData([...responseData]);
-    setFilteredData([...responseData]);
+    try{
+
+      const { data } = await axios.post(
+        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getOHQ",
+        { itemCode: null, userId },
+        apiHeader("POST", token)
+      ); // sending itemCode 'null' gives all available data
+      const { responseData } = data;
+      setItemData([...responseData]);
+      setFilteredData([...responseData]);
+    }catch(error){
+      console.log("Error", error)
+      alert("Error occured while fetching data. Please try again.")
+    }
   };
 
+  const populateItemDataHq = async (orgId) => {
+    try{
+
+      const { data } = await axios.post(
+        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getOHQ",
+        { itemCode: null, userId, orgId },
+        apiHeader("POST", token)
+      ); // sending itemCode 'null' gives all available data
+      const { responseData } = data;
+      setItemData([...responseData]);
+      setFilteredData([...responseData]);
+    }
+    catch(error){
+      console.log("Error", error)
+      alert("Error occured while fetching data. Please try again.")
+    }
+  };
+
+  console.log("Filtered data: ", filteredData)
+
   useEffect(() => {
-    populateItemData();
-  }, []);
+    console.log("USEFFECT ORG ID CANGED", orgId)
+    if(orgId){
+      populateItemDataHq(orgId);  
+    }
+    else{
+      populateItemData();
+    }
+  }, [orgId]);
 
   // const renderLocator = (obj) => {
   //   return (
