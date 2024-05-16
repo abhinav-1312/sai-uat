@@ -5,7 +5,9 @@ import { ExportOutlined } from "@ant-design/icons";
 import axios from "axios";
 import dayjs from "dayjs";
 import { CSVLink } from 'react-csv';
+import moment from "moment";
 
+const { RangePicker } = DatePicker;
 const { Option } = Select;
 const dateFormat = "DD/MM/YYYY";
 
@@ -54,10 +56,6 @@ const StockLedger = ({orgId}) => {
     try{
       const { data } = await axios.post(url, {orgId}, apiHeader("POST", token));
       const { responseData } = data;
-
-
-      console.log("response data: ", responseData)
-  
       const modData = responseData.map((item) => {
         return {
           itemMasterCd: item.itemMasterCd,
@@ -85,14 +83,12 @@ const StockLedger = ({orgId}) => {
         axios.get(locatorUrl, apiHeader("GET", token)),
         axios.get(locationUrl, apiHeader("GET", token)),
       ]);
-  
-      console.log("Locator Data: ", locatorData.data.responseData);
-      console.log("Location Data: ", locationData.data.responseData);
-  
+    
       const locatorObj = locatorData.data.responseData.reduce((acc, curr) => {
         acc[curr.id] = curr.locatorDesc;
         return acc;
       }, {});
+
       const locationObj = locationData.data.responseData.reduce((acc, curr) => {
         acc[curr.id] = curr.locationName;
         return acc;
@@ -202,7 +198,6 @@ const StockLedger = ({orgId}) => {
           apiHeader("POST", token)
         );
         const { responseData } = data;
-        console.log("resposnedaata: ", responseData);
         setLedger(responseData);
 
       }
@@ -213,7 +208,6 @@ const StockLedger = ({orgId}) => {
           apiHeader("POST", token)
         );
         const { responseData } = data;
-        console.log("resposnedaata: ", responseData);
         setLedger(responseData);
 
       }
@@ -222,6 +216,27 @@ const StockLedger = ({orgId}) => {
       alert("Error occured while fetching stock ledger. Please try again.")
     }
   };
+
+  const disabledDate = (current) => {
+    // Disable dates that are after today
+    return current && current > moment().endOf('day');
+  };
+
+  const handleRangeChange = (dates) => {
+    if(dates && dates.length === 2){
+      const startDateStr = dates[0].format(dateFormat)
+      const endDateStr = dates[1].format(dateFormat)
+
+      setFilterOption(prev => {
+        return {
+          ...prev,
+          fromDate: startDateStr,
+          toDate: endDateStr
+        }
+      })
+
+    }
+  }
 
   return (
     <>
@@ -262,28 +277,13 @@ const StockLedger = ({orgId}) => {
             </Select>
           </Form.Item>
 
-          <Form.Item label="From Date" name="fromDate" rules={[{ required: true, message: 'Please enter start date' }]}>
-            <DatePicker
+          <Form.Item style={{ gridColumn: "span 2" }}> 
+            <RangePicker
+              value = {[filterOption.fromDate ? moment(filterOption.fromDate, 'DD/MM/YYYY') : null, filterOption.toDate ? moment(filterOption.toDate , 'DD/MM/YYYY') : null]}
+              style={{width: "100%"}}
               format={dateFormat}
-              style={{ width: "100%" }}
-              onChange={(date, dateString) =>
-                handleFormValueChange("fromDate", dateString)
-              }
-            />
-          </Form.Item>
-
-          <Form.Item label="To Date" name="toDate">
-            <DatePicker
-              value={
-                filterOption.toDate !== null
-                  ? dayjs(filterOption.toDate, dateFormat)
-                  : null
-              }
-              format={dateFormat}
-              style={{ width: "100%" }}
-              onChange={(date, dateString) =>
-                handleFormValueChange("toDate", dateString)
-              }
+              onChange={handleRangeChange}
+              disabledDate={disabledDate} // Disable future dates
             />
           </Form.Item>
 
