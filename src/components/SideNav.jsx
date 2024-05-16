@@ -170,6 +170,12 @@ const SideNav = () => {
   const userRole = localStorage.getItem("userRoles");
   const filteredMenuItems = menuItems.filter((item) => {
     switch (userRole) {
+      case "SuperAdmin": 
+        return (
+          item.key !== "22" &&
+          item.key !== "23" &&
+          item.key !== "24"
+        )
       case "ssadmin" : 
         return (
           item.key !== "2" &&

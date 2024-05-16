@@ -270,7 +270,6 @@ const RetunNote = () => {
       // Handle response data as needed
     } catch (error) {
       console.error("Error fetching sub process details:", error);
-      // Handle error
     }
   };
 
