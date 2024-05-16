@@ -204,7 +204,7 @@ const RetunNote = () => {
           zipcode: processData?.crZipcode,
   
           processId: processData?.processId,
-          issueNoteDt: processData?.issueDate,
+          issueNoteDt: processData?.issueNoteDt,
           consumerName: processData?.consumerName,
           contactNo: processData?.contactNo,
   
@@ -244,7 +244,7 @@ const RetunNote = () => {
           zipcode: processData?.crZipcode,
   
           processId: processData?.processId,
-          issueNoteDt: processData?.issueDate,
+          issueNoteDt: processData?.issueNoteDt,
           consumerName: processData?.consumerName,
           contactNo: processData?.contactNo,
   
