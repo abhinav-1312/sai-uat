@@ -131,9 +131,6 @@ const ItemsPage = () => {
     const itemMasterUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMaster"
     const vendorMasterUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getVendorMaster"
     try {
-      // const {data: itemMasterData, data: vendorMasterData } = await axios.get(
-      //   "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMaster", apiHeader("GET", token)
-      // );
 
       const [itemMasterData, vendorMasterData] = await Promise.all([
         axios.get(itemMasterUrl, apiHeader("GET", token)),
@@ -144,8 +141,6 @@ const ItemsPage = () => {
       const vendorData = vendorMasterData.data.responseData;
 
       const vendorObj = convertArrayToObject(vendorData, "id", "vendorName")
-
-      console.log("VendorObj", vendorObj)
       
       const itemList = itemData.map(item=>{
         return{
@@ -153,12 +148,7 @@ const ItemsPage = () => {
             id: item.id,
             itemCode: item.itemMasterCd,
             itemDescription: item.itemMasterDesc,
-            // uom: uomResponse?.uomName || "default UOM",
             uom: item.uomDtls.uomName,
-            // quantityOnHand: item.quantity,
-            // location: locationResponse?.locationName,
-            // locatorCode: locatorResponse?.locatorCd,
-            // locatorDesc: locatorResponse?.locatorDesc,
             price: item.price,
             vendorDetail: vendorObj[parseInt(item.vendorId)],
             category: item.categoryDesc,
@@ -177,97 +167,27 @@ const ItemsPage = () => {
         }
       })
 
-      // const itemList = responseData.map(item=>{
-      //   return {
-      //     key: item.id,
-      //     id: item.id,
-      //     itemCode: item.itemCode,
-      //     itemDescription: item.itemMasterDesc,
-      //     uom: item.uomDtls.uomName,
-      //     price: item.price,
-
-
-      //   }
-      // })
-
-      // console.log("Response: ", responseData)
-
-      // const itemList = await Promise.all(
-      //   responseData.map(async (item) => {
-          // const uomResponse = await apiRequest(
-          //   "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getUOMMasterById",
-          //   "POST",
-          //   {
-          //     id: item.uomId,
-          //     userId: "string",
-          //   }
-          // );
-
-          // const locationResponse = await apiRequest(
-          //   "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocationMasterById",
-          //   "POST",
-          //   {
-          //     locationId: item.locationId,
-          //     userId: "string",
-          //   }
-          // );
-
-          // const locatorResponse = await apiRequest(
-          //   "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocatorMasterById",
-          //   "POST",
-          //   {
-          //     id: item.locatorId,
-          //     userId: "string",
-          //   }
-          // );
-
-          // const vendorResponse = await apiRequest(
-          //   "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getVendorMaster",
-          //   "POST",
-          //   {
-          //     id: item.vendorId,
-          //     userId: "string",
-          //   }
-          // );
-
-      //     return {
-      //       key: item.id,
-      //       id: item.id,
-      //       itemCode: item.itemMasterCd,
-      //       itemDescription: item.itemMasterDesc,
-      //       // uom: uomResponse?.uomName || "default UOM",
-      //       uom: item.uomDtls.uomName,
-      //       // quantityOnHand: item.quantity,
-      //       // location: locationResponse?.locationName,
-      //       // locatorCode: locatorResponse?.locatorCd,
-      //       // locatorDesc: locatorResponse?.locatorDesc,
-      //       price: item.price,
-      //       vendorDetail: vendorResponse.vendorName,
-      //       category: item.categoryDesc,
-      //       subcategory: item.subCategoryDesc,
-      //       type: item.typeDesc,
-      //       disciplines: item.disciplinesDesc,
-      //       brand: item.brandDesc,
-      //       colour: item.colorDesc,
-      //       size: item.sizeDesc,
-      //       usageCategory: item.usageCategoryDesc,
-      //       reOrderPoint: item.reOrderPoint ? item.reOrderPoint : "null",
-      //       minStockLevel: item.minStockLevel,
-      //       maxStockLevel: item.maxStockLevel,
-      //       status: item.status === "A" ? "Active" : "InActive",
-      //       endDate: new Date(item.endDate).toISOString().split("T")[0],
-      //     };
-      //   })
-      // );
-
       setItems(itemList);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
-  };
+  };  
+
+  const init = () => {
+    getItems()
+    getUoms()
+    getBrands()
+    getSizes()
+    getColors()
+    getUsageCategories()
+    getCategories()
+    getLocations()
+    getLocators()
+    
+  }
 
   useEffect(() => {
-    getItems()
+    init()
   }, []);
 
   const getItem = async (id) => {
@@ -312,20 +232,6 @@ const ItemsPage = () => {
     getItems();
   };
 
-  const generate3DigitRandString = () => {
-    // Generate a random number between 0 and 999 (inclusive)
-    const randomNumber = Math.floor(Math.random() * 1000);
-
-    // Convert the random number to a string
-    let randomNumberString = randomNumber.toString();
-
-    // Pad the string with leading zeros if necessary
-    if (randomNumberString.length < 3) {
-      randomNumberString = randomNumberString.padStart(3, "0");
-    }
-
-    return randomNumberString;
-  };
 
   const handleFormSubmit = async (values) => {
     const userCd = localStorage.getItem("userCd")
@@ -336,10 +242,6 @@ const ItemsPage = () => {
       uomId: Number(values.uomId),
       createUserId: userCd,
       endDate: values.endDate.format("DD/MM/YYYY"),
-      // itemName: itemNames[values.itemMasterDesc]
-      //   ? values.itemMasterDesc
-      //   : generate3DigitRandString(),
-      // itemMasterDesc: itemNames[values.itemMasterDesc] || values.itemMasterDesc,
     };
 
     if (!tempItem.itemMasterCd) {
