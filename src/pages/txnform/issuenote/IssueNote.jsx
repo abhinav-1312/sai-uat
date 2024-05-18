@@ -640,21 +640,10 @@ const IssueNote = () => {
                 >
                   <Input value={formData?.ceRegionalCenterCd}
                     onChange={(e) =>
-                      // handleChange("ceRegionalCenterCd", e.target.value)
                       handleCeRccChange(e.target.value)
                     }
                   />
                 </Form.Item>
-                {/* <Form.Item
-                  label="REGIONAL CENTER NAME  :"
-                  name="ceRegionalCenterName"
-                >
-                  <Input value={formData?.ceRegionalCenterName}
-                    onChange={(e) =>
-                      handleChange("ceRegionalCenterName", e.target.value)
-                    }
-                  />
-                </Form.Item> */}
                 <FormInputItem label="REGIONAL CENTER NAME" value={formData.ceRegionalCenterName} />
                 <FormInputItem label="ADDRESS" value={formData.ceAddress} />
                 <FormInputItem label="ZIPCODE" value={formData.ceZipcode} />

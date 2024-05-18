@@ -10,7 +10,8 @@ import {
   allDisciplines,
   subCategories,
 } from "./KeyValueMapping";
-import { apiHeader } from "../../utils/Functions";
+import { apiHeader, convertArrayToObject } from "../../utils/Functions";
+import axios from "axios";
 
 const apiRequest = async (url, method, requestData) => {
   const token = localStorage.getItem("token");
@@ -127,15 +128,72 @@ const ItemsPage = () => {
   const token = localStorage.getItem("token")
 
   const getItems = async () => {
+    const itemMasterUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMaster"
+    const vendorMasterUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getVendorMaster"
     try {
-      const response = await fetch(
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMaster", apiHeader("GET", token)
-      );
+      // const {data: itemMasterData, data: vendorMasterData } = await axios.get(
+      //   "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMaster", apiHeader("GET", token)
+      // );
 
-      const { responseData } = await response.json();
+      const [itemMasterData, vendorMasterData] = await Promise.all([
+        axios.get(itemMasterUrl, apiHeader("GET", token)),
+        axios.get(vendorMasterUrl, apiHeader("GET", token)),
+      ]);
 
-      const itemList = await Promise.all(
-        responseData.map(async (item) => {
+      const itemData = itemMasterData.data.responseData;
+      const vendorData = vendorMasterData.data.responseData;
+
+      const vendorObj = convertArrayToObject(vendorData, "id", "vendorName")
+
+      console.log("VendorObj", vendorObj)
+      
+      const itemList = itemData.map(item=>{
+        return{
+          key: item.id,
+            id: item.id,
+            itemCode: item.itemMasterCd,
+            itemDescription: item.itemMasterDesc,
+            // uom: uomResponse?.uomName || "default UOM",
+            uom: item.uomDtls.uomName,
+            // quantityOnHand: item.quantity,
+            // location: locationResponse?.locationName,
+            // locatorCode: locatorResponse?.locatorCd,
+            // locatorDesc: locatorResponse?.locatorDesc,
+            price: item.price,
+            vendorDetail: vendorObj[parseInt(item.vendorId)],
+            category: item.categoryDesc,
+            subcategory: item.subCategoryDesc,
+            type: item.typeDesc,
+            disciplines: item.disciplinesDesc,
+            brand: item.brandDesc,
+            colour: item.colorDesc,
+            size: item.sizeDesc,
+            usageCategory: item.usageCategoryDesc,
+            reOrderPoint: item.reOrderPoint ? item.reOrderPoint : "null",
+            minStockLevel: item.minStockLevel,
+            maxStockLevel: item.maxStockLevel,
+            status: item.status === "A" ? "Active" : "InActive",
+            endDate: new Date(item.endDate).toISOString().split("T")[0],
+        }
+      })
+
+      // const itemList = responseData.map(item=>{
+      //   return {
+      //     key: item.id,
+      //     id: item.id,
+      //     itemCode: item.itemCode,
+      //     itemDescription: item.itemMasterDesc,
+      //     uom: item.uomDtls.uomName,
+      //     price: item.price,
+
+
+      //   }
+      // })
+
+      // console.log("Response: ", responseData)
+
+      // const itemList = await Promise.all(
+      //   responseData.map(async (item) => {
           // const uomResponse = await apiRequest(
           //   "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getUOMMasterById",
           //   "POST",
@@ -163,44 +221,44 @@ const ItemsPage = () => {
           //   }
           // );
 
-          const vendorResponse = await apiRequest(
-            "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getVendorMasterById",
-            "POST",
-            {
-              id: item.vendorId,
-              userId: "string",
-            }
-          );
+          // const vendorResponse = await apiRequest(
+          //   "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getVendorMaster",
+          //   "POST",
+          //   {
+          //     id: item.vendorId,
+          //     userId: "string",
+          //   }
+          // );
 
-          return {
-            key: item.id,
-            id: item.id,
-            itemCode: item.itemMasterCd,
-            itemDescription: item.itemMasterDesc,
-            // uom: uomResponse?.uomName || "default UOM",
-            uom: item.uomDtls.uomName,
-            // quantityOnHand: item.quantity,
-            // location: locationResponse?.locationName,
-            // locatorCode: locatorResponse?.locatorCd,
-            // locatorDesc: locatorResponse?.locatorDesc,
-            price: item.price,
-            vendorDetail: vendorResponse.vendorName,
-            category: item.categoryDesc,
-            subcategory: item.subCategoryDesc,
-            type: item.typeDesc,
-            disciplines: item.disciplinesDesc,
-            brand: item.brandDesc,
-            colour: item.colorDesc,
-            size: item.sizeDesc,
-            usageCategory: item.usageCategoryDesc,
-            reOrderPoint: item.reOrderPoint ? item.reOrderPoint : "null",
-            minStockLevel: item.minStockLevel,
-            maxStockLevel: item.maxStockLevel,
-            status: item.status === "A" ? "Active" : "InActive",
-            endDate: new Date(item.endDate).toISOString().split("T")[0],
-          };
-        })
-      );
+      //     return {
+      //       key: item.id,
+      //       id: item.id,
+      //       itemCode: item.itemMasterCd,
+      //       itemDescription: item.itemMasterDesc,
+      //       // uom: uomResponse?.uomName || "default UOM",
+      //       uom: item.uomDtls.uomName,
+      //       // quantityOnHand: item.quantity,
+      //       // location: locationResponse?.locationName,
+      //       // locatorCode: locatorResponse?.locatorCd,
+      //       // locatorDesc: locatorResponse?.locatorDesc,
+      //       price: item.price,
+      //       vendorDetail: vendorResponse.vendorName,
+      //       category: item.categoryDesc,
+      //       subcategory: item.subCategoryDesc,
+      //       type: item.typeDesc,
+      //       disciplines: item.disciplinesDesc,
+      //       brand: item.brandDesc,
+      //       colour: item.colorDesc,
+      //       size: item.sizeDesc,
+      //       usageCategory: item.usageCategoryDesc,
+      //       reOrderPoint: item.reOrderPoint ? item.reOrderPoint : "null",
+      //       minStockLevel: item.minStockLevel,
+      //       maxStockLevel: item.maxStockLevel,
+      //       status: item.status === "A" ? "Active" : "InActive",
+      //       endDate: new Date(item.endDate).toISOString().split("T")[0],
+      //     };
+      //   })
+      // );
 
       setItems(itemList);
     } catch (error) {
@@ -208,21 +266,8 @@ const ItemsPage = () => {
     }
   };
 
-  const init = () => {
-    getUoms();
-    getLocations();
-    getLocators();
-    getVendors();
-    getItems();
-    getBrands();
-    getSizes();
-    getColors();
-    getUsageCategories();
-    getCategories();
-  };
-
   useEffect(() => {
-    init();
+    getItems()
   }, []);
 
   const getItem = async (id) => {
@@ -231,7 +276,7 @@ const ItemsPage = () => {
       "POST",
       {
         id: id,
-        userId: "12345",
+        userId: userCd,
       }
     );
     return itemResponse;
@@ -300,8 +345,6 @@ const ItemsPage = () => {
     if (!tempItem.itemMasterCd) {
       delete tempItem.itemMasterCd;
     }
-
-    console.log('Teimitem: ', tempItem)
 
     if (editingItem) {
       if (selectedId) {
