@@ -31,6 +31,10 @@ code {
   color: white !important;
 }
 
+.ant-radio-button-wrapper-checked {
+  color: red !important;
+}
+
 /* @media print { */
   /* header { */
     /* display: none !important;

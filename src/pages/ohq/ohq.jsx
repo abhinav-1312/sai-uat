@@ -3,7 +3,7 @@ import { Input, Table } from "antd";
 import axios from "axios";
 import { apiHeader, handleSearch, renderLocatorOHQ } from "../../utils/Functions";
 
-const Ohq = ({orgId}) => {
+const Ohq = ({orgId, organization}) => {
   const [itemData, setItemData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const token = localStorage.getItem("token");
@@ -13,7 +13,6 @@ const Ohq = ({orgId}) => {
 
   const populateItemData = async () => {
     try{
-
       const { data } = await axios.post(
         "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getOHQ",
         { itemCode: null, userId },
@@ -46,12 +45,60 @@ const Ohq = ({orgId}) => {
     }
   };
 
-  console.log("Filtered data: ", filteredData)
+  const populateAllOHQ = async () => {
+    console.log("all ohq called")
+    try{
+
+      const { data } = await axios.post(
+        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getAllOHQ",
+        { itemCode: null, userId, orgId:null, itemDesc: null },
+        apiHeader("POST", token)
+      ); // sending itemCode 'null' gives all available data
+      const { responseData } = data;
+      const newArray = []
+
+      // const modData = []
+      responseData.map(item=>{
+        item.qtyList.map(obj=>{
+          const objFound = newArray.find(tempItem => tempItem.locationId === obj.locationId && tempItem.itemCode === item.itemCode)
+
+          if(objFound){
+            const qtyListObj = {locatorId: obj.locatorId, quantity: obj.quantity, locatorDesc: obj.locatorDesc}
+            objFound.qtyList.push(qtyListObj)
+          }
+          else{
+            const newItemObj = {
+              itemCode: item.itemCode,
+              itemName: item.itemName,
+              locationId: obj.locationId,
+              locationName: obj.locationName,
+              uomDesc: item.uomDesc,
+              qtyList: [
+                {locatorId: obj.locatorId, quantity: obj.quantity, locatorDesc: obj.locatorDesc}
+              ]
+            }
+
+            newArray.push(newItemObj)
+          }
+        })
+      })
+      console.log("NEw array: ", newArray)
+      setItemData([...newArray]);
+      setFilteredData([...newArray]);
+    }
+    catch(error){
+      console.log("Error", error)
+      alert("Error occured while fetching data. Please try again.")
+    }
+  }
 
   useEffect(() => {
-    console.log("USEFFECT ORG ID CANGED", orgId)
+
     if(orgId){
       populateItemDataHq(orgId);  
+    }
+    else if(organization==="headquarter"){
+      populateAllOHQ()
     }
     else{
       populateItemData();
@@ -122,10 +169,10 @@ const Ohq = ({orgId}) => {
         enterButton="Search"
         size="large"
         onSearch={(e) =>
-          handleSearch(e.target.value, itemData, setFilteredData)
+          handleSearch(e.target?.value || null, itemData, setFilteredData)
         }
         onChange={(e) =>
-          handleSearch(e.target.value, itemData, setFilteredData)
+          handleSearch(e.target?.value || null, itemData, setFilteredData)
         }
         style={{ width: "30%", margin: "1rem 0" }}
       />
