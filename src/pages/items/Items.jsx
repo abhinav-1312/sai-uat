@@ -183,7 +183,7 @@ const ItemsPage = () => {
     getCategories()
     getLocations()
     getLocators()
-    
+    getVendors()
   }
 
   useEffect(() => {
