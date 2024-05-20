@@ -13,6 +13,9 @@ const HqOhq = () => {
     }
     const handleRadioChange = (value) => {
       console.log("Selected value: ", value)
+      if(value === "2"){
+        setOrgId(null)
+      }
       setRadioValue(value)
     }
 
@@ -44,7 +47,7 @@ const HqOhq = () => {
       }
 
       {
-        radioValue === "2" && <Ohq organization="headquarter" orgId = {orgId} />
+        radioValue === "2" && <Ohq organization="headquarter" orgId = {null} />
       }
     </div>
   )

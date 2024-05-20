@@ -41,6 +41,8 @@ const StockLedger = ({orgId}) => {
           itemMasterDesc: item.itemMasterDesc,
         };
       });
+
+      // fetchLocatorLocationDtls()
   
       setItemData([...modData]);
     }
@@ -62,7 +64,7 @@ const StockLedger = ({orgId}) => {
           itemMasterDesc: item.itemMasterDesc,
         };
       });
-  
+      // fetchLocatorLocationDtls()
       setItemData([...modData]);
     }
     catch(error){
@@ -70,8 +72,6 @@ const StockLedger = ({orgId}) => {
       alert("Some error occured. Please try again")
     }
   }
-
-
 
   const fetchLocatorLocationDtls = async () => {
     const locatorUrl =
@@ -132,14 +132,16 @@ const StockLedger = ({orgId}) => {
     {
       title: "Location Description",
       dataIndex: "locationId",
-      render: (id) => location[id]
+      render: (id) => location[parseInt(id)]
     },
     {
       title: "Locator Description",
       dataIndex: "locatorId",
-      render: (id) => locator[id]
+      render: (id) => locator[parseInt(id)]
     },
   ];
+
+  console.log("Locator obj: ", locator)
   
 
   useEffect(() => {
@@ -216,6 +218,8 @@ const StockLedger = ({orgId}) => {
       alert("Error occured while fetching stock ledger. Please try again.")
     }
   };
+
+  console.log("Ledger: ", ledger)
 
   const disabledDate = (current) => {
     // Disable dates that are after today
