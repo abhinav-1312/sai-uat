@@ -63,7 +63,7 @@ const Template = () => {
           Log Out
         </Button>
       </Header>
-      <div style={{display: "flex"}} className="divv">
+      <div style={{display: "flex", minHeight: "100vh"}} className="divv">
       <SideNav />
        <Layout style={{ padding: "0 24px 24px",  overflow: "hidden", flex: 1  }} className="layout">
         <Breadcrumb style={{ margin: "16px 0" }}>

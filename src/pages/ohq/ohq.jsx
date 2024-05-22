@@ -74,7 +74,7 @@ const Ohq = ({orgId, organization}) => {
               locationName: obj.locationName,
               uomDesc: item.uomDesc,
               qtyList: [
-                {locatorId: obj.locatorId, quantity: obj.quantity, locatorDesc: obj.locatorDesc}
+                {locatorId: obj.locatorId, quantity: obj.quantity, locatorDesc: obj.locatorDesc, totalValues: obj.totalValues}
               ]
             }
 

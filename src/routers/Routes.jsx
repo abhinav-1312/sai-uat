@@ -176,13 +176,13 @@ const RoutesComponent = () => {
     <Route path="/" element={<Layout />}>
         {/* <Route path="stockLedger" element={<StockLedger />} />
         {superAdminRoutes} */}
-        {userRole === "SuperAdmin" && superAdminRoutes}
-        {userRole === "ssadmin" && headquarterRoutes}
-        {userRole === "admin" && adminRoutes}
-        {userRole === "InventoryManager" && inventoryManagerRoutes}
-        {userRole === "QualityManager" && qualityManagerRoutes}
-        {userRole === "ItemAdmin" && itemAdminRoutes}
-        {userRole === "VendorAdmin" && vendorAdminRoutes}
+        {(userRole === "ssadmin" && headquarterRoutes) || 
+        (userRole === "SuperAdmin" && superAdminRoutes) ||
+        (userRole === "admin" && adminRoutes) ||
+        (userRole === "InventoryManager" && inventoryManagerRoutes) ||
+        (userRole === "QualityManager" && qualityManagerRoutes) ||
+        (userRole === "ItemAdmin" && itemAdminRoutes) ||
+        (userRole === "VendorAdmin" && vendorAdminRoutes) }
     </Route>
     </Routes>
     </>

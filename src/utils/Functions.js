@@ -168,7 +168,12 @@ export const renderLocatorOHQ = (obj) => {
             title: "QUANTITY",
             dataIndex: "quantity",
             key: "quantity"
-          }
+          },
+          {
+            title: "Total Value",
+            dataIndex: "totalValues",
+            key: "totalValue"
+          },
         ]}
       />
     )
