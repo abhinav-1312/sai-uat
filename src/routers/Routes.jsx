@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Organization from "../pages/organization/Organization";
 import Location from "../pages/location/Location";
 import Items from "../pages/items/Items";
@@ -32,6 +32,9 @@ import StockLedger from "../pages/stockLedger/StockLedger";
 import HqOhq from '../pages/hqRoutes/HqOhq'
 import HqTxnSummary from "../pages/hqRoutes/HqTxnSummary";
 import HqStockLedger from "../pages/hqRoutes/HqStockLedger";
+import ChangePasswordForm from "../auth/ChangePasswordForm";
+import SignIn from "../auth/Login";
+import Layout from '../components/Layout'
 
 
 const RoutesComponent = () => {
@@ -166,15 +169,23 @@ const RoutesComponent = () => {
   );
 
   return (
+    <>
     <Routes>
-      {userRole === "ssadmin" && headquarterRoutes}
-      {userRole === "SuperAdmin" && superAdminRoutes}
-      {userRole === "admin" && adminRoutes}
-      {userRole === "InventoryManager" && inventoryManagerRoutes}
-      {userRole === "QualityManager" && qualityManagerRoutes}
-      {userRole === "ItemAdmin" && itemAdminRoutes}
-      {userRole === "VendorAdmin" && vendorAdminRoutes}
+    <Route path='/changePassword' element={<ChangePasswordForm />} />
+    <Route path='/login' element={<SignIn />} />
+    <Route path="/" element={<Layout />}>
+        {/* <Route path="stockLedger" element={<StockLedger />} />
+        {superAdminRoutes} */}
+        {userRole === "SuperAdmin" && superAdminRoutes}
+        {userRole === "ssadmin" && headquarterRoutes}
+        {userRole === "admin" && adminRoutes}
+        {userRole === "InventoryManager" && inventoryManagerRoutes}
+        {userRole === "QualityManager" && qualityManagerRoutes}
+        {userRole === "ItemAdmin" && itemAdminRoutes}
+        {userRole === "VendorAdmin" && vendorAdminRoutes}
+    </Route>
     </Routes>
+    </>
   );
 };
 

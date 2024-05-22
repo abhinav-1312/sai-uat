@@ -10,7 +10,7 @@ import {
   allDisciplines,
   subCategories,
 } from "./KeyValueMapping";
-import { apiHeader, convertArrayToObject } from "../../utils/Functions";
+import { apiHeader, convertArrayToObject, convertEpochToDateString } from "../../utils/Functions";
 import axios from "axios";
 
 const apiRequest = async (url, method, requestData) => {
@@ -163,7 +163,8 @@ const ItemsPage = () => {
             minStockLevel: item.minStockLevel,
             maxStockLevel: item.maxStockLevel,
             status: item.status === "A" ? "Active" : "InActive",
-            endDate: new Date(item.endDate).toISOString().split("T")[0],
+            // endDate: new Date(item.endDate).toISOString().split("T")[0],
+            endDate: convertEpochToDateString(item.endDate)
         }
       })
 

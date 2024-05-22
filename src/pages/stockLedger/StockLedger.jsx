@@ -41,8 +41,6 @@ const StockLedger = ({orgId}) => {
           itemMasterDesc: item.itemMasterDesc,
         };
       });
-
-      // fetchLocatorLocationDtls()
   
       setItemData([...modData]);
     }
@@ -64,7 +62,7 @@ const StockLedger = ({orgId}) => {
           itemMasterDesc: item.itemMasterDesc,
         };
       });
-      // fetchLocatorLocationDtls()
+
       setItemData([...modData]);
     }
     catch(error){
@@ -141,9 +139,6 @@ const StockLedger = ({orgId}) => {
     },
   ];
 
-  console.log("Locator obj: ", locator)
-  
-
   useEffect(() => {
     if(orgId){
       populateByOrgId()
@@ -173,9 +168,7 @@ const StockLedger = ({orgId}) => {
   };
 
   const handleExportClick = () => {
-    // const csvContent = "data:text/csv;charset=utf-8," 
-    //   + ledger.txns.map(row => Object.values(row).join(",")).join("\n");
-    // setCsvData(encodeURI(csvContent));
+
     const csvContent = [ ['Opening Stock', ledger.initQuantity],
     ['Closing Stock', ledger.finalQuantity],
       ['Transaction ID', 'Item Code', 'Item Description', "Previous Quantity", "Post Quantity", "Process Stage", "Location Description", "Locator Description"], // Header row

@@ -3,7 +3,7 @@ import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input, Typography, Popover } from "antd";
 import axios from "axios";
 import "./Login.css";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import SAI_Logo from "./../assets/images/SAI_logo.svg";
 
@@ -71,8 +71,6 @@ const SignIn = () => {
         localStorage.setItem("userRoles", userRoles);
         localStorage.setItem("userType", "SuperAdmin");
       }
-
-      window.location.reload();
     } catch (error) {
       console.log("Error while login.", error);
       setError("Invalid User Code or Password");
@@ -146,6 +144,8 @@ const SignIn = () => {
           </Popover>
         </Form.Item>
       </Form>
+
+      <Link to="/changePassword"> Forgot Password </Link>
     </div>
   );
 };
