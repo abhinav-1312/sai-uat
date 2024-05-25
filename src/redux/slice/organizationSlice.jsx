@@ -8,7 +8,9 @@ const organizationSlice = createSlice({
         data: null
     },
     reducers: {
-
+        clearOrganization(state, action){
+            state.data = null
+        }
     },
 
     extraReducers: (builder) => {
@@ -89,4 +91,5 @@ export const deleteOrganization = createAsyncThunk(
     }
 )
 
+export const { clearOrganization } = organizationSlice.actions;
 export default organizationSlice.reducer

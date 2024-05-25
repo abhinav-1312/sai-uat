@@ -8,7 +8,9 @@ const userSlice = createSlice({
         data: null
     },
     reducers: {
-
+        clearUser(state, action){
+            state.data = null
+        }
     },
 
     extraReducers: (builder) => {
@@ -87,4 +89,5 @@ export const deleteUser = createAsyncThunk(
     }
 )
 
+export const { clearUser } = userSlice.actions;
 export default userSlice.reducer

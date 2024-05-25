@@ -6,6 +6,15 @@ import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import { Content } from "antd/es/layout/layout";
 import { useDispatch, useSelector } from "react-redux";
 import { userLogout } from "../redux/slice/authSlice";
+import { clearDepartment } from "../redux/slice/departmentSlice";
+import { clearEmployee } from "../redux/slice/employeeSlice";
+import { clearItem } from "../redux/slice/itemSlice";
+import { clearLocation } from "../redux/slice/locationSlice";
+import { clearLocator } from "../redux/slice/locatorSlice";
+import { clearOrganization } from "../redux/slice/organizationSlice";
+import { clearUom } from "../redux/slice/uomSlice";
+import { clearUser } from "../redux/slice/userSlice";
+import { clearVendor } from "../redux/slice/vendorSlice";
 
 const { Header } = Layout;
 const Template = () => {
@@ -21,6 +30,15 @@ const Template = () => {
     // console.log("Navigate called")
     // window.location.reload();
     dispatch(userLogout())
+    dispatch(clearDepartment())
+    dispatch(clearEmployee())
+    dispatch(clearItem())
+    dispatch(clearLocation())
+    dispatch(clearLocator())
+    dispatch(clearOrganization())
+    dispatch(clearUom())
+    dispatch(clearUser())
+    dispatch(clearVendor())
     navigate('/login')
     
   };

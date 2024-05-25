@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
 import { apiCall } from "../../utils/Functions";
 import { BASE_URL } from "../../utils/BaseUrl";
 
@@ -7,6 +6,11 @@ const itemSlice = createSlice({
     name: "item",
     initialState: {
         data: null
+    },
+    reducers: {
+        clearItem(state, action){
+            state.data = null
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -40,4 +44,5 @@ export const fetchItemData = createAsyncThunk(
     }
 )
 
+export const { clearItem } = itemSlice.actions;
 export default itemSlice.reducer

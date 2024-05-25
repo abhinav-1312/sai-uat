@@ -8,7 +8,9 @@ const uomSlice = createSlice({
         data: null
     },
     reducers: {
-
+        clearUom(state, action){
+            state.data = null
+        }
     },
 
     extraReducers: (builder) => {
@@ -87,4 +89,5 @@ export const deleteUom = createAsyncThunk(
     }
 )
 
+export const { clearUom } = uomSlice.actions;
 export default uomSlice.reducer

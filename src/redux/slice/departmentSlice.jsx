@@ -8,7 +8,9 @@ const departmentSlice = createSlice({
         data: null
     },
     reducers: {
-
+        clearDepartment(state, action){
+            state.data = null
+        }
     },
 
     extraReducers: (builder) => {
@@ -88,4 +90,5 @@ export const deleteDepartment = createAsyncThunk(
     }
 )
 
+export const { clearDepartment } = departmentSlice.actions;
 export default departmentSlice.reducer

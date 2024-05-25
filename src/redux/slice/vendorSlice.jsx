@@ -8,7 +8,9 @@ const vendorSlice = createSlice({
         data: null
     },
     reducers: {
-
+        clearVendor(state, action){
+            state.data = null
+        }
     },
 
     extraReducers: (builder) => {
@@ -87,4 +89,5 @@ export const deleteVendor = createAsyncThunk(
     }
 )
 
+export const { clearVendor } = vendorSlice.actions;
 export default vendorSlice.reducer

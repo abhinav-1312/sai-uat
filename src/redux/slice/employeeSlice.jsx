@@ -8,7 +8,9 @@ const employeeSlice = createSlice({
         data: null
     },
     reducers: {
-
+        clearEmployee(state, action){
+            state.data = null
+        }
     },
 
     extraReducers: (builder) => {
@@ -87,4 +89,5 @@ export const deleteEmployee = createAsyncThunk(
     }
 )
 
+export const { clearEmployee } = employeeSlice.actions;
 export default employeeSlice.reducer

@@ -8,7 +8,9 @@ const locationSlice = createSlice({
         data: null
     },
     reducers: {
-
+        clearLocation(state, action){
+            state.data = null
+        }
     },
 
     extraReducers: (builder) => {
@@ -89,4 +91,5 @@ export const deleteLocation = createAsyncThunk(
     }
 )
 
+export const { clearLocation } = locationSlice.actions;
 export default locationSlice.reducer
