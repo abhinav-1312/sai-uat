@@ -55,7 +55,7 @@ const CurrencyPage = () => {
         </Button>
       </div>
       <CurrencyTable
-        currencies={currencies.filter((currency) =>
+        currencies={currencies?.filter((currency) =>
           currency.currencyCode.toLowerCase().includes(searchText.toLowerCase())
         )}
         onEdit={handleEdit}

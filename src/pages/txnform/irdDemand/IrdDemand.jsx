@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import axios from 'axios';
 import { apiHeader, printOrSaveAsPDF } from '../../../utils/Functions';
 import FormInputItem from '../../../components/FormInputItem';
+import { useSelector } from 'react-redux';
 const dateFormat = 'DD/MM/YYYY';
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -24,6 +25,9 @@ const DemandNoteForm = () => {
     crZipcode: "",
     crAddress: ""
   });
+
+  const { organizationDetails, locationDetails, userDetails, token, userCd } = useSelector(state => state.auth)
+
   useEffect(() => {
 
     // fetchItemData()
@@ -41,18 +45,18 @@ const DemandNoteForm = () => {
   //   }
   // };
   const fetchUserDetails = async () => {
-    try {
-      const userCd = localStorage.getItem("userCd")
-      const password = localStorage.getItem("password")
-      const apiUrl = 'https://sai-services.azurewebsites.net/sai-inv-mgmt/login/authenticate';
-      const response = await axios.post(apiUrl, {
-        userCd,
-        password
-      });
+    // try {
+    //   const userCd = localStorage.getItem("userCd")
+    //   const password = localStorage.getItem("password")
+    //   const apiUrl = 'https://sai-services.azurewebsites.net/sai-inv-mgmt/login/authenticate';
+    //   const response = await axios.post(apiUrl, {
+    //     userCd,
+    //     password
+    //   });
 
-      const { responseData } = response.data;
-      const { organizationDetails, locationDetails } = responseData;
-      const { userDetails } = responseData;
+    //   const { responseData } = response.data;
+    //   const { organizationDetails, locationDetails } = responseData;
+    //   const { userDetails } = responseData;
       // Update form data with fetched values
       setFormData({
         crRegionalCenterCd: organizationDetails.id,
@@ -63,14 +67,10 @@ const DemandNoteForm = () => {
         lastName: userDetails.lastName
 
       });
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
+    // } catch (error) {
+    //   console.error('Error fetching data:', error);
+    // }
   };
-
-  const userCd = localStorage.getItem("userCd")
-  const token = localStorage.getItem("token")
-
 
   const handleCeRccChange = async (value) => {
     const url = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getOrgMasterById"

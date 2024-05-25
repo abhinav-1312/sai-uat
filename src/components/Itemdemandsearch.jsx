@@ -15,6 +15,7 @@ import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import axios from "axios";
 import moment from "moment";
 import { apiHeader } from "../utils/Functions";
+import { useSelector } from "react-redux";
 const { TextArea } = Input;
 const { Search } = Input;
 
@@ -23,7 +24,7 @@ const ItemDemandSearch = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [selectedItems, setSelectedItems] = useState([]); // State to hold selected item data
-  const token = localStorage.getItem("token");
+  const {token} = useSelector(state => state.auth)
   useEffect(() => {
     // Fetch data from the API
     fetch(
@@ -40,7 +41,7 @@ const ItemDemandSearch = () => {
   const handleSearch = (value) => {
     setSearchValue(value);
     // Filter data based on any field
-    const filtered = data.filter((item) => {
+    const filtered = data?.filter((item) => {
       // Check if any field includes the search value
       return Object.values(item).some((field) => {
         if (typeof field === "string") {

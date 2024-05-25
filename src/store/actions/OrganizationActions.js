@@ -7,7 +7,7 @@ export const setOrganizations = (organizations) => ({
   payload: organizations,
 });
 
-export const fetchOrganizations = () => async (dispatch) => {
+const fetchOrganizations = () => async (dispatch) => {
   try {
     const response = await fetch(`${BASE_URL}/getOrgMaster`, apiHeader("GET", token) );
     const data = await response.json();

@@ -3,9 +3,10 @@ import React, { useEffect, useState } from 'react'
 import DetailData from './DetailData'
 import { apiHeader, convertArrayToObject, convertEpochToDateString } from '../../../utils/Functions'
 import axios from 'axios'
+import { useSelector } from 'react-redux'
 
 const GrnTable = ({type, data, itemList}) => {
-    const token = localStorage.getItem("token")
+    const {token} = useSelector(state => state.auth);
     const [uomObj, setUomObj] = useState({})
     const [locatorObj, setLocatorObj] = useState({})
 

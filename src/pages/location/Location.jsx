@@ -1,74 +1,53 @@
 // LocationPage.js
 import React, { useState, useEffect } from "react";
 import { Button, Modal, Input } from "antd";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import {
-  fetchLocations,
-  updateLocation,
-  saveLocation,
-  deleteLocation,
+  // fetchLocations,
+  // updateLocation,
+  // saveLocation,
+  // deleteLocation,
 } from "../../store/actions/LocationAction";
 import LocationTable from "./LocationTable";
 import LocationForm from "./LocationForm";
 import dayjs from "dayjs";
-
-const apiRequest = async (url, method, requestData) => {
-  const token = localStorage.getItem("token");
-  const options = {
-    method: method,
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": token,
-    },
-  };
-
-  if (method === "POST") {
-    options["body"] = JSON.stringify(requestData);
-  }
-
-  try {
-    const response = await fetch(url, options);
-    const data = await response.json();
-    return data.responseData;
-  } catch (error) {
-    console.error("Error: ", error);
-  }
-};
+import { deleteLocation, fetchLocations, saveLocation, updateLocation } from "../../redux/slice/locationSlice";
+import { apiCall } from "../../utils/Functions";
 
 const LocationPage = ({
-  locations,
-  fetchLocations,
-  updateLocation,
-  saveLocation,
-  deleteLocation,
+  // locations,
+  // fetchLocations,
+  // updateLocation,
+  // saveLocation,
+  // deleteLocation,
 }) => {
   const [visible, setVisible] = useState(false);
   const [editingLocation, setEditingLocation] = useState(null);
   const [searchText, setSearchText] = useState("");
-
-  useEffect(() => {
-    // Fetch data from Redux store on component mount
-    fetchLocations();
-  }, [fetchLocations]);
-  console.log(editingLocation);
+  const locations = useSelector(state => state.locations.data)
+  const {userCd, token} = useSelector(state => state.auth)
+  const dispatch = useDispatch()
 
   const getLocation = async (id) => {
-    const userCd = localStorage.getItem("userCd")
-    const itemResponse = await apiRequest(
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocationMasterById",
-      "POST",
-      {
-        locationId: id,
-        userId: userCd,
-      }
-    );
-    return itemResponse;
+    // const itemResponse = await apiRequest(
+    //   "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocationMasterById",
+    //   "POST",
+    //   {
+    //     locationId: id,
+    //     userId: userCd,
+    //   }
+    // );
+    try{
+      const itemResponse = await apiCall("POST", "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocationMasterById", token, {locationId: id, userId: userCd})
+      return itemResponse.responseData;
+    }catch(error){
+      console.log("Error fetching location by id.", error)
+      alert("Error fetching location by id.")
+    }
   }
 
   const handleEdit = async (location) => {
-    console.log("LOcation: ", location)
     const locationObject = await getLocation(location);
-    console.log("LOcationObj: ", locationObject)
     const dateObject = new Date(locationObject?.endDate);
     const year = dateObject.getFullYear();
     const month = dateObject.getMonth(); // Months are zero-based, so add 1
@@ -81,25 +60,32 @@ const LocationPage = ({
     setVisible(true);
   };
 
-  const handleDelete = (locationId) => {
+  const handleDelete = async (locationId) => {
     // Implement delete logic using the Redux action
-    deleteLocation(locationId);
+    try{
+      dispatch(deleteLocation({locationId, userId: userCd})).umwrap();
+      dispatch(fetchLocations())
+    }catch(error){
+      console.log("Errpr deleting location.", error)
+    }
+
   };
 
   const handleFormSubmit = async (values) => {
     try {
       if (editingLocation) {
         // Update logic using the Redux action
-        await updateLocation(editingLocation.id, values);
+        await dispatch(updateLocation({locationId: editingLocation.id, values})).unwrap();
       } else {
         // Create logic using the Redux action
-        await saveLocation(values);
+        await dispatch(saveLocation(values)).unwrap();
       }
-
+      dispatch(fetchLocations())
       setVisible(false); // Close the modal
       setEditingLocation(null); // Reset the editing location
     } catch (error) {
       console.error("Error:", error);
+      alert("Error occured while adding or saving location.")
     }
   };
 
@@ -127,7 +113,7 @@ const LocationPage = ({
         </Button>
       </div>
       <LocationTable
-        locations={locations.filter((location) =>
+        locations={locations?.filter((location) =>
           Object.values(location).some(
             (value) =>
               typeof value === "string" &&

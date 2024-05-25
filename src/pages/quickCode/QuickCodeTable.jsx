@@ -10,13 +10,15 @@ import {
   Select,
 } from "antd";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
 const QuickCodeTable = () => {
   const [data, setData] = useState([]);
   const [expandedRowKey, setExpandedRowKey] = useState(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editedConfig, setEditedConfig] = useState({});
-  const token = localStorage.getItem("token");
+  const {token} = useSelector(state => state.auth);
+
 
   useEffect(() => {
     // Fetch data from the API

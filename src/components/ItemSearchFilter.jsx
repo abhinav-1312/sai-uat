@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Input, Button, Table, Popover } from "antd";
 import { apiHeader } from "../utils/Functions";
+import { useSelector } from "react-redux";
 // import 'antd/dist/antd.css';
 
 const { Search } = Input;
@@ -9,7 +10,7 @@ const ItemSearchFilter = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchValue, setSearchValue] = useState("");
-  const token = localStorage.getItem("token");
+  const {token} = useSelector(state => state.auth)
   useEffect(() => {
     // Fetch data from the API
     fetch(
@@ -26,7 +27,7 @@ const ItemSearchFilter = () => {
   const handleSearch = (value) => {
     setSearchValue(value);
     // Filter data based on any field
-    const filtered = data.filter((item) => {
+    const filtered = data?.filter((item) => {
       // Check if any field includes the search value
       return Object.values(item).some((field) => {
         if (typeof field === "string") {

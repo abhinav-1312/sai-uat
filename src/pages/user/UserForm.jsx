@@ -4,15 +4,15 @@ import { Form, Input, Button, Select, Row, Col, DatePicker } from "antd";
 import moment from "moment";
 import axios from "axios";
 import { apiHeader } from "../../utils/Functions";
+import { useSelector } from "react-redux";
 
-const token = localStorage.getItem("token");
 const { Option } = Select;
 
 const UserForm = ({ onSubmit, initialValues }) => {
   const [form] = Form.useForm();
   const [departments, setDepartments] = useState([]);
   const [employeeId, setEmployeeId] = useState([]);
-  const token = localStorage.getItem("token")
+  const {token} = useSelector(state => state.auth);
 
   useEffect(() => {
     const fetchDepartments = async () => {

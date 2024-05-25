@@ -2,39 +2,43 @@ import React from "react";
 import { Button, theme, Layout, Breadcrumb } from "antd";
 import SAI_Logo from "./../assets/images/SAI_logo.svg";
 import SideNav from "./SideNav";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import { Content } from "antd/es/layout/layout";
+import { useDispatch, useSelector } from "react-redux";
+import { userLogout } from "../redux/slice/authSlice";
 
 const { Header } = Layout;
 const Template = () => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   const Logout = () => {
-    localStorage.removeItem("userCd");
-    localStorage.removeItem("userType");
-    localStorage.removeItem("userRoles");
-    localStorage.removeItem("token");
-    <Navigate to='/login' />
-  window.location.reload();
+    // localStorage.removeItem("userCd");
+    // localStorage.removeItem("userType");
+    // localStorage.removeItem("userRoles");
+    // localStorage.removeItem("token");
+    // // navigate('/login', { replace: true });
+    // <Navigate to='/login' replace/>
+    // console.log("Navigate called")
+    // window.location.reload();
+    dispatch(userLogout())
+    navigate('/login')
+    
   };
   const {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  const userCd = localStorage.getItem("userCd")
+  // const isLoggedIn = useSelector((state) => {
+  //   console.log("Statas", state)
+  //   return state.auth.token !== null
+  // })
 
-  if(!userCd){
-    return <Navigate to="/login" />
-  }
-
-  console.log("UserCd: ", userCd)
+  // if(!isLoggedIn){
+  //   return <Navigate to="/login" replace />
+  // }
 
   return (
-    // <div
-    //   style={{
-    //     minHeight: "100vh",
-    //   }}
-    // >
     <>
-    
       <Header
         style={{
           display: "flex",

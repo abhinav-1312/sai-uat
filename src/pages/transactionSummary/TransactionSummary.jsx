@@ -8,13 +8,14 @@ import {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { apiHeader } from "../../utils/Functions";
+import { useSelector } from "react-redux";
 
 const { Option } = Select;
 const dateFormat = "DD/MM/YYYY";
 
 const TransactionSummary = ({orgId}) => {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const {token} = useSelector(state => state.auth);
   const txnType = {
     RN: "Return Note",
     ISN: "Issue Note",

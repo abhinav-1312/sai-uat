@@ -20,6 +20,7 @@ import axios from "axios";
 
 import { apiHeader, handleSearch, printOrSaveAsPDF } from "../../../utils/Functions";
 import FormInputItem from "../../../components/FormInputItem";
+import { useSelector } from "react-redux";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
@@ -286,9 +287,7 @@ const IssueNote = () => {
         render: (locatorQuantity, rowRecord) => renderLocatorISN(locatorQuantity, rowRecord)
     },
   ];
-
-  const token = localStorage.getItem("token")
-  const userCd = localStorage.getItem("userCd")
+  const { organizationDetails, locationDetails, userDetails, token, userCd } = useSelector(state => state.auth)
   const populateItemData = async() => {
     const itemMasterUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMaster"
     const ohqUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getOHQ"
@@ -379,18 +378,18 @@ const IssueNote = () => {
   };
 
   const fetchUserDetails = async () => {
-    const userCd = localStorage.getItem('userCd');
-    const password = localStorage.getItem('password');
-    try {
-      const apiUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
-      const response = await axios.post(apiUrl, {
-        userCd,
-        password
-      });
+    // const userCd = localStorage.getItem('userCd');
+    // const password = localStorage.getItem('password');
+    // try {
+    //   const apiUrl =
+    //     "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
+    //   const response = await axios.post(apiUrl, {
+    //     userCd,
+    //     password
+    //   });
 
-      const { responseData } = response.data;
-      const { organizationDetails, userDetails, locationDetails } = responseData;
+      // const { responseData } = response.data;
+      // const { organizationDetails, userDetails, locationDetails } = responseData;
       // Get current date
       const currentDate = dayjs();
       setFormData(prev=>{
@@ -410,9 +409,9 @@ const IssueNote = () => {
           demandNoteDt: currentDate.format(dateFormat)
         }
       })
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+    // } catch (error) {
+    //   console.error("Error fetching data:", error);
+    // }
   };
 
   const handleCeRccChange = async (value) => {

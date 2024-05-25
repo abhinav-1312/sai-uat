@@ -12,6 +12,7 @@ import OgpTable from "./detailData/OgpTable";
 import IsnTable from "./detailData/IsnTable";
 import ReturnTable from "./detailData/ReturnTable";
 import MisTable from "./detailData/MisTable";
+import { useSelector } from "react-redux";
 
 const TransactionDetail = () => {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ const TransactionDetail = () => {
   const [grnData, setGrnData] = useState(null);
   const [ogpData, setOgpData] = useState(null);
   const [rejectData, setRejectData] = useState(null);
-  const token = localStorage.getItem("token");
+  const {token} = useSelector(state => state.auth);
 
   const populateHqData = async (orgId)=> {
     const trnDetailUrl =
@@ -67,6 +68,15 @@ const TransactionDetail = () => {
     setGrnData(grndata);
     setRejectData(rejectData);
     setInspectionNoteData(inspectionNewRptData);
+  }
+
+  const handleNavigate = () => {
+    if(orgId){
+      navigate("/hqTxnSummary")
+    }
+    else{
+      navigate("/trnsummary")
+    }
   }
 
   const populateData = async () => {
@@ -118,7 +128,7 @@ const TransactionDetail = () => {
         }}
       >
         <div>
-          <Button type="primary" onClick={() => navigate("/trnsummary")}>
+          <Button type="primary" onClick={() => handleNavigate()}>
             Back
           </Button>
         </div>

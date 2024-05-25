@@ -18,6 +18,7 @@ import dayjs from "dayjs";
 import axios from "axios";
 import { apiHeader, daysDifference, printOrSaveAsPDF } from "../../../utils/Functions";
 import FormInputItem from "../../../components/FormInputItem";
+import { useSelector } from "react-redux";
 const dateFormat = "DD/MM/YYYY";
 // import {FormInputItem} from "../../../components/FormInputItem";
 // import { printOrSaveAsPDF } from "../../../utils/Functions";
@@ -125,7 +126,7 @@ const RetunNote = () => {
     fetchUomMaster();
   }, []);
 
-  const token = localStorage.getItem("token")
+  const { organizationDetails, locationDetails, userDetails, token, userCd } = useSelector(state => state.auth)
 
   const fetchUomMaster = async () => {
     try {
@@ -151,19 +152,19 @@ const RetunNote = () => {
     }
   };
   const fetchUserDetails = async () => {
-    try {
-      const userCd = localStorage.getItem("userCd")
-      const password = localStorage.getItem("password")
-      const apiUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
-      const response = await axios.post(apiUrl, {
-        userCd,
-        password,
-      });
+    // try {
+    //   const userCd = localStorage.getItem("userCd")
+    //   const password = localStorage.getItem("password")
+    //   const apiUrl =
+    //     "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
+    //   const response = await axios.post(apiUrl, {
+    //     userCd,
+    //     password,
+    //   });
 
-      const { responseData } = response.data;
-      const { organizationDetails } = responseData;
-      const { userDetails } = responseData;
+    //   const { responseData } = response.data;
+    //   const { organizationDetails } = responseData;
+    //   const { userDetails } = responseData;
       const currentDate = dayjs();
       // Update form data with fetched values
       setFormData({
@@ -179,9 +180,9 @@ const RetunNote = () => {
         returnNoteDt: currentDate.format(dateFormat),
         returnNoteNo: "string",
       });
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+    // } catch (error) {
+    //   console.error("Error fetching data:", error);
+    // }
   };
   const handleIssueNoteNoChange = async (value) => {
     try {
@@ -350,30 +351,6 @@ const RetunNote = () => {
   const handleValuesChange = (_, allValues) => {
     setType(allValues.type);
   };
-
-  // const daysDifference = (issueDate) => {
-  //   const parts = issueDate.split("/");
-  //   const day = parseInt(parts[0], 10);
-  //   const month = parseInt(parts[1], 10);
-  //   const year = parseInt(parts[2], 10);
-  //   const givenDate = new Date(year, month - 1, day); // JavaScript months are 0-indexed
-
-  //   // constGet the current date
-  //   const currentDate = new Date();
-
-  //   // constCalculate the difference in milliseconds
-  //   const differenceMs = Math.abs(currentDate.getTime() - givenDate.getTime());
-
-  //   // constConvert the difference to days
-  //   const differenceDays = Math.floor(differenceMs / (1000 * 60 * 60 * 24));
-  //   // const difference_days = 1
-  //   return differenceDays;
-  // };
-
-  // const findUomName = (uomId) => {
-  //   const foundObj = uomMaster.find((obj) => uomId === obj.id);
-  //   return foundObj ? foundObj.uomName : "Undefined";
-  // };
 
   const findColumnValue = (id, dataSource, sourceName) => {
     const foundObject = dataSource.find((obj) => obj.id === id);

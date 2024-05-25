@@ -55,7 +55,7 @@ const TaxPage = () => {
         </Button>
       </div>
       <TaxTable
-        taxes={taxes.filter((tax) =>
+        taxes={taxes?.filter((tax) =>
           tax.taxName.toLowerCase().includes(searchText.toLowerCase())
         )}
         onEdit={handleEdit}

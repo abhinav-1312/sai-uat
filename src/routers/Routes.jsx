@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Organization from "../pages/organization/Organization";
 import Location from "../pages/location/Location";
@@ -29,25 +29,27 @@ import OHQ from "../pages/ohq/ohq";
 import TransactionSummary from "../pages/transactionSummary/TransactionSummary";
 import TransactionDetail from "../pages/transactionSummary/TransactionDetail";
 import StockLedger from "../pages/stockLedger/StockLedger";
-import HqOhq from '../pages/hqRoutes/HqOhq'
+import HqOhq from "../pages/hqRoutes/HqOhq";
 import HqTxnSummary from "../pages/hqRoutes/HqTxnSummary";
 import HqStockLedger from "../pages/hqRoutes/HqStockLedger";
 import ChangePasswordForm from "../auth/ChangePasswordForm";
 import SignIn from "../auth/Login";
-import Layout from '../components/Layout'
-
+import Layout from "../components/Layout";
+import { useUser } from "../context/UserContext";
+import PrivateRoutes from "./PrivateRoutes";
+import { useSelector } from "react-redux";
 
 const RoutesComponent = () => {
-  const userRole = localStorage.getItem("userRoles");
+  const userRole = useSelector((state) => state.auth.userRole);
 
   const headquarterRoutes = (
     <>
-      <Route path = '/hqOhq' element={<HqOhq />} />
-      <Route path = '/hqTxnSummary' element={<HqTxnSummary />} />
-      <Route path = '/hqStockLedger' element={<HqStockLedger />} />
+      <Route path="/hqOhq" element={<HqOhq />} />
+      <Route path="/hqTxnSummary" element={<HqTxnSummary />} />
+      <Route path="/hqStockLedger" element={<HqStockLedger />} />
       <Route path="/hqTxnSummary/:trnno" element={<TransactionDetail />} />
     </>
-  )
+  );
 
   const superAdminRoutes = (
     <>
@@ -168,24 +170,38 @@ const RoutesComponent = () => {
     </>
   );
 
+  const generateRoutes = (userRole) => {
+    console.log("Generate rourtes cleed: ", userRole);
+    switch (userRole) {
+      case "SuperAdmin":
+        return superAdminRoutes;
+      case "ssadmin":
+        return headquarterRoutes;
+      case "admin":
+        return adminRoutes;
+      case "InventoryManager":
+        return inventoryManagerRoutes;
+      case "QualityManager":
+        return qualityManagerRoutes;
+      case "ItemAdmin":
+        return itemAdminRoutes;
+      case "VendorAdmin":
+        return vendorAdminRoutes;
+      default:
+        return adminRoutes;
+    }
+  };
+
   return (
-    <>
     <Routes>
-    <Route path='/changePassword' element={<ChangePasswordForm />} />
-    <Route path='/login' element={<SignIn />} />
-    <Route path="/" element={<Layout />}>
-        {/* <Route path="stockLedger" element={<StockLedger />} />
-        {superAdminRoutes} */}
-        {(userRole === "ssadmin" && headquarterRoutes) || 
-        (userRole === "SuperAdmin" && superAdminRoutes) ||
-        (userRole === "admin" && adminRoutes) ||
-        (userRole === "InventoryManager" && inventoryManagerRoutes) ||
-        (userRole === "QualityManager" && qualityManagerRoutes) ||
-        (userRole === "ItemAdmin" && itemAdminRoutes) ||
-        (userRole === "VendorAdmin" && vendorAdminRoutes) }
-    </Route>
+      <Route path="/changePassword" element={<ChangePasswordForm />} />
+      <Route path="/login" element={<SignIn />} />
+      <Route element={<PrivateRoutes />}>
+        <Route path="/" element={<Layout />}>
+          {generateRoutes(userRole)}
+        </Route>
+      </Route>
     </Routes>
-    </>
   );
 };
 

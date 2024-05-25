@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { apiHeader, convertArrayToObject, convertEpochToDateString } from '../../../utils/Functions'
 import axios from 'axios'
 import DetailData from './DetailData'
+import { useSelector } from 'react-redux'
 
 const IgpTable = ({type, data, itemList}) => {
 
-    const token = localStorage.getItem("token")
+    const {token} = useSelector(state => state.auth);
     const [uomObj, setUomObj] = useState({})
     const [locatorObj, setLocatorObj] = useState({})
 

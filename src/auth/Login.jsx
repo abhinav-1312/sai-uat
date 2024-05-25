@@ -3,83 +3,49 @@ import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input, Typography, Popover } from "antd";
 import axios from "axios";
 import "./Login.css";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import SAI_Logo from "./../assets/images/SAI_logo.svg";
+import { useUser } from "../context/UserContext";
+import { useDispatch } from "react-redux";
+import { login } from "../redux/slice/authSlice";
+import { fetchDepartments } from "../redux/slice/departmentSlice";
+import { fetchEmployees } from "../redux/slice/employeeSlice";
+import { fetchLocations } from "../redux/slice/locationSlice";
+import { fetchLocators } from "../redux/slice/locatorSlice";
+import { fetchUsers } from "../redux/slice/userSlice";
+import { fetchVendors } from "../redux/slice/vendorSlice";
+import { fetchOrganizations } from "../redux/slice/organizationSlice";
+import { fetchUoms } from "../redux/slice/uomSlice";
 
 const SignIn = () => {
   // const [userCd, setUserCd] = useState("");
   // const [password, setPassword] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [error, setError] = useState(null);
+  const navigate = useNavigate()
+
+  const dispatch = useDispatch()
 
   const handleLogin = async (values) => {
-    try {
-      const response = await axios.post(
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate",
-        {
-          userCd: values.userCd,
-          password: values.password,
-        }
-      );
+    try{
+      await dispatch(login(values)).unwrap()
+      navigate("/")
+      dispatch(fetchDepartments())
+    dispatch(fetchEmployees())
+    dispatch(fetchLocations())
+    dispatch(fetchLocators())
+    dispatch(fetchUsers())
+    dispatch(fetchVendors())
+    dispatch(fetchOrganizations())
+    dispatch(fetchUoms())
 
-      const { userCd, userType } = response.data.responseData.userDetails;
-      const { token } = response.data.responseData;
-      
-      // Store user details in local storage
-      // localStorage.setItem(response)
-      localStorage.setItem("userCd", userCd);
-      localStorage.setItem("userType", userType);
-      localStorage.setItem("password", values.password);
-      localStorage.setItem("token", token);
-
-      setIsLoggedIn(true);
-      console.log(isLoggedIn);
-
-      if (userType === "01") {
-        const userRoles = "ssadmin";
-        localStorage.setItem("userRoles", userRoles);
-        localStorage.setItem("userType", "ssadmin");
-      }
-      if (userType === "11") {
-        const userRoles = "admin";
-        localStorage.setItem("userRoles", userRoles);
-        localStorage.setItem("userType", "admin");
-      }
-      if (userType === "12") {
-        const userRoles = "InventoryManager";
-        localStorage.setItem("userRoles", userRoles);
-        localStorage.setItem("userType", "InventoryManager");
-      }
-      if (userType === "13") {
-        const userRoles = "QualityManager";
-        localStorage.setItem("userRoles", userRoles);
-        localStorage.setItem("userType", "QualityManager");
-      }
-      if (userType === "14") {
-        const userRoles = "ItemAdmin";
-        localStorage.setItem("userRoles", userRoles);
-        localStorage.setItem("userType", "ItemAdmin");
-      }
-      if (userType === "15") {
-        const userRoles = "VendorAdmin";
-        localStorage.setItem("userRoles", userRoles);
-        localStorage.setItem("userType", "VendorAdmin");
-      }
-      if (userType === "99") {
-        const userRoles = "SuperAdmin";
-        localStorage.setItem("userRoles", userRoles);
-        localStorage.setItem("userType", "SuperAdmin");
-      }
-    } catch (error) {
-      console.log("Error while login.", error);
-      setError("Invalid User Code or Password");
+    }
+    catch(error){
+      console.log("Error on login.", error)
     }
   };
 
-  if (isLoggedIn) {
-    return <Navigate to="/" replace />;
-  }
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };

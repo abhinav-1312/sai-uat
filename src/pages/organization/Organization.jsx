@@ -1,52 +1,59 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal, Input } from "antd";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import {
-  fetchOrganizations,
-  updateOrganization,
-  saveOrganization,
-  deleteOrganization,
+  // updateOrganization,
+  // saveOrganization,
+  // deleteOrganization,
 } from "../../store/actions/OrganizationActions";
 import OrganizationTable from "./OrganizationTable";
 import OrganizationForm from "./OrganizationForm";
+import { deleteOrganization, fetchOrganizations, saveOrganization, updateOrganization } from "../../redux/slice/organizationSlice";
 
 const OrganizationPage = ({
-  organizations,
-  fetchOrganizations,
-  updateOrganization,
-  saveOrganization,
-  deleteOrganization,
+  // organizations,
+  // fetchOrganizations,
+  // updateOrganization,
+  // saveOrganization,
+  // deleteOrganization,
 }) => {
   const [visible, setVisible] = useState(false);
   const [editingOrganization, setEditingOrganization] = useState(null);
   const [searchText, setSearchText] = useState("");
+  // const [organizations, setOrganizations] = useState(null)
+  const dispatch = useDispatch()
+  const userCd = useSelector(state => state.auth.userCd)
 
-  useEffect(() => {
-    fetchOrganizations();
-  }, [fetchOrganizations]);
-
+   const organizations = useSelector(state => state.organizations.data)
+  
+  
   const handleEdit = (organization) => {
     console.log(organization);
     setEditingOrganization(organization);
     setVisible(true);
   };
 
-  const handleDelete = (organizationId) => {
-    deleteOrganization(organizationId);
+  const handleDelete = async (organizationId) => {
+    
+    await dispatch(deleteOrganization({id: organizationId, userId: userCd })).unwrap()
+    dispatch(fetchOrganizations())
   };
 
   const handleFormSubmit = async (values) => {
     try {
       if (editingOrganization) {
-        await updateOrganization(editingOrganization.id, values);
+        await dispatch(updateOrganization({organizationId: editingOrganization.id, values})).unwrap()
       } else {
-        await saveOrganization(values);
+        await dispatch(saveOrganization(values)).unwrap()
       }
+
+      dispatch(fetchOrganizations())
 
       setVisible(false);
       setEditingOrganization(null);
     } catch (error) {
       console.error("Error:", error);
+      alert("Error occured while editing organization.")
     }
   };
 
@@ -75,7 +82,7 @@ const OrganizationPage = ({
       </div>
       <OrganizationTable
     
-        organizations={organizations.filter((organization) =>
+        organizations={organizations?.filter((organization) =>
           Object.values(organization).some(
             (value) =>
               typeof value === "string" &&

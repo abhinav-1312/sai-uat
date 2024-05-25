@@ -6,6 +6,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { CSVLink } from 'react-csv';
 import moment from "moment";
+import { useSelector } from "react-redux";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -13,7 +14,7 @@ const dateFormat = "DD/MM/YYYY";
 
 
 const StockLedger = ({orgId}) => {
-  const token = localStorage.getItem("token");
+  const {token} = useSelector(state => state.auth);
 
   const [filterOption, setFilterOption] = useState({
     fromDate: null,
@@ -68,6 +69,37 @@ const StockLedger = ({orgId}) => {
     catch(error){
       console.log("error", error)
       alert("Some error occured. Please try again")
+    }
+  }
+
+  const fetchLocationLocatorByOrgId = async () => {
+    const locatorUrl =
+      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocatorMasterByOrgId";
+    const locationUrl =
+      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocationMasterByOrgId";
+    try{
+      const [locatorData, locationData] = await Promise.all([
+        axios.post(locatorUrl, {orgId}, apiHeader("POST", token)),
+        axios.post(locationUrl, {orgId}, apiHeader("POST", token)),
+      ]);
+    
+      const locatorObj = locatorData.data.responseData.reduce((acc, curr) => {
+        acc[curr.id] = curr.locatorDesc;
+        return acc;
+      }, {});
+
+      const locationObj = locationData.data.responseData.reduce((acc, curr) => {
+        acc[curr.id] = curr.locationName;
+        return acc;
+      }, {});
+  
+      setLocator({...locatorObj})
+      setLocation({...locationObj})
+
+    }
+    catch(error){
+      console.log("Error occured: ", error)
+      alert("Error occured. Please try again.")
     }
   }
 
@@ -142,11 +174,12 @@ const StockLedger = ({orgId}) => {
   useEffect(() => {
     if(orgId){
       populateByOrgId()
+      fetchLocationLocatorByOrgId()
     }
     else{
       populateItemData();
+      fetchLocatorLocationDtls();
     }
-    fetchLocatorLocationDtls();
   }, [orgId]);
 
   const handleFormValueChange = (fieldName, value) => {
@@ -256,7 +289,7 @@ const StockLedger = ({orgId}) => {
         >
           <Form.Item label="Item Description" style={{ gridColumn: "span 2" }} rules={[{ required: true, message: 'Please enter Item Code' }]} >
             <Select
-              value={filterOption.itemCode}
+              value={filterOption?.itemCode}
               onChange={(value) => handleFormValueChange("itemCode", value)}
               showSearch
           optionFilterProp="children"

@@ -1,29 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal, Input } from "antd";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import {
-  fetchLocators,
-  updateLocator,
-  saveLocator,
-  deleteLocator,
+  // fetchLocators,
+  // updateLocator,
+  // saveLocator,
+  // deleteLocator,
 } from "../../store/actions/LocatorActions";
 import LocatorTable from "./LocatorTable";
 import LocatorForm from "./LocatorForm";
+import { deleteLocator, fetchLocators, saveLocator, updateLocator } from "../../redux/slice/locatorSlice";
 
 const LocatorPage = ({
-  locators,
-  fetchLocators,
-  updateLocator,
-  saveLocator,
-  deleteLocator,
+  // locators,
+  // fetchLocators,
+  // updateLocator,
+  // saveLocator,
+  // deleteLocator,
 }) => {
   const [visible, setVisible] = useState(false);
   const [editingLocator, setEditingLocator] = useState(null);
   const [searchText, setSearchText] = useState("");
+  const userCd = useSelector(state => state.auth.userCd)
+  const locators = useSelector(state => state.locators.data)
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    fetchLocators();
-  }, [fetchLocators]);
+    dispatch(fetchLocators());
+  }, []);
 
   const handleEdit = (locator) => {
     console.log(locator);
@@ -32,21 +36,22 @@ const LocatorPage = ({
   };
 
   const handleDelete = (locatorId) => {
-    deleteLocator(locatorId);
+    dispatch(deleteLocator({locatorId, userId: userCd}));
   };
 
   const handleFormSubmit = async (values) => {
     try {
       if (editingLocator) {
-        await updateLocator(editingLocator.id, values);
+        await dispatch(updateLocator({locatorId: editingLocator.id, values})).unwrap();
       } else {
-        await saveLocator(values);
+        await dispatch(saveLocator(values)).unwrap();
       }
-
+      dispatch(fetchLocators())
       setVisible(false);
       setEditingLocator(null);
     } catch (error) {
       console.error("Error:", error);
+      alert("Error occured while saving or updating locator.")
     }
   };
 
@@ -74,7 +79,7 @@ const LocatorPage = ({
         </Button>
       </div>
       <LocatorTable
-        locators={locators.filter((locator) =>
+        locators={locators?.filter((locator) =>
           Object.values(locator).some(
             (value) =>
               typeof value === "string" &&

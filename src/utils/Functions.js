@@ -1,6 +1,7 @@
 import {Table, Button} from "antd"
 import html2pdf from 'html2pdf.js';
 import axios from 'axios'
+import { useSelector } from "react-redux";
 
 const sanitizeText = (text) => {
   return text.toString().toLowerCase().replace(/\s+/g, '');
@@ -12,7 +13,7 @@ export const handleSearch = (searchText, itemData, setHook, setSearch=null) => {
       const sanitizedText = sanitizeText(searchText);
       if(setSearch !== null)
         setSearch(sanitizedText)
-      const filtered = itemData.filter((parentObject) =>
+      const filtered = itemData?.filter((parentObject) =>
         recursiveSearch(parentObject, sanitizedText)
     );
     setHook([...filtered]);
@@ -21,10 +22,38 @@ export const handleSearch = (searchText, itemData, setHook, setSearch=null) => {
 
 export const apiHeader = (method, token) => {
   return {
-    method: method,
+    // method: method,
     headers: {
       "Content-Type": "application/json",
       'Authorization': `Bearer ${token}`
+    }
+  }
+}
+
+export const apiCall = async (method, url, token, payload=null) => {
+  const header = {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    }
+  }
+  if(method === "GET") {
+    try{
+      const {data} = await axios.get(url, header)
+      return data
+    }
+    catch(error){
+      console.log("Error occured.", error)
+      alert("Some error occured.")
+    }
+  }
+  else if(method === "POST"){
+    try{
+      const {data} = await axios.post(url, payload, header)
+      return data
+    }catch(error){
+      console.log("Error occured.", error)
+      alert("Some error occured.")
     }
   }
 }
@@ -88,6 +117,13 @@ const recursiveSearch = (object, searchText) => {
   return false;
 };
 
+export const convertToCurrency = (amount) => {
+  const formattedAmount = amount.toLocaleString('en-IN', {
+    style: 'currency',
+    currency: 'INR'
+  });
+  return formattedAmount
+}
 
 
 export const handleSelectItem = (
@@ -172,7 +208,8 @@ export const renderLocatorOHQ = (obj) => {
           {
             title: "Total Value",
             dataIndex: "totalValues",
-            key: "totalValue"
+            key: "totalValue",
+            render: (value) => convertToCurrency(value)
           },
         ]}
       />

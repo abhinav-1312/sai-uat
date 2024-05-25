@@ -18,6 +18,7 @@ import {
 import { Link } from "react-router-dom";
 import RoutesComponent from "../routers/Routes";
 import StockLedger from "../pages/stockLedger/StockLedger";
+import { useSelector } from "react-redux";
 
 const { Content, Sider } = Layout;
 
@@ -167,8 +168,8 @@ const SideNav = () => {
     setCollapsed(!collapsed);
   };
 
-  const userRole = localStorage.getItem("userRoles");
-  const filteredMenuItems = menuItems.filter((item) => {
+  const {userRole} = useSelector(state => state.auth)
+  const filteredMenuItems = menuItems?.filter((item) => {
     switch (userRole) {
       case "SuperAdmin": 
         return (
@@ -330,7 +331,7 @@ const SideNav = () => {
           defaultSelectedKeys={["1"]}
           style={{ background: "#57cac3", color: "white" }}
         >
-          {filteredMenuItems.map((item) =>
+          {filteredMenuItems?.map((item) =>
             item.children ? (
               renderSubMenu(item)
             ) : (

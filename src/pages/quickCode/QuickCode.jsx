@@ -47,7 +47,7 @@ const QuickCodePage = () => {
         </Button>
       </div>
       <QuickCodeTable
-        quickCodes={quickCodes.filter((quickCode) =>
+        quickCodes={quickCodes?.filter((quickCode) =>
           quickCode.configCode.toLowerCase().includes(searchText.toLowerCase())
         )}
         onEdit={handleEdit}

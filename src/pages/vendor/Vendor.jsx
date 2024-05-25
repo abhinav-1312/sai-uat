@@ -1,29 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal, Input } from "antd";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import {
-  fetchVendors,
-  updateVendor,
-  saveVendor,
-  deleteVendor,
+  // fetchVendors,
+  // updateVendor,
+  // saveVendor,
+  // deleteVendor,
 } from "../../store/actions/VendorActions";
 import VendorTable from "./VendorTable";
 import VendorForm from "./VendorForm";
+import { deleteVendor, fetchVendors, saveVendor, updateVendor } from "../../redux/slice/vendorSlice";
 
 const VendorPage = ({
-  vendors,
-  fetchVendors,
-  updateVendor,
-  saveVendor,
-  deleteVendor,
+  // vendors,
+  // fetchVendors,
+  // updateVendor,
+  // saveVendor,
+  // deleteVendor,
 }) => {
   const [visible, setVisible] = useState(false);
   const [editingVendor, setEditingVendor] = useState(null);
   const [searchText, setSearchText] = useState("");
 
+  const userCd = useSelector(state => state.auth.userCd)
+  const vendors = useSelector(state => state.vendors.data)
+  const dispatch = useDispatch()
+
   useEffect(() => {
-    fetchVendors();
-  }, [fetchVendors]);
+    dispatch(fetchVendors());
+  }, []);
 
   const handleEdit = (vendor) => {
     setEditingVendor(vendor);
@@ -31,20 +36,21 @@ const VendorPage = ({
   };
 
   const handleDelete = (vendorId) => {
-    deleteVendor(vendorId);
+    dispatch(deleteVendor({vendorId, userId: userCd}));
   };
 
   const handleFormSubmit = async (values) => {
     try {
       if (editingVendor) {
-        await updateVendor(editingVendor.id, values);
+        await dispatch(updateVendor({vendorId: editingVendor.id, values})).unwrap();
       } else {
-        await saveVendor(values);
+        await dispatch(saveVendor(values)).unwrap();
       }
       setVisible(false);
       setEditingVendor(null);
     } catch (error) {
       console.error("Error:", error);
+      alert("Error occured while saving or updating vendor.")
     }
   };
 
@@ -72,7 +78,7 @@ const VendorPage = ({
         </Button>
       </div>
       <VendorTable
-        vendors={vendors.filter((vendor) =>
+        vendors={vendors?.filter((vendor) =>
           Object.values(vendor).some(
             (value) =>
               typeof value === "string" &&

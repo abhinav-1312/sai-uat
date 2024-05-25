@@ -2,11 +2,12 @@ import { Form, Select, Input } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { apiHeader } from "../utils/Functions";
+import { useSelector } from "react-redux";
 
 const { Option } = Select;
 
 const OrgSearchFilter = ({handleChange}) => {
-    const token = localStorage.getItem("token")
+  const {token} = useSelector(state => state.auth)
     const [orgData, setOrgData] = useState(null)
     const getOrgMaster = async () => {
         const orgIdUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getOrgMaster"

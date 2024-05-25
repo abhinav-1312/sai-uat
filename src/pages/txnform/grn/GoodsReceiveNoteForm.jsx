@@ -17,7 +17,8 @@ import "./GoodsReceiveNoteForm.css";
 import dayjs from "dayjs";
 import axios from "axios";
 import FormInputItem from "../../../components/FormInputItem";
-import { apiHeader, printOrSaveAsPDF } from "../../../utils/Functions";
+import { apiCall, apiHeader, printOrSaveAsPDF } from "../../../utils/Functions";
+import { useSelector } from "react-redux";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
@@ -105,6 +106,8 @@ const GoodsReceiveNoteForm = () => {
     note: "",
   });
 
+  const { organizationDetails, locationDetails, userDetails, token, userCd } = useSelector(state => state.auth)
+
   const deepClone = (obj) => {
     if (obj === null || typeof obj !== 'object') {
       return obj;
@@ -155,7 +158,6 @@ const GoodsReceiveNoteForm = () => {
     });
   };
 
-  const token = localStorage.getItem("token")
   const populateItemData = async () => {
     const itemMasterUrl =
       "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMaster";
@@ -169,15 +171,18 @@ const GoodsReceiveNoteForm = () => {
     try {
       const [itemMaster, locatorMaster, uomMaster] = await Promise.all(
         [
-          axios.get(itemMasterUrl, apiHeader("GET", token)),
-          axios.get(locatorMasterUrl, apiHeader("GET", token)),
-          axios.get(uomMasterUrl, apiHeader("GET", token)),
+          apiCall("GET", itemMasterUrl, token),
+          apiCall("GET", locatorMasterUrl, token),
+          apiCall("GET", uomMasterUrl, token)
+          // axios.get(itemMasterUrl, apiHeader("GET", token)),
+          // axios.get(locatorMasterUrl, apiHeader("GET", token)),
+          // axios.get(uomMasterUrl, apiHeader("GET", token)),
         ]
       );
 
-      const { responseData: itemMasterData } = itemMaster.data;
-      const { responseData: locatorMasterData } = locatorMaster.data;
-      const { responseData: uomMasterData } = uomMaster.data;
+      const { responseData: itemMasterData } = itemMaster
+      const { responseData: locatorMasterData } = locatorMaster
+      const { responseData: uomMasterData } = uomMaster
 
       setItemData([...itemMasterData]);
       setUomMaster([...uomMasterData]);
@@ -193,21 +198,19 @@ const GoodsReceiveNoteForm = () => {
   }, []);
 
   const fetchUserDetails = async (processType=null) => {
-    console.log("ProcessTypee: ", processType)
-    const userCd = localStorage.getItem('userCd');
-    const password = localStorage.getItem('password');
-    try {
-      const apiUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
-      const response = await axios.post(apiUrl, {
-        userCd,
-        password,
-      });
+    // const password = localStorage.getItem('password');
+    // try {
+    //   const apiUrl =
+    //     "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
+    //   const response = await axios.post(apiUrl, {
+    //     userCd,
+    //     password,
+    //   });
 
-      const { responseData } = response.data;
-      const { organizationDetails } = responseData;
-      const { userDetails } = responseData;
-      const {locationDetails} = responseData
+    //   const { responseData } = response.data;
+    //   const { organizationDetails } = responseData;
+    //   const { userDetails } = responseData;
+    //   const {locationDetails} = responseData
       const currentDate = dayjs();
       // Update form data with fetched values
       if(processType === "IRP"){
@@ -252,12 +255,11 @@ const GoodsReceiveNoteForm = () => {
           processId: "string"
         });
       }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+    // } catch (error) {
+    //   console.error("Error fetching data:", error);
+    // }
   };
 
-  const userCd = localStorage.getItem("userCd")
 
   const handleReturnNoteNoChange = async (value) => {
     try {
@@ -266,10 +268,13 @@ const GoodsReceiveNoteForm = () => {
       const ohqUrl =
         "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getOHQ";
 
-      const {data} = await axios.post(subProcessDtlUrl, {
-        processId: value,
-        processStage: Type==="IRP" ? "RN" : "ACT",
-      }, apiHeader("POST", token));
+
+      // const {data} = await axios.post(subProcessDtlUrl, {
+      //   processId: value,
+      //   processStage: Type==="IRP" ? "RN" : "ACT",
+      // }, apiHeader("POST", token));
+
+      const data = await apiCall("POST", subProcessDtlUrl, token, {processId: value, processStage: Type === "IRP" ? "RN" : "ACT"})
 
       const {responseStatus, responseData} = data
       const {processData, itemList} = responseData
@@ -280,12 +285,14 @@ const GoodsReceiveNoteForm = () => {
             itemList?.map(async (item) => {
               const itemCode  = item.itemCode;
 
-              const ohqRes = await axios.post(ohqUrl, {
-                itemCode: itemCode,
-                userId: userCd,
-              }, apiHeader("POST", token));
-              const { data: ohqProcess } = ohqRes;
-              const { responseData: ohqData } = ohqProcess;
+              // const ohqRes = await axios.post(ohqUrl, {
+              //   itemCode: itemCode,
+              //   userId: userCd,
+              // }, apiHeader("POST", token));
+
+              const data = await apiCall("POST", ohqUrl, token, {itemCode: itemCode, userId: userCd})
+              // const { data: ohqProcess } = ohqRes;
+              const { responseData: ohqData } = data;
               return {
                 itemCode: ohqData[0].itemCode,
                 qtyList: ohqData[0].qtyList,

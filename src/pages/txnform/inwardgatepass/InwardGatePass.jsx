@@ -19,6 +19,7 @@ import dayjs from "dayjs";
 import axios from "axios";
 import { apiHeader, fetchUomLocatorMaster, handleSearch, printOrSaveAsPDF } from "../../../utils/Functions";
 import FormInputItem from "../../../components/FormInputItem";
+import { useSelector } from "react-redux";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Text, Title } = Typography;
@@ -98,10 +99,7 @@ const InwardGatePass = () => {
   const handleOk = () => {
     setIsModalOpen(false);
   };
-
-  const userCd = localStorage.getItem("userCd")
-  const password = localStorage.getItem("password")
-  const token = localStorage.getItem("token")
+  const { organizationDetails, locationDetails, userDetails, token, userCd } = useSelector(state => state.auth)
 
   const searchVendor = async (value) => {
     const vendorByIdUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getVendorMasterById"
@@ -436,20 +434,18 @@ const InwardGatePass = () => {
   };
   const fetchUserDetails = async (processType=null) => {
     console.log("ProcessTypee: ", processType)
-    const userCd = localStorage.getItem('userCd');
-    const password = localStorage.getItem('password');
-    try {
-      const apiUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
-      const response = await axios.post(apiUrl, {
-        userCd,
-        password,
-      });
+    // try {
+    //   const apiUrl =
+    //     "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
+    //   const response = await axios.post(apiUrl, {
+    //     userCd,
+    //     password,
+    //   });
 
-      const { responseData } = response.data;
-      const { organizationDetails } = responseData;
-      const { userDetails } = responseData;
-      const {locationDetails} = responseData
+      // const { responseData } = response.data;
+      // const { organizationDetails } = responseData;
+      // const { userDetails } = responseData;
+      // const {locationDetails} = responseData
       const currentDate = dayjs();
       // Update form data with fetched values
       if(processType === "IRP" || processType === "IOP"){
@@ -493,9 +489,9 @@ const InwardGatePass = () => {
           processId: "string"
         });
       }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+    // } catch (error) {
+    //   console.error("Error fetching data:", error);
+    // }
   };
 
   const handleInwardGatePassChange = async (_, value) => {

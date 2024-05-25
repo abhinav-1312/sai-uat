@@ -13,6 +13,7 @@ import {
 } from "antd";
 import axios from "axios";
 import { apiHeader } from "../../utils/Functions";
+import { useSelector } from "react-redux";
 
 const { Option } = Select;
 
@@ -42,7 +43,7 @@ const ItemsForm = ({
   const [itemDescriptionOptions, setItemDescriptionOptions] = useState([]);
   const [itemDescriptionDisabled, setItemDescriptionDisabled] = useState(true);
 
-  const token = localStorage.getItem("token");
+  const {token} = useSelector(state => state.auth)
 
   const handleCategoryChange = (value) => {
     setSelectedCategory(value);

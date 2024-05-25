@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Input, Table } from "antd";
 import axios from "axios";
-import { apiHeader, handleSearch, renderLocatorOHQ } from "../../utils/Functions";
+import { apiHeader, convertToCurrency, handleSearch, renderLocatorOHQ } from "../../utils/Functions";
+import { useSelector } from "react-redux";
 
 const Ohq = ({orgId, organization}) => {
   const [itemData, setItemData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const token = localStorage.getItem("token");
+  const [totVal, setTotVal] = useState(0)
+  // const token = localStorage.getItem("token");
 
-  const userId = localStorage.getItem("userCd")
+  // const userId = localStorage.getItem("userCd")
+
+  const {token, userCd:userId} = useSelector(state=>state.auth)
   // const [itemMasterData, setItemMasterData] = useState([])
 
   const populateItemData = async () => {
@@ -21,6 +25,16 @@ const Ohq = ({orgId, organization}) => {
       const { responseData } = data;
       setItemData([...responseData]);
       setFilteredData([...responseData]);
+
+      // calculate total value
+      let sum = 0
+      responseData.forEach(item => {
+        item.qtyList.forEach(loc => {
+          sum = sum + loc.totalValues
+        })
+      })
+
+      setTotVal(convertToCurrency(sum))
     }catch(error){
       console.log("Error", error)
       alert("Error occured while fetching data. Please try again.")
@@ -38,6 +52,16 @@ const Ohq = ({orgId, organization}) => {
       const { responseData } = data;
       setItemData([...responseData]);
       setFilteredData([...responseData]);
+
+      // calculate total value
+      let sum = 0
+      responseData.forEach(item => {
+        item.qtyList.forEach(loc => {
+          sum = sum + loc.totalValues
+        })
+      })
+
+      setTotVal(convertToCurrency(sum))
     }
     catch(error){
       console.log("Error", error)
@@ -82,7 +106,6 @@ const Ohq = ({orgId, organization}) => {
           }
         })
       })
-      console.log("NEw array: ", newArray)
       setItemData([...newArray]);
       setFilteredData([...newArray]);
     }
@@ -163,6 +186,8 @@ const Ohq = ({orgId, organization}) => {
     <>
       <h1 style={{ textAlign: "center" }}> On Hand Quantity for Items </h1>
 
+      <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+
       <Input.Search
         placeholder="Search item"
         allowClear
@@ -175,7 +200,11 @@ const Ohq = ({orgId, organization}) => {
           handleSearch(e.target?.value || null, itemData, setFilteredData)
         }
         style={{ width: "30%", margin: "1rem 0" }}
-      />
+        />
+      <h2 style={{border: "2px solid black", padding: "1rem", borderRadius: "5px"}}>
+        Total value for all items: {totVal}
+      </h2>
+        </div>
 
       <Table dataSource={filteredData} columns={columns} />
     </>

@@ -15,8 +15,10 @@ import {
 import { MinusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
-import { apiHeader, convertEpochToDateString, fetchUomLocatorMaster, printOrSaveAsPDF } from "../../../utils/Functions";
+import { apiCall, apiHeader, convertEpochToDateString, fetchUomLocatorMaster, printOrSaveAsPDF } from "../../../utils/Functions";
 import FormInputItem from "../../../components/FormInputItem";
+import { useSelector } from "react-redux";
+import { BASE_URL } from "../../../utils/BaseUrl";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
@@ -111,21 +113,19 @@ const AcceptanceNote = () => {
     fetchUserDetails();
   }, []);
 
-  const token = localStorage.getItem("token")
+  const { organizationDetails, locationDetails, userDetails, token, userCd } = useSelector(state => state.auth)
 
   const fetchUserDetails = async () => {
-    try {
-      const userCd = localStorage.getItem("userCd")
-      const password = localStorage.getItem("password")
-      const apiUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
-      const response = await axios.post(apiUrl, {
-        userCd,
-        password,
-      });
+    // try {
+      // const userCd = localStorage.getItem("userCd")
+      // const password = localStorage.getItem("password")
+      // const apiUrl =
+      //   "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
+      // const response = await axios.post(apiUrl, {
+      //   userCd,
+      //   password,
+      // });
 
-      const { responseData } = response.data;
-      const { organizationDetails, locationDetails, userDetails } = responseData;
       const currentDate = dayjs();
       // Update form data with fetched values
       setFormData({
@@ -141,20 +141,22 @@ const AcceptanceNote = () => {
         acptRejNodeDT: currentDate.format(dateFormat),
         acptRejNoteNo: "string",
       });
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+    // } catch (error) {
+    //   console.error("Error fetching data:", error);
+    // }
   };
 
   const handleInspectionNOChange = async (value) => {
     try {
-      const apiUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
-      const response = await axios.post(apiUrl, {
-        processId: value,
-        processStage: "IRN",
-      }, apiHeader("POST", token));
-      const responseData = response.data.responseData;
+      // const apiUrl =
+      //   "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
+      // const response = await axios.post(apiUrl, {
+      //   processId: value,
+      //   processStage: "IRN",
+      // }, apiHeader("POST", token));
+
+      const data = await apiCall("POST", `${BASE_URL}/getSubProcessDtls`, token, {processId: value, processStage: "IRN"})
+      const {responseData} = data;
       const { processData, itemList } = responseData;
       setFormData((prevFormData) => ({
         ...prevFormData,
@@ -266,16 +268,16 @@ const AcceptanceNote = () => {
 
       const apiUrl =
       "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/saveAcceptanceNote";
-      const response = await axios.post(apiUrl, formDataCopy, apiHeader("POST", token));
+      // const response = await axios.post(apiUrl, formDataCopy, apiHeader("POST", token));
+      const data = await apiCall("POST", `${BASE_URL}/saveAcceptanceNote`, token, formDataCopy)
+      const {responseData} = data
       if (
-        response.status === 200 &&
-        response.data &&
-        response.data.responseStatus &&
-        response.data.responseStatus.message === "Success"
+        data.responseStatus &&
+        data.responseStatus.message === "Success"
       ) {
         // Access the specific success message data if available
         const { processId, processType, subProcessId } =
-          response.data.responseData;
+          responseData;
         setFormData((prev) => {
           return {
             ...prev,

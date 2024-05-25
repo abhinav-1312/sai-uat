@@ -19,6 +19,7 @@ import { apiHeader } from "../../../utils/Functions";
 import FormInputItem from "../../../components/FormInputItem";
 import FormDatePickerItem from "../../../components/FormDatePickerItem";
 import { convertArrayToObject, printOrSaveAsPDF } from "../../../utils/Functions";
+import { useSelector } from "react-redux";
 
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
@@ -27,7 +28,6 @@ const { Title } = Typography;
 const InspectionNote = () => {
   const formRef = useRef()
   const [buttonVisible, setButtonVisible] = useState(false)
-  const token = localStorage.getItem("token")
   const [Type, setType] = useState("PO");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -115,6 +115,7 @@ const InspectionNote = () => {
       };
     });
   };
+  const { organizationDetails, locationDetails, userDetails, token, userCd } = useSelector(state => state.auth)
 
   useEffect(() => {
     // fetchItemData();
@@ -135,20 +136,20 @@ const InspectionNote = () => {
   };
 
   const fetchUserDetails = async () => {
-    try {
-      const userCd = localStorage.getItem("userCd")
-      const password = localStorage.getItem("password")
-      const apiUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
-      const response = await axios.post(apiUrl, {
-        userCd,
-        password,
-      });
+    // try {
+    //   // const userCd = localStorage.getItem("userCd")
+    //   // const password = localStorage.getItem("password")
+    //   const apiUrl =
+    //     "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
+    //   const response = await axios.post(apiUrl, {
+    //     userCd,
+    //     password,
+    //   });
 
-      const { responseData } = response.data;
-      const { organizationDetails, locationDetails } = responseData;
-      const { userDetails } = responseData;
-      console.log("Fetched data:", organizationDetails);
+      // const { responseData } = response.data;
+      // const { organizationDetails, locationDetails } = responseData;
+      // const { userDetails } = responseData;
+      // console.log("Fetched data:", organizationDetails);
       const currentDate = dayjs();
       // Update form data with fetched values
       setFormData({
@@ -164,9 +165,9 @@ const InspectionNote = () => {
         inspectionRptDate: currentDate.format(dateFormat),
         inspectionRptNo: "string",
       });
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+    // } catch (error) {
+    //   console.error("Error fetching data:", error);
+    // }
   };
   
   const handleInwardGatePassChange = async (_fieldName, value) => {

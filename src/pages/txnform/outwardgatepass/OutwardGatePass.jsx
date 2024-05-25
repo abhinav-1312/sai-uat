@@ -20,6 +20,7 @@ import { apiHeader } from "../../../utils/Functions";
 import FormInputItem from "../../../components/FormInputItem";
 import { printOrSaveAsPDF } from "../../../utils/Functions";
 import FormDatePickerItem from "../../../components/FormDatePickerItem";
+import { useSelector } from "react-redux";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
@@ -137,8 +138,7 @@ const OutwardGatePass = () => {
     });
   };
 
-  const token = localStorage.getItem("token")
-  const userCd = localStorage.getItem("userCd")
+  const { organizationDetails, locationDetails, userDetails, token, userCd } = useSelector(state => state.auth)
 
   const populateItemData = async () => {
     const itemMasterUrl =
@@ -199,19 +199,19 @@ const OutwardGatePass = () => {
     }
   };
   const fetchUserDetails = async () => {
-    try {
-      const userCd = localStorage.getItem("userCd")
-      const password = localStorage.getItem("password")
-      const apiUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
-      const response = await axios.post(apiUrl, {
-        userCd,
-        password,
-      }, apiHeader("POST", token));
+    // try {
+    //   const userCd = localStorage.getItem("userCd")
+    //   const password = localStorage.getItem("password")
+    //   const apiUrl =
+    //     "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
+    //   const response = await axios.post(apiUrl, {
+    //     userCd,
+    //     password,
+    //   }, apiHeader("POST", token));
 
-      const { responseData } = response.data;
-      console.log("Response data: ", responseData);
-      const { userDetails } = responseData;
+      // const { responseData } = response.data;
+      // console.log("Response data: ", responseData);
+      // const { userDetails } = responseData;
       const currentDate = dayjs();
       // Update form data with fetched values
       setFormData({
@@ -223,9 +223,9 @@ const OutwardGatePass = () => {
         gatePassDate: currentDate.format(dateFormat),
         gatePassNo: "string",
       });
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+    // } catch (error) {
+    //   console.error("Error fetching data:", error);
+    // }
   };
   const handleIssueNoteNoChange = async (value) => {
     try {

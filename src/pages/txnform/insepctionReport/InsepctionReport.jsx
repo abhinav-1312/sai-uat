@@ -21,6 +21,7 @@ import { convertArrayToObject, printOrSaveAsPDF } from "../../../utils/Functions
 import FormInputItem from "../../../components/FormInputItem";
 import FormDatePickerItem from "../../../components/FormDatePickerItem";
 import FormDropdownItem from "../../../components/FormDropdownItem";
+import { useSelector } from "react-redux";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
@@ -122,7 +123,7 @@ const InsepctionReport = () => {
     });
   };
 
-  const token = localStorage.getItem("token")
+  const { organizationDetails, locationDetails, userDetails, token, userCd } = useSelector(state => state.auth)
 
   useEffect(() => {
     fetchItemData();
@@ -142,20 +143,20 @@ const InsepctionReport = () => {
     }
   };
   const fetchUserDetails = async () => {
-    try {
-      const userCd = localStorage.getItem("userCd")
-      const password = localStorage.getItem("password")
-      const apiUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
-      const response = await axios.post(apiUrl, {
-        userCd,
-        password,
-      });
+    // try {
+    //   const userCd = localStorage.getItem("userCd")
+    //   const password = localStorage.getItem("password")
+    //   const apiUrl =
+    //     "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
+    //   const response = await axios.post(apiUrl, {
+    //     userCd,
+    //     password,
+    //   });
 
-      const { responseData } = response.data;
-      const { organizationDetails } = responseData;
-      const { userDetails } = responseData;
-      const {locationDetails} = responseData
+      // const { responseData } = response.data;
+      // const { organizationDetails } = responseData;
+      // const { userDetails } = responseData;
+      // const {locationDetails} = responseData
       const currentDate = dayjs();
       // Update form data with fetched values
       setFormData({
@@ -172,13 +173,12 @@ const InsepctionReport = () => {
         inspectionRptNo: "string",
         dateOfInspectionDate: "20/12/2026" // bogus data since field is not required in this form, and form not getting submitted with it being empty
       });
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+    // } catch (error) {
+    //   console.error("Error fetching data:", error);
+    // }
   };
 
   const handleInwardGatePassChange = async (_, value) => {
-    console.log("VALUE: ", value)
     try {
       const apiUrl =
         "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";

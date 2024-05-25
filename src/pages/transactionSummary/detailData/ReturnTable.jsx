@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react'
 import DetailData from './DetailData'
 import axios from 'axios'
 import { apiHeader, convertArrayToObject, daysDifference } from '../../../utils/Functions'
+import { useSelector } from 'react-redux'
 
 const ReturnTable = ({data, itemList}) => {
 
-    const token = localStorage.getItem("token")
+    const {token} = useSelector(state => state.auth);
     const [uomObj, setUomObj] = useState({})
     const [locatorObj, setLocatorObj] = useState({})
 

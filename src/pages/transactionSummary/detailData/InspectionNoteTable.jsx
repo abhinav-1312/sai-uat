@@ -6,9 +6,10 @@ import {
 } from "../../../utils/Functions";
 import axios from "axios";
 import DetailData from "./DetailData";
+import { useSelector } from "react-redux";
 
 const InspectionNoteTable = ({type, data, itemList}) => {
-  const token = localStorage.getItem("token");
+  const {token} = useSelector(state => state.auth);
   const [uomObj, setUomObj] = useState({});
   const [locatorObj, setLocatorObj] = useState({});
 

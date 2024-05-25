@@ -5,9 +5,11 @@ import { Link } from 'react-router-dom';
 import SAI_Logo from "./../assets/images/SAI_logo.svg";
 import { apiHeader } from '../utils/Functions';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 const ChangePasswordForm = () => {
     const [form] = Form.useForm();
+    const  {token} = useSelector(state => state.auth)
 
     const handleSubmit = async (values) => {
         if (values.newPassword !== values.confirmPassword) {
@@ -23,7 +25,6 @@ const ChangePasswordForm = () => {
           const url = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/changePassword"
 
           try{
-            const token = localStorage.getItem("token")
             const {data} = await axios.post(url, {userCd, oldPassword, newPassword}, apiHeader("POST", token))
             console.log("Data: ", data)
           }catch(error){
