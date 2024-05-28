@@ -1,22 +1,13 @@
 import React, { useState, useEffect } from "react";
 import {
-  Form,
   Input,
   Button,
-  Row,
-  Col,
-  DatePicker,
-  AutoComplete,
-  Select,
   Table,
   Popover,
 } from "antd";
-import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
-import axios from "axios";
-import moment from "moment";
+
 import { apiHeader } from "../utils/Functions";
 import { useSelector } from "react-redux";
-const { TextArea } = Input;
 const { Search } = Input;
 
 const ItemDemandSearch = () => {

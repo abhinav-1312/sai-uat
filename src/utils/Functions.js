@@ -217,7 +217,7 @@ export const renderLocatorOHQ = (obj) => {
   }
 
 export const convertArrayToObject = (array, _makeKey, valueKey ) => {
-    return array.reduce((acc, obj) => {
+    return array?.reduce((acc, obj) => {
       acc[obj[_makeKey]] = obj[valueKey]
       return acc
     }, {})

@@ -16,17 +16,21 @@ const PrivateRoutes = () => {
 
     const dispatch = useDispatch()
 
+    const populateReduxStore = async () => {
+      await dispatch(fetchDepartments()).unwrap()
+      await dispatch(fetchEmployees()).unwrap()
+      await dispatch(fetchLocations()).unwrap()
+      await dispatch(fetchLocators()).unwrap()
+      await dispatch(fetchUsers()).unwrap()
+      await dispatch(fetchVendors()).unwrap()
+      await dispatch(fetchOrganizations()).unwrap()
+      await dispatch(fetchUoms()).unwrap()
+      await dispatch(fetchItemData()).unwrap()
+    }
+
     useEffect(() => {
       if(isLoggedIn){
-        dispatch(fetchDepartments())
-        dispatch(fetchEmployees())
-        dispatch(fetchLocations())
-        dispatch(fetchLocators())
-        dispatch(fetchUsers())
-        dispatch(fetchVendors())
-        dispatch(fetchOrganizations())
-        dispatch(fetchUoms())
-        dispatch(fetchItemData())
+        populateReduxStore()
       }
     }, [])
   return (

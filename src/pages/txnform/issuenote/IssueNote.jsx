@@ -88,6 +88,8 @@ const IssueNote = () => {
     interRdDemandNote: "",
   });
 
+  const [disableSubmitBtn, setDisableSubmitBtn] = useState(false)
+
   console.log("FORMdATA ISSUE NOTE: ", formData)
   
   const showModal = () => {
@@ -435,7 +437,7 @@ const IssueNote = () => {
   }
 
   const onFinish = async () => {
-
+    setDisableSubmitBtn(true)
     try {
       const formDataCopy = { ...formData };
       
@@ -511,6 +513,7 @@ const IssueNote = () => {
       console.error("Error saving issue note:", error);
       message.error("Failed to submit issue note. ");
     }
+    setDisableSubmitBtn(false)
   };
 
   const handleValuesChange = (_, allValues) => {
@@ -906,6 +909,8 @@ const IssueNote = () => {
                 width: "200px",
                 margin: 16,
               }}
+
+              disabled={disableSubmitBtn}
             >
               SUBMIT
             </Button>

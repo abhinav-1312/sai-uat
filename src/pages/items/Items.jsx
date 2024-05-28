@@ -12,17 +12,54 @@ import {
 } from "./KeyValueMapping";
 import { apiHeader, convertArrayToObject, convertEpochToDateString } from "../../utils/Functions";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchItemData } from "../../redux/slice/itemSlice";
+import { fetchVendors } from "../../redux/slice/vendorSlice";
 
 
 
 const ItemsPage = () => {
-  const token = useSelector(state=> state.auth.token)
-  const itemData = useSelector(state => state.item.data)
-  const vendorData = useSelector(state => state.vendors.data)
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    // dispatch(fetchItemData())
+    init()
+  }, []);
+
+  const {token} = useSelector(state=> state.auth)
+  const {data: itemData, loading: itemLoading} = useSelector(state => state.item)
+  const {data: vendorData, loading: vendorLoading} = useSelector(state => state.vendors)
   const locationData = useSelector(state => state.locations.data)
   const locatorData = useSelector(state => state.locators.data)
   const uomData = useSelector(state => state.uoms.data)
+
+  const vendorObj = convertArrayToObject(vendorData, "id", "vendorName")
+  const itemList = itemData?.map(item=>{
+    return{
+      key: item.id,
+        id: item.id,
+        itemCode: item.itemMasterCd,
+        itemDescription: item.itemMasterDesc,
+        uom: item.uomDtls.uomName,
+        price: item.price,
+        vendorDetail: vendorObj[parseInt(item.vendorId)],
+        category: item.categoryDesc,
+        subcategory: item.subCategoryDesc,
+        type: item.typeDesc,
+        disciplines: item.disciplinesDesc,
+        brand: item.brandDesc,
+        colour: item.colorDesc,
+        size: item.sizeDesc,
+        usageCategory: item.usageCategoryDesc,
+        reOrderPoint: item.reOrderPoint ? item.reOrderPoint : "null",
+        minStockLevel: item.minStockLevel,
+        maxStockLevel: item.maxStockLevel,
+        status: item.status === "A" ? "Active" : "InActive",
+        // endDate: new Date(item.endDate).toISOString().split("T")[0],
+        endDate: convertEpochToDateString(item.endDate)
+    }
+  })
+
   const [items, setItems] = useState([]);
   const [visible, setVisible] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
@@ -117,6 +154,8 @@ const ItemsPage = () => {
     setLocations(locationData);
   };
 
+  console.log("LOADINGGG: ", vendorLoading, itemLoading)
+
   const getLocators = async () => {
     // const locatorsResponse = await apiRequest(
     //   "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster",
@@ -136,6 +175,7 @@ const ItemsPage = () => {
   
 
   const getItems = async () => {
+    console.log("get item")
     const itemMasterUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMaster"
     const vendorMasterUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getVendorMaster"
     try {
@@ -148,35 +188,40 @@ const ItemsPage = () => {
       // const itemData = itemMasterData.data.responseData;
       // const vendorData = vendorMasterData.data.responseData;
 
+      // const vendorObj = convertArrayToObject(vendorData, "id", "vendorName")
+
+
+      console.log("after while")
+
       const vendorObj = convertArrayToObject(vendorData, "id", "vendorName")
-      
+      console.log("vendor obj: ", vendorObj)
+
       const itemList = itemData.map(item=>{
         return{
-          key: item.id,
-            id: item.id,
-            itemCode: item.itemMasterCd,
-            itemDescription: item.itemMasterDesc,
-            uom: item.uomDtls.uomName,
-            price: item.price,
-            vendorDetail: vendorObj[parseInt(item.vendorId)],
-            category: item.categoryDesc,
-            subcategory: item.subCategoryDesc,
-            type: item.typeDesc,
-            disciplines: item.disciplinesDesc,
-            brand: item.brandDesc,
-            colour: item.colorDesc,
-            size: item.sizeDesc,
-            usageCategory: item.usageCategoryDesc,
-            reOrderPoint: item.reOrderPoint ? item.reOrderPoint : "null",
-            minStockLevel: item.minStockLevel,
-            maxStockLevel: item.maxStockLevel,
-            status: item.status === "A" ? "Active" : "InActive",
+            key: item?.id,
+            id: item?.id,
+            itemCode: item?.itemMasterCd,
+            itemDescription: item?.itemMasterDesc,
+            uom: item?.uomDtls.uomName,
+            price: item?.price,
+            vendorDetail: vendorObj[parseInt(item?.vendorId)],
+            category: item?.categoryDesc,
+            subcategory: item?.subCategoryDesc,
+            type: item?.typeDesc,
+            disciplines: item?.disciplinesDesc,
+            brand: item?.brandDesc,
+            colour: item?.colorDesc,
+            size: item?.sizeDesc,
+            usageCategory: item?.usageCategoryDesc,
+            reOrderPoint: item?.reOrderPoint ? item.reOrderPoint : "null",
+            minStockLevel: item?.minStockLevel,
+            maxStockLevel: item?.maxStockLevel,
+            status: item?.status === "A" ? "Active" : "InActive",
             // endDate: new Date(item.endDate).toISOString().split("T")[0],
-            endDate: convertEpochToDateString(item.endDate)
+            endDate: convertEpochToDateString(item?.endDate)
         }
       })
 
-      console.log("ItemLsit: ", itemList)
 
       setItems(itemList);
     } catch (error) {
@@ -184,22 +229,19 @@ const ItemsPage = () => {
     }
   };  
 
-  const init = () => {
-    getItems()
-    getUoms()
+  const init =  () => {
+    // getItems()
+    // getUoms()
     getBrands()
     getSizes()
     getColors()
     getUsageCategories()
     getCategories()
-    getLocations()
-    getLocators()
-    getVendors()
+    // getLocations()
+    // getLocators()
+    // getVendors()
   }
 
-  useEffect(() => {
-    init()
-  }, []);
 
   const getItem = async (id) => {
     const itemResponse = await apiRequest(
@@ -240,7 +282,7 @@ const ItemsPage = () => {
         userId: userCd,
       }
     );
-    getItems();
+    dispatch(fetchItemData())
   };
 
 
@@ -276,7 +318,8 @@ const ItemsPage = () => {
         tempItem
       );
     }
-    getItems();
+
+    dispatch(fetchItemData())
     setVisible(false);
   };
 
@@ -304,17 +347,21 @@ const ItemsPage = () => {
         </Button>
       </div>
       <ItemsTable
+      
         // items={items.filter((item) =>
         //   item.itemDescription.toLowerCase().includes(searchText.toLowerCase()) ||
         //   item.itemCode.toLowerCase().includes(searchText.toLowerCase())
         // )}
-        items={items?.filter((item) =>
+        // items={items?.filter((item) =>
+
+        items={itemList?.filter((item) =>
           Object.values(item).some(
             (value) =>
               typeof value === "string" &&
               value.toLowerCase().includes(searchText.toLowerCase())
           )
         )}
+
         onEdit={handleEdit}
         onDelete={handleDelete}
       />
@@ -332,10 +379,10 @@ const ItemsPage = () => {
           key={editingItem ? `edit-${editingItem.id}` : "add"}
           onSubmit={handleFormSubmit}
           initialValues={editingItem}
-          uoms={uoms}
-          locations={locations}
-          locators={locators}
-          vendors={vendors}
+          uoms={uomData}
+          locations={locationData}
+          locators={locatorData}
+          vendors={vendorData}
           brands={brands}
           colors={colors}
           itemNames={itemNames}

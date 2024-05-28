@@ -1,15 +1,13 @@
 import React from 'react'
 import { Form, Input, Button } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import SAI_Logo from "./../assets/images/SAI_logo.svg";
-import { apiHeader } from '../utils/Functions';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
 
 const ChangePasswordForm = () => {
     const [form] = Form.useForm();
-    const  {token} = useSelector(state => state.auth)
+    const navigate = useNavigate()
 
     const handleSubmit = async (values) => {
         if (values.newPassword !== values.confirmPassword) {
@@ -25,8 +23,9 @@ const ChangePasswordForm = () => {
           const url = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/changePassword"
 
           try{
-            const {data} = await axios.post(url, {userCd, oldPassword, newPassword}, apiHeader("POST", token))
-            console.log("Data: ", data)
+            await axios.post(url, {userCd, oldPassword, newPassword})
+            alert("Password changed successfully.")
+            navigate("/login")
           }catch(error){
             console.log("Error occured while changing password.", error)
             alert("Error occured while changing password.")
