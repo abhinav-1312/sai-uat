@@ -9,6 +9,7 @@ import {
   TeamOutlined,
   DollarOutlined,
   TransactionOutlined,
+  EnterOutlined,
   AppstoreOutlined,
   TagsOutlined,
   CreditCardOutlined,
@@ -159,6 +160,18 @@ const menuItems = [
     label: "Transaction Summary",
     path: "/hqTxnSummary",
   },
+  {
+    key: "25",
+    icon: <EnterOutlined />,
+    label: "Correction Process",
+    path: "/transaction",
+    children: [
+      { key: "25.1", label: "Issue Note", path: "/trans/issue" },
+      { key: "25.2", label: "Return Note", path: "/trans/return" },
+      { key: "25.3", label: "GRN", path: "/trans/grn" },
+    ]
+
+  }
 ];
 
 const SideNav = () => {
@@ -180,6 +193,7 @@ const SideNav = () => {
       case "ssadmin" : 
         return (
           item.key !== "2" &&
+          item.key !== "25" &&
           item.key !== "1" &&
           item.key !== "14" &&
           item.key !== "15" &&
@@ -214,6 +228,7 @@ const SideNav = () => {
         // Only show items accessible to inventory managers
         return (
           item.key !== "22" &&
+          item.key !== "25" &&
           item.key !== "4" &&
           item.key !== "23" &&
           item.key !== "24" &&
@@ -232,6 +247,7 @@ const SideNav = () => {
       case "QualityManager":
         return (
           item.key !== "22" &&
+          item.key !== "25" &&
           item.key !== "23" &&
           item.key !== "24" &&
           item.key !== "2" &&
@@ -253,6 +269,7 @@ const SideNav = () => {
       case "ItemAdmin":
         return (
           item.key !== "22" &&
+          item.key !== "25" &&
           item.key !== "23" &&
           item.key !== "24" &&
           item.key !== "2" &&
@@ -277,6 +294,7 @@ const SideNav = () => {
       case "VendorAdmin":
         return (
           item.key !== "22" &&
+          item.key !== "25" &&
           item.key !== "23" &&
           item.key !== "24" &&
           item.key !== "2" &&
