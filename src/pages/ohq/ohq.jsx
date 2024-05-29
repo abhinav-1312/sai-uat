@@ -108,6 +108,16 @@ const Ohq = ({orgId, organization}) => {
       })
       setItemData([...newArray]);
       setFilteredData([...newArray]);
+
+      // calculate total value
+      let sum = 0
+      responseData.forEach(item => {
+        item.qtyList.forEach(loc => {
+          sum = sum + loc.totalValues
+        })
+      })
+
+      setTotVal(convertToCurrency(sum))
     }
     catch(error){
       console.log("Error", error)

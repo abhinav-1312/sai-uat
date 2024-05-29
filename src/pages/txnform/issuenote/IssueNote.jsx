@@ -13,6 +13,7 @@ import {
   Modal,
   Popover,
   Table,
+  Tooltip,
 } from "antd";
 import { MinusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
@@ -89,9 +90,13 @@ const IssueNote = () => {
     userId: "string",
     processType: "IRP",
     interRdDemandNote: "",
-  });
+  }
+);
 
   const [disableSubmitBtn, setDisableSubmitBtn] = useState(false);
+  const handleFormReset = () => {
+    window.location.reload()
+  }
 
   console.log("FORMdATA ISSUE NOTE: ", formData);
 
@@ -572,7 +577,6 @@ const IssueNote = () => {
       console.error("Error saving issue note:", error);
       message.error("Failed to submit issue note. ");
     }
-    setDisableSubmitBtn(false);
   };
 
   const handleValuesChange = (_, allValues) => {
@@ -1012,7 +1016,7 @@ const IssueNote = () => {
             <Button
               type="primary"
               htmlType="reset"
-              onClick={() => setFormSubmitted(false)}
+              onClick={handleFormReset}
               style={{ width: "200px", margin: 16 }}
             >
               RESET
@@ -1020,6 +1024,8 @@ const IssueNote = () => {
           </Form.Item>
 
           <Form.Item>
+          <Tooltip title={disableSubmitBtn ? "Press reset button to enable submit." : ""}>
+
             <Button
               type="primary"
               htmlType="submit"
@@ -1030,9 +1036,10 @@ const IssueNote = () => {
                 margin: 16,
               }}
               disabled={disableSubmitBtn}
-            >
+              >
               SUBMIT
             </Button>
+              </Tooltip>
           </Form.Item>
           <Form.Item>
             <Button
