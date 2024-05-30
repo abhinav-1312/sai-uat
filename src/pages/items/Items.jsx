@@ -113,6 +113,7 @@ const ItemsPage = () => {
     setCategories(categoriesRespone.responseData);
   }, [token]);
 
+
   useEffect(() => {
     getBrands()
     getSizes()
