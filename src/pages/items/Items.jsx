@@ -1,5 +1,5 @@
 // ItemsPage.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Button, Modal, Input } from "antd";
 import ItemsTable from "./ItemsTable";
 import ItemsForm from "./ItemsForm";
@@ -10,30 +10,23 @@ import {
   allDisciplines,
   subCategories,
 } from "./KeyValueMapping";
-import { apiHeader, convertArrayToObject, convertEpochToDateString } from "../../utils/Functions";
-import axios from "axios";
+import { apiCall, convertEpochToDateString } from "../../utils/Functions";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchItemData } from "../../redux/slice/itemSlice";
-import { fetchVendors } from "../../redux/slice/vendorSlice";
 
 
 
 const ItemsPage = () => {
   const dispatch = useDispatch()
 
-  useEffect(() => {
-    // dispatch(fetchItemData())
-    init()
-  }, []);
-
   const {token} = useSelector(state=> state.auth)
-  const {data: itemData, loading: itemLoading} = useSelector(state => state.item)
-  const {data: vendorData, loading: vendorLoading} = useSelector(state => state.vendors)
-  const locationData = useSelector(state => state.locations.data)
-  const locatorData = useSelector(state => state.locators.data)
-  const uomData = useSelector(state => state.uoms.data)
+  const {data: itemData} = useSelector(state => state.item)
+  const {data: vendorData} = useSelector(state => state.vendors)
+  const {data: locationData} = useSelector(state => state.locations)
+  const {data: locatorData} = useSelector(state => state.locators)
+  const {data: uomData} = useSelector(state => state.uoms)
+  const {vendorObj} = useSelector(state => state.vendors)
 
-  const vendorObj = convertArrayToObject(vendorData, "id", "vendorName")
   const itemList = itemData?.map(item=>{
     return{
       key: item.id,
@@ -55,198 +48,85 @@ const ItemsPage = () => {
         minStockLevel: item.minStockLevel,
         maxStockLevel: item.maxStockLevel,
         status: item.status === "A" ? "Active" : "InActive",
-        // endDate: new Date(item.endDate).toISOString().split("T")[0],
         endDate: convertEpochToDateString(item.endDate)
     }
   })
 
-  const [items, setItems] = useState([]);
   const [visible, setVisible] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [brands, setBrands] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
-  const [uoms, setUoms] = useState([]);
-  const [locations, setLocations] = useState([]);
-  const [locators, setLocators] = useState([]);
-  const [vendors, setVendors] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [colors, setColors] = useState([]);
   const [usageCategories, setUsageCategories] = useState([]);
   const [categories, setCategories] = useState([]);
 
-  const apiRequest = async (url, method, requestData) => {
-    const options = {
-      method: method,
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': `Bearer ${token}`,
-      },
-    };
-  
-    if (method === "POST") {
-      options["body"] = JSON.stringify(requestData);
-    }
-  
-    try {
-      const response = await fetch(url, options);
-      const data = await response.json();
-      return data.responseData;
-    } catch (error) {
-      console.error("Error: ", error);
-    }
-  };
-
-  const getUoms = async () => {
-    // const uomResponse = await apiRequest(
-    //   "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster",
-    //   "GET"
-    // );
-
-    setUoms(uomData);
-  };
-  const getBrands = async () => {
-    const brandsResponse = await apiRequest(
+  const getBrands = useCallback(async () => {
+    const brandsResponse = await apiCall(
+      "GET",
       "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/genparam/getAllBrands",
-      "GET"
+      token
     );
 
-    setBrands(brandsResponse);
-  };
-  const getSizes = async () => {
-    const sizesResponse = await apiRequest(
+    setBrands(brandsResponse.responseData);
+  }, [token]);
+
+  const getSizes = useCallback(async () => {
+    const sizesResponse = await apiCall(
+      "GET",
       "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/genparam/getAllSizes",
-      "GET"
+      token
     );
 
-    setSizes(sizesResponse);
-  };
-  const getColors = async () => {
-    const colorsResponse = await apiRequest(
+    setSizes(sizesResponse.responseData);
+  }, [token]);
+
+  const getColors = useCallback(async () => {
+    const colorsResponse = await apiCall(
+      "GET",
       "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/genparam/getAllColors",
-      "GET"
+      token
     );
 
-    setColors(colorsResponse);
-  };
-  const getUsageCategories = async () => {
-    const usageCategoriesRespone = await apiRequest(
+    setColors(colorsResponse.responseData);
+  }, [token]);
+
+
+  const getUsageCategories = useCallback(async () => {
+    const usageCategoriesRespone = await apiCall(
+      "GET",
       "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/genparam/getAllUsageCategories",
-      "GET"
+      token
     );
 
-    setUsageCategories(usageCategoriesRespone);
-  };
-  const getCategories = async () => {
-    const categoriesRespone = await apiRequest(
+    setUsageCategories(usageCategoriesRespone.responseData);
+  }, [token]);
+
+  const getCategories = useCallback(async () => {
+    const categoriesRespone = await apiCall(
+      "GET",
       "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/genparam/getAllCategories",
-      "GET"
+      token
     );
 
-    setCategories(categoriesRespone);
-  };
+    setCategories(categoriesRespone.responseData);
+  }, [token]);
 
-  const getLocations = async () => {
-    // const locationsResponse = await apiRequest(
-    //   "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocationMaster",
-    //   "GET"
-    // );
-    setLocations(locationData);
-  };
-
-  console.log("LOADINGGG: ", vendorLoading, itemLoading)
-
-  const getLocators = async () => {
-    // const locatorsResponse = await apiRequest(
-    //   "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster",
-    //   "GET"
-    // );
-    setLocators(locatorData);
-  };
-
-  const getVendors = async () => {
-    // const vendorsResponse = await apiRequest(
-    //   "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getVendorMaster",
-    //   "GET"
-    // );
-    setVendors(vendorData);
-  };
-
-  
-
-  const getItems = async () => {
-    console.log("get item")
-    const itemMasterUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMaster"
-    const vendorMasterUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getVendorMaster"
-    try {
-
-      // const [itemMasterData, vendorMasterData] = await Promise.all([
-      //   axios.get(itemMasterUrl, apiHeader("GET", token)),
-      //   axios.get(vendorMasterUrl, apiHeader("GET", token)),
-      // ]);
-
-      // const itemData = itemMasterData.data.responseData;
-      // const vendorData = vendorMasterData.data.responseData;
-
-      // const vendorObj = convertArrayToObject(vendorData, "id", "vendorName")
-
-
-      console.log("after while")
-
-      const vendorObj = convertArrayToObject(vendorData, "id", "vendorName")
-      console.log("vendor obj: ", vendorObj)
-
-      const itemList = itemData.map(item=>{
-        return{
-            key: item?.id,
-            id: item?.id,
-            itemCode: item?.itemMasterCd,
-            itemDescription: item?.itemMasterDesc,
-            uom: item?.uomDtls.uomName,
-            price: item?.price,
-            vendorDetail: vendorObj[parseInt(item?.vendorId)],
-            category: item?.categoryDesc,
-            subcategory: item?.subCategoryDesc,
-            type: item?.typeDesc,
-            disciplines: item?.disciplinesDesc,
-            brand: item?.brandDesc,
-            colour: item?.colorDesc,
-            size: item?.sizeDesc,
-            usageCategory: item?.usageCategoryDesc,
-            reOrderPoint: item?.reOrderPoint ? item.reOrderPoint : "null",
-            minStockLevel: item?.minStockLevel,
-            maxStockLevel: item?.maxStockLevel,
-            status: item?.status === "A" ? "Active" : "InActive",
-            // endDate: new Date(item.endDate).toISOString().split("T")[0],
-            endDate: convertEpochToDateString(item?.endDate)
-        }
-      })
-
-
-      setItems(itemList);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };  
-
-  const init =  () => {
-    // getItems()
-    // getUoms()
+  useEffect(() => {
     getBrands()
     getSizes()
     getColors()
     getUsageCategories()
     getCategories()
-    // getLocations()
-    // getLocators()
-    // getVendors()
-  }
+  }, [getBrands, getSizes, getColors, getUsageCategories, getCategories]);
 
 
   const getItem = async (id) => {
-    const itemResponse = await apiRequest(
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMasterById",
+    const itemResponse = await apiCall(
       "POST",
+      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMasterById",
+      token,
       {
         id: id,
         userId: userCd,
@@ -274,9 +154,10 @@ const ItemsPage = () => {
   const {userCd} = useSelector(state => state.auth)
   const handleDelete = async (itemId) => {
     // Implement delete logic here
-    await apiRequest(
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/deleteItemMaster",
+    await apiCall(
       "POST",
+      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/deleteItemMaster",
+      token,
       {
         id: itemId,
         userId: userCd,
@@ -305,16 +186,18 @@ const ItemsPage = () => {
         tempItem["itemMasterId"] = selectedId;
       }
 
-      const data = await apiRequest(
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/updateItemMaster",
+      await apiCall(
         "POST",
+        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/updateItemMaster",
+        token,
         tempItem
       );
     } else {
       // Implement create logic here
-      const data = await apiRequest(
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/saveItemMaster",
+      await apiCall(
         "POST",
+        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/saveItemMaster",
+        token,
         tempItem
       );
     }
@@ -347,13 +230,7 @@ const ItemsPage = () => {
         </Button>
       </div>
       <ItemsTable
-      
-        // items={items.filter((item) =>
-        //   item.itemDescription.toLowerCase().includes(searchText.toLowerCase()) ||
-        //   item.itemCode.toLowerCase().includes(searchText.toLowerCase())
-        // )}
-        // items={items?.filter((item) =>
-
+    
         items={itemList?.filter((item) =>
           Object.values(item).some(
             (value) =>

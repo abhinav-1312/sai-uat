@@ -139,7 +139,7 @@ const menuItems = [
   {
     key: "21",
     icon: <EnvironmentOutlined />,
-    label: "ItemDemandSearch",
+    label: "Item Demand Search",
     path: "/itemsearch",
   },
   {

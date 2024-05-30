@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Input,
   Button,
@@ -6,43 +6,13 @@ import {
   Popover,
 } from "antd";
 
-import { apiHeader } from "../utils/Functions";
 import { useSelector } from "react-redux";
 const { Search } = Input;
 
 const ItemDemandSearch = () => {
-  const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [selectedItems, setSelectedItems] = useState([]); // State to hold selected item data
-  const {token} = useSelector(state => state.auth)
-  useEffect(() => {
-    // Fetch data from the API
-    fetch(
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMaster", apiHeader("GET", token)
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setData(data.responseData);
-        setFilteredData(data.responseData); // Initially set filtered data to all data
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
-
-  const handleSearch = (value) => {
-    setSearchValue(value);
-    // Filter data based on any field
-    const filtered = data?.filter((item) => {
-      // Check if any field includes the search value
-      return Object.values(item).some((field) => {
-        if (typeof field === "string") {
-          return field.toLowerCase().includes(value.toLowerCase());
-        }
-        return false;
-      });
-    });
-    setFilteredData(filtered);
-  };
+  const {data} = useSelector(state => state.item)
 
   const handleSelectItem = (record) => {
     // Check if the item is already selected
@@ -69,17 +39,10 @@ const ItemDemandSearch = () => {
       dataIndex: "itemMasterDesc",
       key: "itemMasterDesc",
     },
-    { title: "UOM", dataIndex: "uom", key: "uom" },
-    {
-      title: "QUANTITY ON HAND",
-      dataIndex: "quantity",
-      key: "quantity",
-    },
-    { title: "LOCATION", dataIndex: "locationId", key: "location" },
-    {
-      title: "LOCATOR CODE",
-      dataIndex: "locatorId",
-      key: "locatorCode",
+    { title: "UOM", 
+      dataIndex: "uomDtls", 
+      key: "uom" ,
+      render: (obj) => obj.uomName
     },
     { title: "PRICE", dataIndex: "price", key: "price" },
     { title: "VENDOR DETAIL", dataIndex: "vendorId", key: "vendorDetail" },
@@ -135,7 +98,14 @@ const ItemDemandSearch = () => {
         <Popover
           content={
             <Table
-              dataSource={filteredData}
+              // dataSource={filteredData}
+              dataSource={data?.filter((item) =>
+                Object.values(item).some(
+                  (value) =>
+                    typeof value === "string" &&
+                    value.toLowerCase().includes(searchValue.toLowerCase())
+                )
+              )}
               columns={columns}
               pagination={false}
               scroll={{ x: "max-content" }}
@@ -144,7 +114,8 @@ const ItemDemandSearch = () => {
           }
           title="Filtered Item Data"
           trigger="click"
-          visible={searchValue !== "" && filteredData.length > 0}
+          // visible={searchValue !== "" && filteredData.length > 0}
+          visible={searchValue !== ""}
           style={{ width: "200px" }}
           placement="right"
         >
@@ -153,7 +124,7 @@ const ItemDemandSearch = () => {
             allowClear
             enterButton="Search"
             size="large"
-            onSearch={handleSearch}
+            onChange={(e) => setSearchValue(e.target.value)}
           />
         </Popover>
       </div>
