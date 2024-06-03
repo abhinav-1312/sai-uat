@@ -193,7 +193,6 @@ const ItemsForm = ({
   ]);
 
   const onFinish = (values) => {
-    console.log("VAlues before: ", values)
     const itemMasterDescCopy = values.itemMasterDesc[0]
     // if(typeof(itemMasterDescCopy === "string")){
       const combinedCodeAndDesc = itemMasterDescCopy.split("$#")
