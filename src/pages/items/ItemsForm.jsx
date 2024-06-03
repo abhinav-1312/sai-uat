@@ -79,7 +79,7 @@ const ItemsForm = ({
       const fetchSubCategories = async () => {
         try {
           const response = await axios.post(
-            "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/genparam/getAllSubCategoriesByDtls",
+            "/genparam/getAllSubCategoriesByDtls",
             {
               categoryCode: selectedCategory,
             },
@@ -106,7 +106,7 @@ const ItemsForm = ({
       const fetchTypes = async () => {
         try {
           const response = await axios.post(
-            "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/genparam/getAllItemTypeByDtls",
+            "/genparam/getAllItemTypeByDtls",
             {
               categoryCode: selectedCategory,
               subCategoryCode: selectedSubCategory,
@@ -133,7 +133,7 @@ const ItemsForm = ({
       const fetchDisciplines = async () => {
         try {
           const response = await axios.post(
-            "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/genparam/getAllDisciplineByDtls",
+            "/genparam/getAllDisciplineByDtls",
             {
               categoryCode: selectedCategory,
               subCategoryCode: selectedSubCategory,
@@ -161,7 +161,7 @@ const ItemsForm = ({
       const fetchItemDescriptions = async () => {
         try {
           const response = await axios.post(
-            "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/genparam/getAllItemNamesByDtls",
+            "/genparam/getAllItemNamesByDtls",
             {
               categoryCode: selectedCategory,
               subCategoryCode: selectedSubCategory,
@@ -193,6 +193,7 @@ const ItemsForm = ({
   ]);
 
   const onFinish = (values) => {
+    console.log("VAlues before: ", values)
     const itemMasterDescCopy = values.itemMasterDesc[0]
     // if(typeof(itemMasterDescCopy === "string")){
       const combinedCodeAndDesc = itemMasterDescCopy.split("$#")
@@ -200,18 +201,19 @@ const ItemsForm = ({
         values = { ...values, itemName: null, itemMasterDesc: itemMasterDescCopy };
       }
       else{
-        const itemName= parseInt(combinedCodeAndDesc[0]);
+        const itemName= combinedCodeAndDesc[0];
         const itemMasterDesc = combinedCodeAndDesc[1];
         values = { ...values, itemName, itemMasterDesc };
       }
+      // console.log("VAlues after: ", values)
       onSubmit(values);
     // }
     // else{
     //   values = {...values, itemMasterCd: null, itemMasterDesc: itemMasterDescCopy[0]}
     //   onSubmit(values)
     // }
-    console.log("ITemmaster desc: ", values.itemMasterDesc)
-    console.log("Values: ", values);
+    // console.log("ITemmaster desc: ", values.itemMasterDesc)
+    // console.log("Values: ", values);
     // form.resetFields();
   };
 

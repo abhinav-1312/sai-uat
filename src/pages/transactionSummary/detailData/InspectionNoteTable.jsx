@@ -15,9 +15,9 @@ const InspectionNoteTable = ({type, data, itemList}) => {
 
   const fetchUom = async () => {
     const uomMasterUrl =
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster";
+      "/master/getUOMMaster";
     const locatorMasterUrl =
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster";
+      "/master/getLocatorMaster";
 
     try {
       const [uomMaster, locatorMaster] = await Promise.all([

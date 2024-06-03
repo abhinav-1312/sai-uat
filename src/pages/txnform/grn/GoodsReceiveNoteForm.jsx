@@ -212,7 +212,7 @@ const GoodsReceiveNoteForm = () => {
   const handleReturnNoteNoChange = async (value) => {
     try {
       const subProcessDtlUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
+        "/getSubProcessDtls";
 
       const data = await apiCall("POST", subProcessDtlUrl, token, {processId: value, processStage: Type === "IRP" ? "RN" : "ACT"})
 
@@ -280,9 +280,9 @@ const GoodsReceiveNoteForm = () => {
   const handleInwardGatePassNoChange = async (value) => {
     try {
       const subProcessDtlUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
+        "/getSubProcessDtls";
       const ohqUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getOHQ";
+        "/master/getOHQ";
 
       const subProcessRes = await apiCall("POST", subProcessDtlUrl, token, {processId: value, processStage: "IGP"})
 
@@ -426,7 +426,7 @@ const GoodsReceiveNoteForm = () => {
       });
 
       const apiUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/saveGRN";
+        "/saveGRN";
       const response = await apiCall("POST", apiUrl, token, formDataCopy)
       if (
         response.status === 200 &&

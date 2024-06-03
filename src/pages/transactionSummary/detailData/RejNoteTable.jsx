@@ -12,7 +12,7 @@ const RejNoteTable = ({data, type, itemList}) => {
     const fetchUom = async () => {
         // console.log("Fetch uom called")
         const uomMasterUrl =
-            "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster";
+            "/master/getUOMMaster";
     
         try{
             const {data} = await axios.get(uomMasterUrl, apiHeader("GET", token))

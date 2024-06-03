@@ -65,7 +65,7 @@ const ItemsPage = () => {
   const getBrands = useCallback(async () => {
     const brandsResponse = await apiCall(
       "GET",
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/genparam/getAllBrands",
+      "/genparam/getAllBrands",
       token
     );
 
@@ -75,7 +75,7 @@ const ItemsPage = () => {
   const getSizes = useCallback(async () => {
     const sizesResponse = await apiCall(
       "GET",
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/genparam/getAllSizes",
+      "/genparam/getAllSizes",
       token
     );
 
@@ -85,7 +85,7 @@ const ItemsPage = () => {
   const getColors = useCallback(async () => {
     const colorsResponse = await apiCall(
       "GET",
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/genparam/getAllColors",
+      "/genparam/getAllColors",
       token
     );
 
@@ -96,7 +96,7 @@ const ItemsPage = () => {
   const getUsageCategories = useCallback(async () => {
     const usageCategoriesRespone = await apiCall(
       "GET",
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/genparam/getAllUsageCategories",
+      "/genparam/getAllUsageCategories",
       token
     );
 
@@ -106,7 +106,7 @@ const ItemsPage = () => {
   const getCategories = useCallback(async () => {
     const categoriesRespone = await apiCall(
       "GET",
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/genparam/getAllCategories",
+      "/genparam/getAllCategories",
       token
     );
 
@@ -126,7 +126,7 @@ const ItemsPage = () => {
   const getItem = async (id) => {
     const itemResponse = await apiCall(
       "POST",
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMasterById",
+      "/master/getItemMasterById",
       token,
       {
         id: id,
@@ -157,7 +157,7 @@ const ItemsPage = () => {
     // Implement delete logic here
     await apiCall(
       "POST",
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/deleteItemMaster",
+      "/master/deleteItemMaster",
       token,
       {
         id: itemId,
@@ -189,7 +189,7 @@ const ItemsPage = () => {
 
       await apiCall(
         "POST",
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/updateItemMaster",
+        "/master/updateItemMaster",
         token,
         tempItem
       );
@@ -197,7 +197,7 @@ const ItemsPage = () => {
       // Implement create logic here
       await apiCall(
         "POST",
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/saveItemMaster",
+        "/master/saveItemMaster",
         token,
         tempItem
       );

@@ -36,7 +36,7 @@ export const fetchUsers = createAsyncThunk(
     async (_, {getState}) => {
         try{
             const {token} = getState().auth
-            const {responseData} = await apiCall("GET", `${BASE_URL}/master/getUserMaster`, token)
+            const {responseData} = await apiCall("GET", `/master/getUserMaster`, token)
             return responseData
         }
         catch(error){
@@ -51,7 +51,7 @@ export const updateUser = createAsyncThunk(
     async ({userId, values}, {getState}) => {
         try{
             const {token} = getState().auth
-            await apiCall("POST", `${BASE_URL}/master/updateUserMaster`, token, {userId, ...values})
+            await apiCall("POST", `/master/updateUserMaster`, token, {userId, ...values})
             
         }
         catch(error){
@@ -65,7 +65,7 @@ export const saveUser = createAsyncThunk(
     async (values, {getState}) => {
         try{
             const {token} = getState().auth
-            await apiCall("POST", `${BASE_URL}/master/saveUserMaster`, token, {...values})
+            await apiCall("POST", `/master/saveUserMaster`, token, {...values})
             
         }
         catch(error){
@@ -79,7 +79,7 @@ export const deleteUser = createAsyncThunk(
     async (userId, {getState}) => {
         try{
             const {token} = getState().auth
-            await apiCall("POST", `${BASE_URL}/master/deleteUserMaster`, token, {userId})
+            await apiCall("POST", `/master/deleteUserMaster`, token, {userId})
             
         }
         catch(error){

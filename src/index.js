@@ -8,8 +8,10 @@ import store from "./store/store";
 import toolkitStore, { persistor } from "./redux/index";
 import { PersistGate } from "redux-persist/integration/react";
 import "antd/dist/reset.css";
+import axios from "axios";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+axios.defaults.baseURL = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt"
 root.render(
     <PersistGate persistor={persistor}>
   <Provider store={toolkitStore}>

@@ -10,7 +10,7 @@ const OrgSearchFilter = ({handleChange}) => {
   const {token} = useSelector(state => state.auth)
     const [orgData, setOrgData] = useState(null)
     const getOrgMaster = async () => {
-        const orgIdUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getOrgMaster"
+        const orgIdUrl = "/master/getOrgMaster"
         try{
             const {data} = await axios.get(orgIdUrl, apiHeader("GET", token))
             const {responseData} = data

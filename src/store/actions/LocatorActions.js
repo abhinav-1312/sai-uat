@@ -10,7 +10,7 @@ export const setLocators = (locators) => ({
 
 export const fetchLocators = () => async (dispatch) => {
   try {
-    const response = await fetch(`${BASE_URL}/getLocatorMaster`, apiHeader("GET", token));
+    const response = await fetch(`/getLocatorMaster`, apiHeader("GET", token));
     const data = await response.json();
 
     dispatch(setLocators(data.responseData));
@@ -21,7 +21,7 @@ export const fetchLocators = () => async (dispatch) => {
 
 export const updateLocator = (locatorId, values) => async (dispatch) => {
   try {
-    const updateResponse = await fetch(`${BASE_URL}/updateLocatorMaster`, {
+    const updateResponse = await fetch(`/updateLocatorMaster`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ export const updateLocator = (locatorId, values) => async (dispatch) => {
 
 export const saveLocator = (values) => async (dispatch) => {
   try {
-    const createResponse = await fetch(`${BASE_URL}/saveLocatorMaster`, {
+    const createResponse = await fetch(`/saveLocatorMaster`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ export const saveLocator = (values) => async (dispatch) => {
 
 export const deleteLocator = (locatorId) => async (dispatch) => {
   try {
-    const deleteResponse = await fetch(`${BASE_URL}/deleteLocatorMaster`, {
+    const deleteResponse = await fetch(`/deleteLocatorMaster`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

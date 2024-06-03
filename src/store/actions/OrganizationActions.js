@@ -9,7 +9,7 @@ export const setOrganizations = (organizations) => ({
 
 const fetchOrganizations = () => async (dispatch) => {
   try {
-    const response = await fetch(`${BASE_URL}/getOrgMaster`, apiHeader("GET", token) );
+    const response = await fetch(`/getOrgMaster`, apiHeader("GET", token) );
     const data = await response.json();
 
     dispatch(setOrganizations(data.responseData));
@@ -20,7 +20,7 @@ const fetchOrganizations = () => async (dispatch) => {
 
 export const updateOrganization = (organizationId, values) => async (dispatch) => {
   try {
-    const updateResponse = await fetch(`${BASE_URL}/updateOrgMaster`, {
+    const updateResponse = await fetch(`/updateOrgMaster`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ export const updateOrganization = (organizationId, values) => async (dispatch) =
 
 export const saveOrganization = (values) => async (dispatch) => {
   try {
-    const createResponse = await fetch(`${BASE_URL}/saveOrgMaster`, {
+    const createResponse = await fetch(`/saveOrgMaster`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -69,7 +69,7 @@ export const saveOrganization = (values) => async (dispatch) => {
 
 export const deleteOrganization = (organizationId) => async (dispatch) => {
   try {
-    const deleteResponse = await fetch(`${BASE_URL}/deleteOrgMaster`, {
+    const deleteResponse = await fetch(`/deleteOrgMaster`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

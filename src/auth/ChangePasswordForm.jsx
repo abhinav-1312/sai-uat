@@ -20,7 +20,7 @@ const ChangePasswordForm = () => {
         } else {
           const {userCd, oldPassword, newPassword} = values
 
-          const url = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/changePassword"
+          const url = "/master/changePassword"
 
           try{
             await axios.post(url, {userCd, oldPassword, newPassword})

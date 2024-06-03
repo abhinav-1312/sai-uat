@@ -10,7 +10,7 @@ export const setEmployees = (employees) => ({
 
 export const fetchEmployees = () => async (dispatch) => {
   try {
-    const response = await fetch(`${BASE_URL}/getEmpMaster`, apiHeader("GET", token));
+    const response = await fetch(`/getEmpMaster`, apiHeader("GET", token));
     const data = await response.json();
 
     dispatch(setEmployees(data.responseData));
@@ -21,7 +21,7 @@ export const fetchEmployees = () => async (dispatch) => {
 
 export const updateEmployee = (employeeId, values) => async (dispatch) => {
   try {
-    const updateResponse = await fetch(`${BASE_URL}/updateEmpMaster`, {
+    const updateResponse = await fetch(`/updateEmpMaster`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ export const updateEmployee = (employeeId, values) => async (dispatch) => {
 
 export const saveEmployee = (values) => async (dispatch) => {
   try {
-    const createResponse = await fetch(`${BASE_URL}/saveEmpMaster`, {
+    const createResponse = await fetch(`/saveEmpMaster`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ export const saveEmployee = (values) => async (dispatch) => {
 
 export const deleteEmployee = (employeeId) => async (dispatch) => {
   try {
-    const deleteResponse = await fetch(`${BASE_URL}/deleteEmpMaster`, {
+    const deleteResponse = await fetch(`/deleteEmpMaster`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -18,7 +18,7 @@ const UserForm = ({ onSubmit, initialValues }) => {
     const fetchDepartments = async () => {
       try {
         const response = await axios.get(
-          "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getDeptMaster", apiHeader("GET", token)
+          "/master/getDeptMaster", apiHeader("GET", token)
         );
         const data = response.data.responseData;
         setDepartments(data);
@@ -33,7 +33,7 @@ const UserForm = ({ onSubmit, initialValues }) => {
     const fetchEmployeeId = async () => {
       try {
         const response = await axios.get(
-          "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getEmpMaster", apiHeader("GET", token)
+          "/master/getEmpMaster", apiHeader("GET", token)
         );
         const data = response.data.responseData;
         setEmployeeId(data);

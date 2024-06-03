@@ -134,7 +134,7 @@ const InsepctionReport = () => {
   const fetchItemData = async () => {
     try {
       const apiUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMaster";
+        "/master/getItemMaster";
       const response = await axios.get(apiUrl, apiHeader("GET", token));
       const { responseData } = response.data;
       // setItemData(responseData);
@@ -147,7 +147,7 @@ const InsepctionReport = () => {
     //   const userCd = localStorage.getItem("userCd")
     //   const password = localStorage.getItem("password")
     //   const apiUrl =
-    //     "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
+    //     "/login/authenticate";
     //   const response = await axios.post(apiUrl, {
     //     userCd,
     //     password,
@@ -181,7 +181,7 @@ const InsepctionReport = () => {
   const handleInwardGatePassChange = async (_, value) => {
     try {
       const apiUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
+        "/getSubProcessDtls";
       const response = await axios.post(apiUrl, {
         processId: value,
         processStage: "IGP",
@@ -282,7 +282,7 @@ const InsepctionReport = () => {
       });
 
       const apiUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/saveInspectionReport";
+        "/saveInspectionReport";
       const response = await axios.post(apiUrl, formDataCopy, apiHeader("POST", token));
       console.log("Received values:", values);
       if (

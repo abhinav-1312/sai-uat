@@ -12,9 +12,9 @@ const IsnTable = ({type, data, itemList}) => {
 const fetchUomLocatorMaster = async (setUomHook, setLocatorHook) => {
     try {
       const uomMasterUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster";
+        "/master/getUOMMaster";
       const locatorMasterUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster";
+        "/master/getLocatorMaster";
       const [uomMaster, locatorMaster] = await Promise.all([axios.get(uomMasterUrl, apiHeader("GET", token)), axios.get(locatorMasterUrl, apiHeader("GET", token))]);
       const { responseData: uomMasterData } = uomMaster.data;
       const { responseData: locatorMasterData } = locatorMaster.data;

@@ -36,7 +36,7 @@ export const fetchOrganizations = createAsyncThunk(
         try{
             // const {token} = "1234"
             const {token} = getState().auth
-            const {responseData} = await apiCall("GET", `${BASE_URL}/master/getOrgMaster`, token)
+            const {responseData} = await apiCall("GET", `/master/getOrgMaster`, token)
             return responseData
         }
         catch(error){
@@ -51,7 +51,7 @@ export const updateOrganization = createAsyncThunk(
     async ({organizationId, values}, {getState}) => {
         try{
             const {token} = getState().auth
-            await apiCall("POST", `${BASE_URL}/master/updateOrgMaster`, token, {organizationId, ...values})
+            await apiCall("POST", `/master/updateOrgMaster`, token, {organizationId, ...values})
             alert("ORganization updated successfully.")
             
         }
@@ -66,7 +66,7 @@ export const saveOrganization = createAsyncThunk(
     async (values, {getState}) => {
         try{
             const {token} = getState().auth
-            await apiCall("POST", `${BASE_URL}/master/saveOrgMaster`, token, {...values})
+            await apiCall("POST", `/master/saveOrgMaster`, token, {...values})
             alert("ORganization saved successfully.")
             
         }
@@ -81,7 +81,7 @@ export const deleteOrganization = createAsyncThunk(
     async (formData, {getState}) => {
         try{
             const {token} = getState().auth
-            await apiCall("POST", `${BASE_URL}/master/deleteOrgMaster`, token, {...formData})
+            await apiCall("POST", `/master/deleteOrgMaster`, token, {...formData})
             alert("ORganization deleted successfully.")
         }
         catch(error){

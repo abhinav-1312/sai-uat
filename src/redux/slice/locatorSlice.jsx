@@ -1,15 +1,17 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 import { BASE_URL } from '../../utils/BaseUrl';
-import { apiCall } from '../../utils/Functions';
+import { apiCall, convertArrayToObject } from '../../utils/Functions';
 
 const locatorSlice = createSlice({
     name: "locators",
     initialState: {
-        data: null
+        data: null,
+        locatorObj: null
     },
     reducers: {
         clearLocator(state, action){
             state.data = null
+            state.locatorObj = null
         }
     },
 
@@ -22,6 +24,7 @@ const locatorSlice = createSlice({
           .addCase(fetchLocators.fulfilled, (state, action) => {
             state.loading = false;
             state.data = action.payload
+            state.locatorObj = convertArrayToObject(action.payload, "id", "locatorDesc")
           })
           .addCase(fetchLocators.rejected, (state, action) => {
             state.loading = false;
@@ -36,7 +39,7 @@ export const fetchLocators = createAsyncThunk(
     async (_, {getState}) => {
         try{
             const {token} = getState().auth
-            const {responseData} = await apiCall("GET", `${BASE_URL}/master/getLocatorMaster`, token)
+            const {responseData} = await apiCall("GET", `/master/getLocatorMaster`, token)
             return responseData
         }
         catch(error){
@@ -51,7 +54,7 @@ export const updateLocator = createAsyncThunk(
     async ({locatorId, values}, {getState}) => {
         try{
             const {token} = getState().auth
-            await apiCall("POST", `${BASE_URL}/master/updateLocatorMaster`, token, {locatorId, ...values})
+            await apiCall("POST", `/master/updateLocatorMaster`, token, {locatorId, ...values})
             
         }
         catch(error){
@@ -65,7 +68,7 @@ export const saveLocator = createAsyncThunk(
     async (values, {getState}) => {
         try{
             const {token} = getState().auth
-            await apiCall("POST", `${BASE_URL}/master/saveLocatorMaster`, token, {...values})
+            await apiCall("POST", `/master/saveLocatorMaster`, token, {...values})
             
         }
         catch(error){
@@ -79,7 +82,7 @@ export const deleteLocator = createAsyncThunk(
     async (formData, {getState}) => {
         try{
             const {token} = getState().auth
-            await apiCall("POST", `${BASE_URL}/master/deleteLocatorMaster`, token, {...formData})
+            await apiCall("POST", `/master/deleteLocatorMaster`, token, {...formData})
             
         }
         catch(error){

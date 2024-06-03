@@ -10,7 +10,7 @@ export const setUOM = (UOMs) => ({
 
 export const fetchUOM = () => async (dispatch) => {
   try {
-    const response = await fetch(`${BASE_URL}/getUOMMaster`, apiHeader("GET", token));
+    const response = await fetch(`/getUOMMaster`, apiHeader("GET", token));
     const data = await response.json();
 
     dispatch(setUOM(data.responseData));
@@ -21,7 +21,7 @@ export const fetchUOM = () => async (dispatch) => {
 
 export const updateUOM = (uomId, values) => async (dispatch) => {
   try {
-    const updateResponse = await fetch(`${BASE_URL}/updateUOMMaster`, {
+    const updateResponse = await fetch(`/updateUOMMaster`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -47,7 +47,7 @@ export const updateUOM = (uomId, values) => async (dispatch) => {
 
 export const saveUOM = (values) => async (dispatch) => {
   try {
-    const createResponse = await fetch(`${BASE_URL}/saveUOMMaster`, {
+    const createResponse = await fetch(`/saveUOMMaster`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -70,7 +70,7 @@ export const saveUOM = (values) => async (dispatch) => {
 
 export const deleteUOM = (uomId) => async (dispatch) => {
   try {
-    const deleteResponse = await fetch(`${BASE_URL}/deleteUOMMaster`, {
+    const deleteResponse = await fetch(`/deleteUOMMaster`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -61,7 +61,7 @@ export const login = createAsyncThunk(
     'auth/login',
     async (formData) => {
         try {
-            const url = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate"
+            const url = "/login/authenticate"
             const {data} = await axios.post(url, formData)
             const { userCd, userType } = data.responseData.userDetails;
             const { token } = data.responseData;

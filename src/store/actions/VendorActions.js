@@ -10,7 +10,7 @@ export const setVendors = (vendors) => ({
 
 export const fetchVendors = () => async (dispatch) => {
   try {
-    const response = await fetch(`${BASE_URL}/getVendorMaster`, apiHeader("GET", token));
+    const response = await fetch(`/getVendorMaster`, apiHeader("GET", token));
     const data = await response.json();
 
     dispatch(setVendors(data.responseData));
@@ -21,7 +21,7 @@ export const fetchVendors = () => async (dispatch) => {
 
 export const updateVendor = (vendorId, values) => async (dispatch) => {
   try {
-    const updateResponse = await fetch(`${BASE_URL}/updateVendorMaster`, {
+    const updateResponse = await fetch(`/updateVendorMaster`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ export const updateVendor = (vendorId, values) => async (dispatch) => {
 
 export const saveVendor = (values) => async (dispatch) => {
   try {
-    const createResponse = await fetch(`${BASE_URL}/saveVendorMaster`, {
+    const createResponse = await fetch(`/saveVendorMaster`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ export const saveVendor = (values) => async (dispatch) => {
 
 export const deleteVendor = (vendorId) => async (dispatch) => {
   try {
-    const deleteResponse = await fetch(`${BASE_URL}/deleteVendorMaster`, {
+    const deleteResponse = await fetch(`/deleteVendorMaster`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

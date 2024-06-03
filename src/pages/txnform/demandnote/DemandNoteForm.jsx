@@ -120,8 +120,10 @@ const DemandNoteForm = () => {
         </div>
 
         <div className="terms-condition-container">
-          <h3>Terms And Conditions</h3>
-          <TextArea rows={4} />
+          <div>
+            <h3>Terms And Conditions</h3>
+            <TextArea rows={4} />
+          </div>
         </div>
 
         <div className="designations-container">

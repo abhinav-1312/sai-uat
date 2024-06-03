@@ -30,7 +30,7 @@ const LocationPage = ({
 
   const getLocation = async (id) => {
     // const itemResponse = await apiRequest(
-    //   "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocationMasterById",
+    //   "/master/getLocationMasterById",
     //   "POST",
     //   {
     //     locationId: id,
@@ -38,7 +38,7 @@ const LocationPage = ({
     //   }
     // );
     try{
-      const itemResponse = await apiCall("POST", "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocationMasterById", token, {locationId: id, userId: userCd})
+      const itemResponse = await apiCall("POST", "/master/getLocationMasterById", token, {locationId: id, userId: userCd})
       return itemResponse.responseData;
     }catch(error){
       console.log("Error fetching location by id.", error)

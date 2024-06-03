@@ -36,7 +36,7 @@ export const fetchEmployees = createAsyncThunk(
     async (_, {getState}) => {
         try{
             const {token} = getState().auth
-            const {responseData} = await apiCall("GET", `${BASE_URL}/master/getEmpMaster`, token)
+            const {responseData} = await apiCall("GET", `/master/getEmpMaster`, token)
             return responseData
         }
         catch(error){
@@ -51,7 +51,7 @@ export const updateEmployee = createAsyncThunk(
     async ({employeeId, values}, {getState}) => {
         try{
             const {token} = getState().auth
-            await apiCall("POST", `${BASE_URL}/master/updateEmpMaster`, token, {employeeId, ...values})
+            await apiCall("POST", `/master/updateEmpMaster`, token, {employeeId, ...values})
             
         }
         catch(error){
@@ -65,7 +65,7 @@ export const saveEmployee = createAsyncThunk(
     async (values, {getState}) => {
         try{
             const {token} = getState().auth
-            await apiCall("POST", `${BASE_URL}/master/saveEmpMaster`, token, {...values})
+            await apiCall("POST", `/master/saveEmpMaster`, token, {...values})
             
         }
         catch(error){
@@ -79,7 +79,7 @@ export const deleteEmployee = createAsyncThunk(
     async (formData, {getState}) => {
         try{
             const {token} = getState().auth
-            await apiCall("POST", `${BASE_URL}/master/deleteEmpMaster`, token, {...formData})
+            await apiCall("POST", `/master/deleteEmpMaster`, token, {...formData})
             
         }
         catch(error){

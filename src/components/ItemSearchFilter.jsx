@@ -14,7 +14,7 @@ const ItemSearchFilter = () => {
   useEffect(() => {
     // Fetch data from the API
     fetch(
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMaster", apiHeader("GET", token)
+      "/master/getItemMaster", apiHeader("GET", token)
     )
       .then((response) => response.json())
       .then((data) => {

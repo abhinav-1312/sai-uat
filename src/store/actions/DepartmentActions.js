@@ -12,7 +12,7 @@ export const setDepartments = (departments) => ({
 
 export const fetchDepartments = () => async (dispatch) => {
   try {
-    const response = await fetch(`${BASE_URL}/getDeptMaster`, apiHeader("GET", token));
+    const response = await fetch(`/getDeptMaster`, apiHeader("GET", token));
     console.log("Response: ", response)
     const data = await response.json();
 
@@ -25,7 +25,7 @@ export const fetchDepartments = () => async (dispatch) => {
 
 export const updateDepartment = (departmentId, values) => async (dispatch) => {
   try {
-    const updateResponse = await fetch(`${BASE_URL}/updateDeptMaster`, {
+    const updateResponse = await fetch(`/updateDeptMaster`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ export const updateDepartment = (departmentId, values) => async (dispatch) => {
 
 export const saveDepartment = (values) => async (dispatch) => {
   try {
-    const createResponse = await fetch(`${BASE_URL}/saveDeptMaster`, {
+    const createResponse = await fetch(`/saveDeptMaster`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ export const saveDepartment = (values) => async (dispatch) => {
 
 export const deleteDepartment = (departmentId) => async (dispatch) => {
   try {
-    const deleteResponse = await fetch(`${BASE_URL}/deleteDeptMaster`, {
+    const deleteResponse = await fetch(`/deleteDeptMaster`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

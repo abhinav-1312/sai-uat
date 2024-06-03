@@ -18,7 +18,7 @@ const Ohq = ({orgId, organization}) => {
   const populateItemData = async () => {
     try{
       const { data } = await axios.post(
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getOHQ",
+        "/master/getOHQ",
         { itemCode: null, userId },
         apiHeader("POST", token)
       ); // sending itemCode 'null' gives all available data
@@ -45,7 +45,7 @@ const Ohq = ({orgId, organization}) => {
     try{
 
       const { data } = await axios.post(
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getOHQ",
+        "/master/getOHQ",
         { itemCode: null, userId, orgId },
         apiHeader("POST", token)
       ); // sending itemCode 'null' gives all available data
@@ -74,7 +74,7 @@ const Ohq = ({orgId, organization}) => {
     try{
 
       const { data } = await axios.post(
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getAllOHQ",
+        "/master/getAllOHQ",
         { itemCode: null, userId, orgId:null, itemDesc: null },
         apiHeader("POST", token)
       ); // sending itemCode 'null' gives all available data

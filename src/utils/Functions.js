@@ -2,6 +2,7 @@ import {Table, Button} from "antd"
 import html2pdf from 'html2pdf.js';
 import axios from 'axios'
 import { useSelector } from "react-redux";
+import { useCallback } from "react";
 
 const sanitizeText = (text) => {
   return text.toString().toLowerCase().replace(/\s+/g, '');
@@ -57,6 +58,59 @@ export const apiCall = async (method, url, token, payload=null) => {
     }
   }
 }
+
+// export const mergeItemMasterAndOhq = (itemMasterArr, ohqArr) => {
+//   return itemMasterArr?.map((item) => {
+//     const itemCodeMatch = ohqArr?.find(
+//       (itemOhq) => itemOhq.itemCode === item.itemMasterCd
+//     );
+//     if (itemCodeMatch) {
+//       const newQtyList = itemCodeMatch.qtyList.filter(
+//         (obj) => obj.quantity !== 0
+//       );
+
+//       if (newQtyList.length > 0)
+//         console.log("NEW QTY LIST: ", item.itemMasterDesc, newQtyList)
+//         return {
+//           ...item,
+//           qtyList: newQtyList,
+//           locationId: itemCodeMatch.locationId,
+//           locationDesc: itemCodeMatch.locationName,
+//         };
+//     }
+//   });
+// };
+
+export const mergeItemMasterAndOhq = (itemMasterArr, ohqArr) => {
+  console.log("Called")
+  // Ensure input arrays are valid and handle cases where they are not provided
+  if (!Array.isArray(itemMasterArr) || !Array.isArray(ohqArr)) {
+    console.error("Invalid input arrays");
+    return [];
+  }
+
+  return itemMasterArr.map((item) => {
+    const itemCodeMatch = ohqArr.find(
+      (itemOhq) => itemOhq.itemCode === item.itemMasterCd
+    );
+
+    if (itemCodeMatch) {
+      // Filter the quantity list to exclude quantities of 0
+      const newQtyList = itemCodeMatch.qtyList.filter(
+        (obj) => obj.quantity !== 0
+      );
+      if (newQtyList.length > 0) {
+        return {
+          ...item,
+          qtyList: newQtyList,
+          locationId: itemCodeMatch.locationId,
+          locationDesc: itemCodeMatch.locationName,
+        };
+      }
+    }
+  }).filter(item => item !== undefined);
+};
+
 
 // export const handleSearch = (searchText, itemData, setHook) => {
 //   setSearch(searchText)
@@ -276,9 +330,9 @@ export const convertArrayToObject = (array, _makeKey, valueKey ) => {
   export const fetchUomLocatorMaster = async (setUomHook, setLocatorHook) => {
     try {
       const uomMasterUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster";
+        "/master/getUOMMaster";
       const locatorMasterUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster";
+        "/master/getLocatorMaster";
       const [uomMaster, locatorMaster] = await Promise.all([axios.get(uomMasterUrl, apiHeader("GET", token)), axios.get(locatorMasterUrl, apiHeader("GET", token))]);
       const { responseData: uomMasterData } = uomMaster.data;
       const { responseData: locatorMasterData } = locatorMaster.data;
@@ -341,4 +395,14 @@ export const convertArrayToObject = (array, _makeKey, valueKey ) => {
       title: column.title,
       dataIndex: column.dataIndex
     }))
+  }
+
+  export const searchedData = (item, searchText) => {
+    if(item === undefined) return
+    console.log("search data called")
+    return Object.values(item).some(
+      (value) =>
+        typeof value === "string" &&
+        value.toLowerCase().includes(searchText.toLowerCase())
+    )
   }

@@ -10,7 +10,7 @@ const { TextArea } = Input;
 const DemandNotePage = () => {
   const formRef = useRef();
 
-  const handlePrint  = useReactToPrint({
+  const handlePrint = useReactToPrint({
     content: () => formRef.current,
   });
   return (
@@ -18,7 +18,15 @@ const DemandNotePage = () => {
       <div className="a4-container" ref={formRef}>
         <h2 className="a4-heading">Sports Authority Of India - Demand Note</h2>
 
-        <Form layout="vertical" style={{display: "flex", flexDirection: "column", gap: "1rem", margin: "1rem 0"}}>
+        <Form
+          layout="vertical"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "1rem",
+            margin: "1rem 0",
+          }}
+        >
           <div className="consignor-consignee-container grid-2">
             <FormInputItem label="Regional Center Code" />
             <FormInputItem label="Demand Note No." />
@@ -55,11 +63,10 @@ const DemandNotePage = () => {
             </div>
           </div>
 
-
-            <div className="terms-condition-container">
-              <h3>Terms And Conditions</h3>
-              <TextArea rows={4} />
-            </div>
+          <div className="terms-condition-container">
+            <h3>Terms And Conditions</h3>
+            <TextArea rows={4} />
+          </div>
 
           <div className="designations-container">
             <div className="each-desg">
@@ -81,15 +88,14 @@ const DemandNotePage = () => {
         </Form>
 
         <div className="button-container">
-
-        <Button
-          onClick={() => handlePrint(formRef)}
-          type="primary"
-          danger
-          style={{ width: "200px", alignContent: "end" }}
+          <Button
+            onClick={() => handlePrint(formRef)}
+            type="primary"
+            danger
+            style={{ width: "200px", alignContent: "end" }}
           >
-          PRINT
-        </Button>
+            PRINT
+          </Button>
         </div>
       </div>
     </>

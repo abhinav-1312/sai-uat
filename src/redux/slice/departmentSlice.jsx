@@ -37,7 +37,7 @@ export const fetchDepartments = createAsyncThunk(
         try{
             // const {token} = "1234"
             const {token} = getState().auth
-            const {responseData} = await apiCall("GET", `${BASE_URL}/master/getDeptMaster`, token)
+            const {responseData} = await apiCall("GET", `/master/getDeptMaster`, token)
             return responseData
         }
         catch(error){
@@ -52,7 +52,7 @@ export const updateDepartment = createAsyncThunk(
     async ({departmentId, values}, {getState}) => {
         try{
             const {token} = getState().auth
-            await apiCall("POST", `${BASE_URL}/master/updateDeptMaster`, token, {departmentId, ...values})
+            await apiCall("POST", `/master/updateDeptMaster`, token, {departmentId, ...values})
             
         }
         catch(error){
@@ -66,7 +66,7 @@ export const saveDepartment = createAsyncThunk(
     async (values, {getState}) => {
         try{
             const {token} = getState().auth
-            await apiCall("POST", `${BASE_URL}/master/saveDeptMaster`, token, {...values})
+            await apiCall("POST", `/master/saveDeptMaster`, token, {...values})
             
         }
         catch(error){
@@ -80,7 +80,7 @@ export const deleteDepartment = createAsyncThunk(
     async (formData, {getState}) => {
         try{
             const {token} = getState().auth
-            await apiCall("POST", `${BASE_URL}/master/deleteDeptMaster`, token, {...formData})
+            await apiCall("POST", `/master/deleteDeptMaster`, token, {...formData})
             
         }
         catch(error){

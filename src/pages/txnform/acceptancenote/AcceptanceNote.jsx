@@ -120,7 +120,7 @@ const AcceptanceNote = () => {
       // const userCd = localStorage.getItem("userCd")
       // const password = localStorage.getItem("password")
       // const apiUrl =
-      //   "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
+      //   "/login/authenticate";
       // const response = await axios.post(apiUrl, {
       //   userCd,
       //   password,
@@ -149,13 +149,13 @@ const AcceptanceNote = () => {
   const handleInspectionNOChange = async (value) => {
     try {
       // const apiUrl =
-      //   "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
+      //   "/getSubProcessDtls";
       // const response = await axios.post(apiUrl, {
       //   processId: value,
       //   processStage: "IRN",
       // }, apiHeader("POST", token));
 
-      const data = await apiCall("POST", `${BASE_URL}/getSubProcessDtls`, token, {processId: value, processStage: "IRN"})
+      const data = await apiCall("POST", `/getSubProcessDtls`, token, {processId: value, processStage: "IRN"})
       const {responseData} = data;
       const { processData, itemList } = responseData;
       setFormData((prevFormData) => ({
@@ -267,9 +267,9 @@ const AcceptanceNote = () => {
       });
 
       const apiUrl =
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/saveAcceptanceNote";
+      "/saveAcceptanceNote";
       // const response = await axios.post(apiUrl, formDataCopy, apiHeader("POST", token));
-      const data = await apiCall("POST", `${BASE_URL}/saveAcceptanceNote`, token, formDataCopy)
+      const data = await apiCall("POST", `/saveAcceptanceNote`, token, formDataCopy)
       const {responseData} = data
       if (
         data.responseStatus &&

@@ -31,7 +31,7 @@ const StockLedger = ({orgId}) => {
   const populateItemData = async () => {
     try{
       const { data } = await axios.get(
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMaster",
+        "/master/getItemMaster",
         apiHeader("GET", token)
       );
       const { responseData } = data;
@@ -52,7 +52,7 @@ const StockLedger = ({orgId}) => {
   };
 
   const populateByOrgId = async () => {
-    const url = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMasterByOrgId"
+    const url = "/master/getItemMasterByOrgId"
 
     try{
       const { data } = await axios.post(url, {orgId}, apiHeader("POST", token));
@@ -74,9 +74,9 @@ const StockLedger = ({orgId}) => {
 
   const fetchLocationLocatorByOrgId = async () => {
     const locatorUrl =
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocatorMasterByOrgId";
+      "/master/getLocatorMasterByOrgId";
     const locationUrl =
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocationMasterByOrgId";
+      "/master/getLocationMasterByOrgId";
     try{
       const [locatorData, locationData] = await Promise.all([
         axios.post(locatorUrl, {orgId}, apiHeader("POST", token)),
@@ -105,9 +105,9 @@ const StockLedger = ({orgId}) => {
 
   const fetchLocatorLocationDtls = async () => {
     const locatorUrl =
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster";
+      "/master/getLocatorMaster";
     const locationUrl =
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocationMaster";
+      "/master/getLocationMaster";
     try{
       const [locatorData, locationData] = await Promise.all([
         axios.get(locatorUrl, apiHeader("GET", token)),
@@ -217,7 +217,7 @@ const StockLedger = ({orgId}) => {
       return
     }
     const url =
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/txns/getStockLedger";
+      "/txns/getStockLedger";
     try{
       if(orgId){
         const { data } = await axios.post(

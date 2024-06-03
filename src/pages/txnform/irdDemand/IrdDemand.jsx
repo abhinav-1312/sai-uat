@@ -73,7 +73,7 @@ const DemandNoteForm = () => {
   };
 
   const handleCeRccChange = async (value) => {
-    const url = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getOrgMasterById"
+    const url = "/master/getOrgMasterById"
     const {data} = await axios.post(url, {id: value, userId: userCd}, apiHeader("POST", token))
     const {responseStatus, responseData} = data
 

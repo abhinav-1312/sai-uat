@@ -140,6 +140,9 @@ code {
 
 .terms-condition-container{
   /* padding: 1rem 0; */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0 1rem;
 }
 
 .designations-container{
@@ -154,10 +157,11 @@ code {
   gap: 0.5rem
 }
 
-.button-container {
+.button-container{
   display: flex;
   justify-content: center;
   align-items: center;  
+  gap: 4rem;
 }
 
 .each-desg{
@@ -173,4 +177,30 @@ code {
   .button-container{
     display: none;
   }
+}
+
+.a4-subheading-container{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.heading-container{
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.consignor-consignee-heading{
+  font-weight: bold;
+  color: #003566;
+}
+
+.consignor-container, .consignee-container, .other-container{
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem
 }

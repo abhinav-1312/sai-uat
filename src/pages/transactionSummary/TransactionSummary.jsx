@@ -111,7 +111,7 @@ const TransactionSummary = ({orgId}) => {
   const populateData = async () => {
     try {
       const { data } = await axios.post(
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/txns/getTxnSummary",
+        "/txns/getTxnSummary",
         { startDate: null, endDate: null, itemCode: null, txnType: null },
         apiHeader("POST", token)
       );
@@ -126,7 +126,7 @@ const TransactionSummary = ({orgId}) => {
   const populateHqData = async (orgId) => {
     try {
       const { data } = await axios.post(
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/txns/getTxnSummary",
+        "/txns/getTxnSummary",
         { startDate: null, endDate: null, itemCode: null, txnType: null, orgId },
         apiHeader("POST", token)
       );
@@ -159,7 +159,7 @@ const TransactionSummary = ({orgId}) => {
       }
       if(orgId){
         const { data } = await axios.post(
-          "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/txns/getTxnSummary",
+          "/txns/getTxnSummary",
           {...formDataCopy, orgId},
           apiHeader("POST", token)
         );
@@ -168,7 +168,7 @@ const TransactionSummary = ({orgId}) => {
       }
       else{
         const { data } = await axios.post(
-          "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/txns/getTxnSummary",
+          "/txns/getTxnSummary",
           formDataCopy,
           apiHeader("POST", token)
         );

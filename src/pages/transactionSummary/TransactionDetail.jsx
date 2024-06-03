@@ -41,7 +41,7 @@ const TransactionDetail = () => {
 
   const populateHqData = async (orgId)=> {
     const trnDetailUrl =
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/txns/getTxnDtls";
+      "/txns/getTxnDtls";
     const { data } = await axios.post(
       trnDetailUrl,
       { processId: trnNo, orgId },
@@ -81,7 +81,7 @@ const TransactionDetail = () => {
 
   const populateData = async () => {
     const trnDetailUrl =
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/txns/getTxnDtls";
+      "/txns/getTxnDtls";
     const { data } = await axios.post(
       trnDetailUrl,
       { processId: trnNo },

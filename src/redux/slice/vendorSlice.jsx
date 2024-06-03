@@ -38,7 +38,7 @@ export const fetchVendors = createAsyncThunk(
     async (_, {getState}) => {
         try{
             const {token} = getState().auth
-            const {responseData} = await apiCall("GET", `${BASE_URL}/master/getVendorMaster`, token)
+            const {responseData} = await apiCall("GET", `/master/getVendorMaster`, token)
             return responseData
         }
         catch(error){
@@ -53,7 +53,7 @@ export const updateVendor = createAsyncThunk(
     async ({vendorId, values}, {getState}) => {
         try{
             const {token} = getState().auth
-            await apiCall("POST", `${BASE_URL}/master/updateVendorMaster`, token, {vendorId, ...values})
+            await apiCall("POST", `/master/updateVendorMaster`, token, {vendorId, ...values})
             
         }
         catch(error){
@@ -67,7 +67,7 @@ export const saveVendor = createAsyncThunk(
     async (values, {getState}) => {
         try{
             const {token} = getState().auth
-            await apiCall("POST", `${BASE_URL}/master/saveVendorMaster`, token, {...values})
+            await apiCall("POST", `/master/saveVendorMaster`, token, {...values})
             
         }
         catch(error){
@@ -81,7 +81,7 @@ export const deleteVendor = createAsyncThunk(
     async (formData, {getState}) => {
         try{
             const {token} = getState().auth
-            await apiCall("POST", `${BASE_URL}/master/deleteVendorMaster`, token, {...formData})
+            await apiCall("POST", `/master/deleteVendorMaster`, token, {...formData})
             
         }
         catch(error){

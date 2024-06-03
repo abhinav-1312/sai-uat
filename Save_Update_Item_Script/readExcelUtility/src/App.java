@@ -7,10 +7,10 @@
 
 // public class App {
 //     // Uncomment this when updating exsisting Items
-//     private static final String API_ENDPOINT = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/updateItemMaster";
+//     private static final String API_ENDPOINT = "/master/updateItemMaster";
 //     // Uncomment this when saving new Items
 //     // private static final String API_ENDPOINT =
-//     // "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/saveItemMaster";
+//     // "/master/saveItemMaster";
 
 //     public static void main(String[] args) {
 //         String excelFilePath = "/Users/sarthak/Desktop/5Item.xlsx";

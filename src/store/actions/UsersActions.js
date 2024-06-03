@@ -11,7 +11,7 @@ export const setUsers = (users) => ({
 const token = localStorage.getItem("token");
 export const fetchUsers = () => async (dispatch) => {
   try {
-    const response = await fetch(`${BASE_URL}/getUserMaster`, apiHeader("GET", token));
+    const response = await fetch(`/getUserMaster`, apiHeader("GET", token));
     const data = await response.json();
 
     dispatch(setUsers(data.responseData));
@@ -22,7 +22,7 @@ export const fetchUsers = () => async (dispatch) => {
 
 export const updateUser = (userId, values) => async (dispatch) => {
   try {
-    const updateResponse = await fetch(`${BASE_URL}/updateUserMaster`, {
+    const updateResponse = await fetch(`/updateUserMaster`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -48,7 +48,7 @@ export const updateUser = (userId, values) => async (dispatch) => {
 
 // export const saveUser = (values) => async (dispatch) => {
 //   try {
-//     const createResponse = await fetch(`${BASE_URL}/saveUserMaster`, {
+//     const createResponse = await fetch(`/saveUserMaster`, {
 //       method: "POST",
 //       headers: {
 //         "Content-Type": "application/json",
@@ -71,7 +71,7 @@ export const updateUser = (userId, values) => async (dispatch) => {
 
 export const saveUser = (values) => async (dispatch) => {
   try {
-    const createResponse = await fetch(`${BASE_URL}/saveUserMaster`, {
+    const createResponse = await fetch(`/saveUserMaster`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -103,7 +103,7 @@ export const saveUser = (values) => async (dispatch) => {
 
 export const deleteUser = (userId) => async (dispatch) => {
   try {
-    const deleteResponse = await fetch(`${BASE_URL}/deleteUserMaster`, {
+    const deleteResponse = await fetch(`/deleteUserMaster`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

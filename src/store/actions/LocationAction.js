@@ -11,7 +11,7 @@ export const setLocations = (locations) => ({
 
 export const fetchLocations = () => async (dispatch) => {
   try {
-    const response = await fetch(`${BASE_URL}/getLocationMaster`, apiHeader("GET", token) );
+    const response = await fetch(`/getLocationMaster`, apiHeader("GET", token) );
     const data = await response.json();
 
     dispatch(setLocations(data.responseData));
@@ -22,7 +22,7 @@ export const fetchLocations = () => async (dispatch) => {
 
 export const updateLocation = (locationId, values) => async (dispatch) => {
   try {
-    const updateResponse = await fetch(`${BASE_URL}/updateLocationMaster`, {
+    const updateResponse = await fetch(`/updateLocationMaster`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ export const updateLocation = (locationId, values) => async (dispatch) => {
 
 export const saveLocation = (values) => async (dispatch) => {
   try {
-    const createResponse = await fetch(`https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/saveLocationMaster`, {
+    const createResponse = await fetch(`/master/saveLocationMaster`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ export const saveLocation = (values) => async (dispatch) => {
 
 export const deleteLocation = (locationId) => async (dispatch) => {
   try {
-    const deleteResponse = await fetch(`${BASE_URL}/deleteLocationMaster`, {
+    const deleteResponse = await fetch(`/deleteLocationMaster`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

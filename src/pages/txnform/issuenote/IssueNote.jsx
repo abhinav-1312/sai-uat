@@ -1,5 +1,5 @@
 // IssueNote.js
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import {
   Form,
   Input,
@@ -15,39 +15,52 @@ import {
   Table,
   Tooltip,
 } from "antd";
-import { MinusCircleOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  MinusCircleOutlined,
+  PrinterOutlined,
+  SaveOutlined,
+  UndoOutlined,
+} from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
 
 import {
   apiHeader,
   handleSearch,
+  mergeItemMasterAndOhq,
   printOrSaveAsPDF,
+  searchedData,
 } from "../../../utils/Functions";
 import FormInputItem from "../../../components/FormInputItem";
-import { useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import FormDatePickerItem from "../../../components/FormDatePickerItem";
+import useHandlePrint from "../../../components/useHandlePrint";
+import { fetchOhq } from "../../../redux/slice/ohqSlice";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
-const { Search } = Input;
+const { TextArea } = Input;
 
 const IssueNote = () => {
-  const [buttonVisible, setButtonVisible] = useState(false);
+  const dispatch = useDispatch()
+
+  const {data: itemData} = useSelector(state => state.item)
+  const {data: ohqData} = useSelector(state => state.ohq)
+  const data = useMemo( () => mergeItemMasterAndOhq(itemData, ohqData), [itemData, ohqData])
+
   const formRef = useRef();
+  const handlePrint = useHandlePrint(formRef);
+
+  const [buttonVisible, setButtonVisible] = useState(false);
   const [Type, setType] = useState("IRP");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [selectedItems, setSelectedItems] = useState([]); // State to hold selected item data
-  const [formSubmitted, setFormSubmitted] = useState(false);
   const [tableOpen, setTableOpen] = useState(false);
-  const [locatorMaster, setLocatorMaster] = useState([]);
-  const [locationMaster, setLocationMaster] = useState({});
-  const [vendorMaster, setVendorMaster] = useState({});
-  const [itemDetail, setItemDetail] = useState([]);
 
   const [formData, setFormData] = useState({
     genDate: "",
@@ -90,15 +103,12 @@ const IssueNote = () => {
     userId: "string",
     processType: "IRP",
     interRdDemandNote: "",
-  }
-);
+  });
 
   const [disableSubmitBtn, setDisableSubmitBtn] = useState(false);
   const handleFormReset = () => {
-    window.location.reload()
-  }
-
-  console.log("FORMdATA ISSUE NOTE: ", formData);
+    window.location.reload();
+  };
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -137,7 +147,7 @@ const IssueNote = () => {
     if (fieldName === "quantity") {
       // const formItemQuantity = formData.items[index]
       const {
-        quantity: formItemQuantity,
+        // quantity: formItemQuantity,
         itemCode,
         locatorId: formDataLocId,
       } = formData.items[index];
@@ -170,26 +180,6 @@ const IssueNote = () => {
         ...prevValues,
         items: updatedItems,
       };
-    });
-  };
-
-  const mergeItemMasterAndOhq = (itemMasterArr, ohqArr) => {
-    return itemMasterArr.map((item) => {
-      const itemCodeMatch = ohqArr.find(
-        (itemOhq) => itemOhq.itemCode === item.itemMasterCd
-      );
-      if (itemCodeMatch) {
-        const newQtyList = itemCodeMatch.qtyList.filter(
-          (obj) => obj.quantity !== 0
-        );
-        if (newQtyList.length > 0)
-          return {
-            ...item,
-            qtyList: newQtyList,
-            locationId: itemCodeMatch.locationId,
-            locationDesc: itemCodeMatch.locationName,
-          };
-      }
     });
   };
 
@@ -247,7 +237,6 @@ const IssueNote = () => {
       dataIndex: "itemMasterDesc",
       key: "itemMasterDesc",
       fixed: "left",
-      // render: (itemName) => itemNames[itemName],
     },
     {
       title: "ITEM CODE",
@@ -329,64 +318,85 @@ const IssueNote = () => {
         renderLocatorISN(locatorQuantity, rowRecord),
     },
   ];
-  const { organizationDetails, locationDetails, userDetails, token, userCd } =
-    useSelector((state) => state.auth);
-  const populateItemData = async () => {
-    const itemMasterUrl =
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMaster";
-    const ohqUrl =
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getOHQ";
-    const vendorMasteUrl =
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getVendorMaster";
-    const locationMasterUrl =
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocationMaster";
-    try {
-      const [itemMaster, ohq, vendorMaster, locationMaster] = await Promise.all(
-        [
-          axios.get(itemMasterUrl, apiHeader("GET", token)),
-          axios.post(
-            ohqUrl,
-            { itemCode: null, user: userCd },
-            apiHeader("GET", token)
-          ),
-          axios.get(vendorMasteUrl, apiHeader("GET", token)),
-          axios.get(locationMasterUrl, apiHeader("GET", token)),
-        ]
-      );
+  const { organizationDetails, locationDetails, userDetails, token, userCd } = useSelector((state) => state.auth);
 
-      const { responseData: itemMasterData } = itemMaster.data;
-      // const {responseData : locatorMasterData} = locatorMaster.data
-      // const {responseData : uomMasterData} = uomMaster.data
-      const { responseData: ohqData } = ohq.data;
-      const { responseData: vendorMasterData } = vendorMaster.data;
-      const { responseData: locationMasterData } = locationMaster.data;
+  // const populateItemData = async () => {
+  //   const itemMasterUrl =
+  //     "/master/getItemMaster";
+  //   const ohqUrl =
+  //     "/master/getOHQ";
+  //   const vendorMasteUrl =
+  //     "/master/getVendorMaster";
+  //   const locationMasterUrl =
+  //     "/master/getLocationMaster";
+  //   try {
+  //     const [itemMaster, ohq, vendorMaster, locationMaster] = await Promise.all(
+  //       [
+  //         axios.get(itemMasterUrl, apiHeader("GET", token)),
+  //         axios.post(
+  //           ohqUrl,
+  //           { itemCode: null, user: userCd },
+  //           apiHeader("GET", token)
+  //         ),
+  //         axios.get(vendorMasteUrl, apiHeader("GET", token)),
+  //         axios.get(locationMasterUrl, apiHeader("GET", token)),
+  //       ]
+  //     );
 
-      const mergedItemMaster = mergeItemMasterAndOhq(itemMasterData, ohqData);
+  //     const { responseData: itemMasterData } = itemMaster.data;
+  //     // const {responseData : locatorMasterData} = locatorMaster.data
+  //     // const {responseData : uomMasterData} = uomMaster.data
+  //     const { responseData: ohqData } = ohq.data;
+  //     const { responseData: vendorMasterData } = vendorMaster.data;
+  //     const { responseData: locationMasterData } = locationMaster.data;
 
-      setData([...mergedItemMaster]);
-      setFilteredData([...mergedItemMaster]);
+  //     const mergedItemMaster = mergeItemMasterAndOhq(itemMasterData, ohqData);
 
-      const locationMasterObj = locationMasterData.reduce((acc, obj) => {
-        acc[obj.id] = obj.locationName;
-        return acc;
-      }, {});
+  //     // setData([...mergedItemMaster]);
+  //     setFilteredData([...mergedItemMaster]);
 
-      const vendorMasterObj = vendorMasterData.reduce((acc, obj) => {
-        acc[obj.id] = obj.vendorName;
-        return acc;
-      }, {});
-      setVendorMaster({ ...vendorMasterObj });
-      setLocationMaster({ ...locationMasterObj });
-    } catch (error) {
-      console.log("Populate item data error: ", error);
-    }
-  };
+  //     const locationMasterObj = locationMasterData.reduce((acc, obj) => {
+  //       acc[obj.id] = obj.locationName;
+  //       return acc;
+  //     }, {});
+
+  //     const vendorMasterObj = vendorMasterData.reduce((acc, obj) => {
+  //       acc[obj.id] = obj.vendorName;
+  //       return acc;
+  //     }, {});
+  //     // setVendorMaster({ ...vendorMasterObj });
+  //     // setLocationMaster({ ...locationMasterObj });
+  //   } catch (error) {
+  //     console.log("Populate item data error: ", error);
+  //   }
+  // };
 
   useEffect(() => {
-    // Fetch data from the API
-    populateItemData();
+
+    dispatch(fetchOhq())
+
+    const fetchUserDetails = () => {
+      const currentDate = dayjs();
+      setFormData((prev) => {
+        return {
+          ...prev,
+          crRegionalCenterCd: organizationDetails.id,
+          crRegionalCenterName: organizationDetails.organizationName,
+          crAddress: organizationDetails.locationAddr,
+          crZipcode: locationDetails.zipcode,
+          genName: userDetails.firstName + " " + userDetails.lastName,
+          userId: userCd,
+          issueNoteNo: "not defined",
+          genDate: currentDate.format(dateFormat),
+          issueDate: currentDate.format(dateFormat),
+          approvedDate: currentDate.format(dateFormat),
+          issueNoteDt: currentDate.format(dateFormat),
+          demandNoteDt: currentDate.format(dateFormat),
+        };
+      });
+    };
     fetchUserDetails();
-  }, []);
+  }, [organizationDetails.id, organizationDetails.organizationName, locationDetails.zipcode, organizationDetails.locationAddr, userCd, userDetails.firstName, userDetails.lastName,  dispatch]);
 
   const handleSelectItem = (record, subRecord) => {
     setTableOpen(false);
@@ -431,46 +441,32 @@ const IssueNote = () => {
     }
   };
 
-  const fetchUserDetails = async () => {
-    // const userCd = localStorage.getItem('userCd');
-    // const password = localStorage.getItem('password');
-    // try {
-    //   const apiUrl =
-    //     "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
-    //   const response = await axios.post(apiUrl, {
-    //     userCd,
-    //     password
-    //   });
+  // const fetchUserDetails = () => {
+  //   const currentDate = dayjs();
+  //   setFormData((prev) => {
+  //     return {
+  //       ...prev,
+  //       crRegionalCenterCd: organizationDetails.id,
+  //       crRegionalCenterName: organizationDetails.organizationName,
+  //       crAddress: organizationDetails.locationAddr,
+  //       crZipcode: locationDetails.zipcode,
+  //       genName: userDetails.firstName + " " + userDetails.lastName,
+  //       userId: userCd,
+  //       issueNoteNo: "not defined",
+  //       genDate: currentDate.format(dateFormat),
+  //       issueDate: currentDate.format(dateFormat),
+  //       approvedDate: currentDate.format(dateFormat),
+  //       issueNoteDt: currentDate.format(dateFormat),
+  //       demandNoteDt: currentDate.format(dateFormat),
+  //     };
+  //   });
+  // };
 
-    // const { responseData } = response.data;
-    // const { organizationDetails, userDetails, locationDetails } = responseData;
-    // Get current date
-    const currentDate = dayjs();
-    setFormData((prev) => {
-      return {
-        ...prev,
-        crRegionalCenterCd: organizationDetails.id,
-        crRegionalCenterName: organizationDetails.organizationName,
-        crAddress: organizationDetails.locationAddr,
-        crZipcode: locationDetails.zipcode,
-        genName: userDetails.firstName + " " + userDetails.lastName,
-        userId: userCd,
-        issueNoteNo: "string",
-        genDate: currentDate.format(dateFormat),
-        issueDate: currentDate.format(dateFormat),
-        approvedDate: currentDate.format(dateFormat),
-        issueNoteDt: currentDate.format(dateFormat),
-        demandNoteDt: currentDate.format(dateFormat),
-      };
-    });
-    // } catch (error) {
-    //   console.error("Error fetching data:", error);
-    // }
-  };
+  console.log("DATAA: ", data)
 
   const handleCeRccChange = async (value) => {
     const url =
-      "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getOrgMasterById";
+      "/master/getOrgMasterById";
     const { data } = await axios.post(
       url,
       { id: value, userId: userCd },
@@ -538,7 +534,7 @@ const IssueNote = () => {
       });
 
       const apiUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/saveIssueNote";
+        "/saveIssueNote";
       const response = await axios.post(
         apiUrl,
         formDataCopy,
@@ -567,10 +563,10 @@ const IssueNote = () => {
         message.success(
           `Issue note saved successfully! Process ID: ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
-        setFormSubmitted(true);
         // fetchUserDetails()
       } else {
         // Display a generic success message if specific data is not available
+        setErrorMessage("Failed to save issue note. Please try again later.")
         message.error("Failed to save issue note. Please try again later.");
       }
     } catch (error) {
@@ -595,6 +591,267 @@ const IssueNote = () => {
       return { ...prevValues, items: updatedItems1 };
     });
   };
+
+  useEffect(()=> {
+    console.log("RE rendered")
+  }, [data])
+
+  return (
+    <>
+      <div className="a4-container" ref={formRef}>
+        <div className="heading-container">
+          <h4>
+            Issue Note No. : <br /> {formData.issueNoteNo}
+          </h4>
+          <h2 className="a4-heading">Sports Authority Of India - Issue Note</h2>
+          <h4>
+            Issue Note Date. : <br /> {formData.issueNoteDt}
+          </h4>
+        </div>
+
+        <Form
+          layout="vertical"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "1rem",
+            margin: "0.5rem 0",
+          }}
+        >
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(10rem, 1fr))",
+              gap: "1rem",
+              margin: "1rem 0",
+            }}
+          >
+            <div className="consignor-container">
+              <h3 className="consignor-consignee-heading">Consignor Details</h3>
+              <FormInputItem
+                label="Regional Center Code"
+                value={formData.crRegionalCenterCd}
+              />
+              <FormInputItem
+                label="Regional Center Name"
+                value={formData.crRegionalCenterName}
+              />
+              <FormInputItem label="Address" value={formData.crAddress} />
+              <FormInputItem label="Zipcode" value={formData.crZipcode} />
+            </div>
+
+            <div className="consignee-container">
+              <h3 className="consignor-consignee-heading">Consignee Details</h3>
+
+              {formData.processType === "IRP" ||
+              formData.processType === "NIRP" ? (
+                <>
+                  <FormInputItem
+                    label="Consumer Name"
+                    name="consumerName"
+                    onChange={handleChange}
+                  />
+                  <FormInputItem
+                    label="Contact No."
+                    name="contactNo"
+                    onChange={handleChange}
+                  />
+                </>
+              ) : (
+                <>
+                  <FormInputItem
+                    label="Regional Center Code"
+                    value={formData.ceRegionalCenterCd}
+                  />
+                  <FormInputItem
+                    label="Regional Center Name"
+                    value={formData.crRegionalCenterName}
+                  />
+                  <FormInputItem label="Address" value={formData.crAddress} />
+                  <FormInputItem label="Zipcode" value={formData.crZipcode} />
+                </>
+              )}
+            </div>
+
+            <div className="other-container">
+              <h3 className="consignor-consignee-heading">Other Details</h3>
+
+              <Form.Item label="Type" name="type">
+                <Select
+                  onChange={(value) => handleChange("processType", value)}
+                >
+                  <Option value="IRP">1. RETURNABLE</Option>
+                  <Option value="NIRP">2. NON RETURNABLE</Option>
+                  <Option value="IOP">3. INTER - ORG. TRANSFER</Option>
+                </Select>
+              </Form.Item>
+
+              <FormInputItem
+                label="Demand Note No."
+                name="demandNoteNo"
+                onChange={handleChange}
+              />
+              <FormDatePickerItem
+                label="Demand Note Date"
+                defaultValue={dayjs()}
+                name="demandNoteDt"
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          <div className="item-details-container">
+            <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+              <h3>Item Details</h3>
+              {/* <Button type="dashed" icon={<PlusOutlined />}>
+                Add Item
+              </Button> */}
+
+              <Popover
+                onClick={() => setTableOpen(true)}
+                content={
+                  <Table
+                    pagination={{ pageSize: 3 }}
+                    // dataSource={searchedData(data, searchValue)}
+                    dataSource={data !== undefined && data?.filter((item) =>
+                        Object.values(item).some(
+                          (value) =>
+                            typeof value === "string" &&
+                            value.toLowerCase().includes(searchValue.toLowerCase())
+                        )
+                      )}
+                    
+                    columns={tableColumns}
+                    scroll={{ x: "max-content" }}
+                    style={{
+                      width: "600px",
+                      display: tableOpen ? "block" : "none",
+                    }}
+                  />
+                }
+                title="Filtered Item Data"
+                trigger="click"
+                // open={true}
+                open={searchValue !== "" && filteredData.length > 0}
+                style={{ width: "200px" }}
+                placement="right"
+              >
+                <Input.Search
+                  placeholder="Search Item Data"
+                  allowClear
+                  enterButton="Search"
+                  size="medium"
+                  style={{ width: "16rem" }}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                />
+              </Popover>
+            </div>
+
+            <div className="each-item-detail-container">
+              <div className="each-item-detail-container-grid">
+                <FormInputItem label="S. No." />
+                <FormInputItem label="Item Code" />
+                <FormInputItem
+                  label="Item Description"
+                  className="item-desc-cell"
+                />
+                <FormInputItem label="Unit of Measurement" />
+                <FormInputItem label="Required Quantity" />
+                <FormInputItem label="Req. For No. of Days" />
+                <FormInputItem label="Remark" />
+                <Button icon={<DeleteOutlined />} className="delete-button" />
+              </div>
+            </div>
+
+            <div className="each-item-detail-container">
+              <div className="each-item-detail-container-grid">
+                <FormInputItem label="S. No." />
+                <FormInputItem label="Item Code" />
+                <FormInputItem
+                  label="Item Description"
+                  className="item-desc-cell"
+                />
+                <FormInputItem label="Unit of Measurement" />
+                <FormInputItem label="Required Quantity" />
+                <FormInputItem label="Req. For No. of Days" />
+                <FormInputItem label="Remark" />
+                <Button icon={<DeleteOutlined />} className="delete-button" />
+              </div>
+            </div>
+          </div>
+
+          <div className="terms-condition-container">
+            <div>
+              <h3>Terms And Conditions</h3>
+              <TextArea rows={4} />
+            </div>
+            <div>
+              <h3>Note</h3>
+              <TextArea rows={4} />
+            </div>
+          </div>
+
+          <div className="designations-container">
+            <div className="each-desg">
+              <h4> Generated By </h4>
+              <FormInputItem placeholder="Name and Designation" />
+              <FormDatePickerItem defaultValue={dayjs()} />
+            </div>
+            <div className="each-desg">
+              <h4> Approved By </h4>
+              <FormInputItem placeholder="Name and Designation" />
+              <FormDatePickerItem defaultValue={dayjs()} />
+            </div>
+            <div className="each-desg">
+              <h4> Received By </h4>
+              <FormInputItem placeholder="Name and Signature" />
+              <FormDatePickerItem defaultValue={dayjs()} />
+            </div>
+          </div>
+        </Form>
+
+        <div className="button-container">
+          <Button
+            onClick={handlePrint}
+            type="primary"
+            danger
+            style={{ width: "200px" }}
+            icon={<UndoOutlined />}
+          >
+            Reset
+          </Button>
+          <Button
+            onClick={handlePrint}
+            type="primary"
+            style={{
+              backgroundColor: "#4CAF50",
+              width: "200px",
+            }}
+            icon={<SaveOutlined />}
+          >
+            Save
+          </Button>
+          <Button
+            onClick={handlePrint}
+            type="primary"
+            style={{ width: "200px" }}
+            icon={<PrinterOutlined />}
+          >
+            Print
+          </Button>
+        </div>
+      </div>
+      <Modal
+          title="Issue note saved successfully"
+          visible={isModalOpen}
+          onOk={handleOk}
+        >
+          {successMessage && <p>{successMessage}</p>}
+          {errorMessage && <p>{errorMessage}</p>}
+        </Modal>
+
+    </>
+  );
 
   return (
     <div className="goods-receive-note-form-container" ref={formRef}>
@@ -1024,22 +1281,25 @@ const IssueNote = () => {
           </Form.Item>
 
           <Form.Item>
-          <Tooltip title={disableSubmitBtn ? "Press reset button to enable submit." : ""}>
-
-            <Button
-              type="primary"
-              htmlType="submit"
-              style={{
-                backgroundColor: "#4CAF50",
-                borderColor: "#4CAF50",
-                width: "200px",
-                margin: 16,
-              }}
-              disabled={disableSubmitBtn}
+            <Tooltip
+              title={
+                disableSubmitBtn ? "Press reset button to enable submit." : ""
+              }
+            >
+              <Button
+                type="primary"
+                htmlType="submit"
+                style={{
+                  backgroundColor: "#4CAF50",
+                  borderColor: "#4CAF50",
+                  width: "200px",
+                  margin: 16,
+                }}
+                disabled={disableSubmitBtn}
               >
-              SUBMIT
-            </Button>
-              </Tooltip>
+                SUBMIT
+              </Button>
+            </Tooltip>
           </Form.Item>
           <Form.Item>
             <Button

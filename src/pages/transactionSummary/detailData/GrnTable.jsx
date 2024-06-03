@@ -12,8 +12,8 @@ const GrnTable = ({type, data, itemList}) => {
 
     const fetchUom = async () => {
         // console.log("Fetch uom called")
-        const uomMasterUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getUOMMaster";
-        const locatorMasterUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocatorMaster";
+        const uomMasterUrl = "/master/getUOMMaster";
+        const locatorMasterUrl = "/master/getLocatorMaster";
     
         try{
             // const {data}= await axios.get(uomMasterUrl, apiHeader("GET", token))

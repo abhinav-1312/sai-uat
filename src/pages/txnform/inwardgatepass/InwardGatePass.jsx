@@ -102,7 +102,7 @@ const InwardGatePass = () => {
   const { organizationDetails, locationDetails, userDetails, token, userCd } = useSelector(state => state.auth)
 
   const searchVendor = async (value) => {
-    const vendorByIdUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getVendorMasterById"
+    const vendorByIdUrl = "/master/getVendorMasterById"
     try{
       const response = await axios.post(vendorByIdUrl, {userId: userCd, id: value}, apiHeader("POST", token))
       const {responseStatus, responseData} = response.data
@@ -371,10 +371,10 @@ const InwardGatePass = () => {
   }
 
   const populateItemData = async() => {
-    const itemMasterUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMaster"
-    const ohqUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getOHQ"
-    const vendorMasteUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getVendorMaster"
-    const locationMasterUrl = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getLocationMaster"
+    const itemMasterUrl = "/master/getItemMaster"
+    const ohqUrl = "/master/getOHQ"
+    const vendorMasteUrl = "/master/getVendorMaster"
+    const locationMasterUrl = "/master/getLocationMaster"
     try{
       const [itemMaster, ohq, vendorMaster, locationMaster] = await Promise.all([
         axios.get(itemMasterUrl, apiHeader("GET", token)),
@@ -424,7 +424,7 @@ const InwardGatePass = () => {
   const fetchItemData = async () => {
     try {
       const apiUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/master/getItemMaster";
+        "/master/getItemMaster";
       const response = await axios.get(apiUrl, apiHeader("GET", token));
       const { responseData } = response.data;
       setItemData(responseData);
@@ -436,7 +436,7 @@ const InwardGatePass = () => {
     console.log("ProcessTypee: ", processType)
     // try {
     //   const apiUrl =
-    //     "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/login/authenticate";
+    //     "/login/authenticate";
     //   const response = await axios.post(apiUrl, {
     //     userCd,
     //     password,
@@ -498,7 +498,7 @@ const InwardGatePass = () => {
     console.log("VALUE: ", value, "Inward gate pass")
     try {
       const apiUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
+        "/getSubProcessDtls";
       const response = await axios.post(apiUrl, {
         processId: value,
         processStage: "OGP",
@@ -599,7 +599,7 @@ const InwardGatePass = () => {
       const aprName = formDataCopy.approvedName === "" ? "NA" : formDataCopy.approvedName 
 
       const apiUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/saveInwardGatePass";
+        "/saveInwardGatePass";
       const response = await axios.post(apiUrl, {...formDataCopy, approvedName: aprName}, apiHeader("POST", token));
       if (
         response.status === 200 &&
@@ -665,7 +665,7 @@ const InwardGatePass = () => {
 
   const handleIssueNoteNoChange = async (_, value) => {
     const apiUrl =
-        "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt/getSubProcessDtls";
+        "/getSubProcessDtls";
         try{
         const {data} = await axios.post(apiUrl, {
           processId: value,
