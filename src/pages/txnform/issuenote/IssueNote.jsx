@@ -107,6 +107,7 @@ const IssueNote = () => {
   };
 
   const handleChange = (fieldName, value) => {
+    console.log("FIeldname value: ", fieldName, value)
     if (fieldName === "interRdDemandNote") {
       setFormData((prevValues) => {
         return {
@@ -115,6 +116,7 @@ const IssueNote = () => {
           demandNoteNo: value,
         };
       });
+      return
     }
     if (fieldName === "processType") {
       setFormData((prevValues) => {
@@ -125,6 +127,7 @@ const IssueNote = () => {
           processTypeDesc: (value === "IRP" ? "Returnable" : (value === "NIRP" ? "Non Returnable" : "Inter Org Transfer"))
         };
       });
+      return
     }
     setFormData((prevValues) => ({
       ...prevValues,
@@ -330,6 +333,8 @@ const IssueNote = () => {
     })
   }
 
+  console.log('Formdata processtype: ', formData.processType)
+
   return (
     <>
       <div className="a4-container" ref={formRef}>
@@ -426,22 +431,13 @@ const IssueNote = () => {
             <div className="other-container">
               <h3 className="consignor-consignee-heading">Other Details</h3>
 
-              <Form.Item label="Type" name="processTypeDesc" onClick = {processTypeClick}>
+              <Form.Item label="Type" name="processTypeDesc">
                 <Select
-                  // value={
-                  //   formData.processTypeDesc
-                  // }
                   onChange={(value) => handleChange("processType", value)}
                 >
-                  {
-                    !formData.processType &&
-                    <>
-                    <Option value="IRP">1. RETURNABLE</Option>
-                    <Option value="NIRP">2. NON RETURNABLE</Option>
-                    <Option value="IOP">3. INTER - ORG. TRANSFER</Option>
-                    </>
-                  
-                  }
+                  <Option value="IRP">1. RETURNABLE</Option>
+                  <Option value="NIRP">2. NON RETURNABLE</Option>
+                  <Option value="IOP">3. INTER - ORG. TRANSFER</Option>
                 </Select>
               </Form.Item>
 
