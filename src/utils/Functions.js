@@ -406,3 +406,16 @@ export const convertArrayToObject = (array, _makeKey, valueKey ) => {
         value.toLowerCase().includes(searchText.toLowerCase())
     )
   }
+
+export const removeItem = (index, setFormData) => {
+  setFormData((prevValues) => {
+    const updatedItems = prevValues.items;
+    updatedItems.splice(index, 1);
+
+    const updatedItems1 = updatedItems.map((item, key) => {
+      return { ...item, srNo: key + 1 };
+    });
+
+    return { ...prevValues, items: updatedItems1 };
+  });
+};

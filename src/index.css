@@ -118,14 +118,9 @@ code {
   gap: 1rem 4rem;
 }
 
-.item-details-container{
-  /* padding: 1rem 0; */
-}
-
 .each-item-detail-container{
   border: 1px solid black;
   padding: 1rem;
-  /* margin-top: 1rem; */
 }
 
 .each-item-detail-container-grid{
@@ -158,10 +153,9 @@ code {
 }
 
 .button-container{
-  display: flex;
-  justify-content: center;
-  align-items: center;  
-  gap: 4rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 1rem;
 }
 
 .each-desg{
