@@ -427,16 +427,15 @@ const GoodsReceiveNoteForm = () => {
 
       const apiUrl =
         "/saveGRN";
-      const response = await apiCall("POST", apiUrl, token, formDataCopy)
+      const {responseStatus, responseData} = await apiCall("POST", apiUrl, token, formDataCopy)
+      console.log("STATSU: ", responseStatus)
+      console.log("DATAA: ", responseData)
       if (
-        response.status === 200 &&
-        response.data &&
-        response.data.responseStatus &&
-        response.data.responseStatus.message === "Success"
+        responseStatus.statusCode === 200 &&
+        responseStatus.message === "Success"
       ) {
         // Access the specific success message data if available
-        const { processId, processType, subProcessId } =
-          response.data.responseData;
+        const { processId, processType, subProcessId } = responseData;
         setFormData((prevValues) => {
           return {
             ...prevValues,
