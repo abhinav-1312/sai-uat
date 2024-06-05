@@ -4,7 +4,7 @@ import moment from 'moment/moment';
 import dayjs from 'dayjs';
 const dateFormat = "DD/MM/YYYY";
 
-const FormDatePickerItem = ({label, name, defaultValue, format, onChange, value}) => {
+const FormDatePickerItem = ({label, name, defaultValue, onChange, value, readOnly}) => {
   // const [dateError, setDateError] = useState('');
   // const handleDateChange = (date, dateString) => {
   //   console.log("DATE, ", date)
@@ -26,7 +26,7 @@ const FormDatePickerItem = ({label, name, defaultValue, format, onChange, value}
 
   return (
     <Form.Item label = {label}>
-      <DatePicker style={{width: "100%"}} format={dateFormat} value={dayjs(value, dateFormat, true)} onChange={(date, dateString) => onChange(name, dateString)}/>
+      <DatePicker readOnly={readOnly} defaultValue={defaultValue} style={{width: "100%"}} format={dateFormat} value={dayjs(value, dateFormat, true)} onChange={(date, dateString) => onChange(name, dateString)}/>
     </Form.Item>
   )
 }

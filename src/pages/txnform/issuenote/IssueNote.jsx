@@ -23,14 +23,21 @@ import useHandlePrint from "../../../components/useHandlePrint";
 import { fetchOhq } from "../../../redux/slice/ohqSlice";
 import ItemSearch from "./ItemSearch";
 import FormDatePickerItemNew from "../../../components/FormDatePickerItemNew";
+import { useLocation, useNavigate } from "react-router-dom";
+import { fetchUoms } from "../../../redux/slice/uomSlice";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { TextArea } = Input;
 
 const IssueNote = () => {
+  const {uomObj} = useSelector(state => state.uoms)
+
   const issueNote = JSON.parse(localStorage.getItem("issueNote"));
 
-  console.log("Issue note: ", issueNote)
+  const location = useLocation()
+
+  const {isnData, itemList} = location.state ? location.state : {isnData: null, itemList: null}
+  console.log("ISN DATA: ", isnData, itemList)
 
   const [form] = Form.useForm()
   const dispatch = useDispatch();
@@ -94,9 +101,13 @@ const IssueNote = () => {
     interRdDemandNote: "",
   });
 
+  const navigate = useNavigate()
+
   const handleFormReset = () => {
     message.success("Issue Note reset successfully.")
-    window.location.reload();
+
+    navigate('/trans/issue', {state: { isnData: null, itemList: null }})
+
     localStorage.removeItem("issueNote");
   };
 
@@ -109,7 +120,6 @@ const IssueNote = () => {
   };
 
   const handleChange = (fieldName, value) => {
-    console.log("FIeldname value: ", fieldName, value)
     if (fieldName === "interRdDemandNote") {
       setFormData((prevValues) => {
         return {
@@ -139,7 +149,6 @@ const IssueNote = () => {
 
   const itemHandleChange = (fieldName, value, index) => {
     // quantity logic to be applied
-    console.log("kfejgwejewfghf", fieldName, value, index)
     setFormData((prevValues) => {
       const updatedItems = prevValues.items;
       updatedItems[index] = {
@@ -171,18 +180,32 @@ const IssueNote = () => {
     });
   };
 
+  console.log("formdata: ", formData)
+
   useEffect(() => {
+    const fetchUom = async () => {
+      await dispatch(fetchUoms()).unwrap()
+    }
+    fetchUom()
     dispatch(fetchOhq());
     const issueNoteData = localStorage.getItem("issueNote")
+    
+    if(isnData !== null){
+      console.log("Insie not null", isnData.type)
+      setFormData({...isnData, processTypeDesc: (isnData.type === "IRP" ? "Returnable" : (isnData.type === "NIRP" ? "Non Returnable" : "Inter Org Transfer")), items: [...itemList]})
+      return
+    }
+    
     if (issueNoteData) {
       setFormData({ ...JSON.parse(issueNoteData) });
       return;
     }
+
     const fetchUserDetails = () => {
       const currentDate = dayjs();
       setFormData((prev) => {
         return {
-          ...prev,
+          // ...prev,
           crRegionalCenterCd: organizationDetails.id,
           crRegionalCenterName: organizationDetails.organizationName,
           crAddress: organizationDetails.locationAddr,
@@ -208,9 +231,9 @@ const IssueNote = () => {
     userDetails.firstName,
     userDetails.lastName,
     dispatch,
+    isnData,
+    itemList
   ]);
-
-  console.log(formData.processType)
 
   const handleCeRccChange = async (_, value) => {
     const url = "/master/getOrgMasterById";
@@ -327,23 +350,12 @@ const IssueNote = () => {
     message.success("Issue Note saved as draft successfully.")
   };
 
-  const processTypeClick = () => {
-    setFormData(prev => {
-      return {
-        ...prev,
-        type: null, processType: null, processTypeDesc: null
-      }
-    })
-  }
-
-  console.log("Form data: ", formData)
-
   return (
     <>
       <div className="a4-container" ref={formRef}>
         <div className="heading-container">
           <h4>
-            Issue Note No. : <br /> {formData.issueNoteNo}
+            Issue Note No. : <br /> {isnData ? formData.processId : formData.issueNoteNo}
           </h4>
           <h2 className="a4-heading">Sports Authority Of India - Issue Note</h2>
           <h4>
@@ -361,7 +373,7 @@ const IssueNote = () => {
             margin: "0.5rem 0",
           }}
           initialValues={formData}
-          defaultValue={formData}
+          // defaultValue={formData}
         >
           <div
             style={{
@@ -373,9 +385,10 @@ const IssueNote = () => {
           >
             <div className="consignor-container">
               <h3 className="consignor-consignee-heading">Consignor Details</h3>
-              <FormInputItem
+              <FormInputItem readOnly={isnData === null}
                 label="Regional Center Code"
                 value={formData.crRegionalCenterCd}
+                // readOnly={}
               />
               <FormInputItem
                 label="Regional Center Name"
@@ -388,20 +401,22 @@ const IssueNote = () => {
             <div className="consignee-container">
               <h3 className="consignor-consignee-heading">Consignee Details</h3>
 
-              {formData.processType === "IRP" ||
-              formData.processType === "NIRP" ? (
+              {(formData.type === "IRP" ||
+              formData.type === "NIRP") ? (
                 <>
                   <FormInputItem
                     label="Consumer Name"
                     name="consumerName"
                     value={formData.consumerName}
                     onChange={handleChange}
+                    readOnly={isnData !== null}
                   />
                   <FormInputItem
                     label="Contact No."
                     name="contactNo"
                     value={formData.contactNo}
                     onChange={handleChange}
+                    readOnly={isnData !== null}
                   />
                 </>
               ) : (
@@ -411,21 +426,25 @@ const IssueNote = () => {
                     name="ceRegionalCenterCd"
                     value={formData.ceRegionalCenterCd}
                     onChange={handleCeRccChange}
+                    readOnly={isnData !== null}
                   />
                   <FormInputItem
                     label="Regional Center Name"
                     name="ceRegionalCenterName"
                     value={formData.ceRegionalCenterName}
+                    readOnly={isnData !== null}
                   />
                   <FormInputItem
                     label="Address"
                     value={formData.ceAddress}
                     name="ceAddress"
+                    readOnly={isnData !== null}
                   />
                   <FormInputItem
                     label="Zipcode"
                     value={formData.ceZipcode}
                     name="ceZipcode"
+                    readOnly={isnData !== null}
                   />
                 </>
               )}
@@ -434,14 +453,23 @@ const IssueNote = () => {
             <div className="other-container">
               <h3 className="consignor-consignee-heading">Other Details</h3>
 
-              <Form.Item label="Type" name="processTypeDesc">
-                <Select
-                  onChange={(value) => handleChange("processType", value)}
-                >
-                  <Option value="IRP">Returnable</Option>
-                  <Option value="NIRP">Non Returnable</Option>
-                  <Option value="IOP">Inter Org Transfer</Option>
-                </Select>
+              <Form.Item label="Type" name="processTypeDesc" >
+                {
+                  isnData !== null ?
+                  <>
+                  <Input value = {formData.processTypeDesc} readOnly={true} />
+                  <Input value = {(isnData.type === "IRP" ? "Returnable" : (isnData.type === "NIRP" ? "Non Returnable" : "Inter Org Transfer"))} readOnly={true}  style={{display: "none"}}  />
+                  </>
+                  :
+                  <Select
+                    onChange={(value) => handleChange("processType", value)}
+                    value={formData.processTypeDesc}
+                  >
+                    <Option value="IRP">Returnable</Option>
+                    <Option value="NIRP">Non Returnable</Option>
+                    <Option value="IOP">Inter Org Transfer</Option>
+                  </Select>
+                }
               </Form.Item>
 
               <FormInputItem
@@ -453,21 +481,31 @@ const IssueNote = () => {
                 }
                 value={formData.demandNoteNo}
                 onChange={handleChange}
+                readOnly={isnData !== null}
               />
+
+              {
+                isnData !== null ? 
+                <FormInputItem label="Demand Note Date" value = {formData.demandNoteDt} readOnly={isnData !== null} />
+                :
               <FormDatePickerItem
                 label="Demand Note Date"
                 defaultValue={dayjs()}
                 name="demandNoteDt"
                 onChange={handleChange}
                 value={formData.demandNoteDt}
-              />
+                />
+              }
             </div>
           </div>
 
           <div className="item-details-container">
             <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
               <h3>Item Details</h3>
-              <ItemSearch itemArray={data} updateFormData={updateFormData} />
+              {
+                isnData === null &&
+                <ItemSearch itemArray={data} updateFormData={updateFormData} />
+              }
             </div>
 
             {formData?.items?.length > 0 &&
@@ -475,24 +513,28 @@ const IssueNote = () => {
                 return (
                   <div className="each-item-detail-container">
                     <div className="each-item-detail-container-grid">
-                      <FormInputItem label="S. No." value={item.srNo} />
-                      <FormInputItem label="Item Code" value={item.itemCode} />
+                      <FormInputItem label="S. No." value={item.srNo || item?.sNo} readOnly={isnData !== null} />
+                      <FormInputItem label="Item Code" value={item.itemCode}  readOnly={isnData !== null}/>
                       <FormInputItem
                         label="Item Description"
                         className="item-desc-cell"
                         value={item.itemDesc}
+                        readOnly={isnData !== null}
                       />
                       <FormInputItem
                         label="Unit of Measurement"
-                        value={item.uomDesc}
+                        value={item.uomDesc || (uomObj 
+                          && uomObj[parseInt(item?.uom)])}
+                          readOnly={isnData !== null}
                       />
-                      <FormInputItem name="quantity" label="Required Quantity" value={item.quantity} onChange={(fieldName, value) => itemHandleChange(fieldName, value, key)} />
-                      <FormInputItem name="noOfDays" label="Req. For No. Of Days" value={item.noOfDays} onChange={(fieldName, value) => itemHandleChange(fieldName, value, key)} />
-                      <FormInputItem name="remarks" label = "Remarks" value={item.remarks} onChange={(fieldName, value) => itemHandleChange(fieldName, value, key)} />
+                      <FormInputItem name="quantity" label="Required Quantity" value={item.quantity} onChange={(fieldName, value) => itemHandleChange(fieldName, value, key)} readOnly={isnData !== null} />
+                      <FormInputItem name="noOfDays" label="Req. For No. Of Days" value={item.noOfDays || item.requiredDays} onChange={(fieldName, value) => itemHandleChange(fieldName, value, key)} readOnly={isnData !== null} />
+                      <FormInputItem name="remarks" label = "Remarks" value={item.remarks} onChange={(fieldName, value) => itemHandleChange(fieldName, value, key)} readOnly={isnData !== null} />
                       <Button
                         icon={<DeleteOutlined />}
                         className="delete-button"
                         onClick={() => removeItem(key, setFormData)}
+                        disabled={isnData !== null}
                       />
                     </div>
                   </div>
@@ -507,6 +549,7 @@ const IssueNote = () => {
                 rows={4}
                 value={formData.termsCondition}
                 onChange={(e) => handleChange("termsCondition", e.target.value)}
+                readOnly={isnData !== null}
               />
             </div>
             <div>
@@ -515,6 +558,7 @@ const IssueNote = () => {
                 rows={4}
                 value={formData.note}
                 onChange={(e) => handleChange("note", e.target.value)}
+                readOnly={isnData !== null}
               />
             </div>
           </div>
@@ -526,13 +570,21 @@ const IssueNote = () => {
                 placeholder="Name and Designation"
                 name="genName"
                 value={formData.genName}
+                readOnly={isnData !== null}
               />
-              <FormDatePickerItem
-                defaultValue={dayjs()}
-                name="genDate"
-                onChange={handleChange}
-                value={formData.genDate}
-              />
+              {
+                isnData !== null ? 
+                <FormInputItem value = {formData.genDate} readOnly={isnData !== null} />
+                :
+                <FormDatePickerItem
+                  defaultValue={dayjs()}
+                  name="genDate"
+                  onChange={handleChange}
+                  value={formData.genDate}
+                  readOnly={isnData !== null}
+                />
+
+              }
             </div>
             <div className="each-desg">
               <h4> Approved By </h4>
@@ -541,13 +593,22 @@ const IssueNote = () => {
                 name="approvedName"
                 onChange={handleChange}
                 value={formData.approvedName}
+                readOnly={isnData !== null}
               />
+
+              {
+                isnData !== null ? 
+                <FormInputItem value = {formData.approvedDate} readOnly={isnData !== null} />
+                :
               <FormDatePickerItem
                 defaultValue={dayjs()}
                 name="approvedDate"
                 onChange={handleChange}
                 value={formData.approvedDate}
+                readOnly={isnData !== null}
               />
+              }
+
             </div>
             <div className="each-desg">
               <h4> Received By </h4>
@@ -556,13 +617,21 @@ const IssueNote = () => {
                 name="issueName"
                 value={formData.issueName}
                 onChange={handleChange}
+                readOnly={isnData !== null}
               />
-              <FormDatePickerItem
-                defaultValue={dayjs()}
-                name="issueDate"
-                onChange={handleChange}
-                value={formData.issueDate}
-              />
+
+              {
+                isnData !== null ? 
+                <FormInputItem value = {formData.issueDate} readOnly={isnData !== null} />
+                :
+                <FormDatePickerItem
+                  defaultValue={dayjs()}
+                  name="issueDate"
+                  onChange={handleChange}
+                  value={formData.issueDate}
+                  readOnly={isnData !== null}
+                />
+              }
             </div>
           </div>
           <div className="button-container">
@@ -592,7 +661,8 @@ const IssueNote = () => {
                   backgroundColor: "#4CAF50",
                 }}
                 icon={<SaveOutlined />}
-                disabled={!submitBtnEnabled}
+                disabled={isnData ? true : !submitBtnEnabled}
+                // disabled={true}
               >
                 Submit
               </Button>
@@ -607,6 +677,7 @@ const IssueNote = () => {
                   backgroundColor: "#eed202",
                 }}
                 icon={<CloudDownloadOutlined />}
+                disabled={isnData !== null}
               >
                 Save draft
               </Button>
@@ -623,7 +694,7 @@ const IssueNote = () => {
                 onClick={handlePrint}
                 type="primary"
                 icon={<PrinterOutlined />}
-                disabled={!printBtnEnabled}
+                disabled={isnData ? false : !printBtnEnabled}
               >
                 Print
               </Button>

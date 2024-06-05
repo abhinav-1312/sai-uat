@@ -13,6 +13,7 @@ import IsnTable from "./detailData/IsnTable";
 import ReturnTable from "./detailData/ReturnTable";
 import MisTable from "./detailData/MisTable";
 import { useSelector } from "react-redux";
+import IssueNote from "../txnform/issuenote/IssueNote";
 
 const TransactionDetail = () => {
   const navigate = useNavigate();
@@ -110,6 +111,12 @@ const TransactionDetail = () => {
     setInspectionNoteData(inspectionNewRptData);
   };
 
+  const handleIsnPrint = () => {
+    navigate('/trans/issue', {
+      state: { isnData: isnData.data, itemList: isnData.itemList }, // Pass data as state
+    });
+  }
+
   useEffect(() => {
     if(orgId){
       populateHqData(orgId)
@@ -138,7 +145,9 @@ const TransactionDetail = () => {
 
       {objectFromArr["ISN"] && (
         <div>
-          <h2>Issue Note</h2>
+          <div style={{display: "flex", gap: "1rem", marginBottom: "0.5rem"}}>
+          <h2>Issue Note</h2> <Button danger onClick = {handleIsnPrint}> Print </Button>
+          </div>
           {isnData?.data ? (
             <IsnTable
               type={isnData?.data?.type}
