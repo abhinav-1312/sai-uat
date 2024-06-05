@@ -146,7 +146,11 @@ const TransactionDetail = () => {
       {objectFromArr["ISN"] && (
         <div>
           <div style={{display: "flex", gap: "1rem", marginBottom: "0.5rem"}}>
-          <h2>Issue Note</h2> <Button danger onClick = {handleIsnPrint}> Print </Button>
+          <h2>Issue Note</h2> 
+          {
+            isnData?.data &&
+            <Button danger onClick = {handleIsnPrint}> Print </Button>
+          }
           </div>
           {isnData?.data ? (
             <IsnTable
