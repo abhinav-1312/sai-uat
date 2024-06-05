@@ -22,6 +22,7 @@ import FormDatePickerItem from "../../../components/FormDatePickerItem";
 import useHandlePrint from "../../../components/useHandlePrint";
 import { fetchOhq } from "../../../redux/slice/ohqSlice";
 import ItemSearch from "./ItemSearch";
+import FormDatePickerItemNew from "../../../components/FormDatePickerItemNew";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { TextArea } = Input;
@@ -89,11 +90,12 @@ const IssueNote = () => {
     ],
     userId: "string",
     processType: issueNote?.processType || "IRP",
-    processTypeDesc : (issueNote?.processType === "IRP" ? "Returnable" : (issueNote?.processType === "NIRP" ? "Non Returnable" : "Inter Org Transfer")),
+    processTypeDesc : issueNote ? (issueNote?.processType === "IRP" ? "Returnable" : (issueNote?.processType === "NIRP" ? "Non Returnable" : "Inter Org Transfer")) : "Returnable",
     interRdDemandNote: "",
   });
 
   const handleFormReset = () => {
+    message.success("Issue Note reset successfully.")
     window.location.reload();
     localStorage.removeItem("issueNote");
   };
@@ -137,7 +139,7 @@ const IssueNote = () => {
 
   const itemHandleChange = (fieldName, value, index) => {
     // quantity logic to be applied
-
+    console.log("kfejgwejewfghf", fieldName, value, index)
     setFormData((prevValues) => {
       const updatedItems = prevValues.items;
       updatedItems[index] = {
@@ -322,6 +324,7 @@ const IssueNote = () => {
 
   const saveDraft = () => {
     localStorage.setItem("issueNote", JSON.stringify(formData));
+    message.success("Issue Note saved as draft successfully.")
   };
 
   const processTypeClick = () => {
@@ -333,7 +336,7 @@ const IssueNote = () => {
     })
   }
 
-  console.log('Formdata processtype: ', formData.processType)
+  console.log("Form data: ", formData)
 
   return (
     <>
@@ -435,9 +438,9 @@ const IssueNote = () => {
                 <Select
                   onChange={(value) => handleChange("processType", value)}
                 >
-                  <Option value="IRP">1. RETURNABLE</Option>
-                  <Option value="NIRP">2. NON RETURNABLE</Option>
-                  <Option value="IOP">3. INTER - ORG. TRANSFER</Option>
+                  <Option value="IRP">Returnable</Option>
+                  <Option value="NIRP">Non Returnable</Option>
+                  <Option value="IOP">Inter Org Transfer</Option>
                 </Select>
               </Form.Item>
 
@@ -448,6 +451,7 @@ const IssueNote = () => {
                     ? "interRdDemandNote"
                     : "demandNoteNo"
                 }
+                value={formData.demandNoteNo}
                 onChange={handleChange}
               />
               <FormDatePickerItem
@@ -455,6 +459,7 @@ const IssueNote = () => {
                 defaultValue={dayjs()}
                 name="demandNoteDt"
                 onChange={handleChange}
+                value={formData.demandNoteDt}
               />
             </div>
           </div>
@@ -481,32 +486,9 @@ const IssueNote = () => {
                         label="Unit of Measurement"
                         value={item.uomDesc}
                       />
-                      <Form.Item label="Required Quantity">
-                        <Input
-                          value={item.quantity}
-                          onChange={(e) =>
-                            itemHandleChange("quantity", e.target.value, key)
-                          }
-                        />
-                      </Form.Item>
-                      <Form.Item label="Req. For No. Of Days">
-                        <Input
-                          value={item.noOfDays}
-                          onChange={(e) =>
-                            itemHandleChange("noOfDays", e.target.value, key)
-                          }
-                        />
-                      </Form.Item>
-
-                      <Form.Item label="Remarks">
-                        <Input
-                          value={item.remarks}
-                          onChange={(e) =>
-                            itemHandleChange("remarks", e.target.value, key)
-                          }
-                        />
-                      </Form.Item>
-
+                      <FormInputItem name="quantity" label="Required Quantity" value={item.quantity} onChange={(fieldName, value) => itemHandleChange(fieldName, value, key)} />
+                      <FormInputItem name="noOfDays" label="Req. For No. Of Days" value={item.noOfDays} onChange={(fieldName, value) => itemHandleChange(fieldName, value, key)} />
+                      <FormInputItem name="remarks" label = "Remarks" value={item.remarks} onChange={(fieldName, value) => itemHandleChange(fieldName, value, key)} />
                       <Button
                         icon={<DeleteOutlined />}
                         className="delete-button"
@@ -543,12 +525,13 @@ const IssueNote = () => {
               <FormInputItem
                 placeholder="Name and Designation"
                 name="genName"
-                onChange={handleChange}
+                value={formData.genName}
               />
               <FormDatePickerItem
                 defaultValue={dayjs()}
                 name="genDate"
                 onChange={handleChange}
+                value={formData.genDate}
               />
             </div>
             <div className="each-desg">
@@ -557,11 +540,13 @@ const IssueNote = () => {
                 placeholder="Name and Designation"
                 name="approvedName"
                 onChange={handleChange}
+                value={formData.approvedName}
               />
               <FormDatePickerItem
                 defaultValue={dayjs()}
                 name="approvedDate"
                 onChange={handleChange}
+                value={formData.approvedDate}
               />
             </div>
             <div className="each-desg">
@@ -569,12 +554,14 @@ const IssueNote = () => {
               <FormInputItem
                 placeholder="Name and Signature"
                 name="issueName"
+                value={formData.issueName}
                 onChange={handleChange}
               />
               <FormDatePickerItem
                 defaultValue={dayjs()}
                 name="issueDate"
                 onChange={handleChange}
+                value={formData.issueDate}
               />
             </div>
           </div>
@@ -603,7 +590,6 @@ const IssueNote = () => {
                 type="primary"
                 style={{
                   backgroundColor: "#4CAF50",
-                  // width: "200px",
                 }}
                 icon={<SaveOutlined />}
                 disabled={!submitBtnEnabled}
