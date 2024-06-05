@@ -40,6 +40,7 @@ const Template = () => {
     dispatch(clearUser())
     dispatch(clearVendor())
     navigate('/login')
+    localStorage.removeItem("issueNote")
     
   };
   const {
