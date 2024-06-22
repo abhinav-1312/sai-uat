@@ -82,7 +82,6 @@ export const apiCall = async (method, url, token, payload=null) => {
 // };
 
 export const mergeItemMasterAndOhq = (itemMasterArr, ohqArr) => {
-  console.log("Called")
   // Ensure input arrays are valid and handle cases where they are not provided
   if (!Array.isArray(itemMasterArr) || !Array.isArray(ohqArr)) {
     console.error("Invalid input arrays");
@@ -399,7 +398,6 @@ export const convertArrayToObject = (array, _makeKey, valueKey ) => {
 
   export const searchedData = (item, searchText) => {
     if(item === undefined) return
-    console.log("search data called")
     return Object.values(item).some(
       (value) =>
         typeof value === "string" &&

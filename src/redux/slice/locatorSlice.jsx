@@ -1,5 +1,4 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
-import { BASE_URL } from '../../utils/BaseUrl';
 import { apiCall, convertArrayToObject } from '../../utils/Functions';
 
 const locatorSlice = createSlice({

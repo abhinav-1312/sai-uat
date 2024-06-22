@@ -102,8 +102,6 @@ const ItemSearch = ({itemArray, updateFormData}) => {
         );
       };
 
-      console.log("Filtered data: ", filteredData)
-
     const tableColumns = [
         { title: "S NO.", dataIndex: "id", key: "id", fixed: "left", width: 80 },
         {
@@ -217,7 +215,7 @@ const ItemSearch = ({itemArray, updateFormData}) => {
               placement="right"
       >
         <Search
-          placeholder="input search text"
+          placeholder="Search items"
         //   onSearch={handleSearch}
         //   onChange={(e) => handleSearch(e.target.value)}
           onChange={(e) =>

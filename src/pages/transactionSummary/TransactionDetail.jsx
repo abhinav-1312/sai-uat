@@ -117,6 +117,12 @@ const TransactionDetail = () => {
     });
   }
 
+  const handleOgpPrint = () => {
+    navigate('/trans/outward', {
+      state: {ogpData: ogpData.data, itemList: ogpData.itemList}
+    })
+  }
+
   useEffect(() => {
     if(orgId){
       populateHqData(orgId)
@@ -167,7 +173,13 @@ const TransactionDetail = () => {
 
       {objectFromArr["OGP"] && (
         <div>
+          <div style={{display: "flex", gap: "1rem", marginBottom: "0.5rem"}}>
           <h2>Outward Gate Pass</h2>
+          {
+            ogpData?.data &&
+            <Button danger onClick = {handleOgpPrint}> Print </Button>
+          }
+          </div>
           {ogpData?.data ? (
             <OgpTable
               type={ogpData?.data?.type}

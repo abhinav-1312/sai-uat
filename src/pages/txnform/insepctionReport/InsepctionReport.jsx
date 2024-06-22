@@ -45,6 +45,7 @@ const InsepctionReport = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [uomMaster, setUomMaster] = useState({})
+  console.log("UOMMASTER: ", uomMaster)
   const [locatorMaster, setLocatorMaster] = useState({})
   const [formData, setFormData] = useState({
     genDate: "",
@@ -428,7 +429,7 @@ const InsepctionReport = () => {
                       <FormInputItem label="Serial No. :" value={item.srNo} readOnly={true}/>
                       <FormInputItem label="ITEM CODE :" value={item.itemCode} readOnly={true}/>
                       <FormInputItem label="ITEM DESCRIPTION :" value={item.itemDesc} readOnly={true}/>
-                      <FormInputItem label="UOM :" value={uomMaster[item.uom]} readOnly={true}/>
+                      <FormInputItem label="UOM :" value={uomMaster[parseInt(item.uom)]} readOnly={true}/>
                       {/* <FormInputItem label="RECIEVED QUANTITY :" name="quantity" value={formData.items[key].quantity} onChange={(fieldName, value) => itemHandleChange("quantity", value, key)} />
                       <FormInputItem label="BUDGET HEAD PROCUREMENT :" name="budgetHeadProcurement" value={item.budgetHeadProcurement} onChange={(fieldName, value) => itemHandleChange("budgetHeadProcurement", value, key)}/> */}
 

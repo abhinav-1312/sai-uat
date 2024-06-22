@@ -22,9 +22,9 @@ import FormDatePickerItem from "../../../components/FormDatePickerItem";
 import useHandlePrint from "../../../components/useHandlePrint";
 import { fetchOhq } from "../../../redux/slice/ohqSlice";
 import ItemSearch from "./ItemSearch";
-import FormDatePickerItemNew from "../../../components/FormDatePickerItemNew";
 import { useLocation, useNavigate } from "react-router-dom";
 import { fetchUoms } from "../../../redux/slice/uomSlice";
+import { fetchLocators } from "../../../redux/slice/locatorSlice";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { TextArea } = Input;
@@ -37,7 +37,7 @@ const IssueNote = () => {
   const location = useLocation()
 
   const {isnData, itemList} = location.state ? location.state : {isnData: null, itemList: null}
-  console.log("ISN DATA: ", isnData, itemList)
+
 
   const [form] = Form.useForm()
   const dispatch = useDispatch();
@@ -108,7 +108,10 @@ const IssueNote = () => {
 
     navigate('/trans/issue', {state: { isnData: null, itemList: null }})
 
+    window.location.reload()
+
     localStorage.removeItem("issueNote");
+
   };
 
   const showModal = () => {
@@ -180,18 +183,17 @@ const IssueNote = () => {
     });
   };
 
-  console.log("formdata: ", formData)
-
   useEffect(() => {
-    const fetchUom = async () => {
+    console.log("Rerendered")
+    const fetchUomLoc = async () => {
       await dispatch(fetchUoms()).unwrap()
+      await dispatch(fetchLocators()).unwrap()
     }
-    fetchUom()
+    fetchUomLoc()
     dispatch(fetchOhq());
     const issueNoteData = localStorage.getItem("issueNote")
     
     if(isnData !== null){
-      console.log("Insie not null", isnData.type)
       setFormData({...isnData, processTypeDesc: (isnData.type === "IRP" ? "Returnable" : (isnData.type === "NIRP" ? "Non Returnable" : "Inter Org Transfer")), items: [...itemList]})
       return
     }
@@ -218,6 +220,9 @@ const IssueNote = () => {
           approvedDate: currentDate.format(dateFormat),
           issueNoteDt: currentDate.format(dateFormat),
           demandNoteDt: currentDate.format(dateFormat),
+          type: "IRP",
+          processType: "IRP",
+          processTypeDesc: "Returnable"
         };
       });
     };
@@ -527,7 +532,8 @@ const IssueNote = () => {
                           && uomObj[parseInt(item?.uom)])}
                           readOnly={isnData !== null}
                       />
-                      <FormInputItem name="quantity" label="Required Quantity" value={item.quantity} onChange={(fieldName, value) => itemHandleChange(fieldName, value, key)} readOnly={isnData !== null} />
+
+                      <FormInputItem name="quantity" label={"Required Quantity"} value={item.quantity} onChange={(fieldName, value) => itemHandleChange(fieldName, value, key)} readOnly={isnData !== null} />
                       <FormInputItem name="noOfDays" label="Req. For No. Of Days" value={item.noOfDays || item.requiredDays} onChange={(fieldName, value) => itemHandleChange(fieldName, value, key)} readOnly={isnData !== null} />
                       <FormInputItem name="remarks" label = "Remarks" value={item.remarks} onChange={(fieldName, value) => itemHandleChange(fieldName, value, key)} readOnly={isnData !== null} />
                       <Button
@@ -546,7 +552,7 @@ const IssueNote = () => {
             <div>
               <h3>Terms And Conditions</h3>
               <TextArea
-                rows={4}
+                autoSize={{ minRows: 4, maxRows: 8 }}
                 value={formData.termsCondition}
                 onChange={(e) => handleChange("termsCondition", e.target.value)}
                 readOnly={isnData !== null}
@@ -555,7 +561,7 @@ const IssueNote = () => {
             <div>
               <h3>Note</h3>
               <TextArea
-                rows={4}
+                autoSize={{ minRows: 4, maxRows: 8 }}
                 value={formData.note}
                 onChange={(e) => handleChange("note", e.target.value)}
                 readOnly={isnData !== null}

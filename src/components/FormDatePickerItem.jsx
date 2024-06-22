@@ -23,10 +23,28 @@ const FormDatePickerItem = ({label, name, defaultValue, onChange, value, readOnl
   //     <DatePicker value={dayjs(value, dateFormat, true)} style={{width: "100%"}} value={value}  defaultValue={dayjs(defaultValue, dateFormat, true)} format={dateFormat} onChange={handleDateChange}/>
   //   </Form.Item>
   // )
+  const handleDateChange = (date, dateString) => {
+    if (dateString === "") {
+      onChange(name, null);
+    } else {
+      onChange(name, dateString);
+    }
+  };
+
 
   return (
     <Form.Item label = {label}>
-      <DatePicker readOnly={readOnly} defaultValue={defaultValue} style={{width: "100%"}} format={dateFormat} value={dayjs(value, dateFormat, true)} onChange={(date, dateString) => onChange(name, dateString)}/>
+      {/* <DatePicker readOnly={readOnly} defaultValue={defaultValue} style={{width: "100%"}} format={dateFormat} value={dayjs(value, dateFormat, true)} onChange={(date, dateString) => onChange(name, dateString)}/> */}
+
+      <DatePicker
+      readOnly={readOnly}
+      defaultValue={dayjs(defaultValue, dateFormat, true)}
+      style={{ width: "100%" }}
+      format={dateFormat}
+      value={value ? dayjs(value, dateFormat, true) : null}
+      onChange={handleDateChange}
+    />
+
     </Form.Item>
   )
 }

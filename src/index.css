@@ -121,6 +121,7 @@ code {
 .each-item-detail-container{
   border: 1px solid black;
   padding: 1rem;
+  position: relative;
 }
 
 .each-item-detail-container-grid{
@@ -130,7 +131,9 @@ code {
 }
 
 .delete-button{
-  justify-self:right;
+  position: absolute;
+  top: 0;
+  right: 0
 }
 
 .terms-condition-container{
@@ -141,9 +144,17 @@ code {
 }
 
 .designations-container{
-  display: grid;
+  /* display: grid;
   grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-  gap: 4rem;
+  gap: 4rem; */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.each-desg{
+  max-width: 11rem;
+  flex: 1 1 200px; 
 }
 
 .item-details-container{
@@ -197,4 +208,10 @@ code {
   display: flex;
   flex-direction: column;
   gap: 0.5rem
+}
+
+.other-details-2cols{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(1rem, 1fr));
+  gap: 0rem;
 }
