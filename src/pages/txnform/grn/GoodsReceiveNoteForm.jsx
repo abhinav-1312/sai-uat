@@ -106,6 +106,8 @@ const GoodsReceiveNoteForm = () => {
 
   const { organizationDetails, locationDetails, userDetails, token, userCd } = useSelector(state => state.auth)
 
+  const {data: itemData} = useSelector(state => state.item)
+
   const deepClone = (obj) => {
     if (obj === null || typeof obj !== 'object') {
       return obj;
@@ -262,6 +264,7 @@ const GoodsReceiveNoteForm = () => {
           conditionOfGoods: item?.conditionOfGoods,
           budgetHeadProcurement: item?.budgetHeadProcurement,
           locatorId: parseInt(item?.locatorId),
+          unitPrice: itemData.find(obj => obj.itemMasterCd === item.itemCode)?.price || 0,
           qtyList: [
             {
               locatorId: parseInt(item?.locatorId),
@@ -276,6 +279,7 @@ const GoodsReceiveNoteForm = () => {
     }
   };
 
+  console.log("Formdata: ", formData)
 
   const handleInwardGatePassNoChange = async (value) => {
     try {
@@ -417,6 +421,7 @@ const GoodsReceiveNoteForm = () => {
         "conditionOfGoods",
         "note",
         "items",
+        "unitPrice"
       ];
 
       allFields.forEach((field) => {
@@ -559,6 +564,12 @@ const GoodsReceiveNoteForm = () => {
     setSelectedOption(value);
     console.log("VSEECT VALUE: ", value)
   };
+
+  if(!itemData) {
+    return (
+      <h2>Loading please wait ...</h2>
+    )
+  }
 
   return (
     <div className="goods-receive-note-form-container" ref={formRef}>
@@ -803,6 +814,11 @@ const GoodsReceiveNoteForm = () => {
                       {/* <Form.Item label="BUDGET HEAD PROCUREMENT">
                         <Input value={item.budgetHeadProcurement} readOnly />
                       </Form.Item> */}
+                      {
+                        formData.processType === "PO" && (
+                          <FormInputItem label="Unit Price" name="unitPrice" value={item.unitPrice} onChange={(fieldName, value) => itemHandleChange(fieldName, value, key)} />
+                        )
+                      }
 
                       <FormInputItem label="BUDGET HEAD PROCUREMENT" name="budgetHeadProcurement" value={item.budgetHeadProcurement} onChange={(name, value)=> itemHandleChange("budgetHeadProcurement", value, key)} />
 
