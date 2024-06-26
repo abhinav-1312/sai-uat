@@ -38,6 +38,7 @@ import Layout from "../components/Layout";
 import { useUser } from "../context/UserContext";
 import PrivateRoutes from "./PrivateRoutes";
 import { useSelector } from "react-redux";
+import Dashboard from "../pages/dashboard/Dashboard";
 
 const RoutesComponent = () => {
   const userRole = useSelector((state) => state.auth.userRole);
@@ -198,6 +199,7 @@ const RoutesComponent = () => {
       <Route path="/login" element={<SignIn />} />
       <Route element={<PrivateRoutes />}>
         <Route path="/" element={<Layout />}>
+          <Route index element={<Dashboard />} />
           {generateRoutes(userRole)}
         </Route>
       </Route>
