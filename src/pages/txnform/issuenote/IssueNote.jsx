@@ -552,7 +552,7 @@ const IssueNote = () => {
             <div>
               <h3>Terms And Conditions</h3>
               <TextArea
-                autoSize={{ minRows: 4, maxRows: 8 }}
+                autoSize={{ minRows: 4, maxRows: 16 }}
                 value={formData.termsCondition}
                 onChange={(e) => handleChange("termsCondition", e.target.value)}
                 readOnly={isnData !== null}
@@ -561,7 +561,7 @@ const IssueNote = () => {
             <div>
               <h3>Note</h3>
               <TextArea
-                autoSize={{ minRows: 4, maxRows: 8 }}
+                autoSize={{ minRows: 4, maxRows: 16 }}
                 value={formData.note}
                 onChange={(e) => handleChange("note", e.target.value)}
                 readOnly={isnData !== null}
