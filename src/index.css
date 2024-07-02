@@ -274,16 +274,22 @@ code {
   color: white;
 }
 
+each
+
 .each-tab .active-slab{
   transition: all 0.2 ease-in;
   transform: scale(1.05);
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
+.each-tab:hover{
+  color: white !important;
+}
+
 .each-tab::after{
   position: absolute;
   content: "";
-  background-color: lightgray;
+  /* background-color: lightgray; */
   width: 0;
   height: 5px;
   bottom: 0;

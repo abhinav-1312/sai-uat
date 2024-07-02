@@ -194,7 +194,7 @@ const SideNav = () => {
         return (
           item.key !== "2" &&
           item.key !== "25" &&
-          item.key !== "1" &&
+          // item.key !== "1" &&
           item.key !== "14" &&
           item.key !== "15" &&
           item.key !== "8" &&

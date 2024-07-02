@@ -32,7 +32,7 @@ const OrgSearchFilter = ({handleChange}) => {
     }, [])
   return (
     <>
-      <Form>
+      <Form style={{marginBottom: "1rem"}}>
         <Form.Item>
           <Select placeholder="Please select an organization."
             style={{ width: 200 }}
