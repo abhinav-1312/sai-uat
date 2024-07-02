@@ -269,17 +269,16 @@ code {
 }
 
 .each-tab{
-  transition: all 1s ease-in;
+  transition: all 0.2s ease-in;
   position: relative;
   color: white;
 }
 
-each
-
-.each-tab .active-slab{
+.active-slab{
   transition: all 0.2 ease-in;
-  transform: scale(1.05);
-  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  transform: scale(1.05) !important;
+  /* box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px; */
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
 }
 
 .each-tab:hover{
