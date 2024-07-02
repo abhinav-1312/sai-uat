@@ -111,7 +111,7 @@ const SignIn = () => {
         </Form.Item>
       </Form>
 
-      <Link to="/changePassword"> Forgot Password </Link>
+      <Link to="/changePassword"> Change Password </Link>
     </div>
   );
 };
