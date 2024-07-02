@@ -102,6 +102,8 @@ const TransactionSlab = ({allData, txnFilters, setTxnFilters, populateTxnData, s
   //   issueNoteType: null,
   // });
 
+  console.log("TXN FILTERS: ", txnFilters)
+
   const handleFilterChange = (fieldName, value) => {
     setTxnFilters(prev => {
         return {
@@ -152,7 +154,8 @@ const TransactionSlab = ({allData, txnFilters, setTxnFilters, populateTxnData, s
         message.error("Please enter from date and to date.")
         return
       }
-      if(txnFilters.issueNoteType === "IRP" || "NIRP"){
+      if(txnFilters.issueNoteType === "IRP" || txnFilters.issueNoteType === "NIRP"){
+        console.log("IRP NIRP if")
         try{
           const {responseData} = await apiCall("POST", "/getDashboardIssueNoteData", token, {startDate: txnFilters.startDate, endDate: txnFilters.endDate, type: txnFilters.issueNoteType, orgId: orgId ? orgId : null})
           setTxnSlabData(prev => {
@@ -167,6 +170,7 @@ const TransactionSlab = ({allData, txnFilters, setTxnFilters, populateTxnData, s
         }
       }
       else{
+        console.log("else")
         try{
           const {responseData} = await apiCall("POST", "/getDashboardIssueNoteData", token, {startDate: txnFilters.startDate, endDate: txnFilters.endDate, type: "IRP", orgId: orgId ? orgId : null, pendingReturn: true})
           setTxnSlabData(prev => {
@@ -182,6 +186,7 @@ const TransactionSlab = ({allData, txnFilters, setTxnFilters, populateTxnData, s
       }
     }
     else{
+      console.log("TXN SUMMARY")
       try {
         const {responseData} = await apiCall("POST", "/txns/getTxnSummary", token, { startDate: txnFilters.startDate, endDate: txnFilters.endDate, txnType: txnFilters.txnType === "null" ? null : txnFilters.txnType, orgId: orgId ? orgId : null})
         // const { data } = await apiCall(

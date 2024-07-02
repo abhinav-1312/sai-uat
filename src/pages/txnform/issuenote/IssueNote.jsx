@@ -241,6 +241,12 @@ const IssueNote = () => {
   ]);
 
   const handleCeRccChange = async (_, value) => {
+    setFormData(prev => {
+      return {
+        ...prev,
+        ceRegionalCenterCd: value
+      }
+    })
     const url = "/master/getOrgMasterById";
     const { data } = await axios.post(
       url,
