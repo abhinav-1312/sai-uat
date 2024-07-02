@@ -30,10 +30,10 @@ const ohqSlice = createSlice({
 
 export const fetchOhq = createAsyncThunk(
     "ohq/fetchOhq",
-    async (_, {getState}) => {
+    async (orgId = null, {getState}) => {
         try{
             const {token, userCd} = getState().auth
-            const {responseData} = await apiCall("POST", `/master/getOHQ`, token, { itemCode: null, user: userCd })
+            const {responseData} = await apiCall("POST", `/master/getOHQ`, token, { itemCode: null, user: userCd, orgId: orgId ? orgId : null })
             return responseData
         }
         catch(error){

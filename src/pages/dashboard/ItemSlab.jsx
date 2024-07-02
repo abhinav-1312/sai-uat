@@ -1,33 +1,19 @@
 import { Table, Input } from "antd";
 import React, { useState } from "react";
 import { handleSearch } from "../../utils/Functions";
+import { useSelector } from "react-redux";
 
 const { Search } = Input;
 
-const sampleData = [
-  {
-    itemCode: 1233,
-    itemDesc: "Sample hardcoded desc",
-    subcategory: "Sample",
-    fnsCategory: "Slow Moving",
-  },
-  {
-    itemCode: 1233,
-    itemDesc: "Sample hardcoded desc",
-    subcategory: "Sample",
-    fnsCategory: "Slow Moving",
-  },
-  {
-    itemCode: 1233,
-    itemDesc: "Sample hardcoded desc",
-    subcategory: "Sample",
-    fnsCategory: "Fast Moving",
-  },
-];
+const ItemSlab = ({allData, filteredData, setFilteredData}) => {
 
-const ItemSlab = () => {
+  console.log("Alldata: ", allData)
+
+  console.log("Rendered")
+  
   const [searchText, setSearchText] = useState("");
-  const [filteredData, setFilteredData] = useState(sampleData);
+  // const [filteredData, setFilteredData] = useState(allData ? [...allData] : []);
+  console.log("FilteredData: ", filteredData)
   const columns = [
     {
       title: "Item Code",
@@ -35,17 +21,23 @@ const ItemSlab = () => {
     },
     {
       title: "Item Description",
-      dataIndex: "itemDesc",
+      dataIndex: "itemDescription",
     },
     {
       title: "Subcategory",
-      dataIndex: "itemDesc",
+      dataIndex: "subCategory",
     },
     {
       title: "FNS Category",
       dataIndex: "fnsCategory",
     },
   ];
+
+  if(!allData){
+    return (
+      <h3>Loading</h3>
+    )
+  }
   return (
     <div>
       <div style={{ marginBottom: "1rem" }}>
@@ -54,7 +46,7 @@ const ItemSlab = () => {
           onChange={(e) =>
             handleSearch(
               e.target?.value || "",
-              sampleData,
+              allData,
               setFilteredData,
               setSearchText
             )

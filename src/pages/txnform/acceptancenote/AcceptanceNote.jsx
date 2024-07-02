@@ -15,7 +15,7 @@ import {
 import { MinusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
-import { apiCall, apiHeader, convertEpochToDateString, fetchUomLocatorMaster, printOrSaveAsPDF } from "../../../utils/Functions";
+import { apiCall, apiHeader, convertEpochToDateString, printOrSaveAsPDF } from "../../../utils/Functions";
 import FormInputItem from "../../../components/FormInputItem";
 import { useSelector } from "react-redux";
 import { BASE_URL } from "../../../utils/BaseUrl";
@@ -109,7 +109,6 @@ const AcceptanceNote = () => {
   };
 
   useEffect(() => {
-    fetchUomLocatorMaster(setUomMaster, setLocatorMaster)
     fetchUserDetails();
   }, []);
 
@@ -145,6 +144,8 @@ const AcceptanceNote = () => {
     //   console.error("Error fetching data:", error);
     // }
   };
+
+  const { uomObj } = useSelector((state) => state.uoms);
 
   const handleInspectionNOChange = async (value) => {
     try {
@@ -307,6 +308,12 @@ const AcceptanceNote = () => {
   const handleValuesChange = (_, allValues) => {
     setType(allValues.type);
   };
+
+  if(!uomObj){
+    return (
+      <h3>Loading please wait...</h3>
+    )
+  }
 
   return (
     <div className="goods-receive-note-form-container" ref={formRef}>
@@ -492,7 +499,7 @@ const AcceptanceNote = () => {
                     <FormInputItem
                       label="UOM :"
                       key={key}
-                      value={uomMaster[item.uom]}
+                      value={uomObj[item?.uom]}
                     />
 
                     {Type !== "PO" && Type !== "IOP" && (

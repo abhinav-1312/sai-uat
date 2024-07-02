@@ -816,7 +816,7 @@ const GoodsReceiveNoteForm = () => {
                       </Form.Item> */}
                       {
                         formData.processType === "PO" && (
-                          <FormInputItem label="Unit Price" name="unitPrice" value={item.unitPrice} onChange={(fieldName, value) => itemHandleChange(fieldName, value, key)} />
+                          <FormInputItem label="Unit Price" name="unitPrice" value={item.unitPrice} onChange={(fieldName, value) => itemHandleChange(fieldName, parseInt(value), key)} />
                         )
                       }
 

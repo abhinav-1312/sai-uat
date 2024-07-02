@@ -472,8 +472,8 @@ const InwardGatePass = () => {
       ) {
         setFormData((prev) => {
           return {
-            ...processData,
             ...prev,
+            ...processData,
             inwardGatePass: value,
             items: itemList.map((item) => ({
               ...item,
@@ -488,7 +488,7 @@ const InwardGatePass = () => {
     }
   };
 
-  if (!locatorMaster || !ohqData || !itemData) {
+  if (!locatorMaster || !ohqData || !itemData || uomObj) {
     return <h2> Loading please wait...</h2>;
   }
 

@@ -16,7 +16,7 @@ import {
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
-import { apiHeader, fetchUomLocatorMaster } from "../../../utils/Functions";
+import { apiHeader } from "../../../utils/Functions";
 import { convertArrayToObject, printOrSaveAsPDF } from "../../../utils/Functions";
 import FormInputItem from "../../../components/FormInputItem";
 import FormDatePickerItem from "../../../components/FormDatePickerItem";
@@ -129,7 +129,6 @@ const InsepctionReport = () => {
   useEffect(() => {
     fetchItemData();
     fetchUserDetails();
-    fetchUomLocatorMaster(setUomMaster, setLocatorMaster)
   }, []);
 
   const fetchItemData = async () => {
@@ -339,6 +338,7 @@ const InsepctionReport = () => {
   }
 
   console.log("Form data: ", formData)
+  const { uomObj } = useSelector((state) => state.uoms);
 
   return (
     <div className="goods-receive-note-form-container" ref={formRef}> 
@@ -429,7 +429,7 @@ const InsepctionReport = () => {
                       <FormInputItem label="Serial No. :" value={item.srNo} readOnly={true}/>
                       <FormInputItem label="ITEM CODE :" value={item.itemCode} readOnly={true}/>
                       <FormInputItem label="ITEM DESCRIPTION :" value={item.itemDesc} readOnly={true}/>
-                      <FormInputItem label="UOM :" value={uomMaster[parseInt(item.uom)]} readOnly={true}/>
+                      <FormInputItem label="UOM :" value={uomObj[parseInt(item.uom)]} readOnly={true}/>
                       {/* <FormInputItem label="RECIEVED QUANTITY :" name="quantity" value={formData.items[key].quantity} onChange={(fieldName, value) => itemHandleChange("quantity", value, key)} />
                       <FormInputItem label="BUDGET HEAD PROCUREMENT :" name="budgetHeadProcurement" value={item.budgetHeadProcurement} onChange={(fieldName, value) => itemHandleChange("budgetHeadProcurement", value, key)}/> */}
 
