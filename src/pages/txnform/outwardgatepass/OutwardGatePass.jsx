@@ -413,7 +413,7 @@ const OutwardGatePass = () => {
       const { responseData } = response.data;
       const { processData, itemList } = responseData;
 
-      if (responseData !== null) {
+      if (responseData !== null && processData !== null) {
         setFormData((prev) => {
           return {
             ...prev,

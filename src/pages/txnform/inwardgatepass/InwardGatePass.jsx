@@ -294,6 +294,10 @@ const InwardGatePass = () => {
       );
       const responseData = response.data.responseData;
       const { processData, itemList } = responseData;
+
+      if(processData === null) {
+        return;
+      }
       setFormData((prevFormData) => ({
         ...prevFormData,
 

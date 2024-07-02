@@ -1,11 +1,11 @@
 import React from "react";
 import { Form, Input, Button } from "antd";
 
-const IndependentVariableForm = ({ heading }) => {
+const IndependentVariableForm = ({ heading, onFinish, url }) => {
   const [form] = Form.useForm();
 
-  const onFinish = (values) => {
-    console.log("Values: ", values)
+  const handleFinish = (values) => {
+    onFinish(url, values)
   }
 
   return (
@@ -17,7 +17,7 @@ const IndependentVariableForm = ({ heading }) => {
         name="basic"
         layout="vertical"
         initialValues={{ remember: true }}
-        onFinish={onFinish}
+        onFinish={handleFinish}
         style={{
             display: "flex",
             alignItems: "center",

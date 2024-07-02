@@ -32,8 +32,8 @@ const RejectionNote = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [itemData, setItemData] = useState([]);
-  const [uomMaster, setUomMaster] = useState({})
-  const [locatorMaster, setLocatorMaster] = useState({})
+  const {uomObj: uomMaster} = useSelector(state => state.uoms)
+  const {locatorObj: locatorMaster} = useSelector(state => state.locators)
   const [formData, setFormData] = useState({
     genDate: "",
     genName: "",
@@ -113,7 +113,6 @@ const RejectionNote = () => {
     });
   };
   useEffect(() => {
-    fetchUomLocatorMaster(setUomMaster, setLocatorMaster);
     fetchItemData();
     fetchUserDetails();
   }, []);
@@ -326,6 +325,12 @@ const RejectionNote = () => {
       };
     });
   };
+
+  if(!uomMaster || !locatorMaster){
+    return (
+      <h3>Loading. Please wait...</h3>
+    )
+  }
 
 
   return (
