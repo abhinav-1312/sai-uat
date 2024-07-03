@@ -36,18 +36,32 @@ const sampleData = [
       },
 ]
 
-const columns = [
+
+
+const InvValSlab = ({data, filteredData, setFilteredData, itemDescDropdown, subcatDropdown}) => {
+    const [searchText, setSearchText] = useState("");
+    // const [data, setData] = useState(null)
+  // const [filteredData, setFilteredData] = useState();
+  const {token, userCd} = useSelector(state => state.auth)
+
+  const columns = [
     {
         title: "Item Code",
         dataIndex: "itemCode"
     },
     {
         title: "Item Description",
-        dataIndex: "itemName"
+        dataIndex: "itemName",
+        key: 'itemName',
+      filters: [...itemDescDropdown],
+      onFilter: (value, record) => record.itemName.indexOf(value) === 0,
     },
     {
         title: "Subcategory",
-        dataIndex: "subcategory"
+        dataIndex: "subcategory",
+        key: "subcategory",
+        filters: [...subcatDropdown],
+        onFilter: (value, record) => record.subcategory.indexOf(value) === 0,
     },
     {
         title: "OHQ",
@@ -58,12 +72,6 @@ const columns = [
         dataIndex: "value"
     },
 ]
-
-const InvValSlab = ({data, filteredData, setFilteredData}) => {
-    const [searchText, setSearchText] = useState("");
-    // const [data, setData] = useState(null)
-  // const [filteredData, setFilteredData] = useState();
-  const {token, userCd} = useSelector(state => state.auth)
 
   // const populateData = async () => {
   //   try{

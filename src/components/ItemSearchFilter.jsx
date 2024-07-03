@@ -119,7 +119,7 @@ const ItemSearchFilter = () => {
         }
         title="Filtered Item Data"
         trigger="click"
-        visible={searchValue !== "" && filteredData.length > 0}
+        open={searchValue !== "" && filteredData.length > 0}
         style={{ width: "200px" }}
         placement="right"
       >

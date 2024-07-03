@@ -4,7 +4,7 @@ import ItemSlab from "./ItemSlab";
 import TransactionSlab from "./TransactionSlab";
 import InvValSlab from "./InvValSlab";
 import PurchaseSummarySlab from "./PurchaseSummarySlab";
-import { apiCall, convertToCurrency } from "../../utils/Functions";
+import { apiCall, convertToCurrency, sortAlphabetically } from "../../utils/Functions";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchOhq } from "../../redux/slice/ohqSlice";
 import axios from "axios";
@@ -26,10 +26,9 @@ const Dashboard = ({orgId}) => {
       count: null,
       allData: null,
     })
-
-    console.log("Item slab data: ", itemSlabData)
-
     const [itemSlabFilteredData, setItemSlabFilteredData] = useState(null)
+    const [itemSlabDescDropdown, setItemSlabDescDropdown] = useState(null)
+    const [itemSlabSubcatDropdown, setItemSlabSubcatDropdown] = useState(null)
 
     const [txnSlabData, setTxnSlabData] = useState({
       count: null,
@@ -40,6 +39,8 @@ const Dashboard = ({orgId}) => {
       count: null,
       allData: null
     })
+    const [invItemDescDropdown, setInvItemDescDropdown] = useState(null)
+    const [invItemSubcatDropdown, setInvItemSubcatDropdown] = useState(null)
 
     const [invFilteredData, setInvFilteredData] = useState(null)
 
@@ -50,9 +51,31 @@ const Dashboard = ({orgId}) => {
         setItemSlabData(prev => {
           return {
             ...prev,
-            allData: [...itemData]
+            allData: [...itemData],
           }
         })
+        const filterDropdownArr = []
+        const subcatDropdownArr = []
+        itemData.forEach(item=> {
+          filterDropdownArr.push(
+            {
+
+              text: item.itemDescription,
+              value: item.itemDescription+"-"+item.itemCode
+            }
+          )
+          subcatDropdownArr.push(
+            {
+              text: item.subCategoryDesc,
+              value: item.subCategoryDesc
+            }
+          )
+
+          
+        })
+
+        setItemSlabDescDropdown([...sortAlphabetically(filterDropdownArr)])
+        setItemSlabSubcatDropdown([...subcatDropdownArr])
         setItemSlabFilteredData([...itemData])
       }
       catch(error){
@@ -87,10 +110,29 @@ const Dashboard = ({orgId}) => {
           return {
             itemCode: obj.itemCode,
             itemName: obj.itemName,
-            subcategory: "N/A",
+            subcategory: obj.qtyList[0].subcategoryDesc,
             value: convertToCurrency(totVal), 
             quantity: totQuantity
           }
+        })
+
+        const itemDescDrop = []
+        const subcatDescDrop = []
+        modData.forEach(data=> {
+          itemDescDrop.push(
+            {
+              text: data.itemName,
+              value: data.itemName
+            }
+          )
+          subcatDescDrop.push(
+            {
+              text: data.subcategory,
+              value: data.subcategory
+            }
+          )
+          setInvItemDescDropdown([...sortAlphabetically(itemDescDrop)])
+          setInvItemSubcatDropdown([...subcatDescDrop])
         })
         setInvFilteredData([...modData])
         setInvSlabData({count: convertToCurrency(allVal), allData: [...modData]})
@@ -104,13 +146,7 @@ const Dashboard = ({orgId}) => {
     const getOhqDtls = useCallback( async () => {
       try{
         const {responseData} = await apiCall("POST", '/master/getOHQ', token, {orgId: orgId?orgId:null})
-        let itemTotalCount = 0
-        responseData?.forEach(obj => {
-          obj.qtyList.forEach(qty => {
-            itemTotalCount = itemTotalCount + qty.quantity
-            console.log("itemtotcount: ", itemTotalCount)
-          })
-        })
+        const itemTotalCount = responseData.length
         setItemSlabData(prev=> {
           return {
             ...prev,
@@ -123,7 +159,24 @@ const Dashboard = ({orgId}) => {
       }
     }, [token, orgId])
 
-    console.log("Inv slab: ", invSlabData)
+    const [summaryData, setSummaryData] = useState(
+      {
+        allData: null,
+        count: null
+      }
+    )
+
+    const [summaryDataFilters, setSummaryDataFilters] = useState({
+      subcategory: null,
+      usageCategory: null, 
+      itemCode: null,
+      startDate: null,
+      endDate: null
+    })
+
+    const populateSummaryData = async () => {
+      const {responseData: summaryData} = await apiCall("POST", "/txns/getTxnSummary", token, {  txnType: "PO", orgId: orgId ? orgId : null})
+    }
 
     useEffect(()=>{
       fnsCategory()
@@ -131,27 +184,19 @@ const Dashboard = ({orgId}) => {
       populateTxnData()
       populateInvData()
     },[fnsCategory, dispatch, orgId, populateTxnData, getOhqDtls, populateInvData])
-
-    // console.log(itemSlabData.count, txnSlabData.count, itemSlabData.allData, txnSlabData.allData)
-
-    // if(!itemSlabData.count || !itemSlabData.allData || !txnSlabData.count || !txnSlabData.allData){
-    //   return (
-    //     <h3>Loading. Please wait...</h3>
-    //   )
-    // }
   return (
     <div style={{display: "flex", flexDirection: "column", gap: "4rem"}}>
       <div className="dashboard-tabs">
         <Button className={`each-tab ${activeTab === "tab1" ? "active-slab" : ""}`} id="tab1" onClick={() => setActiveTab("tab1")}>
           <span className="tab-fieldName">Item</span>
-          <span className="tab-value">{itemSlabData.count} <span style={{fontSize: "0.8rem", fontWeight: "normal"}}>total count</span> </span>
+          <span className="tab-value">{itemSlabData.count} <span style={{fontSize: "0.8rem", fontWeight: "normal"}}>unique items</span> </span>
         </Button>
         <Button className={`each-tab ${activeTab === "tab2" ? "active-slab" : ""}`} id="tab2" onClick={() => setActiveTab("tab2")}>
           <span className="tab-fieldName">Transaction</span>
           <span className="tab-value">{txnSlabData.count} <span style={{fontSize: "0.8rem", fontWeight: "normal"}}>total transactions</span> </span>
         </Button>
         <Button className={`each-tab ${activeTab === "tab3" ? "active-slab" : ""}`} id="tab3" onClick={() => setActiveTab("tab3")}>
-          <span className="tab-fieldName">Inventory And Value</span>
+          <span className="tab-fieldName">Inventory Value</span>
           <span className="tab-value">{invSlabData.count} <span style={{fontSize: "0.8rem", fontWeight: "normal"}}>total value</span></span>
         </Button>
         <Button className={`each-tab ${activeTab === "tab4" ? "active-slab" : ""}`} id="tab4" onClick={() => setActiveTab("tab4")}>
@@ -162,7 +207,7 @@ const Dashboard = ({orgId}) => {
 
       {
         activeTab === "tab1" && (
-          <ItemSlab count = {itemSlabData.count} allData = {itemSlabData.allData} filteredData={itemSlabFilteredData} setFilteredData={setItemSlabFilteredData} />
+          <ItemSlab count = {itemSlabData.count} allData = {itemSlabData.allData} filteredData={itemSlabFilteredData} setFilteredData={setItemSlabFilteredData} descFilterDropdown = {itemSlabDescDropdown} subcatDropdown={itemSlabSubcatDropdown} />
         )
       }
       {
@@ -172,12 +217,12 @@ const Dashboard = ({orgId}) => {
       }
       {
         activeTab === "tab3" && (
-            <InvValSlab data={invSlabData.allData} filteredData={invFilteredData} setFilteredData={setInvFilteredData}/>
+            <InvValSlab data={invSlabData.allData} filteredData={invFilteredData} setFilteredData={setInvFilteredData} itemDescDropdown={invItemDescDropdown} subcatDropdown={invItemSubcatDropdown}/>
         )
       }
       {
         activeTab === "tab4" && (
-            <PurchaseSummarySlab />
+            <PurchaseSummarySlab filters = {summaryDataFilters} setFilers = {setSummaryDataFilters} />
         )
       }
     </div>

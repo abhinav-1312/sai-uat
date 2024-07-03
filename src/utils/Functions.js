@@ -417,3 +417,12 @@ export const removeItem = (index, setFormData) => {
     return { ...prevValues, items: updatedItems1 };
   });
 };
+
+export const sortAlphabetically = (arr) => {
+  arr.sort(function(a, b) {
+    // Compare the 'value' property of each object alphabetically
+    return a.value.localeCompare(b.value);
+  });
+
+  return arr
+}
