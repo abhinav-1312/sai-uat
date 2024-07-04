@@ -132,13 +132,13 @@ const isnColumns = [
         value: "IRP"
       },
     ],
-    onFilter: (value, record) => record.processData.type.indexOf(value) === 0,
+    onFilter: (value, record) => record?.processData?.type?.indexOf(value) === 0,
 },
 {
     title: "Transaction Name",
     dataIndex: "processStage",
     filters: [...txnName],
-    onFilter: (value, record) => record.processStage.indexOf(value) === 0,
+    onFilter: (value, record) => record?.processStage?.indexOf(value) === 0,
 
 },
 {
