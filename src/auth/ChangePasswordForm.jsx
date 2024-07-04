@@ -17,7 +17,16 @@ const ChangePasswordForm = () => {
               errors: ['The new password and confirmation password do not match!'],
             },
           ]);
-        } else {
+        } 
+        else if ((values.newPassword).length < 7){
+          form.setFields([
+            {
+              name: 'newPassword',
+              errors: ['The new password must contains atleast 7 characters!'],
+            },
+          ]);
+        }
+        else {
           const {userCd, oldPassword, newPassword} = values
 
           const url = "/master/changePassword"

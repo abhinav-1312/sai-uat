@@ -289,6 +289,7 @@ const InwardGatePass = () => {
         {
           processId: value,
           processStage: "OGP",
+          rejectProcess: true
         },
         apiHeader("POST", token)
       );
