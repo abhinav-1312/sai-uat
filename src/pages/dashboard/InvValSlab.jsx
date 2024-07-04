@@ -54,14 +54,14 @@ const InvValSlab = ({data, filteredData, setFilteredData, itemDescDropdown, subc
         dataIndex: "itemName",
         key: 'itemName',
       filters: [...itemDescDropdown],
-      onFilter: (value, record) => record.itemName.indexOf(value) === 0,
+      onFilter: (value, record) => record?.itemName?.indexOf(value) === 0,
     },
     {
         title: "Subcategory",
         dataIndex: "subcategory",
         key: "subcategory",
         filters: [...subcatDropdown],
-        onFilter: (value, record) => record.subcategory.indexOf(value) === 0,
+        onFilter: (value, record) => record?.subcategory?.indexOf(value) === 0,
     },
     {
         title: "OHQ",

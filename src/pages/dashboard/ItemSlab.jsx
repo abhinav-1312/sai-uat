@@ -44,14 +44,14 @@ const ItemSlab = ({allData, filteredData, setFilteredData, descFilterDropdown, s
       dataIndex: "itemDescription",
       key: 'itemDescription',
       filters:[...descFilterDropdown || []],
-      onFilter: (value, record) => record.itemDescription.indexOf(value.split('-')[0]) === 0,
+      onFilter: (value, record) => record?.itemDescription?.indexOf(value.split('-')[0]) === 0,
     },
     {
       title: "Subcategory",
       dataIndex: "subCategoryDesc",
       key: "subcategoryDesc",
         filters: [...subcatDropdown || []],
-        onFilter: (value, record) => record.subcategoryDesc.indexOf(value) === 0,
+        onFilter: (value, record) => record?.subcategoryDesc?.indexOf(value) === 0,
     },
     {
       title: "FNS Category",
@@ -71,7 +71,7 @@ const ItemSlab = ({allData, filteredData, setFilteredData, descFilterDropdown, s
           value: "No Moving"
         },
       ],
-      onFilter: (value, record) => record.fnsCategory.indexOf(value) === 0,
+      onFilter: (value, record) => record?.fnsCategory?.indexOf(value) === 0,
     },
   ];
 

@@ -282,6 +282,12 @@ const InwardGatePass = () => {
 
   const handleInwardGatePassChange = async (_, value) => {
     console.log("VALUE: ", value, "Inward gate pass");
+    setFormData(prev=> {
+      return {
+        ...prev,
+        inwardGatePass: value
+      }
+    })
     try {
       const apiUrl = "/getSubProcessDtls";
       const response = await axios.post(
