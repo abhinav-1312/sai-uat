@@ -9,6 +9,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchOhq } from "../../redux/slice/ohqSlice";
 import axios from "axios";
 
+const currentDate = new Date(); 
+const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+console.log("DAE: ", `${startDate.getDate()}/${startDate.getMonth() + 1}/${startDate.getFullYear()}`)
+const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
+
 const Dashboard = ({orgId}) => {
     const [activeTab, setActiveTab] = useState("tab1")
 
@@ -167,23 +172,46 @@ const Dashboard = ({orgId}) => {
     )
 
     const [summaryDataFilters, setSummaryDataFilters] = useState({
-      subcategory: null,
-      usageCategory: null, 
+      subCategoryCode: null,
+      categoryCode: null,
+      // usageCategory: null, 
       itemCode: null,
-      startDate: null,
-      endDate: null
+      startDate: `${startDate.getDate().toString().padStart(2, '0')}/${(startDate.getMonth() + 1).toString().padStart(2, '0')}/${startDate.getFullYear()}`,
+      endDate: `${endDate.getDate().toString().padStart(2, '0')}/${(endDate.getMonth() + 1).toString().padStart(2, '0')}/${endDate.getFullYear()}`
     })
 
-    const populateSummaryData = async () => {
-      const {responseData: summaryData} = await apiCall("POST", "/txns/getTxnSummary", token, {  txnType: "PO", orgId: orgId ? orgId : null})
-    }
+    const handlePurchaseSearch = useCallback(async () => {
+      if(!summaryDataFilters.startDate || !summaryDataFilters.endDate){
+        message.error("Please enter start date and end date.")
+        return
+      }
+      try{
+        const {responseData} = await apiCall("POST", "/getPurchaseSummary", token, {...summaryDataFilters, orgId: null})
+        let totVal = 0;
+        responseData?.forEach(data => {
+          totVal = totVal + data.totalValue
+        })
+        setSummaryData({
+          allData: [...responseData],
+          count: convertToCurrency(totVal)
+        })
+        // console.log("Response data.: ", responseData)
+      }catch(error){
+        console.log("Error fetching purchase summary.", error)
+      }
+    }, [token, summaryDataFilters])
+
+    // const populateSummaryData = async () => {
+    //   const {responseData: summaryData} = await apiCall("POST", "/txns/getTxnSummary", token, {  txnType: "PO", orgId: orgId ? orgId : null})
+    // }
 
     useEffect(()=>{
       fnsCategory()
       getOhqDtls()
       populateTxnData()
       populateInvData()
-    },[fnsCategory, dispatch, orgId, populateTxnData, getOhqDtls, populateInvData])
+      handlePurchaseSearch()
+    },[fnsCategory, dispatch, orgId, populateTxnData, getOhqDtls, populateInvData, handlePurchaseSearch])
   return (
     <div style={{display: "flex", flexDirection: "column", gap: "4rem"}}>
       <div className="dashboard-tabs">
@@ -201,7 +229,7 @@ const Dashboard = ({orgId}) => {
         </Button>
         <Button className={`each-tab ${activeTab === "tab4" ? "active-slab" : ""}`} id="tab4" onClick={() => setActiveTab("tab4")}>
           <span className="tab-fieldName">Purchasing Summary</span>
-          <span className="tab-value">123456</span>
+          <span className="tab-value">{summaryData.count} <span style={{fontSize: "0.8rem", fontWeight: "normal"}}>for selected dates</span></span>
         </Button>
       </div>
 
@@ -222,7 +250,7 @@ const Dashboard = ({orgId}) => {
       }
       {
         activeTab === "tab4" && (
-            <PurchaseSummarySlab filters = {summaryDataFilters} setFilers = {setSummaryDataFilters} />
+            <PurchaseSummarySlab filters = {summaryDataFilters} setFilters = {setSummaryDataFilters} handleSumSearch={handlePurchaseSearch} allData={summaryData.allData} />
         )
       }
     </div>

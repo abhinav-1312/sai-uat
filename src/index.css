@@ -359,3 +359,16 @@ code {
   transform: scale(1.5);
 }
 
+.pur-sum{
+  display: flex;
+  gap: 1rem;
+  justify-content:flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pur-sum > * {
+  width: calc(25% - 20px); /* Adjust width as needed */
+  margin: 10px; /* Adjust margin between items */
+
+}
