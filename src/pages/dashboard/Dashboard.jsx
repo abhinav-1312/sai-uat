@@ -7,6 +7,7 @@ import PurchaseSummarySlab from "./PurchaseSummarySlab";
 import { apiCall, convertToCurrency, sortAlphabetically } from "../../utils/Functions";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchOhq } from "../../redux/slice/ohqSlice";
+import Loader from '../../components/Loader'
 import axios from "axios";
 import _ from "lodash"
 
@@ -17,6 +18,11 @@ const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
 
 const Dashboard = ({orgId}) => {
     const [activeTab, setActiveTab] = useState("tab1")
+    const [itemSlabLoading, setItemSlabLoading] = useState(false)
+    const [txnSlabLoading, setTxnSlabLoading] = useState(false)
+    const [invValLoading, setInvValLoading] = useState(false)
+    const [purSumLoading, setPurSumLoading] = useState(false)
+    const [ohqLoading, setOhqLoading] = useState(false)
 
     const [txnFilters, setTxnFilters] = useState({
       txnType: null,
@@ -51,6 +57,7 @@ const Dashboard = ({orgId}) => {
     const [invFilteredData, setInvFilteredData] = useState(null)
 
     const fnsCategory = useCallback(async () => {
+      setItemSlabLoading(true)
       const url = "/getFNSCategory"
       try{
         const {responseData:itemData} = await apiCall("POST", url, token, {orgId: orgId ? orgId:null})
@@ -91,10 +98,13 @@ const Dashboard = ({orgId}) => {
       catch(error){
         console.log("Error fetching data", error)
       }
+      finally{
+        setItemSlabLoading(false)
+      }
     }, [orgId, token])
 
     const populateTxnData = useCallback( async () => {
-      console.log("txn data called")
+      setTxnSlabLoading(true)
       try {
         const { responseData } = await apiCall("POST", "/txns/getTxnSummary", token, { startDate: null, endDate: null, itemCode: null, txnType: null, orgId: orgId ? orgId : null }) 
         setTxnSlabData({count: responseData.length, allData: [...responseData].reverse()})
@@ -103,9 +113,13 @@ const Dashboard = ({orgId}) => {
         message.error("Error occured while fetching data. Please try again.");
         console.log("Populate data error.", error);
       }
+      finally{
+        setTxnSlabLoading(false)
+      }
     }, [orgId, token]);
 
     const populateInvData = useCallback( async () => {
+      setInvValLoading(true)
       try{
         const {responseData} = await apiCall("POST", "/master/getOHQ", token, {itemCode: null, userId: userCd, orgId: orgId ? orgId : null})
         let allVal = 0;
@@ -156,9 +170,13 @@ const Dashboard = ({orgId}) => {
         console.log("Error in inv slab: ", error)
         message.error("Error occured fetching inventory details.")
       }
+      finally{
+        setInvValLoading(false)
+      }
     }, [orgId, token, userCd])
 
     const getOhqDtls = useCallback( async () => {
+      setOhqLoading(true)
       try{
         const {responseData} = await apiCall("POST", '/master/getOHQ', token, {orgId: orgId?orgId:null})
         const itemTotalCount = responseData.length
@@ -171,6 +189,9 @@ const Dashboard = ({orgId}) => {
       }catch(error){
         message.error("Error occured fetching ohq.")
         console.log("Error on fetching ohq dtls.", error)
+      }
+      finally{
+        setOhqLoading(false)
       }
     }, [token, orgId])
 
@@ -191,6 +212,7 @@ const Dashboard = ({orgId}) => {
     })
 
     const handlePurchaseSearch = useCallback(async () => {
+      setPurSumLoading(true)
       if(!summaryDataFilters.startDate || !summaryDataFilters.endDate){
         message.error("Please enter start date and end date.")
         return
@@ -209,6 +231,9 @@ const Dashboard = ({orgId}) => {
       }catch(error){
         console.log("Error fetching purchase summary.", error)
       }
+      finally{
+        setPurSumLoading(false)
+      }
     }, [token, summaryDataFilters])
 
     // const populateSummaryData = async () => {
@@ -222,6 +247,18 @@ const Dashboard = ({orgId}) => {
       populateInvData()
       handlePurchaseSearch()
     },[fnsCategory, dispatch, orgId, populateTxnData, getOhqDtls, populateInvData, handlePurchaseSearch])
+
+
+    if(itemSlabLoading ||
+      txnSlabLoading ||
+      invValLoading ||
+      purSumLoading ||
+      ohqLoading){
+        return (
+          <Loader />
+        )
+      }
+
   return (
     <div style={{display: "flex", flexDirection: "column", gap: "4rem"}}>
       <div className="dashboard-tabs">
