@@ -5,8 +5,9 @@ import TransactionSummary from '../transactionSummary/TransactionSummary'
 import FormInputItem from '../../components/FormInputItem'
 import FormDatePickerItem from '../../components/FormDatePickerItem'
 import { Button, Input, Space, Table } from 'antd'
-import {SearchOutlined} from '@ant-design/icons'
+import {SearchOutlined, RightOutlined} from '@ant-design/icons'
 import Highlighter from 'react-highlight-words';
+import _ from 'lodash'
 
 
 
@@ -39,6 +40,48 @@ const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData,
         }
       })
     }
+
+    const [filteredInfo, setFilteredInfo] = useState({})
+  // Calculate number of rows matching filters
+  const modData = allData?.filter(record => {
+    return Object.keys(filteredInfo).every(key => {
+      const filterValues = filteredInfo[key];
+      if (filterValues && filterValues.length > 0) {
+        return filterValues.includes(_.trim(record[key]));
+      }
+      return true; // If no filter applied for this column, return true
+    });
+  });
+
+  const renderAppliedFilters = () => {
+    return (
+      <div>
+        {/* <p>Applied filters:</p> */}
+        <ul>
+          {Object.keys(filteredInfo).map(key => {
+            const filterValues = filteredInfo[key];
+            if (filterValues && filterValues.length > 0) {
+              const column = columns.find(col => col.dataIndex === key);
+              return (
+                // <li key={key}>
+                <div>
+                  <RightOutlined />
+                  {column.title}:  <span style={{fontWeight: "normal"}}> {filterValues.join(', ')} </span>
+                </div>
+                // </li>
+              );
+            }
+            return null;
+          })}
+        </ul>
+      </div>
+    );
+  };
+
+  const handleTableChange = (pagination, filters) => {
+    console.log('Filters changed:', filters);
+    setFilteredInfo(filters); // Update filteredInfo state with applied filters
+  };
 
     const handleReset1 = () =>{
     }
@@ -183,7 +226,16 @@ const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData,
           <Button primary style={{fontWeight: "bold"}} onClick={handleReset}> Reset </Button>
         </div>
 
+        {Object.keys(filteredInfo).length > 0 && (
+         <div className="sec-slab" style={{color: "white", backgroundColor: "#9B59B6"}}>
+         <div>No. of items for : </div>
+         <div>{renderAppliedFilters()}</div>
+         <div style={{fontSize: "2rem", fontWeight: "bold", textAlign: "center"}}>{modData.length}</div>
+       </div>
+      )}
+
         <Table
+        onChange={handleTableChange}
         dataSource={allData}
         columns={columns}
         pagination={{ pageSize: 10 }}

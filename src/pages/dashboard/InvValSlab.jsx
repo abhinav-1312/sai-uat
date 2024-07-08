@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { Table, Input, message } from "antd";
 import { apiCall, convertToCurrency, handleSearch } from "../../utils/Functions";
+import {SearchOutlined, RightOutlined} from '@ant-design/icons'
 import { useSelector } from 'react-redux';
+import _ from 'lodash'
 
 const { Search } = Input;
 
@@ -38,6 +40,9 @@ const sampleData = [
 
 
 
+
+
+
 const InvValSlab = ({data, filteredData, setFilteredData, itemDescDropdown, subcatDropdown}) => {
     const [searchText, setSearchText] = useState("");
     // const [data, setData] = useState(null)
@@ -53,14 +58,14 @@ const InvValSlab = ({data, filteredData, setFilteredData, itemDescDropdown, subc
         title: "Item Description",
         dataIndex: "itemName",
         key: 'itemName',
-      filters: [...itemDescDropdown],
+      filters: [...itemDescDropdown || []],
       onFilter: (value, record) => record?.itemName?.indexOf(value) === 0,
     },
     {
         title: "Subcategory",
         dataIndex: "subcategory",
         key: "subcategory",
-        filters: [...subcatDropdown],
+        filters: [...subcatDropdown || []],
         onFilter: (value, record) => record?.subcategory?.indexOf(value) === 0,
     },
     {
@@ -72,6 +77,53 @@ const InvValSlab = ({data, filteredData, setFilteredData, itemDescDropdown, subc
         dataIndex: "value"
     },
 ]
+
+const [filteredInfo, setFilteredInfo] = useState({})
+// Calculate number of rows matching filters
+const modData = filteredData?.filter(record => {
+  return Object.keys(filteredInfo).every(key => {
+    const filterValues = filteredInfo[key];
+    if (filterValues && filterValues.length > 0) {
+      return filterValues.includes(_.trim(record[key]));
+    }
+    return true; // If no filter applied for this column, return true
+  });
+});
+
+let filteredVal = 0;
+modData?.forEach((item,index)=>{
+    filteredVal = filteredVal + item.value
+})
+
+const renderAppliedFilters = () => {
+  return (
+    <div>
+      {/* <p>Applied filters:</p> */}
+      <ul>
+        {Object.keys(filteredInfo).map(key => {
+          const filterValues = filteredInfo[key];
+          if (filterValues && filterValues.length > 0) {
+            const column = columns.find(col => col.dataIndex === key);
+            return (
+              // <li key={key}>
+              <div>
+                <RightOutlined />
+                {column.title}:  <span style={{fontWeight: "normal"}}> {filterValues.join(', ')} </span>
+              </div>
+              // </li>
+            );
+          }
+          return null;
+        })}
+      </ul>
+    </div>
+  );
+};
+
+const handleTableChange = (pagination, filters) => {
+  console.log('Filters changed:', filters);
+  setFilteredInfo(filters); // Update filteredInfo state with applied filters
+};
 
   // const populateData = async () => {
   //   try{
@@ -123,9 +175,21 @@ const InvValSlab = ({data, filteredData, setFilteredData, itemDescDropdown, subc
         style={{ width: 200 }}
       />
     </div>
+
+    {Object.keys(filteredInfo).length > 0 && (
+        <div className="sec-slab" style={{backgroundColor: "#3498DB", color: "white"}}>
+        <div>Total value of items for: </div>
+        <div>{renderAppliedFilters()}</div>
+        <div style={{fontSize: "2rem", fontWeight: "bold", textAlign: "center"}}>{filteredVal}</div>
+      </div>
+
+      )}
+
+
     <Table
       dataSource={filteredData}
       columns={columns}
+      onChange={handleTableChange}
       pagination={{ pageSize: 10 }}
     />
   </div>

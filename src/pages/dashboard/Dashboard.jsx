@@ -8,6 +8,7 @@ import { apiCall, convertToCurrency, sortAlphabetically } from "../../utils/Func
 import { useDispatch, useSelector } from "react-redux";
 import { fetchOhq } from "../../redux/slice/ohqSlice";
 import axios from "axios";
+import _ from "lodash"
 
 const currentDate = new Date(); 
 const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
@@ -59,28 +60,32 @@ const Dashboard = ({orgId}) => {
             allData: [...itemData],
           }
         })
-        const filterDropdownArr = []
-        const subcatDropdownArr = []
+        const filterDropdownArr = new Set()
+        const subcatDropdownArr = new Set()
         itemData.forEach(item=> {
-          filterDropdownArr.push(
-            {
+          const trimmedObj1 = 
+          {
 
-              text: item.itemDescription,
-              value: item.itemDescription+"-"+item.itemCode
-            }
-          )
-          subcatDropdownArr.push(
-            {
-              text: item.subCategoryDesc,
-              value: item.subCategoryDesc
-            }
-          )
+            text: _.trim(item.itemDescription),
+            value: _.trim(item.itemDescription)
+          }
+          const trimmedString1 = JSON.stringify(trimmedObj1);
+          filterDropdownArr.add(trimmedString1)
 
+          const trimmedObj2 = 
+          {
+            text: _.trim(item.subCategoryDesc),
+            value: _.trim(item.subCategoryDesc)
+          }
+          const trimmedString2 = JSON.stringify(trimmedObj2);
+          subcatDropdownArr.add(trimmedString2)
+
+          console.log("Filter dropdown: ", filterDropdownArr)
           
         })
 
-        setItemSlabDescDropdown([...sortAlphabetically(filterDropdownArr)])
-        setItemSlabSubcatDropdown([...subcatDropdownArr])
+        setItemSlabDescDropdown([...sortAlphabetically(Array.from(filterDropdownArr).map(str => JSON.parse(str)))])
+        setItemSlabSubcatDropdown([...Array.from(subcatDropdownArr).map(str=> JSON.parse(str))])
         setItemSlabFilteredData([...itemData])
       }
       catch(error){
@@ -89,9 +94,11 @@ const Dashboard = ({orgId}) => {
     }, [orgId, token])
 
     const populateTxnData = useCallback( async () => {
+      console.log("txn data called")
       try {
         const { responseData } = await apiCall("POST", "/txns/getTxnSummary", token, { startDate: null, endDate: null, itemCode: null, txnType: null, orgId: orgId ? orgId : null }) 
         setTxnSlabData({count: responseData.length, allData: [...responseData].reverse()})
+        console.log("response txn : ", responseData)
       } catch (error) {
         message.error("Error occured while fetching data. Please try again.");
         console.log("Populate data error.", error);
@@ -121,23 +128,26 @@ const Dashboard = ({orgId}) => {
           }
         })
 
-        const itemDescDrop = []
-        const subcatDescDrop = []
+        const itemDescDrop = new Set()
+        const subcatDescDrop = new Set()
         modData.forEach(data=> {
-          itemDescDrop.push(
-            {
-              text: data.itemName,
-              value: data.itemName
-            }
-          )
-          subcatDescDrop.push(
-            {
-              text: data.subcategory,
-              value: data.subcategory
-            }
-          )
-          setInvItemDescDropdown([...sortAlphabetically(itemDescDrop)])
-          setInvItemSubcatDropdown([...subcatDescDrop])
+          const trimmedObj1 = {
+            text: _.trim(data.itemName),
+            value: _.trim(data.itemName)
+          }
+
+          const trimmedString1 = JSON.stringify(trimmedObj1);
+
+          itemDescDrop.add(trimmedString1)
+
+          const trimmedObj2 = {
+            text: _.trim(data.subcategory),
+            value: _.trim(data.subcategory)
+          }
+          const trimmedString2 = JSON.stringify(trimmedObj2);
+          subcatDescDrop.add(trimmedString2)
+          setInvItemDescDropdown([...sortAlphabetically(Array.from(itemDescDrop).map(str => JSON.parse(str)))])
+          setInvItemSubcatDropdown([...Array.from(subcatDescDrop).map(str => JSON.parse(str))])
         })
         setInvFilteredData([...modData])
         setInvSlabData({count: convertToCurrency(allVal), allData: [...modData]})
