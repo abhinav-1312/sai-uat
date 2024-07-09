@@ -1,4 +1,4 @@
-import {Table, Button} from "antd"
+import {Table, Button, message} from "antd"
 import html2pdf from 'html2pdf.js';
 import axios from 'axios'
 import { useSelector } from "react-redux";
@@ -45,7 +45,7 @@ export const apiCall = async (method, url, token, payload=null) => {
     }
     catch(error){
       console.log("Error occured.", error)
-      alert("Some error occured.")
+      message.error("Some error occured.")
     }
   }
   else if(method === "POST"){
@@ -54,7 +54,7 @@ export const apiCall = async (method, url, token, payload=null) => {
       return data
     }catch(error){
       console.log("Error occured.", error)
-      alert("Some error occured.")
+      message.error("Some error occured.")
     }
   }
 }

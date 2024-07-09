@@ -1,6 +1,7 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 import { BASE_URL } from '../../utils/BaseUrl';
 import { apiCall, convertArrayToObject } from '../../utils/Functions';
+import { message } from 'antd';
 
 const vendorSlice = createSlice({
     name: "vendors",
@@ -43,7 +44,7 @@ export const fetchVendors = createAsyncThunk(
         }
         catch(error){
             console.log("Error occured while fetching vendor details.", error)
-            alert("Error occured while fetching vendor details.")
+            message.error("Error occured while fetching vendor details.")
         }
     }
 )
@@ -58,7 +59,7 @@ export const updateVendor = createAsyncThunk(
         }
         catch(error){
             console.log("Error occured while updating vendor.", error)
-            alert("Error occured while updating vendor.")
+            message.error("Error occured while updating vendor.")
         }
     }
 )
@@ -72,7 +73,7 @@ export const saveVendor = createAsyncThunk(
         }
         catch(error){
             console.log("Error occured while adding vendor.", error)
-            alert("Error occured while adding vendor.")
+            message.error("Error occured while adding vendor.")
         }
     }
 )
@@ -86,7 +87,7 @@ export const deleteVendor = createAsyncThunk(
         }
         catch(error){
             console.log("Error occured while deleting UOM.", error)
-            alert("Error occured while deleting UOM.")
+            message.error("Error occured while deleting UOM.")
         }
     }
 )

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Modal, Input } from "antd";
+import { Button, Modal, Input, message } from "antd";
 import { connect, useDispatch, useSelector } from "react-redux";
 import {
   // fetchEmployees,
@@ -58,7 +58,7 @@ const EmployeePage = ({
       setEditingEmployee(null);
     } catch (error) {
       console.error("Error while editing or saving employee", error);
-      alert("Error while editing or saving employee.")
+      message.error("Error while editing or saving employee.")
     }
   };
 

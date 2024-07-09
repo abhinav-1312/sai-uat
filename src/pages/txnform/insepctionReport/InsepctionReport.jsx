@@ -122,9 +122,9 @@ const InsepctionReport = () => {
         items: updatedItems,
       };
     });
-  };
+  }; 
 
-  const { organizationDetails, locationDetails, userDetails, token, userCd } = useSelector(state => state.auth)
+  const { organizationDetails, locationDetails, userDetails, token } = useSelector(state => state.auth)
 
   useEffect(() => {
     fetchItemData();
@@ -143,20 +143,6 @@ const InsepctionReport = () => {
     }
   };
   const fetchUserDetails = async () => {
-    // try {
-    //   const userCd = localStorage.getItem("userCd")
-    //   const password = localStorage.getItem("password")
-    //   const apiUrl =
-    //     "/login/authenticate";
-    //   const response = await axios.post(apiUrl, {
-    //     userCd,
-    //     password,
-    //   });
-
-      // const { responseData } = response.data;
-      // const { organizationDetails } = responseData;
-      // const { userDetails } = responseData;
-      // const {locationDetails} = responseData
       const currentDate = dayjs();
       // Update form data with fetched values
       setFormData({
@@ -186,7 +172,7 @@ const InsepctionReport = () => {
         processId: value,
         processStage: "IGP",
       }, apiHeader("POST", token));
-      const responseData = response.data.responseData;
+      const responseData = response?.data?.responseData || []; 
       const { processData, itemList } = responseData;
       console.log("API Response:", response.data);
       setFormData((prevFormData) => ({

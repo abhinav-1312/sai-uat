@@ -1,6 +1,6 @@
 // DepartmentPage.js
 import React, { useState, useEffect } from "react";
-import { Button, Modal, Input } from "antd";
+import { Button, Modal, Input, message } from "antd";
 import { connect, useDispatch, useSelector } from "react-redux";
 import DepartmentTable from "./DepartmentTable";
 import DepartmentForm from "./DepartmentForm";
@@ -58,7 +58,7 @@ const DepartmentPage = ({
       setEditingDepartment(null); // Reset the editing department
     } catch (error) {
       console.error("Error:", error);
-      alert("Error while saving or updating department.")
+      message.error("Error while saving or updating department.")
     }
   };
 

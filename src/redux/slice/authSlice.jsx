@@ -1,4 +1,5 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
+import { message } from 'antd'
 import axios from 'axios'
 
 const userRoleMap = {
@@ -71,7 +72,7 @@ export const login = createAsyncThunk(
             return {userCd, userRole, token, organizationDetails, locationDetails, userDetails}
         }catch(error){
             console.log("Error while loggin in.", error)
-            alert("Some error occured while logging in. Please try again.")
+            message.error("Some error occured while logging in. Please try again.")
         }
     }
 )

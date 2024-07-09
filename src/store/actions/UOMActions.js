@@ -1,3 +1,4 @@
+import { message } from "antd";
 import { BASE_URL } from "../../utils/BaseUrl";
 import { apiHeader } from "../../utils/Functions";
 
@@ -34,10 +35,10 @@ export const updateUOM = (uomId, values) => async (dispatch) => {
     });
 
     if (updateResponse.ok) {
-      alert("UOM updated successfully");
+      message.error("UOM updated successfully");
       dispatch(fetchUOM());
     } else {
-      alert("Update Failed");
+      message.error("Update Failed");
       console.error("Update failed:", updateResponse.statusText);
     }
   } catch (error) {
@@ -57,10 +58,10 @@ export const saveUOM = (values) => async (dispatch) => {
     });
 
     if (createResponse.ok) {
-      alert("UOM Added Successfully");
+      message.error("UOM Added Successfully");
       dispatch(fetchUOM());
     } else {
-      alert("UOM Added Failed");
+      message.error("UOM Added Failed");
       console.error("Create failed:", createResponse.statusText);
     }
   } catch (error) {
@@ -83,10 +84,10 @@ export const deleteUOM = (uomId) => async (dispatch) => {
     });
 
     if (deleteResponse.ok) {
-      alert("UOM deleted successfully");
+      message.error("UOM deleted successfully");
       dispatch(fetchUOM());
     } else {
-      alert("failed to delete UOM");
+      message.error("failed to delete UOM");
       console.error("Delete failed:", deleteResponse.statusText);
     }
   } catch (error) {

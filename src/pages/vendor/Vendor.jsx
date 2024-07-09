@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Modal, Input } from "antd";
+import { Button, Modal, Input, message } from "antd";
 import { connect, useDispatch, useSelector } from "react-redux";
 import {
   // fetchVendors,
@@ -50,7 +50,7 @@ const VendorPage = ({
       setEditingVendor(null);
     } catch (error) {
       console.error("Error:", error);
-      alert("Error occured while saving or updating vendor.")
+      message.error("Error occured while saving or updating vendor.")
     }
   };
 

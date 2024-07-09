@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Modal, Input } from "antd";
+import { Button, Modal, Input, message } from "antd";
 import { connect, useDispatch, useSelector } from "react-redux";
 import {
   // fetchLocators,
@@ -51,7 +51,7 @@ const LocatorPage = ({
       setEditingLocator(null);
     } catch (error) {
       console.error("Error:", error);
-      alert("Error occured while saving or updating locator.")
+      message.error("Error occured while saving or updating locator.")
     }
   };
 

@@ -107,7 +107,7 @@ const TransactionSummary = ({orgId}) => {
         apiHeader("POST", token)
       );
       const { responseData } = data;
-      setFilteredData([...responseData].reverse());
+      setFilteredData([...responseData || []].reverse());
     } catch (error) {
       message.error("Error occured while fetching data. Please try again.");
       console.log("Populate data error.", error);
@@ -122,7 +122,7 @@ const TransactionSummary = ({orgId}) => {
         apiHeader("POST", token)
       );
       const { responseData } = data;
-      setFilteredData([...responseData].reverse());
+      setFilteredData([...responseData || []].reverse());
     } catch (error) {
       message.error("Error occured while fetching data. Please try again.");
       console.log("Populate data error.", error);
@@ -155,7 +155,7 @@ const TransactionSummary = ({orgId}) => {
           apiHeader("POST", token)
         );
         const { responseData } = data;
-        setFilteredData([...responseData].reverse());
+        setFilteredData([...responseData || []].reverse());
       }
       else{
         const { data } = await axios.post(
@@ -164,7 +164,7 @@ const TransactionSummary = ({orgId}) => {
           apiHeader("POST", token)
         );
         const { responseData } = data;
-        setFilteredData([...responseData].reverse());
+        setFilteredData([...responseData || []].reverse());
       }
     } catch (error) {
       message.error("Some error occured. Please try again.");

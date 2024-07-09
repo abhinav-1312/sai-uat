@@ -1,4 +1,5 @@
 // LocationActions.js
+import { message } from "antd";
 import { BASE_URL } from "../../utils/BaseUrl";
 import { apiHeader } from "../../utils/Functions";
 
@@ -35,10 +36,10 @@ export const updateLocation = (locationId, values) => async (dispatch) => {
     });
 
     if (updateResponse.ok) {
-      alert('Location updated successfully')
+      message.success('Location updated successfully')
       dispatch(fetchLocations()); 
     } else {
-      alert('Update Failed')
+      message.error('Update Failed')
       console.error('Update failed:', updateResponse.statusText);
     }
   } catch (error) {
@@ -58,10 +59,10 @@ export const saveLocation = (values) => async (dispatch) => {
     });
 
     if (createResponse.ok) {
-      alert('Location Added Successfully')
+      message.success('Location Added Successfully')
       dispatch(fetchLocations()); 
     } else {
-      alert('Location Added Failed')
+      message.error('Location Added Failed')
       console.error('Create failed:', createResponse.statusText);
     }
   } catch (error) {
@@ -84,10 +85,10 @@ export const deleteLocation = (locationId) => async (dispatch) => {
     });
 
     if (deleteResponse.ok) {
-      alert('Location deleted successfully')
+      message.success('Location deleted successfully')
       dispatch(fetchLocations());
     } else {
-      alert('failed to delete Location')
+      message.error('failed to delete Location')
       console.error('Delete failed:', deleteResponse.statusText);
     }
   } catch (error) {

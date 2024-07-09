@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import SAI_Logo from "./../assets/images/SAI_logo.svg";
@@ -33,11 +33,11 @@ const ChangePasswordForm = () => {
 
           try{
             await axios.post(url, {userCd, oldPassword, newPassword})
-            alert("Password changed successfully.")
+            message.error("Password changed successfully.")
             navigate("/login")
           }catch(error){
             console.log("Error occured while changing password.", error)
-            alert("Error occured while changing password.")
+            message.error("Error occured while changing password.")
           }
         }
       };

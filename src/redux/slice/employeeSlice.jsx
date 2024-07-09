@@ -1,6 +1,7 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 import { BASE_URL } from '../../utils/BaseUrl';
 import { apiCall } from '../../utils/Functions';
+import { message } from 'antd';
 
 const employeeSlice = createSlice({
     name: "employees",
@@ -41,7 +42,7 @@ export const fetchEmployees = createAsyncThunk(
         }
         catch(error){
             console.log("Error occured while fetching employees data.", error)
-            alert("Error occured while fetching employees data.")
+            message.error("Error occured while fetching employees data.")
         }
     }
 )
@@ -56,7 +57,7 @@ export const updateEmployee = createAsyncThunk(
         }
         catch(error){
             console.log("Error occured while updating employee.", error)
-            alert("Error occured while updating employee.")
+            message.error("Error occured while updating employee.")
         }
     }
 )
@@ -70,7 +71,7 @@ export const saveEmployee = createAsyncThunk(
         }
         catch(error){
             console.log("Error occured while adding employee.", error)
-            alert("Error occured while adding employee.")
+            message.error("Error occured while adding employee.")
         }
     }
 )
@@ -84,7 +85,7 @@ export const deleteEmployee = createAsyncThunk(
         }
         catch(error){
             console.log("Error occured while deleting organization.", error)
-            alert("Error occured while deleting organization.")
+            message.error("Error occured while deleting organization.")
         }
     }
 )

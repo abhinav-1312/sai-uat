@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Modal, Input } from "antd";
+import { Button, Modal, Input, message } from "antd";
 import { connect, useDispatch, useSelector } from "react-redux";
 import {
   // updateOrganization,
@@ -52,7 +52,7 @@ const OrganizationPage = ({
       setEditingOrganization(null);
     } catch (error) {
       console.error("Error:", error);
-      alert("Error occured while editing organization.")
+      message.error("Error occured while editing organization.")
     }
   };
 

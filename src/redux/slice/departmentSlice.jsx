@@ -1,6 +1,7 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 import { BASE_URL } from '../../utils/BaseUrl';
 import { apiCall } from '../../utils/Functions';
+import { message } from 'antd';
 
 const departmentSlice = createSlice({
     name: "departments",
@@ -42,7 +43,7 @@ export const fetchDepartments = createAsyncThunk(
         }
         catch(error){
             console.log("Error occured while fetching departments.", error)
-            alert("Error occured while fetching departments.")
+            message.error("Error occured while fetching departments.")
         }
     }
 )
@@ -57,7 +58,7 @@ export const updateDepartment = createAsyncThunk(
         }
         catch(error){
             console.log("Error occured while updating department.", error)
-            alert("Error occured while updating department.")
+            message.error("Error occured while updating department.")
         }
     }
 )
@@ -71,7 +72,7 @@ export const saveDepartment = createAsyncThunk(
         }
         catch(error){
             console.log("Error occured while adding department.", error)
-            alert("Error occured while adding department.")
+            message.error("Error occured while adding department.")
         }
     }
 )
@@ -85,7 +86,7 @@ export const deleteDepartment = createAsyncThunk(
         }
         catch(error){
             console.log("Error occured while deleting organization.", error)
-            alert("Error occured while deleting organization.")
+            message.error("Error occured while deleting organization.")
         }
     }
 )

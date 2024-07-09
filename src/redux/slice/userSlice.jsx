@@ -1,6 +1,7 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 import { BASE_URL } from '../../utils/BaseUrl';
 import { apiCall } from '../../utils/Functions';
+import { message } from 'antd';
 
 const userSlice = createSlice({
     name: "users",
@@ -41,7 +42,7 @@ export const fetchUsers = createAsyncThunk(
         }
         catch(error){
             console.log("Error occured while fetching user details.", error)
-            alert("Error occured while fetching user details.")
+            message.error("Error occured while fetching user details.")
         }
     }
 )
@@ -56,7 +57,7 @@ export const updateUser = createAsyncThunk(
         }
         catch(error){
             console.log("Error occured while updating user.", error)
-            alert("Error occured while updating user.")
+            message.error("Error occured while updating user.")
         }
     }
 )
@@ -70,7 +71,7 @@ export const saveUser = createAsyncThunk(
         }
         catch(error){
             console.log("Error occured while adding user.", error)
-            alert("Error occured while adding user.")
+            message.error("Error occured while adding user.")
         }
     }
 )
@@ -84,7 +85,7 @@ export const deleteUser = createAsyncThunk(
         }
         catch(error){
             console.log("Error occured while deleting user.", error)
-            alert("Error occured while deleting user.")
+            message.error("Error occured while deleting user.")
         }
     }
 )

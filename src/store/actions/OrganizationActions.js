@@ -1,3 +1,4 @@
+import { message } from "antd";
 import { BASE_URL } from "../../utils/BaseUrl";
 import { apiHeader } from "../../utils/Functions";
 
@@ -33,10 +34,10 @@ export const updateOrganization = (organizationId, values) => async (dispatch) =
     });
 
     if (updateResponse.ok) {
-      alert('Organizations updated successfully')
+      message.success('Organizations updated successfully')
       dispatch(fetchOrganizations()); 
     } else {
-      alert('Update Failed')
+      message.error('Update Failed')
       console.error('Update failed:', updateResponse.statusText);
     }
   } catch (error) {
@@ -56,10 +57,10 @@ export const saveOrganization = (values) => async (dispatch) => {
     });
 
     if (createResponse.ok) {
-      alert('Organizations Added Successfully')
+      message.success('Organizations Added Successfully')
       dispatch(fetchOrganizations()); 
     } else {
-      alert('Organizations Added Failed')
+      message.error('Organizations Added Failed')
       console.error('Create failed:', createResponse.statusText);
     }
   } catch (error) {
@@ -82,10 +83,10 @@ export const deleteOrganization = (organizationId) => async (dispatch) => {
     });
 
     if (deleteResponse.ok) {
-      alert('Organizations deleted successfully')
+      message.success('Organizations deleted successfully')
       dispatch(fetchOrganizations()); // Refresh the organization list after deletion
     } else {
-      alert('failed to delete Organizations')
+      message.error('failed to delete Organizations')
       console.error('Delete failed:', deleteResponse.statusText);
     }
   } catch (error) {

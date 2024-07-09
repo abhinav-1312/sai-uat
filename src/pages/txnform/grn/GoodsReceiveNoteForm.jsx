@@ -433,8 +433,6 @@ const GoodsReceiveNoteForm = () => {
       const apiUrl =
         "/saveGRN";
       const {responseStatus, responseData} = await apiCall("POST", apiUrl, token, formDataCopy)
-      console.log("STATSU: ", responseStatus)
-      console.log("DATAA: ", responseData)
       if (
         responseStatus.statusCode === 200 &&
         responseStatus.message === "Success"

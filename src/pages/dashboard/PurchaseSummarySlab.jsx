@@ -8,10 +8,11 @@ import { Button, Input, Space, Table } from 'antd'
 import {SearchOutlined, RightOutlined} from '@ant-design/icons'
 import Highlighter from 'react-highlight-words';
 import _ from 'lodash'
+import { useNavigate } from 'react-router-dom'
 
 
 
-const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData, handleSumSearch}) => {
+const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData, handleSumSearch, orgId}) => {
     const {token} = useSelector(state => state.auth)
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
@@ -52,6 +53,18 @@ const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData,
       return true; // If no filter applied for this column, return true
     });
   });
+
+  const navigate = useNavigate()
+
+  const handleViewClick = (id) => {
+    if(orgId){
+      
+      navigate(`/hqTxnSummary/${id}_GRN`);
+    }
+    else{
+      navigate(`/trnsummary/${id}_GRN`);
+    }
+  }
 
   const renderAppliedFilters = () => {
     return (
@@ -207,6 +220,12 @@ const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData,
         dataIndex: "totalValue",
         render: (val) => convertToCurrency(val)
       },
+      {
+        title: "View",
+        id: "view",
+        fixed: "right",
+        render: (_, record) => <Button type={"primary"} onClick={()=>handleViewClick(record.id)}> View </Button>,
+    },
     ]
 
     // return(

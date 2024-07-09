@@ -1,3 +1,4 @@
+import { message } from "antd";
 import { BASE_URL } from "../../utils/BaseUrl";
 import { apiHeader } from "../../utils/Functions";
 
@@ -34,10 +35,10 @@ export const updateVendor = (vendorId, values) => async (dispatch) => {
     });
 
     if (updateResponse.ok) {
-      alert('Vendors updated successfully')
+      message.error('Vendors updated successfully')
       dispatch(fetchVendors()); 
     } else {
-      alert('Update Failed')
+      message.error('Update Failed')
       console.error('Update failed:', updateResponse.statusText);
     }
   } catch (error) {
@@ -57,10 +58,10 @@ export const saveVendor = (values) => async (dispatch) => {
     });
 
     if (createResponse.ok) {
-      alert('Vendors Added Successfully')
+      message.error('Vendors Added Successfully')
       dispatch(fetchVendors());
     } else {
-      alert('Vendors Added Failed')
+      message.error('Vendors Added Failed')
       console.error('Create failed:', createResponse.statusText);
     }
   } catch (error) {
@@ -83,10 +84,10 @@ export const deleteVendor = (vendorId) => async (dispatch) => {
     });
 
     if (deleteResponse.ok) {
-      alert('Vendors deleted successfully')
+      message.error('Vendors deleted successfully')
       dispatch(fetchVendors()); 
     } else {
-      alert('failed to delete Vendors')
+      message.error('failed to delete Vendors')
       console.error('Delete failed:', deleteResponse.statusText);
     }
   } catch (error) {

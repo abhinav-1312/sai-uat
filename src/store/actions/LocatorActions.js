@@ -1,4 +1,5 @@
 // LocatorActions.js
+import { message } from "antd";
 import { BASE_URL } from "../../utils/BaseUrl";
 import { apiHeader } from "../../utils/Functions";
 const token = localStorage.getItem("token");
@@ -15,7 +16,7 @@ export const fetchLocators = () => async (dispatch) => {
 
     dispatch(setLocators(data.responseData));
   } catch (error) {
-    console.error('Error fetching locator data:', error);
+    message.error('Error fetching locator data:', error);
   }
 };
 
@@ -34,10 +35,10 @@ export const updateLocator = (locatorId, values) => async (dispatch) => {
     });
 
     if (updateResponse.ok) {
-      alert('Locator updated successfully')
+      message.success('Locator updated successfully')
       dispatch(fetchLocators());
     } else {
-      alert('Update Failed')
+      message.error('Update Failed')
       console.error('Update failed:', updateResponse.statusText);
     }
   } catch (error) {
@@ -57,10 +58,10 @@ export const saveLocator = (values) => async (dispatch) => {
     });
 
     if (createResponse.ok) {
-      alert('Locator Added Successfully')
+      message.success('Locator Added Successfully')
       dispatch(fetchLocators()); 
     } else {
-      alert('Locator Added Failed')
+      message.error('Locator Added Failed')
       console.error('Create failed:', createResponse.statusText);
     }
   } catch (error) {
@@ -83,10 +84,10 @@ export const deleteLocator = (locatorId) => async (dispatch) => {
     });
 
     if (deleteResponse.ok) {
-      alert('Locator deleted successfully')
+      message.success('Locator deleted successfully')
       dispatch(fetchLocators()); 
     } else {
-      alert('failed to delete Locator')
+      message.error('failed to delete Locator')
       console.error('Delete failed:', deleteResponse.statusText);
     }
   } catch (error) {

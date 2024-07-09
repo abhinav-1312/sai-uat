@@ -1,4 +1,5 @@
 // DepartmentActions.js
+import { message } from "antd";
 import { BASE_URL } from "../../utils/BaseUrl";
 import { apiHeader } from "../../utils/Functions";
 
@@ -38,10 +39,10 @@ export const updateDepartment = (departmentId, values) => async (dispatch) => {
     });
 
     if (updateResponse.ok) {
-      alert('Department updated successfully')
+      message.error('Department updated successfully')
       dispatch(fetchDepartments()); 
     } else {
-      alert('Update Failed')
+      message.error('Update Failed')
       console.error('Update failed:', updateResponse.statusText);
     }
   } catch (error) {
@@ -61,10 +62,10 @@ export const saveDepartment = (values) => async (dispatch) => {
     });
 
     if (createResponse.ok) {
-      alert('Department Added Successfully')
+      message.error('Department Added Successfully')
       dispatch(fetchDepartments());
     } else {
-      alert('Department Added Failed')
+      message.error('Department Added Failed')
       console.error('Create failed:', createResponse.statusText);
     }
   } catch (error) {
@@ -87,10 +88,10 @@ export const deleteDepartment = (departmentId) => async (dispatch) => {
     });
 
     if (deleteResponse.ok) {
-      alert('Department deleted successfully')
+      message.error('Department deleted successfully')
       dispatch(fetchDepartments()); 
     } else {
-      alert('failed to delete department')
+      message.error('failed to delete department')
       console.error('Delete failed:', deleteResponse.statusText);
     }
   } catch (error) {

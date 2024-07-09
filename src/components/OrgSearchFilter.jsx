@@ -1,4 +1,4 @@
-import { Form, Select, Input } from "antd";
+import { Form, Select, Input, message } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { apiHeader } from "../utils/Functions";
@@ -14,14 +14,14 @@ const OrgSearchFilter = ({handleChange}) => {
         try{
             const {data} = await axios.get(orgIdUrl, apiHeader("GET", token))
             const {responseData} = data
-            const modRes = responseData.map(item=>{
+            const modRes = responseData?.map(item=>{
                 return {id: item.id, name: item.organizationName}
             })
 
             setOrgData([...modRes])
         }catch(error){
             console.log("Error", error)
-            alert("Error occured while fetching organization details. Please try again.")
+            message.error("Error occured while fetching organization details. Please try again.")
         }
 
     }

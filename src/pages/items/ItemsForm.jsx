@@ -85,7 +85,7 @@ const ItemsForm = ({
             },
             apiHeader("POST", token)
           );
-          const data = response.data.responseData;
+          const data = response?.data?.responseData || [];
           // Assuming the response contains an array of subcategory options
           const subcategoryOptions = data.map((subcategory) => ({
             key: subcategory.subCategoryCode,
@@ -113,7 +113,7 @@ const ItemsForm = ({
             },
             apiHeader("POST", token)
           );
-          const data = response.data.responseData;
+          const data = response?.data?.responseData || [];
           const typeOptions = data.map((type) => ({
             key: type.typeCode,
             value: type.typeDesc,
@@ -141,7 +141,7 @@ const ItemsForm = ({
             },
             apiHeader("POST", token)
           );
-          const data = response.data.responseData;
+          const data = response?.data?.responseData || [];
           const disciplineOptions = data.map((discipline) => ({
             key: discipline.disciplineCode,
             value: discipline.disciplineName,
@@ -170,7 +170,7 @@ const ItemsForm = ({
             },
             apiHeader("POST", token)
           );
-          const data = response.data.responseData;
+          const data = response?.data?.responseData || [];
           const itemDescriptionOptions = data.map((itemDescription) => ({
             value: itemDescription.itemName,
             key: itemDescription.itemNameCode,

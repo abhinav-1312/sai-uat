@@ -1,3 +1,4 @@
+import { message } from "antd";
 import { BASE_URL } from "../../utils/BaseUrl";
 import { apiHeader } from "../../utils/Functions";
 
@@ -34,10 +35,10 @@ export const updateEmployee = (employeeId, values) => async (dispatch) => {
     });
 
     if (updateResponse.ok) {
-      alert('Employee updated successfully')
+      message.error('Employee updated successfully')
       dispatch(fetchEmployees()); 
     } else {
-      alert('Update Failed')
+      message.error('Update Failed')
       console.error('Update failed:', updateResponse.statusText);
     }
   } catch (error) {
@@ -58,10 +59,10 @@ export const saveEmployee = (values) => async (dispatch) => {
 
     console.log("Created response: ", createResponse)
     // if (createResponse.ok) {
-    //   alert("Employee Added successfully")
+    //   message.error("Employee Added successfully")
     //   dispatch(fetchEmployees()); 
     // } else {
-    //   alert("something went wrong")
+    //   message.error("something went wrong")
     //   console.error('Create failed:', createResponse.statusText);
     // }
   } catch (error) {
@@ -85,10 +86,10 @@ export const deleteEmployee = (employeeId) => async (dispatch) => {
     });
 
     if (deleteResponse.ok) {
-      alert("Employee deleted successfully")
+      message.error("Employee deleted successfully")
       dispatch(fetchEmployees());
     } else {
-      alert("Failed to delete employee")
+      message.error("Failed to delete employee")
       console.error('Delete failed:', deleteResponse.statusText);
     }
   } catch (error) {

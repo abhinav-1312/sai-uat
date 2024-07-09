@@ -22,8 +22,10 @@ const Dashboard = ({orgId}) => {
     const [txnSlabLoading, setTxnSlabLoading] = useState(false)
     const [invValLoading, setInvValLoading] = useState(false)
     const [purSumLoading, setPurSumLoading] = useState(false)
-    const [ohqLoading, setOhqLoading] = useState(false)
+    // const [ohqLoading, setOhqLoading] = useState(false)
 
+    
+    console.log(itemSlabLoading, txnSlabLoading, invValLoading, purSumLoading)
     const [txnFilters, setTxnFilters] = useState({
       txnType: null,
       startDate: null,
@@ -107,8 +109,7 @@ const Dashboard = ({orgId}) => {
       setTxnSlabLoading(true)
       try {
         const { responseData } = await apiCall("POST", "/txns/getTxnSummary", token, { startDate: null, endDate: null, itemCode: null, txnType: null, orgId: orgId ? orgId : null }) 
-        setTxnSlabData({count: responseData.length, allData: [...responseData].reverse()})
-        console.log("response txn : ", responseData)
+        setTxnSlabData({count: responseData?.length, allData: [...responseData || []].reverse()})
       } catch (error) {
         message.error("Error occured while fetching data. Please try again.");
         console.log("Populate data error.", error);
@@ -122,8 +123,17 @@ const Dashboard = ({orgId}) => {
       setInvValLoading(true)
       try{
         const {responseData} = await apiCall("POST", "/master/getOHQ", token, {itemCode: null, userId: userCd, orgId: orgId ? orgId : null})
+
+        const itemTotalCount = responseData?.length
+        setItemSlabData(prev=> {
+          return {
+            ...prev,
+            count: itemTotalCount
+          }
+        })
+
         let allVal = 0;
-        const modData = responseData.map(obj => {
+        const modData = responseData?.map(obj => {
           let totVal = 0;
           let totQuantity = 0;
           obj.qtyList.forEach(qty => {
@@ -175,25 +185,25 @@ const Dashboard = ({orgId}) => {
       }
     }, [orgId, token, userCd])
 
-    const getOhqDtls = useCallback( async () => {
-      setOhqLoading(true)
-      try{
-        const {responseData} = await apiCall("POST", '/master/getOHQ', token, {orgId: orgId?orgId:null})
-        const itemTotalCount = responseData.length
-        setItemSlabData(prev=> {
-          return {
-            ...prev,
-            count: itemTotalCount
-          }
-        })
-      }catch(error){
-        message.error("Error occured fetching ohq.")
-        console.log("Error on fetching ohq dtls.", error)
-      }
-      finally{
-        setOhqLoading(false)
-      }
-    }, [token, orgId])
+    // const getOhqDtls = useCallback( async () => {
+    //   setOhqLoading(true)
+    //   try{
+    //     const {responseData} = await apiCall("POST", '/master/getOHQ', token, {orgId: orgId?orgId:null})
+    //     const itemTotalCount = responseData?.length
+    //     setItemSlabData(prev=> {
+    //       return {
+    //         ...prev,
+    //         count: itemTotalCount
+    //       }
+    //     })
+    //   }catch(error){
+    //     message.error("Error occured fetching ohq.")
+    //     console.log("Error on fetching ohq dtls.", error)
+    //   }
+    //   finally{
+    //     setOhqLoading(false)
+    //   }
+    // }, [token, orgId])
 
     const [summaryData, setSummaryData] = useState(
       {
@@ -224,7 +234,7 @@ const Dashboard = ({orgId}) => {
           totVal = totVal + data.totalValue
         })
         setSummaryData({
-          allData: [...responseData],
+          allData: [...responseData || []],
           count: convertToCurrency(totVal)
         })
         // console.log("Response data.: ", responseData)
@@ -242,18 +252,18 @@ const Dashboard = ({orgId}) => {
 
     useEffect(()=>{
       fnsCategory()
-      getOhqDtls()
+      // getOhqDtls()
       populateTxnData()
       populateInvData()
       handlePurchaseSearch()
-    },[fnsCategory, dispatch, orgId, populateTxnData, getOhqDtls, populateInvData, handlePurchaseSearch])
+    },[fnsCategory, dispatch, orgId, populateTxnData, populateInvData, handlePurchaseSearch])
 
 
     if(itemSlabLoading ||
       txnSlabLoading ||
       invValLoading ||
-      purSumLoading ||
-      ohqLoading){
+      purSumLoading
+      ){
         return (
           <Loader />
         )

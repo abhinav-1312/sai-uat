@@ -28,7 +28,7 @@ const QuickCodeTable = () => {
         { headers: { Authorization: token } }
       )
       .then((response) => {
-        setData(response.data.responseData);
+        setData(response?.data?.responseData || []);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);

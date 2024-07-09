@@ -69,7 +69,7 @@ const ItemsPage = () => {
       token
     );
 
-    setBrands(brandsResponse.responseData);
+    setBrands(brandsResponse?.responseData || []);
   }, [token]);
 
   const getSizes = useCallback(async () => {
@@ -79,7 +79,7 @@ const ItemsPage = () => {
       token
     );
 
-    setSizes(sizesResponse.responseData);
+    setSizes(sizesResponse?.responseData || []);
   }, [token]);
 
   const getColors = useCallback(async () => {
@@ -89,7 +89,7 @@ const ItemsPage = () => {
       token
     );
 
-    setColors(colorsResponse.responseData);
+    setColors(colorsResponse?.responseData || []);
   }, [token]);
 
 
@@ -100,7 +100,7 @@ const ItemsPage = () => {
       token
     );
 
-    setUsageCategories(usageCategoriesRespone.responseData);
+    setUsageCategories(usageCategoriesRespone?.responseData || []);
   }, [token]);
 
   const getCategories = useCallback(async () => {
@@ -110,7 +110,7 @@ const ItemsPage = () => {
       token
     );
 
-    setCategories(categoriesRespone.responseData);
+    setCategories(categoriesRespone?.responseData || []);
   }, [token]);
 
 

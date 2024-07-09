@@ -1,5 +1,6 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 import { apiCall, convertArrayToObject } from '../../utils/Functions';
+import { message } from 'antd';
 
 const locatorSlice = createSlice({
     name: "locators",
@@ -43,7 +44,7 @@ export const fetchLocators = createAsyncThunk(
         }
         catch(error){
             console.log("Error occured while fetching locator details.", error)
-            alert("Error occured while fetching locator details.")
+            message.error("Error occured while fetching locator details.")
         }
     }
 )
@@ -58,7 +59,7 @@ export const updateLocator = createAsyncThunk(
         }
         catch(error){
             console.log("Error occured while updating locator.", error)
-            alert("Error occured while updating locator.")
+            message.error("Error occured while updating locator.")
         }
     }
 )
@@ -72,7 +73,7 @@ export const saveLocator = createAsyncThunk(
         }
         catch(error){
             console.log("Error occured while adding locator.", error)
-            alert("Error occured while adding locator.")
+            message.error("Error occured while adding locator.")
         }
     }
 )
@@ -86,7 +87,7 @@ export const deleteLocator = createAsyncThunk(
         }
         catch(error){
             console.log("Error occured while deleting locator.", error)
-            alert("Error occured while deleting locator.")
+            message.error("Error occured while deleting locator.")
         }
     }
 )

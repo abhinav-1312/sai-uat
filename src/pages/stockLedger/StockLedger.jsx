@@ -1,4 +1,4 @@
-import { Button, DatePicker, Form, Select, Table } from "antd";
+import { Button, DatePicker, Form, message, Select, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import { apiHeader } from "../../utils/Functions";
 import { ExportOutlined } from "@ant-design/icons";
@@ -36,7 +36,7 @@ const StockLedger = ({orgId}) => {
       );
       const { responseData } = data;
   
-      const modData = responseData.map((item) => {
+      const modData = responseData?.map((item) => {
         return {
           itemMasterCd: item.itemMasterCd,
           itemMasterDesc: item.itemMasterDesc,
@@ -47,7 +47,7 @@ const StockLedger = ({orgId}) => {
     }
     catch(error){
       console.log("error", error)
-      alert("Some error occured. Please try again")
+      message.error("Some error occured. Please try again")
     }
   };
 
@@ -57,7 +57,7 @@ const StockLedger = ({orgId}) => {
     try{
       const { data } = await axios.post(url, {orgId}, apiHeader("POST", token));
       const { responseData } = data;
-      const modData = responseData.map((item) => {
+      const modData = responseData?.map((item) => {
         return {
           itemMasterCd: item.itemMasterCd,
           itemMasterDesc: item.itemMasterDesc,
@@ -68,7 +68,7 @@ const StockLedger = ({orgId}) => {
     }
     catch(error){
       console.log("error", error)
-      alert("Some error occured. Please try again")
+      message.error("Some error occured. Please try again")
     }
   }
 
@@ -83,12 +83,12 @@ const StockLedger = ({orgId}) => {
         axios.post(locationUrl, {orgId}, apiHeader("POST", token)),
       ]);
     
-      const locatorObj = locatorData.data.responseData.reduce((acc, curr) => {
+      const locatorObj = locatorData?.data?.responseData?.reduce((acc, curr) => {
         acc[curr.id] = curr.locatorDesc;
         return acc;
       }, {});
 
-      const locationObj = locationData.data.responseData.reduce((acc, curr) => {
+      const locationObj = locationData?.data?.responseData?.reduce((acc, curr) => {
         acc[curr.id] = curr.locationName;
         return acc;
       }, {});
@@ -99,7 +99,7 @@ const StockLedger = ({orgId}) => {
     }
     catch(error){
       console.log("Error occured: ", error)
-      alert("Error occured. Please try again.")
+      message.error("Error occured. Please try again.")
     }
   }
 
@@ -114,12 +114,12 @@ const StockLedger = ({orgId}) => {
         axios.get(locationUrl, apiHeader("GET", token)),
       ]);
     
-      const locatorObj = locatorData.data.responseData.reduce((acc, curr) => {
+      const locatorObj = locatorData?.data?.responseData?.reduce((acc, curr) => {
         acc[curr.id] = curr.locatorDesc;
         return acc;
       }, {});
 
-      const locationObj = locationData.data.responseData.reduce((acc, curr) => {
+      const locationObj = locationData?.data?.responseData?.reduce((acc, curr) => {
         acc[curr.id] = curr.locationName;
         return acc;
       }, {});
@@ -130,7 +130,7 @@ const StockLedger = ({orgId}) => {
     }
     catch(error){
       console.log("Error occured: ", error)
-      alert("Error occured. Please try again.")
+      message.error("Error occured. Please try again.")
     }
   };
 
@@ -213,7 +213,7 @@ const StockLedger = ({orgId}) => {
 
   const handleSearch = async () => {
     if(filterOption.itemCode === null || filterOption.fromDate === null || filterOption.toDate === null){
-      alert("Please enter all the fields.")
+      message.error("Please enter all the fields.")
       return
     }
     const url =
@@ -226,7 +226,7 @@ const StockLedger = ({orgId}) => {
           apiHeader("POST", token)
         );
         const { responseData } = data;
-        setLedger(responseData);
+        setLedger(responseData || []);
 
       }
       else{
@@ -236,12 +236,12 @@ const StockLedger = ({orgId}) => {
           apiHeader("POST", token)
         );
         const { responseData } = data;
-        setLedger(responseData);
+        setLedger(responseData || []);
 
       }
     }catch(error){
       console.log("Error: ", error)
-      alert("Error occured while fetching stock ledger. Please try again.")
+      message.error("Error occured while fetching stock ledger. Please try again.")
     }
   };
 

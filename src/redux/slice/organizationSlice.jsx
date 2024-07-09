@@ -1,6 +1,7 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 import { BASE_URL } from '../../utils/BaseUrl';
 import { apiCall } from '../../utils/Functions';
+import { message } from 'antd';
 
 const organizationSlice = createSlice({
     name: "organizations",
@@ -41,7 +42,7 @@ export const fetchOrganizations = createAsyncThunk(
         }
         catch(error){
             console.log("Error occured while fetching organizations.", error)
-            alert("Error occured while fetching organizations.")
+            message.error("Error occured while fetching organizations.")
         }
     }
 )
@@ -52,12 +53,12 @@ export const updateOrganization = createAsyncThunk(
         try{
             const {token} = getState().auth
             await apiCall("POST", `/master/updateOrgMaster`, token, {organizationId, ...values})
-            alert("ORganization updated successfully.")
+            message.error("ORganization updated successfully.")
             
         }
         catch(error){
             console.log("Error occured while updating organizations.", error)
-            alert("Error occured while updating organization.")
+            message.error("Error occured while updating organization.")
         }
     }
 )
@@ -67,12 +68,12 @@ export const saveOrganization = createAsyncThunk(
         try{
             const {token} = getState().auth
             await apiCall("POST", `/master/saveOrgMaster`, token, {...values})
-            alert("ORganization saved successfully.")
+            message.error("ORganization saved successfully.")
             
         }
         catch(error){
             console.log("Error occured while adding organization.", error)
-            alert("Error occured while adding organization.")
+            message.error("Error occured while adding organization.")
         }
     }
 )
@@ -82,11 +83,11 @@ export const deleteOrganization = createAsyncThunk(
         try{
             const {token} = getState().auth
             await apiCall("POST", `/master/deleteOrgMaster`, token, {...formData})
-            alert("ORganization deleted successfully.")
+            message.error("ORganization deleted successfully.")
         }
         catch(error){
             console.log("Error occured while deleting organization.", error)
-            alert("Error occured while deleting organization.")
+            message.error("Error occured while deleting organization.")
         }
     }
 )

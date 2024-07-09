@@ -1,4 +1,5 @@
 // import { BASE_URL } from "../../utils/BaseUrl";
+import { message } from "antd";
 import {BASE_URL} from "../../utils/BaseUrl"
 import {apiHeader} from "../../utils/Functions"
 import axios from "axios"
@@ -35,10 +36,10 @@ export const updateUser = (userId, values) => async (dispatch) => {
     });
 
     if (updateResponse.ok) {
-      alert("Users updated successfully");
+      message.error("Users updated successfully");
       dispatch(fetchUsers());
     } else {
-      alert("Update Failed");
+      message.error("Update Failed");
       console.error("Update failed:", updateResponse.statusText);
     }
   } catch (error) {
@@ -58,10 +59,10 @@ export const updateUser = (userId, values) => async (dispatch) => {
 //     });
 
 //     if (createResponse.ok) {
-//       alert("Users Added Successfully");
+//       message.error("Users Added Successfully");
 //       dispatch(fetchUsers());
 //     } else {
-//       alert("User Added Failed");
+//       message.error("User Added Failed");
 //       console.error("Create failed:", createResponse.statusText);
 //     }
 //   } catch (error) {
@@ -83,19 +84,19 @@ export const saveUser = (values) => async (dispatch) => {
     const responseData = await createResponse.json();
 
     if (responseData && responseData.responseStatus && responseData.responseStatus.statusCode === 200) {
-      alert("Users Added Successfully");
+      message.error("Users Added Successfully");
       dispatch(fetchUsers());
     } else {
       // Handle error based on response body
       if (responseData && responseData.responseStatus) {
-        alert(responseData.responseStatus.message);
+        message.error(responseData.responseStatus.message);
       } else {
-        alert("User Added Failed");
+        message.error("User Added Failed");
       }
     }
   } catch (error) {
     console.error("Error:", error);
-    alert("An error occurred while processing your request");
+    message.error("An error occurred while processing your request");
   }
 };
 
@@ -116,10 +117,10 @@ export const deleteUser = (userId) => async (dispatch) => {
     });
 
     if (deleteResponse.ok) {
-      alert("Users deleted successfully");
+      message.error("Users deleted successfully");
       dispatch(fetchUsers());
     } else {
-      alert("failed to delete Users");
+      message.error("failed to delete Users");
       console.error("Delete failed:", deleteResponse.statusText);
     }
   } catch (error) {
