@@ -448,7 +448,7 @@ const OutwardGatePass = () => {
             noaDate: processData?.noaDate
               ? convertEpochToDateString(processData.noaDate)
               : "",
-            noa: processData?.noa ? processData.noa : "",
+            noaNo: processData?.noa ? processData.noa : "",
             conditionOfGoods: processData?.conditionOfGoods,
             challanNo: processData?.challanNo,
             modeOfDelivery: processData?.modeOfDelivery,

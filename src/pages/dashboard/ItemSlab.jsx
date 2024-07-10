@@ -51,7 +51,7 @@ const ItemSlab = ({allData, filteredData, setFilteredData, descFilterDropdown, s
       dataIndex: "subCategoryDesc",
       key: "subCategoryDesc",
         filters: [...subcatDropdown || []],
-        onFilter: (value, record) => _.trim(record)?.subcategoryDesc?.indexOf(_.trim(value)) === 0,
+        onFilter: (value, record) => record?.subCategoryDesc?.indexOf(_.trim(value)) === 0,
     },
     {
       title: "FNS Category",

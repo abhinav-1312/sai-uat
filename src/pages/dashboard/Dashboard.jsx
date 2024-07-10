@@ -13,7 +13,6 @@ import _ from "lodash"
 
 const currentDate = new Date(); 
 const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
-console.log("DAE: ", `${startDate.getDate()}/${startDate.getMonth() + 1}/${startDate.getFullYear()}`)
 const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
 
 const Dashboard = ({orgId}) => {
@@ -24,8 +23,6 @@ const Dashboard = ({orgId}) => {
     const [purSumLoading, setPurSumLoading] = useState(false)
     // const [ohqLoading, setOhqLoading] = useState(false)
 
-    
-    console.log(itemSlabLoading, txnSlabLoading, invValLoading, purSumLoading)
     const [txnFilters, setTxnFilters] = useState({
       txnType: null,
       startDate: null,
@@ -88,8 +85,6 @@ const Dashboard = ({orgId}) => {
           }
           const trimmedString2 = JSON.stringify(trimmedObj2);
           subcatDropdownArr.add(trimmedString2)
-
-          console.log("Filter dropdown: ", filterDropdownArr)
           
         })
 
@@ -221,14 +216,17 @@ const Dashboard = ({orgId}) => {
       endDate: `${endDate.getDate().toString().padStart(2, '0')}/${(endDate.getMonth() + 1).toString().padStart(2, '0')}/${endDate.getFullYear()}`
     })
 
-    const handlePurchaseSearch = useCallback(async () => {
+    console.log("Summary dataa filters: ", summaryDataFilters)
+
+    const handlePurchaseSearch = async () => {
+      console.log("calledddddddddddd")
       setPurSumLoading(true)
       if(!summaryDataFilters.startDate || !summaryDataFilters.endDate){
         message.error("Please enter start date and end date.")
         return
       }
       try{
-        const {responseData} = await apiCall("POST", "/getPurchaseSummary", token, {...summaryDataFilters, orgId: null})
+        const {responseData} = await apiCall("POST", "/getPurchaseSummary", token, {...summaryDataFilters, orgId: orgId ? orgId : null})
         let totVal = 0;
         responseData?.forEach(data => {
           totVal = totVal + data.totalValue
@@ -244,19 +242,20 @@ const Dashboard = ({orgId}) => {
       finally{
         setPurSumLoading(false)
       }
-    }, [token, summaryDataFilters])
+    }
 
     // const populateSummaryData = async () => {
     //   const {responseData: summaryData} = await apiCall("POST", "/txns/getTxnSummary", token, {  txnType: "PO", orgId: orgId ? orgId : null})
     // }
 
     useEffect(()=>{
+      console.log("Called")
       fnsCategory()
       // getOhqDtls()
       populateTxnData()
       populateInvData()
       handlePurchaseSearch()
-    },[fnsCategory, dispatch, orgId, populateTxnData, populateInvData, handlePurchaseSearch])
+    },[fnsCategory, populateTxnData, populateInvData])
 
 
     if(itemSlabLoading ||

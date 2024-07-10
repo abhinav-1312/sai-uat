@@ -92,7 +92,7 @@ const modData = filteredData?.filter(record => {
 
 let filteredVal = 0;
 modData?.forEach((item,index)=>{
-    filteredVal = filteredVal + item.value
+    filteredVal = filteredVal +  parseInt((item.value).replace(/[^\d.-]/g, ''))
 })
 
 const renderAppliedFilters = () => {
@@ -180,7 +180,7 @@ const handleTableChange = (pagination, filters) => {
         <div className="sec-slab" style={{backgroundColor: "#3498DB", color: "white"}}>
         <div>Total value of items for: </div>
         <div>{renderAppliedFilters()}</div>
-        <div style={{fontSize: "2rem", fontWeight: "bold", textAlign: "center"}}>{filteredVal}</div>
+        <div style={{fontSize: "2rem", fontWeight: "bold", textAlign: "center"}}>{convertToCurrency(filteredVal)}</div>
       </div>
 
       )}

@@ -1,15 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { apiCall, convertToCurrency } from '../../utils/Functions'
 import { useSelector } from 'react-redux'
 import TransactionSummary from '../transactionSummary/TransactionSummary'
 import FormInputItem from '../../components/FormInputItem'
 import FormDatePickerItem from '../../components/FormDatePickerItem'
-import { Button, Input, Space, Table } from 'antd'
+import { Button, Form, Input, Select, Space, Table } from 'antd'
 import {SearchOutlined, RightOutlined} from '@ant-design/icons'
 import Highlighter from 'react-highlight-words';
 import _ from 'lodash'
 import { useNavigate } from 'react-router-dom'
-
+const { Option } = Select;
 
 
 const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData, handleSumSearch, orgId}) => {
@@ -42,6 +42,51 @@ const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData,
       })
     }
 
+    const [categories, setCategories] = useState(null)
+    const [subCategories, setSubCategories] = useState(null)
+
+    const populateCategory = useCallback(async () => {
+      const categoriesRespone = await apiCall(
+        "GET",
+        "/genparam/getAllCategories",
+        token
+      );
+  
+      setCategories(categoriesRespone?.responseData || []);
+    }, [token]);
+
+    useEffect(() => {
+      populateCategory()
+    }, [populateCategory])
+
+    
+  useEffect(() => {
+    if (filters.categoryCode) {
+      const fetchSubCategories = async () => {
+        try {
+          const response = await apiCall("POST", "/genparam/getAllSubCategoriesByDtls", token, {categoryCode: filters.categoryCode} ) 
+          // axios.post(
+          //   "/genparam/getAllSubCategoriesByDtls",
+          //   {
+          //     categoryCode: filters.categoryCode,
+          //   },
+          //   apiHeader("POST", token)
+          // );
+          const data = response.responseData || [];
+          // Assuming the response contains an array of subcategory options
+          const subcategoryOptions = data.map((subcategory) => ({
+            key: subcategory.subCategoryCode,
+            value: subcategory.subCategoryDesc,
+          }));
+          setSubCategories([...subcategoryOptions]);
+        } catch (error) {
+          console.error("Error fetching subcategories:", error);
+        }
+      };
+
+      fetchSubCategories();
+    }
+  }, [filters.categoryCode, token]);
     const [filteredInfo, setFilteredInfo] = useState({})
   // Calculate number of rows matching filters
   const modData = allData?.filter(record => {
@@ -58,7 +103,7 @@ const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData,
 
   const handleViewClick = (id) => {
     if(orgId){
-      
+
       navigate(`/hqTxnSummary/${id}_GRN`);
     }
     else{
@@ -231,6 +276,25 @@ const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData,
     // return(
     //   <h3>Page under development.</h3>
     // )
+    console.log("PUR FILTERS: ", filters)
+    const handleCategoryChange = (value) => {
+      setFilters(prev => {
+        return {
+          ...prev, 
+          categoryCode: value, 
+          subCategoryCode: null
+        }
+      })
+    }
+
+    const handleSubCategoryChange = (value) => {
+      setFilters(prev => {
+        return {
+          ...prev, 
+          subCategoryCode: value
+        }
+      })
+    }
   return (
     <>
       <div className="slab-content">
@@ -238,10 +302,37 @@ const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData,
           <FormDatePickerItem label="Start Date" name="startDate" value={filters.startDate} onChange={handleChange} />
           <FormDatePickerItem label="End Date" name="endDate" value={filters.endDate} onChange={handleChange} />
           <FormInputItem label="Item Code" name="itemCode" value={filters.itemCode} onChange={handleChange} />
-          <FormInputItem label="Category Code" name="categoryCode" value={filters.categoryCode} onChange={handleChange} />
-          <FormInputItem label="Subcategory Code" name="subCategoryCode" value={filters.subCategoryCode} onChange={handleChange} />
+
+          <Form.Item label = "Select Category">
+
+          <Select onChange={handleCategoryChange} value={filters.categoryCode}>
+              {categories?.map((category, index) => {
+                return (
+                  <Option key={index} value={category.paramVal}>
+                    {category.paramDesc}
+                  </Option>
+                );
+              })}
+            </Select>
+              </Form.Item>
+
+              <Form.Item label = "Select Subcategory">
+
+          <Select onChange={handleSubCategoryChange} value={filters.subCategoryCode}>
+              {subCategories?.map((subCategory, index) => {
+                return (
+                  <Option key={subCategory.key} value={subCategory.key}>
+                    {subCategory.value}
+                  </Option>
+                );
+              })}
+            </Select>
+              </Form.Item>
+
+          {/* <FormInputItem label="Category Code" name="categoryCode" value={filters.categoryCode} onChange={handleChange} />
+          <FormInputItem label="Subcategory Code" name="subCategoryCode" value={filters.subCategoryCode} onChange={handleChange} /> */}
           {/* <FormInputItem label="Usage Category Description" name="subcategory" value={filters.usageCategory} onChange={handleChange} /> */}
-          <Button primary style={{backgroundColor: "#ff8a00", fontWeight: "bold"}} onClick={handleSearch}> Search </Button>
+          <Button primary style={{backgroundColor: "#ff8a00", fontWeight: "bold"}} onClick={handleSumSearch}> Search </Button>
           <Button primary style={{fontWeight: "bold"}} onClick={handleReset}> Reset </Button>
         </div>
 

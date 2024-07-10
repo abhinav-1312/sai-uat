@@ -172,7 +172,7 @@ const InsepctionReport = () => {
         processId: value,
         processStage: "IGP",
       }, apiHeader("POST", token));
-      const responseData = response?.data?.responseData || []; 
+      const responseData = response?.data?.responseData || {}; 
       const { processData, itemList } = responseData;
       console.log("API Response:", response.data);
       setFormData((prevFormData) => ({
@@ -201,7 +201,7 @@ const InsepctionReport = () => {
         note: processData?.note,
         termsCondition: processData?.termsCondition,
 
-        items: itemList.map((item) => ({
+        items: itemList?.map((item) => ({
           srNo: item?.sNo,
           itemCode: item?.itemCode,
           itemDesc: item?.itemDesc,
