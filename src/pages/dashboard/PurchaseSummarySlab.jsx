@@ -104,7 +104,7 @@ const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData,
   const handleViewClick = (id) => {
     if(orgId){
 
-      navigate(`/hqTxnSummary/${id}_GRN`);
+      navigate(`/hqTxnSummary/${id}-${orgId}_GRN`);
     }
     else{
       navigate(`/trnsummary/${id}_GRN`);

@@ -28,7 +28,6 @@ const OrgSearchFilter = ({handleChange}) => {
 
     useEffect(()=>{
         getOrgMaster()
-
     }, [])
   return (
     <>

@@ -315,6 +315,8 @@ const TransactionSlab = ({allData, txnFilters, setTxnFilters, populateTxnData, s
     // populateTxnData()
   }, [])
 
+
+
   const handleTxnReset = () => {
     setTxnFilters({
       startDate: null,
@@ -502,7 +504,7 @@ const TransactionSlab = ({allData, txnFilters, setTxnFilters, populateTxnData, s
             </div>
         )
       } */}
-      {Object.keys(filteredInfo).length > 0 && (
+      {filteredInfo && (filteredInfo.id || filteredInfo.processStage || filteredInfo.processType)  && (
          <div className="sec-slab" style={{color: "white", backgroundColor: "#2ECC71"}}>
          <div>No. of transactions for : </div>
          <div>{renderAppliedFilters()}</div>

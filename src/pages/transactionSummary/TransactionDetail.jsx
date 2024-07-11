@@ -73,7 +73,8 @@ const TransactionDetail = () => {
 
   const handleNavigate = () => {
     if(orgId){
-      navigate("/hqTxnSummary")
+      // navigate("/hqTxnSummary")
+      navigate(-1)
     }
     else{
       navigate("/trnsummary")

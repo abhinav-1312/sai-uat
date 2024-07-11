@@ -306,7 +306,7 @@ const Dashboard = ({orgId}) => {
       }
       {
         activeTab === "tab4" && (
-            <PurchaseSummarySlab filters = {summaryDataFilters} setFilters = {setSummaryDataFilters} handleSumSearch={handlePurchaseSearch} allData={summaryData.allData} />
+            <PurchaseSummarySlab filters = {summaryDataFilters} setFilters = {setSummaryDataFilters} handleSumSearch={handlePurchaseSearch} allData={summaryData.allData} orgId={orgId} />
         )
       }
     </div>

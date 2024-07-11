@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import OrgSearchFilter from "../../components/OrgSearchFilter"
 import Dashboard from './Dashboard'
@@ -9,9 +9,16 @@ const DashboardWrapper = () => {
 
     const handleChange = (value) => {
         setOrgId(value)
+        localStorage.setItem("orgId", orgId)
     }
 
-    console.log("ORGID: ", orgId)
+    useEffect(()=>{
+        const orgId = localStorage.getItem("orgId")
+        if(orgId){
+            setOrgId(orgId)
+        }
+    }, [])
+
   return (
     <div>
         {

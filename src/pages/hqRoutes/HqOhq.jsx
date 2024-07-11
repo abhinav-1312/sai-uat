@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import OrgSearchFilter from '../../components/OrgSearchFilter'
 import Ohq from '../ohq/ohq'
-import { ConfigProvider, Radio } from 'antd'
+import { Radio } from 'antd'
 import 'antd/dist/reset.css'; 
 
 const HqOhq = () => {
@@ -10,6 +10,7 @@ const HqOhq = () => {
 
     const handleChange = (orgId) => {
         setOrgId(orgId)
+        localStorage.setItem("orgId", orgId)
     }
     const handleRadioChange = (value) => {
       console.log("Selected value: ", value)
@@ -19,9 +20,14 @@ const HqOhq = () => {
       setRadioValue(value)
     }
 
-    const handleRadioClick = () => {
+    useEffect(()=>{
+      const orgId = localStorage.getItem("orgId")
+      if(orgId){
+        setOrgId(orgId)
+      }
+    }, [])
 
-    }
+    
   return (
     <div>
       <Radio.Group onChange = {(e) => handleRadioChange(e.target.value)} value={radioValue} style={{display: "flex",gap: "4rem", padding: "2rem 0"}}>
