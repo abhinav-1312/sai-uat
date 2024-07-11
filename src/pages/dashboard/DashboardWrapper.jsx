@@ -9,15 +9,7 @@ const DashboardWrapper = () => {
 
     const handleChange = (value) => {
         setOrgId(value)
-        localStorage.setItem("orgId", orgId)
     }
-
-    useEffect(()=>{
-        const orgId = localStorage.getItem("orgId")
-        if(orgId){
-            setOrgId(orgId)
-        }
-    }, [])
 
   return (
     <div>
