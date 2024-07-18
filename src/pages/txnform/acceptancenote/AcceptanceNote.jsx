@@ -19,6 +19,7 @@ import { apiCall, apiHeader, convertEpochToDateString, printOrSaveAsPDF } from "
 import FormInputItem from "../../../components/FormInputItem";
 import { useSelector } from "react-redux";
 import { BASE_URL } from "../../../utils/BaseUrl";
+import Loader from "../../../components/Loader";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
@@ -311,7 +312,7 @@ const AcceptanceNote = () => {
 
   if(!uomObj){
     return (
-      <h3>Loading please wait...</h3>
+      <Loader />
     )
   }
 

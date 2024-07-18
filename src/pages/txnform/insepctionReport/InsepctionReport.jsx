@@ -22,6 +22,7 @@ import FormInputItem from "../../../components/FormInputItem";
 import FormDatePickerItem from "../../../components/FormDatePickerItem";
 import FormDropdownItem from "../../../components/FormDropdownItem";
 import { useSelector } from "react-redux";
+import Loader from "../../../components/Loader";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
@@ -322,9 +323,13 @@ const InsepctionReport = () => {
       return {...prevValues, items: updatedItems1}
     })
   }
-
-  console.log("Form data: ", formData)
   const { uomObj } = useSelector((state) => state.uoms);
+
+  if(!uomObj){
+    return (
+      <Loader />
+    )
+  }
 
   return (
     <div className="goods-receive-note-form-container" ref={formRef}> 
