@@ -25,9 +25,7 @@ const EmployeeTable = ({ employees, onEdit, onDelete }) => {
           <Button type="primary" className='saitheme-btn' onClick={() => onEdit(record)}>
             Edit
           </Button>
-          <Button danger onClick={() => onDelete(record.id)}>
-          Delete
-          </Button>
+          {/* <Button */}
         </Space>
       ),
     },

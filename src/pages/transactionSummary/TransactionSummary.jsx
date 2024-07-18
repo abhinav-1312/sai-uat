@@ -185,6 +185,8 @@ const TransactionSummary = ({orgId}) => {
         return acc;
       }, {}),
     }));
+
+    window.location.reload()
   };
 
   const handleTxnTypeClick = () => {
@@ -235,7 +237,7 @@ const TransactionSummary = ({orgId}) => {
           }}
         >
           <div onClick={() => handleItemCdClick()}>
-            <Form.Item label="Item Code" name="itemCode">
+            <Form.Item label="Item Code">
               <Input
                 value={formData.itemCode}
                 onChange={(e) =>
@@ -262,7 +264,7 @@ const TransactionSummary = ({orgId}) => {
             </Form.Item>
           </div>
 
-          <Form.Item label="From Date" name="startDate">
+          <Form.Item label="From Date">
             <DatePicker
               format={dateFormat}
               style={{ width: "100%" }}
@@ -272,7 +274,7 @@ const TransactionSummary = ({orgId}) => {
             />
           </Form.Item>
 
-          <Form.Item label="To Date" name="endDate">
+          <Form.Item label="To Date">
             <DatePicker
               format={dateFormat}
               style={{ width: "100%" }}

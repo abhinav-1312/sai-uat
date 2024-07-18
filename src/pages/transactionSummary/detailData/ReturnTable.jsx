@@ -154,7 +154,7 @@ const itemDetails = [
         },
         {
             title: "Consignor Zipcode",
-            dataIndex: "approvedDate"
+            dataIndex: "zipcode"
         },
         ...consumerDetails
 

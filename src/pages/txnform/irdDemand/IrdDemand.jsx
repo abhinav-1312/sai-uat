@@ -117,7 +117,7 @@ const DemandNoteForm = () => {
 
         <Row gutter={24}>
           <Col span={8}>
-            <Title strong level={2} underline type='danger' > CONSIGNOR DETAIL :-</Title>
+            <Title strong level={2} underline type='danger' > CONSIGNEE DETAIL :-</Title>
 
             <FormInputItem label="REGIONAL CENTER CODE" value={formData.crRegionalCenterCd} />
             <FormInputItem label="REGIONAL CENTER NAME" value={formData.crRegionalCenterName} />
@@ -131,9 +131,9 @@ const DemandNoteForm = () => {
           </Col>
 
           <Col span={8}>
-            <Title strong underline level={2} type="danger" >CONSIGNEE DETAIL :-</Title>
+            <Title strong underline level={2} type="danger" >CONSIGNOR DETAIL :-</Title>
 
-            <Form.Item label="SUPPLIER CODE :" name="supplierCode">
+            <Form.Item label="REGIONAL CENTER CODE :" name="ceRegionalCenterCode">
               <Input onChange={(e) => handleCeRccChange(e.target.value)} />
             </Form.Item>
 

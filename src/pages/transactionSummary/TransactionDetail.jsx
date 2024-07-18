@@ -13,7 +13,6 @@ import IsnTable from "./detailData/IsnTable";
 import ReturnTable from "./detailData/ReturnTable";
 import MisTable from "./detailData/MisTable";
 import { useSelector } from "react-redux";
-import IssueNote from "../txnform/issuenote/IssueNote";
 
 const TransactionDetail = () => {
   const navigate = useNavigate();
@@ -72,13 +71,7 @@ const TransactionDetail = () => {
   }
 
   const handleNavigate = () => {
-    if(orgId){
-      // navigate("/hqTxnSummary")
       navigate(-1)
-    }
-    else{
-      navigate("/trnsummary")
-    }
   }
 
   const populateData = async () => {
@@ -153,7 +146,7 @@ const TransactionDetail = () => {
       {objectFromArr["ISN"] && (
         <div>
           <div style={{display: "flex", gap: "1rem", marginBottom: "0.5rem"}}>
-          <h2>Issue Note</h2> 
+          <h2>Issue Note</h2>
           {
             isnData?.data &&
             <Button danger onClick = {handleIsnPrint}> Print </Button>
@@ -226,7 +219,7 @@ const TransactionDetail = () => {
         </div>
       )}
 
-      {objectFromArr["GRN"] && (
+      {/* {objectFromArr["GRN"] && (
         <div>
           <h2>Goods Receive Note</h2>
           {grnData?.data ? (
@@ -240,9 +233,9 @@ const TransactionDetail = () => {
             "No data available."
           )}
         </div>
-      )}
+      )} */}
 
-      {objectFromArr["ACT"] && (
+      {/* {objectFromArr["ACT"] && (
         <div>
           <h2>Acceptance Note</h2>
           {acceptData?.data ? (
@@ -256,9 +249,9 @@ const TransactionDetail = () => {
             "No data available."
           )}
         </div>
-      )}
+      )} */}
 
-      {objectFromArr["IR"] && (
+      {/* {objectFromArr["IR"] && (
         <div>
           <h2>Material Inward Slip</h2>
           {misData?.data ? (
@@ -272,9 +265,9 @@ const TransactionDetail = () => {
             "No data available."
           )}
         </div>
-      )}
+      )} */}
 
-      {objectFromArr["IRN"] && (
+      {/* {objectFromArr["IRN"] && (
         <div>
           <h2>Inspection Note</h2>
           {inspectionNoteData?.data ? (
@@ -288,9 +281,9 @@ const TransactionDetail = () => {
             "No data available."
           )}
         </div>
-      )}
+      )} */}
 
-      {objectFromArr["REJ"] && (
+      {/* {objectFromArr["REJ"] && (
         <div>
           <h2>Rejection Note</h2>
           {rejectData?.data ? (
@@ -304,7 +297,7 @@ const TransactionDetail = () => {
             "No data available."
           )}
         </div>
-      )}
+      )} */}
     </div>
   );
 };

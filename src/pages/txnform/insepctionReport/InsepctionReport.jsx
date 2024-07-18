@@ -437,7 +437,7 @@ const InsepctionReport = () => {
                         </Form.Item> */}
 
                         <Form.Item label="RECEIVED QUANTITY">
-                          <Input value={item.quantity} onChange={(e)=>itemHandleChange("quantity", e.target.value, key)} />
+                          <Input value={item.quantity} onChange={(e)=>itemHandleChange("quantity", e.target.value, key)} readOnly/>
                         </Form.Item>
 
                         {/* <Form.Item label="BUDGET HEAD PROCUREMENT">

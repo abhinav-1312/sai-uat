@@ -67,37 +67,37 @@ const ItemsTable = ({ items, onEdit, onDelete }) => {
     { title: "RE ORDER POINT", dataIndex: "reOrderPoint", key: "reOrderPoint" },
     { title: "STATUS", dataIndex: "status", key: "status" },
     { title: "CREATE DATE", dataIndex: "endDate", key: "endDate" },
-    {
-      title: "Actions",
-      key: "actions",
-      fixed: "right",
-      render: (_, record) => (
-        <Space>
-          {/* <Button
-            type="primary"
-            className="saitheme-btn"
-            onClick={() => onEdit(record)}
-            disabled
-          >
-            Edit
-          </Button> */}
-          <Popconfirm
-            title="Delete the item"
-            description="Are you sure to delete this item?"
-            onConfirm={(e) => {
-              onDelete(record.id);
-              confirm(e);
-            }}
-            onCancel={cancel}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Button danger>Delete</Button>
-          </Popconfirm>
-          {/* { () => {onDelete(record.id)}} */}
-        </Space>
-      ),
-    },
+    // {
+    //   title: "Actions",
+    //   key: "actions",
+    //   fixed: "right",
+    //   render: (_, record) => (
+    //     <Space>
+    //       {/* <Button
+    //         type="primary"
+    //         className="saitheme-btn"
+    //         onClick={() => onEdit(record)}
+    //         disabled
+    //       >
+    //         Edit
+    //       </Button> */}
+    //       <Popconfirm
+    //         title="Delete the item"
+    //         description="Are you sure to delete this item?"
+    //         onConfirm={(e) => {
+    //           onDelete(record.id);
+    //           confirm(e);
+    //         }}
+    //         onCancel={cancel}
+    //         okText="Yes"
+    //         cancelText="No"
+    //       >
+    //         <Button danger>Delete</Button>
+    //       </Popconfirm>
+    //       {/* { () => {onDelete(record.id)}} */}
+    //     </Space>
+    //   ),
+    // },
   ];
 
   return (

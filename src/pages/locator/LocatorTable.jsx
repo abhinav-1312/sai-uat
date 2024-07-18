@@ -23,9 +23,9 @@ const LocatorTable = ({ locators, onEdit, onDelete }) => {
           <Button type="primary" style={{ backgroundColor: '#ff8a00' }} onClick={() => onEdit(record)}>
             Edit
           </Button>
-          <Button danger onClick={() => onDelete(record.id)}>
+          {/* <Button danger onClick={() => onDelete(record.id)}>
             Delete
-          </Button>
+          </Button> */}
         </Space>
       ),
     },
