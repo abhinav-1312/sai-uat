@@ -232,9 +232,8 @@ const TransactionSlab = ({allData, txnFilters, setTxnFilters, populateTxnData, s
       dataIndex: "processStage",
       filters: [...txnName],
       onFilter: (value, record) => {
-        console.log("rec: ", value)
         return record?.processStage === value
-       } ,
+       }
       // onFilter: (value, record) => record?.processStage?.indexOf(value) === 0,
   
   },

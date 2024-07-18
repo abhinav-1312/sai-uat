@@ -1,5 +1,46 @@
 import { Button } from "antd";
 
+
+const txnName = [
+
+  {
+    text: "RN",
+    value: "RN"
+  },
+  {
+    text: "ISN",
+    value: "ISN"
+  },
+  {
+    text: "OGP",
+    value: "OGP"
+  },
+  {
+    text: "IGP",
+    value: "IGP"
+  },
+  {
+    text: "IR",
+    value: "IR"
+  },
+  {
+    text: "IRN",
+    value: "IRN"
+  },
+  {
+    text: "REJ",
+    value: "REJ"
+  },
+  {
+    text: "ACT",
+    value: "ACT"
+  },
+    {
+      text: "GRN",
+      value: "GRN"
+    },
+  ]
+
 export const trnSummaryColumn = (handleViewClick, handlePrintClick) => {
     return [
         {
@@ -11,13 +52,32 @@ export const trnSummaryColumn = (handleViewClick, handlePrintClick) => {
         {
             title: "Process Type",
             key: "processType",
-            dataIndex: "processType"
+            dataIndex: "processType",
+            filters: [
+              {
+                text: "IOP",
+                value: "IOP"
+              },
+              {
+                text: "PO",
+                value: "PO"
+              },
+              {
+                text: "IRP",
+                value: "IRP"
+              },
+            ],
+            onFilter: (value, record) => record.processType.indexOf(value) === 0,
             // render: (processType) => processTypeList(processType)
         },
         {
             title: "Process Stage",
             key: "processStage",
-            dataIndex: "processStage"
+            dataIndex: "processStage",
+            filters: [...txnName],
+            onFilter: (value, record) => {
+              return record?.processStage === value
+             }
             // render: (processType) => processTypeList(processType)
         },
         {
