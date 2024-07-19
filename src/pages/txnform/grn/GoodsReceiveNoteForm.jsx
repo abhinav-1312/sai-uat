@@ -354,6 +354,10 @@ const GoodsReceiveNoteForm = () => {
   }
 
   const onFinish = async (values) => {
+    if(!formData.issueName || !formData.genName){
+      message.error("Please fill all the fields.")
+      return
+    }
     let found = false
     const tempFormData = deepClone(formData)
     tempFormData.items?.forEach(item=>{

@@ -293,6 +293,10 @@ const OutwardGatePass = () => {
   };
 
   const onFinish = async (values) => {
+    if(!formData.issueName || !formData.genName){
+      message.error("Please fill all the fields.")
+      return
+    }
     setSubmitBtnEnabled(false);
     try {
       const formDataCopy = { ...formData };

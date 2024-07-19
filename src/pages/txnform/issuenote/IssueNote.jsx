@@ -30,6 +30,7 @@ const { Option } = Select;
 const { TextArea } = Input;
 
 const IssueNote = () => {
+
   const {uomObj} = useSelector(state => state.uoms)
 
   const issueNote = JSON.parse(localStorage.getItem("issueNote"));
@@ -273,6 +274,10 @@ const IssueNote = () => {
   };
 
   const onFinish = async () => {
+    if(!formData.issueName || !formData.genName || !formData.approvedName){
+      message.error("Please fill all the fields.")
+      return
+    }
     setSubmitBtnEnabled(false);
     try {
       const formDataCopy = { ...formData };
@@ -384,7 +389,7 @@ const IssueNote = () => {
             margin: "0.5rem 0",
           }}
           initialValues={formData}
-          // defaultValue={formData}
+          onFinish={onFinish}
         >
           <div
             style={{
@@ -583,6 +588,7 @@ const IssueNote = () => {
                 name="genName"
                 value={formData.genName}
                 readOnly={isnData !== null}
+
               />
               {
                 isnData !== null ? 

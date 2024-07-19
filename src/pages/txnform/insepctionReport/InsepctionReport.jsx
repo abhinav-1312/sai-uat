@@ -225,6 +225,18 @@ const InsepctionReport = () => {
   console.log("FOrmdata item: ", formData.items)
 
   const onFinish = async (values) => {
+    if(formData.processType === "PO"){
+      if(!formData.genName || !formData.approvedName){
+        message.error("Please fill all the fields.")
+        return
+      }
+    }
+    else{
+      if(!formData.issueName || !formData.genName){
+        message.error("Please fill all the fields.")
+        return
+      }
+    }
     try {
       const formDataCopy = { ...formData };
 

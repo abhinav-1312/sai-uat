@@ -275,6 +275,10 @@ const RetunNote = () => {
   };
 
   const onFinish = async (values) => {
+    if(!formData.genName || !formData.approvedName){
+      message.error("Please fill all the fields.")
+      return
+    }
     try {
       const formDataCopy = { ...formData };
 

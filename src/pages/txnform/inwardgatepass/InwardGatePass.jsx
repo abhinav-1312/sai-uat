@@ -357,6 +357,18 @@ const InwardGatePass = () => {
   };
 
   const onFinish = async (values) => {
+    if(formData.processType === "IOP"){
+      if(!formData.issueName || !formData.genName){
+        message.error("Please fill all the fields.")
+        return
+      }
+    }
+    else{
+      if(!formData.genName){
+        message.error("Please fill all the fields.")
+        return
+      }
+    }
     setSubmitBtnEnabled(false);
 
     try {
