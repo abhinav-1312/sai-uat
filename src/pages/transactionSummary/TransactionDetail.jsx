@@ -219,7 +219,7 @@ const TransactionDetail = () => {
         </div>
       )}
 
-      {/* {objectFromArr["GRN"] && (
+      {objectFromArr["GRN"] && (
         <div>
           <h2>Goods Receive Note</h2>
           {grnData?.data ? (
@@ -233,9 +233,9 @@ const TransactionDetail = () => {
             "No data available."
           )}
         </div>
-      )} */}
+      )}
 
-      {/* {objectFromArr["ACT"] && (
+      {objectFromArr["ACT"] && (
         <div>
           <h2>Acceptance Note</h2>
           {acceptData?.data ? (
@@ -249,9 +249,9 @@ const TransactionDetail = () => {
             "No data available."
           )}
         </div>
-      )} */}
+      )}
 
-      {/* {objectFromArr["IR"] && (
+      {objectFromArr["IR"] && (
         <div>
           <h2>Material Inward Slip</h2>
           {misData?.data ? (
@@ -265,9 +265,9 @@ const TransactionDetail = () => {
             "No data available."
           )}
         </div>
-      )} */}
+      )}
 
-      {/* {objectFromArr["IRN"] && (
+      {objectFromArr["IRN"] && (
         <div>
           <h2>Inspection Note</h2>
           {inspectionNoteData?.data ? (
@@ -281,9 +281,9 @@ const TransactionDetail = () => {
             "No data available."
           )}
         </div>
-      )} */}
+      )}
 
-      {/* {objectFromArr["REJ"] && (
+      {objectFromArr["REJ"] && (
         <div>
           <h2>Rejection Note</h2>
           {rejectData?.data ? (
@@ -297,7 +297,7 @@ const TransactionDetail = () => {
             "No data available."
           )}
         </div>
-      )} */}
+      )}
     </div>
   );
 };
