@@ -2,8 +2,6 @@ import React from 'react'
 import {Form, Input} from "antd"
 
 const FormInputItem = ({label, name, value, onChange, readOnly, disabled, className, placeholder, rules }) => {
-
-  console.log("BOOL: ", name === "genName" || name === "approvedName" || name === "issueName")
   const handleChange = (e) => {
     if(onChange)
       onChange(name, e.target.value)

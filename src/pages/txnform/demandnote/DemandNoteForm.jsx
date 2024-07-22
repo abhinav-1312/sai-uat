@@ -47,6 +47,16 @@ const DemandNoteForm = () => {
 
   console.log("array:", Array(counter))
 
+  const handleChange = (fieldName, value) => {
+
+  setFormData((prevValues) => ({
+    ...prevValues,
+    [fieldName]: value === "" ? null : value,
+  }));
+}
+
+  
+
   useEffect(() => {
     fetchData();
   }, [fetchData]);
@@ -76,7 +86,8 @@ const DemandNoteForm = () => {
             label="Regional Center Name"
             value={formData.regionalCenterName}
           />
-          <FormDatePickerItem label="Demand Note Date" defaultValue={dayjs()} />
+          <FormDatePickerItem name="demandNoteDt" label="Demand Note Date" defaultValue={dayjs()} onChange={handleChange}
+                value={formData.demandNoteDt} />
           <FormInputItem label="Address" value={formData.consignorAddress} />
           <FormInputItem label="Consumer Name" />
           <FormInputItem label="Zipcode" value={formData.consignorZipCode} />
@@ -130,17 +141,17 @@ const DemandNoteForm = () => {
           <div className="each-desg">
             <h4> Demanded By </h4>
             <FormInputItem placeholder="Name and Signature" />
-            <FormDatePickerItem defaultValue={dayjs()} />
+            <FormDatePickerItem defaultValue={dayjs()} value={formData.demandDt} name="demandDt" onChange={handleChange} />
           </div>
           <div className="each-desg">
             <h4> Approved By </h4>
             <FormInputItem placeholder="Name and Signature" />
-            <FormDatePickerItem defaultValue={dayjs()} />
+            <FormDatePickerItem defaultValue={dayjs()} value={formData.approvalDt} name="approvalDt" onChange={handleChange}/>
           </div>
           <div className="each-desg">
             <h4> Received By </h4>
             <FormInputItem placeholder="Name and Signature" />
-            <FormDatePickerItem defaultValue={dayjs()} />
+            <FormDatePickerItem defaultValue={dayjs()} value={formData.receiveDt}  name="receiveDt" onChange={handleChange}/>
           </div>
         </div>
       </Form>
