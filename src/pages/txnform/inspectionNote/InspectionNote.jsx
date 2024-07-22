@@ -184,7 +184,7 @@ const InspectionNote = () => {
         ...prevFormData,
 
         issueName: processData?.issueName,
-        approvedName: processData?.approvedName,
+        // approvedName: processData?.approvedName,
         processId: processData?.processId,
         inwardGatePass: processData?.processId,
 
@@ -266,6 +266,14 @@ const InspectionNote = () => {
   }
 
   const onFinish = async (values) => {
+
+    if(!formData.genName || !formData.approvedName){
+      message.error("Please fill all the fields.")
+      return
+    }
+    else{
+      console.log("ELSEEEE")
+    }
     
     try {
       const formDataCopy = { ...formData };

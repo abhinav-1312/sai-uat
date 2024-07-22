@@ -15,7 +15,9 @@ const currentDate = new Date();
 const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
 const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
 
-const Dashboard = ({orgId}) => {
+const Dashboard = (props) => {
+    const {organizationDetails} = useSelector(state => state.auth)
+    const orgId = props.orgId ? props.orgId : organizationDetails?.id
     const [activeTab, setActiveTab] = useState("tab1")
     const [itemSlabLoading, setItemSlabLoading] = useState(false)
     const [txnSlabLoading, setTxnSlabLoading] = useState(false)
@@ -216,10 +218,7 @@ const Dashboard = ({orgId}) => {
       endDate: `${endDate.getDate().toString().padStart(2, '0')}/${(endDate.getMonth() + 1).toString().padStart(2, '0')}/${endDate.getFullYear()}`
     })
 
-    console.log("Summary dataa filters: ", summaryDataFilters)
-
     const handlePurchaseSearch = async () => {
-      console.log("calledddddddddddd")
       setPurSumLoading(true)
       if(!summaryDataFilters.startDate || !summaryDataFilters.endDate){
         message.error("Please enter start date and end date.")
@@ -235,7 +234,6 @@ const Dashboard = ({orgId}) => {
           allData: [...responseData || []],
           count: convertToCurrency(totVal)
         })
-        // console.log("Response data.: ", responseData)
       }catch(error){
         console.log("Error fetching purchase summary.", error)
       }
@@ -249,7 +247,6 @@ const Dashboard = ({orgId}) => {
     // }
 
     useEffect(()=>{
-      console.log("Called")
       fnsCategory()
       // getOhqDtls()
       populateTxnData()

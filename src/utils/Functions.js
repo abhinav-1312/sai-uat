@@ -81,7 +81,7 @@ export const apiCall = async (method, url, token, payload=null) => {
 //   });
 // };
 
-export const mergeItemMasterAndOhq = (itemMasterArr, ohqArr) => {
+export const mergeItemMasterAndOhq = (itemMasterArr, ohqArr, form = null) => {
   // Ensure input arrays are valid and handle cases where they are not provided
   if (!Array.isArray(itemMasterArr) || !Array.isArray(ohqArr)) {
     console.error("Invalid input arrays");
@@ -96,7 +96,13 @@ export const mergeItemMasterAndOhq = (itemMasterArr, ohqArr) => {
     if (itemCodeMatch) {
       // Filter the quantity list to exclude quantities of 0
       const newQtyList = itemCodeMatch.qtyList.filter(
-        (obj) => obj.quantity !== 0
+        (obj) =>{
+          if(form === "IGP"){
+            return obj.quantity >= 0
+          }
+          return obj.quantity !== 0
+
+        } 
       );
       if (newQtyList.length > 0) {
         return {

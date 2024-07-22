@@ -111,7 +111,7 @@ const InwardGatePass = () => {
   const { data: ohqData } = useSelector((state) => state.ohq);
 
   const data = useMemo(
-    () => mergeItemMasterAndOhq(itemData, ohqData),
+    () => mergeItemMasterAndOhq(itemData, ohqData, "IGP"),
     [itemData, ohqData]
   );
 
