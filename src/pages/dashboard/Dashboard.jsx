@@ -303,7 +303,7 @@ const Dashboard = (props) => {
       }
       {
         activeTab === "tab4" && (
-            <PurchaseSummarySlab filters = {summaryDataFilters} setFilters = {setSummaryDataFilters} handleSumSearch={handlePurchaseSearch} allData={summaryData.allData} orgId={orgId} />
+            <PurchaseSummarySlab filters = {summaryDataFilters} setFilters = {setSummaryDataFilters} handleSumSearch={handlePurchaseSearch} allData={summaryData.allData} orgId={orgId} isHeadquarter={props.orgId? true : false} />
         )
       }
     </div>

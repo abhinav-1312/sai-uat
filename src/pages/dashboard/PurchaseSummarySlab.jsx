@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router-dom'
 const { Option } = Select;
 
 
-const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData, handleSumSearch, orgId}) => {
+const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData, handleSumSearch, orgId, isHeadquarter}) => {
     const {token} = useSelector(state => state.auth)
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
@@ -102,7 +102,7 @@ const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData,
   const navigate = useNavigate()
 
   const handleViewClick = (id) => {
-    if(orgId){
+    if(isHeadquarter){
 
       navigate(`/hqTxnSummary/${id}-${orgId}_GRN`);
     }
