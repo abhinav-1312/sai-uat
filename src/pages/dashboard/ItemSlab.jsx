@@ -77,7 +77,6 @@ const ItemSlab = ({allData, filteredData, setFilteredData, descFilterDropdown, s
 
    // Handle filters change
    const handleTableChange = (pagination, filters) => {
-    console.log('Filters changed:', filters);
     setFilteredInfo(filters); // Update filteredInfo state with applied filters
   };
 
@@ -89,12 +88,8 @@ const ItemSlab = ({allData, filteredData, setFilteredData, descFilterDropdown, s
 
   // Calculate number of rows matching filters
   const modData = allData?.filter(record => {
-    // if(record.itemCode === "21299001999999991"){
-    //   console.log("REcord: ", record)
-    // }
     return Object.keys(filteredInfo).every(key => {
       const filterValues = filteredInfo[key];
-      console.log("Filtervalues: ", filterValues)
       if (filterValues && filterValues.length > 0) {
         return filterValues.includes(_.trim(record[key]));
       }
@@ -113,12 +108,10 @@ const ItemSlab = ({allData, filteredData, setFilteredData, descFilterDropdown, s
             if (filterValues && filterValues.length > 0) {
               const column = columns.find(col => col.dataIndex === key);
               return (
-                // <li key={key}>
                 <div>
                   <RightOutlined />
                   {column.title}:  <span style={{fontWeight: "normal"}}> {filterValues.join(', ')} </span>
                 </div>
-                // </li>
               );
             }
             return null;
@@ -165,21 +158,6 @@ const ItemSlab = ({allData, filteredData, setFilteredData, descFilterDropdown, s
         pagination={{ pageSize: 10 }}
         onChange={handleTableChange}
       />
-
-
-{/* {Object.keys(filteredInfo).length > 0 && (
-        <div>
-          <p>Number of rows matching filters: {modData.length}</p>
-          <p>Applied filters:</p>
-          <ul>
-            {Object.keys(filteredInfo).map(key => (
-              <li key={key}>
-                {columns.find(col => col.dataIndex === key)?.title}: {filteredInfo[key]?.join(', ')}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )} */}
 
     </div>
   );
