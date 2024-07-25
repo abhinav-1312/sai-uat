@@ -35,16 +35,16 @@ const IndependentVariableForm = ({ heading, onFinish, url }) => {
           name="paramDesc"
           rules={[{ required: true, message: "Please input the description!" }]}
         >
-          <Input />
+          <Input placeholder="(Required)" />
         </Form.Item>
 
         <Form.Item
         style={{flex: 1}}
           label="Value"
           name="paramVal"
-          rules={[{ required: true, message: "Please input the value!" }]}
+          // rules={[{ required: true, message: "Please input the value!" }]}
         >
-          <Input />
+          <Input placeholder="(Optional)" />
         </Form.Item>
 
         <Form.Item>

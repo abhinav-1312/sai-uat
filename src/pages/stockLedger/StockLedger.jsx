@@ -361,6 +361,7 @@ const StockLedger = ({orgId}) => {
                   padding: ".5rem",
                   textAlign: "center",
                   borderBottom: "1px solid #003566",
+                  lineHeight: "2"
                 }}
               >
                 {ledger.initQuantity}
@@ -373,7 +374,34 @@ const StockLedger = ({orgId}) => {
               >
                 <h3 style={{ color: "white" }}>Closing Stock</h3>
               </div>
-              <h3 style={{ padding: ".5rem", textAlign: "center" }}>{ledger.finalQuantity}</h3>
+              <h3 style={{ padding: ".5rem", textAlign: "center", borderBottom: "1px solid #003566", lineHeight: "2" }}>{ledger.finalQuantity}</h3>
+              <div
+                style={{
+                  padding: ".5rem",
+                  backgroundColor: "#003566",
+                }}
+              >
+                <h3 style={{ color: "white" }}>Item Created By</h3>
+              </div>
+              <h3 style={{ padding: ".5rem", textAlign: "center", borderBottom: "1px solid #003566", lineHeight: "2" }}>{ledger.createUser}</h3>
+              <div
+                style={{
+                  padding: ".5rem",
+                  backgroundColor: "#003566",
+                }}
+              >
+                <h3 style={{ color: "white" }}>Item Creation Date</h3>
+              </div>
+              <h3 style={{ padding: ".5rem", textAlign: "center", borderBottom: "1px solid #003566", lineHeight: "2"}}>{ledger.createDate}</h3>
+              <div
+                style={{
+                  padding: ".5rem",
+                  backgroundColor: "#003566",
+                }}
+              >
+                <h3 style={{ color: "white" }}>Initial Quantity On Item Creation</h3>
+              </div>
+              <h3 style={{ padding: ".5rem", textAlign: "center", borderBottom: "1px solid #003566", lineHeight: "2"}}>{ledger.firstQuantity || "N/A"}</h3>
             </div>
 
             <div>

@@ -44,7 +44,7 @@ const SaveIndependentVariables = () => {
     <IndependentVariableForm heading="Save Size" url="/genparam/saveSize" onFinish = {handleFinish}  />
     <IndependentVariableForm heading="Save Brand" url="/genparam/saveBrand" onFinish = {handleFinish} />
     <IndependentVariableForm heading="Save Color" url="genparam/saveColor" onFinish = {handleFinish} />
-    <IndependentVariableForm heading="Save Usage" url="genparam/saveColor" onFinish = {handleFinish} />
+    <IndependentVariableForm heading="Save Usage" url="genparam/saveUsageCategories" onFinish = {handleFinish} />
     </>
   )
 }

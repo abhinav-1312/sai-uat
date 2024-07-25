@@ -74,7 +74,12 @@ const InvValSlab = ({data, filteredData, setFilteredData, itemDescDropdown, subc
     },
     {
         title: "Value",
-        dataIndex: "value"
+        dataIndex: "value",
+        filters: [
+          { text: 'Zero', value: '0' },
+        ],
+        onFilter: (value, record) => parseFloat(record.value.replace(/[^\d.-]/g, '')) === parseFloat(value),
+
     },
 ]
 

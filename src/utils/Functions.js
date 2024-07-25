@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { useCallback } from "react";
 
 const sanitizeText = (text) => {
+  // return text
   return text.toString().toLowerCase().replace(/\s+/g, '');
 };
 
@@ -12,8 +13,7 @@ const sanitizeText = (text) => {
 export const handleSearch = (searchText, itemData, setHook, setSearch=null) => {
   if(searchText !== null){
       const sanitizedText = sanitizeText(searchText);
-      if(setSearch !== null)
-        setSearch(sanitizedText)
+        setSearch(searchText)
       const filtered = itemData?.filter((parentObject) =>
         recursiveSearch(parentObject, sanitizedText)
     );
