@@ -13,11 +13,15 @@ const sanitizeText = (text) => {
 export const handleSearch = (searchText, itemData, setHook, setSearch=null) => {
   if(searchText !== null){
       const sanitizedText = sanitizeText(searchText);
+      if(setSearch)
         setSearch(searchText)
       const filtered = itemData?.filter((parentObject) =>
         recursiveSearch(parentObject, sanitizedText)
     );
     setHook([...filtered]);
+  }
+  else{
+    setHook([...itemData])
   }
 };
 

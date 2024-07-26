@@ -15,9 +15,8 @@ import {
 import { MinusCircleOutlined } from "@ant-design/icons";
 import "./GoodsReceiveNoteForm.css";
 import dayjs from "dayjs";
-import axios from "axios";
 import FormInputItem from "../../../components/FormInputItem";
-import { apiCall, apiHeader, printOrSaveAsPDF } from "../../../utils/Functions";
+import { apiCall, printOrSaveAsPDF } from "../../../utils/Functions";
 import { useSelector } from "react-redux";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
@@ -145,11 +144,30 @@ const GoodsReceiveNoteForm = () => {
   };
 
   const itemHandleChange = (fieldName, value, index) => {
+    if(fieldName === "unitPrice"){
+      if (/^\d*\.?\d*$/.test(value)) {
+        // setValue(value);
+        setFormData((prevValues) => {
+          const updatedItems = [...(prevValues.items || [])];
+          updatedItems[index] = {
+            ...updatedItems[index],
+            [fieldName]: value === "" ? 0 : value,
+          };
+          return {
+            ...prevValues,
+            items: updatedItems,
+          };
+        });
+      }
+
+      return
+    }
     setFormData((prevValues) => {
       const updatedItems = [...(prevValues.items || [])];
       updatedItems[index] = {
         ...updatedItems[index],
-        [fieldName]: value === "" ? null : value,
+        // [fieldName]: value === "" ? null : value,
+        [fieldName]: value
       };
       return {
         ...prevValues,
@@ -279,8 +297,6 @@ const GoodsReceiveNoteForm = () => {
     }
   };
 
-  console.log("Formdata: ", formData)
-
   const handleInwardGatePassNoChange = async (value) => {
     try {
       const subProcessDtlUrl =
@@ -380,7 +396,7 @@ const GoodsReceiveNoteForm = () => {
       delete itemObj.qtyList
 
       const insideArray = qtyList?.map(qtyObj=>{
-        return {...itemObj, quantity: qtyObj.quantity, locatorId: qtyObj.locatorId}
+        return {...itemObj, quantity: qtyObj.quantity, locatorId: qtyObj.locatorId, unitPrice: parseFloat(itemObj.unitPrice)}
       })
 
       return insideArray
@@ -564,7 +580,6 @@ const GoodsReceiveNoteForm = () => {
 
   const handleSelectChange = (value) => {
     setSelectedOption(value);
-    console.log("VSEECT VALUE: ", value)
   };
 
   if(!itemData) {
@@ -818,7 +833,7 @@ const GoodsReceiveNoteForm = () => {
                       </Form.Item> */}
                       {
                         formData.processType === "PO" && (
-                          <FormInputItem label="Unit Price" name="unitPrice" value={item.unitPrice} onChange={(fieldName, value) => itemHandleChange(fieldName, parseInt(value), key)} />
+                          <FormInputItem label="Unit Price" name="unitPrice" value={item.unitPrice} onChange={(fieldName, value) => itemHandleChange(fieldName, value, key)} />
                         )
                       }
 
