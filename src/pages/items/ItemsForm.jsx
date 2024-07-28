@@ -12,7 +12,7 @@ import {
   message,
 } from "antd";
 import axios from "axios";
-import { apiHeader } from "../../utils/Functions";
+import { apiCall, apiHeader } from "../../utils/Functions";
 import { useSelector } from "react-redux";
 
 const { Option } = Select;
@@ -30,6 +30,8 @@ const ItemsForm = ({
   sizes,
   categories,
   usageCategories,
+  setItemDependentValues,
+  validateDepVar
 }) => {
   const [form] = Form.useForm();
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -48,7 +50,7 @@ const ItemsForm = ({
   const handleCategoryChange = (value) => {
     setSelectedCategory(value);
     setSelectedSubCategory(null);
-    setSelectedType(null);
+  setSelectedType(null);
     setSelectedDiscipline(null);
     setDisciplinesDisabled(true);
     setItemDescriptionDisabled(true);
@@ -192,25 +194,48 @@ const ItemsForm = ({
     token,
   ]);
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     const itemMasterDescCopy = values.itemMasterDesc[0]
-    // if(typeof(itemMasterDescCopy === "string")){
-      const combinedCodeAndDesc = itemMasterDescCopy.split("$#")
-      if(combinedCodeAndDesc.length === 1){
-        values = { ...values, itemName: null, itemMasterDesc: itemMasterDescCopy };
+
+    try{
+      const {responseData, responseStatus} = await apiCall("POST", '/master/validateDuplicateItemName', token, {itemName:itemMasterDescCopy})
+      if(responseData) 
+        setItemDependentValues(responseData, values)
+      else{
+        if(responseStatus.message === "Failed" && responseStatus.statusCode === 400){
+          message.error(responseStatus.errorType)
+          return
+        }
+      }
+      console.log('Responsedata: ', responseData)
+      if(typeof(itemMasterDescCopy === "string")){
+        console.log("inside if")
+        const combinedCodeAndDesc = itemMasterDescCopy.split("$#")
+        if(combinedCodeAndDesc.length === 1){
+          console.log("inside if if")
+          values = { ...values, itemName: null, itemMasterDesc: itemMasterDescCopy };
+        }
+        else{
+          console.log("inside if else")
+          const itemName= combinedCodeAndDesc[0];
+          const itemMasterDesc = combinedCodeAndDesc[1];
+          values = { ...values, itemName, itemMasterDesc };
+        }
+        // console.log("VAlues after: ", values)
+        onSubmit(values);
       }
       else{
-        const itemName= combinedCodeAndDesc[0];
-        const itemMasterDesc = combinedCodeAndDesc[1];
-        values = { ...values, itemName, itemMasterDesc };
+        console.log("inside else")
+        values = {...values, itemMasterCd: null, itemMasterDesc: itemMasterDescCopy[0]}
+        onSubmit(values)
       }
-      // console.log("VAlues after: ", values)
-      onSubmit(values);
-    // }
-    // else{
-    //   values = {...values, itemMasterCd: null, itemMasterDesc: itemMasterDescCopy[0]}
-    //   onSubmit(values)
-    // }
+      // return
+    }catch(error){
+      message.error("Item already exist in the organization. Please check item master.")
+      console.log("Error on item name validation.", error)
+      return
+    }
+    // return
     // console.log("ITemmaster desc: ", values.itemMasterDesc)
     // console.log("Values: ", values);
     // form.resetFields();
@@ -235,6 +260,7 @@ const ItemsForm = ({
       onFinish={onFinish}
       initialValues={initialValues}
       layout="vertical"
+      style={{padding: '1rem', border: '1px solid #bbbbbb'}}
     >
       <Row gutter={16}>
         <Col span={8}>
@@ -245,11 +271,18 @@ const ItemsForm = ({
 
         <Col span={8}>
           <Form.Item
+          validateStatus={validateDepVar.validateCategory ? 'error' : ''}
+          help={validateDepVar.validateCategory ? 'Please enter correct value.' : ''}
+  
             name="category"
             label="Category"
             rules={[{ required: true, message: "Please enter Category" }]}
           >
-            <Select onChange={handleCategoryChange}>
+            <Select onChange={handleCategoryChange}
+              style={{
+                borderColor: validateDepVar.validateCategory ? 'red' : undefined,
+              }}
+            >
               {categories?.map((category, index) => {
                 return (
                   <Option key={index} value={category.paramVal}>
@@ -266,10 +299,15 @@ const ItemsForm = ({
             name="subCategory"
             label="Sub-Category"
             rules={[{ required: true, message: "Please enter SUB-CATEGORY" }]}
+            validateStatus={validateDepVar.validateSubCategory ? 'error' : ''}
+          help={validateDepVar.validateSubCategory ? 'Please enter correct value.' : ''}
           >
             <Select
               disabled={!selectedCategory}
               onChange={handleSubCategoryChange}
+              style={{
+                borderColor: validateDepVar.validateSubCategory ? 'red' : undefined,
+              }}
             >
               {subCategoryOptions?.map((option) => (
                 <Option key={option.key} value={option.key}>
@@ -285,8 +323,14 @@ const ItemsForm = ({
             name="type"
             label=" Type"
             rules={[{ required: true, message: "Please enter Item Type" }]}
+            validateStatus={validateDepVar.validateType ? 'error' : ''}
+          help={validateDepVar.validateType ? 'Please enter correct value.' : ''}
           >
-            <Select disabled={!selectedSubCategory} onChange={handleTypeChange}>
+            <Select disabled={!selectedSubCategory} onChange={handleTypeChange}
+              style={{
+                borderColor: validateDepVar.validatType ? 'red' : undefined,
+              }}
+            >
               {typeOptions?.map((option) => (
                 <Option key={option.key} value={option.key}>
                   {option.value}
@@ -301,10 +345,15 @@ const ItemsForm = ({
             name="disciplines"
             label="Disciplines"
             rules={[{ required: true, message: "Please enter Disciplines" }]}
+            validateStatus={validateDepVar.validateDiscipline ? 'error' : ''}
+          help={validateDepVar.validateDiscipline ? 'Please enter correct value.' : ''}
           >
             <Select
               disabled={disciplinesDisabled}
               onChange={handleDisciplineChange}
+              style={{
+                borderColor: validateDepVar.validatDiscipline ? 'red' : undefined,
+              }}
             >
               {disciplineOptions?.map((discipline) => (
                 <Option key={discipline.key} value={discipline.key}>
@@ -359,8 +408,14 @@ const ItemsForm = ({
             name="uomId"
             label="UOM"
             rules={[{ required: true, message: "Please enter UOM" }]}
+            validateStatus={validateDepVar.validateUom ? 'error' : ''}
+            help={validateDepVar.validateUom ? 'Please enter correct value.' : ''}
           >
-            <Select>
+            <Select
+              style={{
+                borderColor: validateDepVar.validateUom ? 'red' : undefined,
+              }}
+            >
               {uoms?.map((uom, index) => {
                 return (
                   <Option key={index} value={uom.id}>
@@ -632,8 +687,14 @@ const ItemsForm = ({
             name="usageCategory"
             label="Usage Category"
             rules={[{ required: true, message: "Please enter Category" }]}
+            validateStatus={validateDepVar.validateUsageCategory ? 'error' : ''}
+            help={validateDepVar.validateUsageCategory ? 'Please enter correct value.' : ''}
           >
-            <Select>
+            <Select
+              style={{
+                borderColor: validateDepVar.validateUsageCategory ? 'red' : undefined,
+              }}
+            >
               {usageCategories?.map((usageCategory, index) => {
                 return (
                   <Option key={index} value={usageCategory.paramVal}>
