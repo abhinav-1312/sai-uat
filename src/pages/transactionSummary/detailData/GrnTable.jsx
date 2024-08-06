@@ -214,7 +214,8 @@ const GrnTable = ({type, data, itemList}) => {
         }
     ]
   return (
-    <DetailData dataColumn={type === "PO" ? [...dataColumn,...poExtraColumns, ] :(type === "IRP" ? [...dataColumn, ...consumerDetails, ...irpExtraColumn, ...orgConsignorDetails] : [...dataColumn, ...orgConsignorDetails, ...orgConsigneeDetails] )} itemListColumn={type === "PO" ? [...itemListColumn, {title: "Unit Price", dataIndex: "unitPrice"}] : {itemListColumn}} data={data} itemList={itemList}/>
+    // <DetailData dataColumn={type === "PO" ? [...dataColumn,...poExtraColumns ] :(type === "IRP" ? [...dataColumn, ...consumerDetails, ...irpExtraColumn, ...orgConsignorDetails] : [...dataColumn] )} itemListColumn={type === "PO" ? [...itemListColumn] : [...itemListColumn]} data={data} itemList={itemList}/>
+    <DetailData dataColumn={type === "PO" ? [...dataColumn,...poExtraColumns, ] :(type === "IRP" ? [...dataColumn, ...consumerDetails, ...irpExtraColumn, ...orgConsignorDetails] : [...dataColumn, ...orgConsignorDetails, ...orgConsigneeDetails] )} itemListColumn={type === "PO" ? [...itemListColumn, {title: "Unit Price", dataIndex: "unitPrice"}] : itemListColumn} data={data} itemList={itemList}/>
   )
 }
 
