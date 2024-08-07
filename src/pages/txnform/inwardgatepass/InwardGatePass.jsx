@@ -172,7 +172,6 @@ const InwardGatePass = () => {
 
   const handleChange = (fieldName, value) => {
     if (fieldName === "processType") {
-      console.log(fieldName, value);
       fetchUserDetails(value);
       return;
     }

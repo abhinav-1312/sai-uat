@@ -2,37 +2,21 @@ import { Table, Input, Button, Popover, Select } from "antd";
 import React, { useState } from "react";
 import { handleSearch } from "../../utils/Functions";
 import { useSelector } from "react-redux";
-import {CaretUpOutlined, RightOutlined} from '@ant-design/icons'
+import { RightOutlined} from '@ant-design/icons'
 import _ from 'lodash'
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
+import OrgWiseCountBar from "./graphs/OrgWiseCountBar";
+
+// Register Chart.js components
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
 const { Search } = Input;
-const { Option } = Select;
 
-const ItemSlab = ({allData, filteredData, setFilteredData, descFilterDropdown, subcatDropdown}) => {
+const ItemSlab = ({allData, filteredData, setFilteredData, descFilterDropdown, subcatDropdown, countOrgWise, orgId}) => {
+  const {orgMasterObj} = useSelector(state => state.orgMaster)
   const [filteredInfo, setFilteredInfo] = useState({});
   const [searchText, setSearchText] = useState("");
-  const [descPopoverOpen, setDescPopoverOpen] = useState(false)
-  const [descFilterVal, setDescFilterVal] = useState(null)
-
-
-  const handleDescSelect = (value) => {
-    console.log("Value: ", value)
-    setDescPopoverOpen(false)
-  }
-
-  const handleDescClick = () => {
-    setDescPopoverOpen(!descPopoverOpen)
-  }
-
-//   const handleSearch = (columnKey, value) => {
-//     // Perform search logic if needed
-//     console.log(`Searching ${columnKey} for ${value}`);
-//   };
-
-//   return <Table dataSource={allData} columns={columns} />;
-// };
-
-
 
   const columns = [
     {
@@ -73,6 +57,11 @@ const ItemSlab = ({allData, filteredData, setFilteredData, descFilterDropdown, s
       ],
       onFilter: (value, record) => record?.fnsCategory?.indexOf(value) === 0,
     },
+    {
+      title: 'Organization Name',
+      dataIndex: 'orgId',
+      render: (value) => orgMasterObj[value]
+    }
   ];
 
    // Handle filters change
@@ -80,7 +69,7 @@ const ItemSlab = ({allData, filteredData, setFilteredData, descFilterDropdown, s
     setFilteredInfo(filters); // Update filteredInfo state with applied filters
   };
 
-  if(!allData){
+  if(!allData || !orgMasterObj){
     return (
       <h3>Loading</h3>
     )
@@ -125,6 +114,10 @@ const ItemSlab = ({allData, filteredData, setFilteredData, descFilterDropdown, s
  
   return (
     <div>
+      {
+        !orgId &&
+        <OrgWiseCountBar labels = {Object.keys(countOrgWise)} values = {Object.values(countOrgWise)} />
+      }
       <div style={{ marginBottom: "1rem" }}>
         <Search
           placeholder="Search items"

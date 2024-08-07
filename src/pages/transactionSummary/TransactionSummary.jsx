@@ -22,13 +22,11 @@ const TransactionSummary = ({orgId}) => {
     OGP: "Outward Gate Pass",
     IGP: "Inward Gate Pass",
     GRN: "Goods Receieved Note",
-    IR: "Inspection Report",
-    IRN: "Inspection Report New",
+    IR: "Material Inward Slip",
+    IRN: "Inspection Note",
     REJ: "Rejection Note",
     ACT: "Acceptance Note",
   };
-  const [writingItemCd, setWritingItemCd] = useState(true);
-  const [writingTxnType, setWritingTxnType] = useState(true);
 
   const [formData, setFormData] = useState({
     startDate: null,
@@ -142,12 +140,6 @@ const TransactionSummary = ({orgId}) => {
   const handleSearch = async () => {
     try {
       const formDataCopy = { ...formData };
-      if (writingItemCd) {
-        delete formDataCopy.txnType;
-      }
-      if (writingTxnType) {
-        delete formDataCopy.itemCode;
-      }
       if(orgId){
         const { data } = await axios.post(
           "/txns/getTxnSummary",
@@ -189,37 +181,8 @@ const TransactionSummary = ({orgId}) => {
     window.location.reload()
   };
 
-  const handleTxnTypeClick = () => {
-    setFormData((prevValues) => {
-      return {
-        ...prevValues,
-        itemCode: null,
-      };
-    });
-    setWritingItemCd(false);
-    setWritingTxnType(true);
-  };
-  const handleItemCdClick = () => {
-    setFormData((prevValues) => {
-      return {
-        ...prevValues,
-        txnType: null,
-      };
-    });
-    setWritingItemCd(true);
-    setWritingTxnType(false);
-    setShowTxn((prevState) => ({
-      ...Object.keys(prevState).reduce((acc, key) => {
-        acc[key] = true; // Set "field" key to true, rest to false
-        return acc;
-      }, {}),
-    }));
-  };
-
   return (
     <>
-      {/* <Button type="primary"> Button primary</Button>
-    <Button type="success" style={{backgroundColor: "#3fb950", border: "#3fb950", color: "#ffffff"}}> Button primary</Button> */}
       <h1 style={{ textAlign: "center" }}>Transaction Summary</h1>
       <div
         style={{
@@ -236,22 +199,20 @@ const TransactionSummary = ({orgId}) => {
             gap: "1rem",
           }}
         >
-          <div onClick={() => handleItemCdClick()}>
+          <div>
             <Form.Item label="Item Code">
               <Input
                 value={formData.itemCode}
                 onChange={(e) =>
                   handleFormValueChange("itemCode", e.target.value)
                 }
-                disabled={!writingItemCd}
               />
             </Form.Item>
           </div>
 
-          <div onClick={() => handleTxnTypeClick()}>
+          <div>
             <Form.Item label="Transaction Type">
               <Select
-                disabled={!writingTxnType}
                 value={formData.txnType}
                 onChange={(value) => handleFormValueChange("txnType", value)}
               >

@@ -9,6 +9,7 @@ import {SearchOutlined, RightOutlined} from '@ant-design/icons'
 import Highlighter from 'react-highlight-words';
 import _ from 'lodash'
 import { useNavigate } from 'react-router-dom'
+import { processStage, processType } from '../../utils/KeyValueMapping'
 const { Option } = Select;
 
 
@@ -121,12 +122,10 @@ const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData,
             if (filterValues && filterValues.length > 0) {
               const column = columns.find(col => col.dataIndex === key);
               return (
-                // <li key={key}>
                 <div>
                   <RightOutlined />
                   {column.title}:  <span style={{fontWeight: "normal"}}> {filterValues.join(', ')} </span>
                 </div>
-                // </li>
               );
             }
             return null;
@@ -140,9 +139,6 @@ const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData,
     console.log('Filters changed:', filters);
     setFilteredInfo(filters); // Update filteredInfo state with applied filters
   };
-
-    const handleReset1 = () =>{
-    }
 
     const getColumnSearchProps = (dataIndex) => ({
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
@@ -254,11 +250,13 @@ const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData,
       },
       {
         title: "Process Type",
-        dataIndex: "processType"
+        dataIndex: "processType",
+        render: (value) => processType[value]
       },
       {
         title: "Transaction Name",
-        dataIndex: "processStage"
+        dataIndex: "processStage",
+        render: (value) => processStage[value]
       },
       {
         title: "Transaction Value",

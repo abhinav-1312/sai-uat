@@ -5,25 +5,22 @@ import TransactionSlab from "./TransactionSlab";
 import InvValSlab from "./InvValSlab";
 import PurchaseSummarySlab from "./PurchaseSummarySlab";
 import { apiCall, convertToCurrency, sortAlphabetically } from "../../utils/Functions";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchOhq } from "../../redux/slice/ohqSlice";
 import Loader from '../../components/Loader'
-import axios from "axios";
 import _ from "lodash"
+import { useSelector } from "react-redux";
 
 const currentDate = new Date(); 
 const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
 const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
 
 const Dashboard = (props) => {
-    const {organizationDetails} = useSelector(state => state.auth)
-    const orgId = props.orgId ? props.orgId : organizationDetails?.id
+    const {organizationDetails, token, userCd} = useSelector(state => state.auth)
+    const orgId = props.orgId === 'null' ? null : ( props.orgId ? props.orgId : organizationDetails?.id)
     const [activeTab, setActiveTab] = useState("tab1")
     const [itemSlabLoading, setItemSlabLoading] = useState(false)
     const [txnSlabLoading, setTxnSlabLoading] = useState(false)
     const [invValLoading, setInvValLoading] = useState(false)
     const [purSumLoading, setPurSumLoading] = useState(false)
-    // const [ohqLoading, setOhqLoading] = useState(false)
 
     const [txnFilters, setTxnFilters] = useState({
       txnType: null,
@@ -32,44 +29,55 @@ const Dashboard = (props) => {
       issueNoteType: null,
     });
 
-    const {token, userCd} = useSelector(state => state.auth)
-    const dispatch = useDispatch()
-
     const [itemSlabData, setItemSlabData] = useState({
       count: null,
       allData: null,
+      countOrgWise: null
     })
-    const [itemSlabFilteredData, setItemSlabFilteredData] = useState(null)
-    const [itemSlabDescDropdown, setItemSlabDescDropdown] = useState(null)
-    const [itemSlabSubcatDropdown, setItemSlabSubcatDropdown] = useState(null)
-
     const [txnSlabData, setTxnSlabData] = useState({
       count: null,
       allData: null
     })
-
     const [invSlabData, setInvSlabData] = useState({
       count: null,
       allData: null
     })
+    const [itemSlabFilteredData, setItemSlabFilteredData] = useState(null)
+    const [itemSlabDescDropdown, setItemSlabDescDropdown] = useState(null)
+    const [itemSlabSubcatDropdown, setItemSlabSubcatDropdown] = useState(null)
+    const [invFilteredData, setInvFilteredData] = useState(null)
+
     const [invItemDescDropdown, setInvItemDescDropdown] = useState(null)
     const [invItemSubcatDropdown, setInvItemSubcatDropdown] = useState(null)
-
-    const [invFilteredData, setInvFilteredData] = useState(null)
 
     const fnsCategory = useCallback(async () => {
       setItemSlabLoading(true)
       const url = "/getFNSCategory"
       try{
         const {responseData:itemData} = await apiCall("POST", url, token, {orgId: orgId ? orgId:null})
-        setItemSlabData(prev => {
-          return {
-            ...prev,
-            allData: [...itemData],
+        const uniqueItemCount = new Set(itemData.map(item => item.itemCode)).size; // unique item in all data we got
+
+        // count unique items org wise
+        const orgIdItemCodeMap = itemData.reduce((acc, item) => {
+          if (!acc[item.orgId]) {
+              acc[item.orgId] = new Set();
           }
-        })
-        const filterDropdownArr = new Set()
-        const subcatDropdownArr = new Set()
+          acc[item.orgId].add(item.itemCode);
+          return acc;
+      }, {});
+      
+      // Count unique itemCodes for each orgId
+      const orgIdUniqueItemCodeCounts = Object.fromEntries(
+          Object.entries(orgIdItemCodeMap).map(([orgId, itemCodes]) => [orgId, itemCodes.size])
+      );
+
+        setItemSlabData({
+            allData: [...itemData],
+            count: uniqueItemCount,
+            countOrgWise: orgIdUniqueItemCodeCounts
+          })
+        const filterDropdownArr = new Set() // dropdown table for item description filter
+        const subcatDropdownArr = new Set() // dropdown table for subcategory filter
         itemData.forEach(item=> {
           const trimmedObj1 = 
           {
@@ -105,7 +113,7 @@ const Dashboard = (props) => {
     const populateTxnData = useCallback( async () => {
       setTxnSlabLoading(true)
       try {
-        const { responseData } = await apiCall("POST", "/txns/getTxnSummary", token, { startDate: null, endDate: null, itemCode: null, txnType: null, orgId: orgId ? orgId : null }) 
+        const { responseData } = await apiCall("POST", "/txns/getTxnSummary", token, { startDate: null, endDate: null, itemCode: null, txnType: null, orgId }) 
         setTxnSlabData({count: responseData?.length, allData: [...responseData || []].reverse()})
       } catch (error) {
         message.error("Error occured while fetching data. Please try again.");
@@ -119,16 +127,7 @@ const Dashboard = (props) => {
     const populateInvData = useCallback( async () => {
       setInvValLoading(true)
       try{
-        const {responseData} = await apiCall("POST", "/master/getOHQ", token, {itemCode: null, userId: userCd, orgId: orgId ? orgId : null})
-
-        const itemTotalCount = responseData?.length
-        setItemSlabData(prev=> {
-          return {
-            ...prev,
-            count: itemTotalCount
-          }
-        })
-
+        const {responseData} = await apiCall("POST", "/master/getOHQ", token, {itemCode: null, userId: userCd, orgId: orgId})
         let allVal = 0;
         const modData = responseData?.map(obj => {
           let totVal = 0;
@@ -172,7 +171,6 @@ const Dashboard = (props) => {
         })
         setInvFilteredData([...modData])
         setInvSlabData({count: convertToCurrency(allVal), allData: [...modData]})
-        // setData([...modData])
       }catch(error){
         console.log("Error in inv slab: ", error)
         message.error("Error occured fetching inventory details.")
@@ -181,26 +179,6 @@ const Dashboard = (props) => {
         setInvValLoading(false)
       }
     }, [orgId, token, userCd])
-
-    // const getOhqDtls = useCallback( async () => {
-    //   setOhqLoading(true)
-    //   try{
-    //     const {responseData} = await apiCall("POST", '/master/getOHQ', token, {orgId: orgId?orgId:null})
-    //     const itemTotalCount = responseData?.length
-    //     setItemSlabData(prev=> {
-    //       return {
-    //         ...prev,
-    //         count: itemTotalCount
-    //       }
-    //     })
-    //   }catch(error){
-    //     message.error("Error occured fetching ohq.")
-    //     console.log("Error on fetching ohq dtls.", error)
-    //   }
-    //   finally{
-    //     setOhqLoading(false)
-    //   }
-    // }, [token, orgId])
 
     const [summaryData, setSummaryData] = useState(
       {
@@ -218,7 +196,7 @@ const Dashboard = (props) => {
       endDate: `${endDate.getDate().toString().padStart(2, '0')}/${(endDate.getMonth() + 1).toString().padStart(2, '0')}/${endDate.getFullYear()}`
     })
 
-    const handlePurchaseSearch = async () => {
+    const handlePurchaseSearch = useCallback( async () => {
       setPurSumLoading(true)
       if(!summaryDataFilters.startDate || !summaryDataFilters.endDate){
         message.error("Please enter start date and end date.")
@@ -240,19 +218,14 @@ const Dashboard = (props) => {
       finally{
         setPurSumLoading(false)
       }
-    }
-
-    // const populateSummaryData = async () => {
-    //   const {responseData: summaryData} = await apiCall("POST", "/txns/getTxnSummary", token, {  txnType: "PO", orgId: orgId ? orgId : null})
-    // }
+    }, [orgId, token, summaryDataFilters])
 
     useEffect(()=>{
       fnsCategory()
-      // getOhqDtls()
       populateTxnData()
       populateInvData()
       handlePurchaseSearch()
-    },[fnsCategory, populateTxnData, populateInvData])
+    },[fnsCategory, populateTxnData, populateInvData, handlePurchaseSearch])
 
 
     if(itemSlabLoading ||
@@ -264,6 +237,7 @@ const Dashboard = (props) => {
           <Loader />
         )
       }
+
 
   return (
     <div style={{display: "flex", flexDirection: "column", gap: "4rem"}}>
@@ -288,7 +262,7 @@ const Dashboard = (props) => {
 
       {
         activeTab === "tab1" && (
-          <ItemSlab count = {itemSlabData.count} allData = {itemSlabData.allData} filteredData={itemSlabFilteredData} setFilteredData={setItemSlabFilteredData} descFilterDropdown = {itemSlabDescDropdown} subcatDropdown={itemSlabSubcatDropdown} />
+          <ItemSlab countOrgWise={itemSlabData.countOrgWise} count = {itemSlabData.count} allData = {itemSlabData.allData} filteredData={itemSlabFilteredData} setFilteredData={setItemSlabFilteredData} descFilterDropdown = {itemSlabDescDropdown} subcatDropdown={itemSlabSubcatDropdown} orgId={orgId} />
         )
       }
       {

@@ -393,3 +393,10 @@ code {
   /* align-items: center; */
   gap: 1rem;
 }
+
+.form-body{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 0.5rem 0;
+}

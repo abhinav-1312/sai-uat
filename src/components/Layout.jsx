@@ -2,9 +2,9 @@ import React from "react";
 import { Button, theme, Layout, Breadcrumb } from "antd";
 import SAI_Logo from "./../assets/images/SAI_logo.svg";
 import SideNav from "./SideNav";
-import { Navigate, Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { Content } from "antd/es/layout/layout";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { userLogout } from "../redux/slice/authSlice";
 import { clearDepartment } from "../redux/slice/departmentSlice";
 import { clearEmployee } from "../redux/slice/employeeSlice";
@@ -15,6 +15,7 @@ import { clearOrganization } from "../redux/slice/organizationSlice";
 import { clearUom } from "../redux/slice/uomSlice";
 import { clearUser } from "../redux/slice/userSlice";
 import { clearVendor } from "../redux/slice/vendorSlice";
+import { clearOrgMaster } from "../redux/slice/orgMasterSlice";
 
 const { Header } = Layout;
 const Template = () => {
@@ -39,9 +40,8 @@ const Template = () => {
     dispatch(clearUom())
     dispatch(clearUser())
     dispatch(clearVendor())
+    dispatch(clearOrgMaster())
     navigate('/login')
-    localStorage.removeItem("issueNote")
-    
   };
   const {
     token: { colorBgContainer },

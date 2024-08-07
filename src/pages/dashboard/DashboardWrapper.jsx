@@ -15,7 +15,15 @@ const DashboardWrapper = () => {
     <div>
         {
             userRole === "ssadmin" && (
-                <OrgSearchFilter handleChange={handleChange}/>
+                <>
+                    <OrgSearchFilter handleChange={handleChange}/>
+                    {
+                        orgId === null && (
+                            <Dashboard orgId={'null'} />
+                        )
+                    }
+
+                </>
             )
         }
         {

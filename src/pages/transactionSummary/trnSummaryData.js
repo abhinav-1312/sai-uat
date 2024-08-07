@@ -1,42 +1,43 @@
 import { Button } from "antd";
+import { processStage, processType } from "../../utils/KeyValueMapping";
 
 
 const txnName = [
 
   {
-    text: "RN",
+    text: "Return Note",
     value: "RN"
   },
   {
-    text: "ISN",
+    text: "Issue Note",
     value: "ISN"
   },
   {
-    text: "OGP",
+    text: "Outward Gate Pass",
     value: "OGP"
   },
   {
-    text: "IGP",
+    text: "Inward Gate Pass",
     value: "IGP"
   },
   {
-    text: "IR",
+    text: "Material Inward Slip",
     value: "IR"
   },
   {
-    text: "IRN",
+    text: "Inspection Note",
     value: "IRN"
   },
   {
-    text: "REJ",
+    text: "Rejection Note",
     value: "REJ"
   },
   {
-    text: "ACT",
+    text: "Acceptance Note",
     value: "ACT"
   },
     {
-      text: "GRN",
+      text: "Goods Receive Note",
       value: "GRN"
     },
   ]
@@ -55,20 +56,20 @@ export const trnSummaryColumn = (handleViewClick, handlePrintClick) => {
             dataIndex: "processType",
             filters: [
               {
-                text: "IOP",
-                value: "IOP"
+                text: "Issue Return Process",
+                value: "IRP"
               },
               {
-                text: "PO",
+                text: "Purchase Order",
                 value: "PO"
               },
               {
-                text: "IRP",
-                value: "IRP"
+                text: "Inter Org Process",
+                value: "IOP"
               },
             ],
             onFilter: (value, record) => record.processType.indexOf(value) === 0,
-            // render: (processType) => processTypeList(processType)
+            render: (value) => processType[value]
         },
         {
             title: "Process Stage",
@@ -77,8 +78,8 @@ export const trnSummaryColumn = (handleViewClick, handlePrintClick) => {
             filters: [...txnName],
             onFilter: (value, record) => {
               return record?.processStage === value
-             }
-            // render: (processType) => processTypeList(processType)
+             },
+            render: (value) => processStage[value]
         },
         {
             title: "Status",

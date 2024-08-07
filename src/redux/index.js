@@ -13,6 +13,7 @@ import userSlice from './slice/userSlice';
 import vendorSlice from './slice/vendorSlice';
 import itemSlice from './slice/itemSlice';
 import ohqSlice from './slice/ohqSlice';
+import orgMasterSlice from './slice/orgMasterSlice'
 
 
 
@@ -33,7 +34,8 @@ const rootReducer = combineReducers({
   users: userSlice,
   vendors: vendorSlice,
   item: itemSlice,
-  ohq: ohqSlice
+  ohq: ohqSlice,
+  orgMaster: orgMasterSlice
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

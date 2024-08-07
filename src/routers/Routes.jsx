@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import React from "react";
+import { Route, Routes } from "react-router-dom";
 import Organization from "../pages/organization/Organization";
 import Location from "../pages/location/Location";
 import Items from "../pages/items/Items";
@@ -35,10 +35,8 @@ import HqStockLedger from "../pages/hqRoutes/HqStockLedger";
 import ChangePasswordForm from "../auth/ChangePasswordForm";
 import SignIn from "../auth/Login";
 import Layout from "../components/Layout";
-import { useUser } from "../context/UserContext";
 import PrivateRoutes from "./PrivateRoutes";
 import { useSelector } from "react-redux";
-import Dashboard from "../pages/dashboard/Dashboard";
 import DashboardWrapper from "../pages/dashboard/DashboardWrapper";
 
 const RoutesComponent = () => {
