@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { apiCall, convertToCurrency } from '../../utils/Functions'
 import { useSelector } from 'react-redux'
-import TransactionSummary from '../transactionSummary/TransactionSummary'
 import FormInputItem from '../../components/FormInputItem'
 import FormDatePickerItem from '../../components/FormDatePickerItem'
 import { Button, Form, Input, Select, Space, Table } from 'antd'
@@ -10,11 +9,13 @@ import Highlighter from 'react-highlight-words';
 import _ from 'lodash'
 import { useNavigate } from 'react-router-dom'
 import { processStage, processType } from '../../utils/KeyValueMapping'
+import Loader from '../../components/Loader'
 const { Option } = Select;
 
 
-const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData, handleSumSearch, orgId, isHeadquarter}) => {
+const PurchaseSummarySlab = ({filters, setFilters, allData, handleSumSearch, isHeadquarter}) => {
     const {token} = useSelector(state => state.auth)
+    const {orgMasterObj} = useSelector(state => state.orgMaster)
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef(null);
@@ -27,12 +28,6 @@ const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData,
       clearFilters();
       setSearchText('');
     };
-    // const populateSummaryData = async () => {
-    //     const {responseData} = await apiCall("POST", "/txns/getTxnSummary", token, {  txnType: "PO", orgId: orgId ? orgId : null})
-    // }
-    // useEffect(()=>{
-    //     populateData()
-    // }, [])
 
     const handleChange = (fieldName, value) => {
       setFilters(prev=> {
@@ -66,13 +61,6 @@ const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData,
       const fetchSubCategories = async () => {
         try {
           const response = await apiCall("POST", "/genparam/getAllSubCategoriesByDtls", token, {categoryCode: filters.categoryCode} ) 
-          // axios.post(
-          //   "/genparam/getAllSubCategoriesByDtls",
-          //   {
-          //     categoryCode: filters.categoryCode,
-          //   },
-          //   apiHeader("POST", token)
-          // );
           const data = response.responseData || [];
           // Assuming the response contains an array of subcategory options
           const subcategoryOptions = data.map((subcategory) => ({
@@ -102,10 +90,10 @@ const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData,
 
   const navigate = useNavigate()
 
-  const handleViewClick = (id) => {
+  const handleViewClick = (id, orgID) => {
     if(isHeadquarter){
 
-      navigate(`/hqTxnSummary/${id}-${orgId}_GRN`);
+      navigate(`/hqTxnSummary/${id}-${orgID}_GRN`);
     }
     else{
       navigate(`/trnsummary/${id}_GRN`);
@@ -135,8 +123,7 @@ const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData,
     );
   };
 
-  const handleTableChange = (pagination, filters) => {
-    console.log('Filters changed:', filters);
+  const handleTableChange = (_, filters) => {
     setFilteredInfo(filters); // Update filteredInfo state with applied filters
   };
 
@@ -245,7 +232,6 @@ const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData,
         dataIndex: "id",
         ...getColumnSearchProps('id'),
         sorter: (a, b) => parseInt(a.id) - parseInt(b.id),
-      // sortOrder: sortedInfo.columnKey === 'name' ? sortedInfo.order : null,
       ellipsis: true,
       },
       {
@@ -264,17 +250,18 @@ const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData,
         render: (val) => convertToCurrency(val)
       },
       {
+        title: 'Organization Name',
+        dataIndex: 'orgId',
+        render: (value) => orgMasterObj[value]
+      },
+      {
         title: "View",
         id: "view",
         fixed: "right",
-        render: (_, record) => <Button type={"primary"} onClick={()=>handleViewClick(record.id)}> View </Button>,
+        render: (_, record) => <Button type={"primary"} onClick={()=>handleViewClick(record.id, record.orgId)}> View </Button>,
     },
     ]
 
-    // return(
-    //   <h3>Page under development.</h3>
-    // )
-    console.log("PUR FILTERS: ", filters)
     const handleCategoryChange = (value) => {
       setFilters(prev => {
         return {
@@ -292,6 +279,10 @@ const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData,
           subCategoryCode: value
         }
       })
+    }
+
+    if(!orgMasterObj){
+      return <Loader />
     }
   return (
     <>
@@ -326,10 +317,6 @@ const PurchaseSummarySlab = ({filters, setFilters, populateSummaryData, allData,
               })}
             </Select>
               </Form.Item>
-
-          {/* <FormInputItem label="Category Code" name="categoryCode" value={filters.categoryCode} onChange={handleChange} />
-          <FormInputItem label="Subcategory Code" name="subCategoryCode" value={filters.subCategoryCode} onChange={handleChange} /> */}
-          {/* <FormInputItem label="Usage Category Description" name="subcategory" value={filters.usageCategory} onChange={handleChange} /> */}
           <Button primary style={{backgroundColor: "#ff8a00", fontWeight: "bold"}} onClick={handleSumSearch}> Search </Button>
           <Button primary style={{fontWeight: "bold"}} onClick={handleReset}> Reset </Button>
         </div>

@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Form, Input, DatePicker, Select, Table, Button, message } from "antd";
 import {
-  processTypeList,
-  trnTypeList,
   trnSummaryColumn,
 } from "./trnSummaryData";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { apiHeader } from "../../utils/Functions";
+import { apiCall, apiHeader } from "../../utils/Functions";
 import { useSelector } from "react-redux";
 
 const { Option } = Select;
@@ -68,7 +66,6 @@ const TransactionSummary = ({orgId}) => {
     else{
       navigate(`/trnsummary/${url}`);
     }
-    // console.log("URL: ", url)
   };
 
   const handlePrintClick = (trnNo) => {
@@ -93,49 +90,31 @@ const TransactionSummary = ({orgId}) => {
     }
   };
 
-
-  const [itemData, setItemData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
 
-  const populateData = async () => {
+  const populateData = useCallback(async () => {
     try {
-      const { data } = await axios.post(
-        "/txns/getTxnSummary",
-        { startDate: null, endDate: null, itemCode: null, txnType: null },
-        apiHeader("POST", token)
-      );
-      const { responseData } = data;
+      const { responseData } = await apiCall('POST', '/txns/getTxnSummary', token, { startDate: null, endDate: null, itemCode: null, txnType: null, orgId: orgId ? orgId : null })
       setFilteredData([...responseData || []].reverse());
     } catch (error) {
       message.error("Error occured while fetching data. Please try again.");
       console.log("Populate data error.", error);
     }
-  };
+  }, [orgId, token]);
 
-  const populateHqData = async (orgId) => {
-    try {
-      const { data } = await axios.post(
-        "/txns/getTxnSummary",
-        { startDate: null, endDate: null, itemCode: null, txnType: null, orgId },
-        apiHeader("POST", token)
-      );
-      const { responseData } = data;
-      setFilteredData([...responseData || []].reverse());
-    } catch (error) {
-      message.error("Error occured while fetching data. Please try again.");
-      console.log("Populate data error.", error);
-    }
-  }
+  // const populateHqData = async (orgId) => {
+  //   try {
+  //     const { responseData } = apiCall('POST', '/txns/getTxnSummary', token, { startDate: null, endDate: null, itemCode: null, txnType: null, orgId })
+  //     setFilteredData([...responseData || []].reverse());
+  //   } catch (error) {
+  //     message.error("Error occured while fetching data. Please try again.");
+  //     console.log("Populate data error.", error);
+  //   }
+  // }
 
   useEffect(() => {
-    console.log("Useffect called txn summary")
-    if(orgId){
-      populateHqData(orgId)
-    }
-    else{
       populateData();
-    }
-  }, [orgId]);
+  }, [populateData]);
 
   const handleSearch = async () => {
     try {

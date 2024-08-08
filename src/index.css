@@ -218,7 +218,7 @@ code {
 
 .dashboard-tabs{
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(1rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
   gap: 1rem;
 }
 
@@ -267,11 +267,18 @@ code {
 #tab4{
   background-color: #9B59B6;
 }
+#tab5{
+  background-color: #008080;
+}
+#tab6{
+  background-color: #054A29;
+}
 
 .each-tab{
   transition: all 0.2s ease-in;
   position: relative;
   color: white;
+  height: inherit;
 }
 
 .active-slab{
@@ -399,4 +406,129 @@ code {
   flex-direction: column;
   gap: 1rem;
   margin: 0.5rem 0;
+}
+
+
+
+
+/* Style the header */
+.header {
+  background-color: #007bff;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.header-title {
+  font-size: 1.6rem; /* Slightly smaller heading */
+  font-weight: 700; /* Bolder heading */
+}
+
+
+/* Style the main content */
+.main-content {
+  max-width: 56.25rem; /* 900px */
+  margin: 0 auto;
+  background: white;
+  padding: 1.875rem; /* 30px */
+  border-radius: 0.5rem; /* 8px */
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1); /* 4px 8px */
+}
+
+/* Style the sections */
+.section {
+  margin-bottom: 1.5625rem; /* 25px */
+}
+
+.section-title {
+  font-size: 1.2rem; /* 28px */
+  color: #007bff;
+  font-weight: 700; /* Slightly bolder heading */
+  margin-bottom: 0.9375rem; /* 15px */
+  border-bottom: 0.125rem solid #007bff; /* 2px */
+  padding-bottom: 0.3125rem; /* 5px */
+}
+
+.section-text {
+  font-size: 1rem; /* 19px */
+  margin-bottom: 1.25rem; /* 20px */
+  margin-top: 0.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: justify;
+}
+
+/* Style the lists */
+.detail-list, .process-list {
+  margin-left: 1.25rem; /* 20px */
+  font-size: 1rem; /* 19px */
+  font-weight: 600;
+}
+
+.detail-list li, .process-list li {
+  margin-bottom: 0.25rem; /* 10px */
+}
+
+.user-types {
+  list-style-type: none;
+  padding-left: 0;
+  margin-top: -1rem;
+  margin-left: 1rem;
+}
+
+.user-types li {
+  margin-bottom: 0.5rem; /* 15px */
+  font-weight: 600; /* Slightly bolder list items */
+  font-size: 1rem;
+}
+
+/* Style the subsection titles */
+
+.subsection{
+  margin-top: 1rem;
+}
+.subsection-title {
+  font-size: 1.2rem; /* 22px */
+  color: #007bff;
+  font-weight: 700; /* Slightly bolder heading */
+  margin-top: 1.25rem; /* 20px */
+  margin-bottom: 0.9375rem; /* 15px */
+}
+
+.process-list{
+  margin-top: 0.5rem;
+}
+
+.responsibility-list {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-left: 2.2rem;
+}
+
+/* Style nested list items */
+.process-list ul {
+  margin-left: 1.25rem; /* 20px */
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+.process-list li {
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: justify;
+  margin-left: 1rem;
+}
+
+.process-list li span {
+  font-weight: 700;
+}
+
+.note-text{
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: red;
 }

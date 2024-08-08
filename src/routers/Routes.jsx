@@ -171,7 +171,6 @@ const RoutesComponent = () => {
   );
 
   const generateRoutes = (userRole) => {
-    console.log("Generate rourtes cleed: ", userRole);
     switch (userRole) {
       case "SuperAdmin":
         return superAdminRoutes;

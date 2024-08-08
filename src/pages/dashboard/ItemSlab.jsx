@@ -1,15 +1,10 @@
-import { Table, Input, Button, Popover, Select } from "antd";
+import { Table, Input } from "antd";
 import React, { useState } from "react";
 import { handleSearch } from "../../utils/Functions";
 import { useSelector } from "react-redux";
 import { RightOutlined} from '@ant-design/icons'
 import _ from 'lodash'
-import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
 import OrgWiseCountBar from "./graphs/OrgWiseCountBar";
-
-// Register Chart.js components
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
 const { Search } = Input;
 
@@ -90,7 +85,6 @@ const ItemSlab = ({allData, filteredData, setFilteredData, descFilterDropdown, s
   const renderAppliedFilters = () => {
     return (
       <div>
-        {/* <p>Applied filters:</p> */}
         <ul>
           {Object.keys(filteredInfo).map(key => {
             const filterValues = filteredInfo[key];

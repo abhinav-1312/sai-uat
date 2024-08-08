@@ -8,6 +8,8 @@ import { apiCall, convertToCurrency, sortAlphabetically } from "../../utils/Func
 import Loader from '../../components/Loader'
 import _ from "lodash"
 import { useSelector } from "react-redux";
+import SopManual from "./SopManual";
+import Faq from "./Faq";
 
 const currentDate = new Date(); 
 const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
@@ -15,7 +17,7 @@ const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
 
 const Dashboard = (props) => {
     const {organizationDetails, token, userCd} = useSelector(state => state.auth)
-    const orgId = props.orgId === 'null' ? null : ( props.orgId ? props.orgId : organizationDetails?.id)
+    const orgId = props.orgId === 'null' ? null : ( (props.orgId && props.orgId !== 'null') ? props.orgId : organizationDetails?.id)
     const [activeTab, setActiveTab] = useState("tab1")
     const [itemSlabLoading, setItemSlabLoading] = useState(false)
     const [txnSlabLoading, setTxnSlabLoading] = useState(false)
@@ -55,7 +57,9 @@ const Dashboard = (props) => {
       const url = "/getFNSCategory"
       try{
         const {responseData:itemData} = await apiCall("POST", url, token, {orgId: orgId ? orgId:null})
-        const uniqueItemCount = new Set(itemData.map(item => item.itemCode)).size; // unique item in all data we got
+        const uniqueItemCount = new Set(itemData.map(item => item.itemCode)); // unique item in all data we got
+
+        console.log("Unique item: ", uniqueItemCount)
 
         // count unique items org wise
         const orgIdItemCodeMap = itemData.reduce((acc, item) => {
@@ -73,7 +77,7 @@ const Dashboard = (props) => {
 
         setItemSlabData({
             allData: [...itemData],
-            count: uniqueItemCount,
+            count: uniqueItemCount.size,
             countOrgWise: orgIdUniqueItemCodeCounts
           })
         const filterDropdownArr = new Set() // dropdown table for item description filter
@@ -144,7 +148,8 @@ const Dashboard = (props) => {
             itemName: obj.itemName,
             subcategory: obj.qtyList[0].subcategoryDesc,
             value: convertToCurrency(totVal), 
-            quantity: totQuantity
+            quantity: totQuantity,
+            locationName: obj.locationName
           }
         })
 
@@ -258,6 +263,14 @@ const Dashboard = (props) => {
           <span className="tab-fieldName">Purchasing Summary</span>
           <span className="tab-value">{summaryData.count} <span style={{fontSize: "0.8rem", fontWeight: "normal"}}>for selected dates</span></span>
         </Button>
+        <Button className={`each-tab ${activeTab === "tab5" ? "active-slab" : ""}`} id="tab5" onClick={() => setActiveTab("tab5")}>
+          <span className="tab-fieldName">SOP & Manual</span>
+          {/* <span className="tab-value">{summaryData.count} <span style={{fontSize: "0.8rem", fontWeight: "normal"}}>for selected dates</span></span> */}
+        </Button>
+        <Button className={`each-tab ${activeTab === "tab6" ? "active-slab" : ""}`} id="tab6" onClick={() => setActiveTab("tab6")}>
+          <span className="tab-fieldName">FAQ</span>
+          {/* <span className="tab-value">{summaryData.count} <span style={{fontSize: "0.8rem", fontWeight: "normal"}}>for selected dates</span></span> */}
+        </Button>
       </div>
 
       {
@@ -277,7 +290,17 @@ const Dashboard = (props) => {
       }
       {
         activeTab === "tab4" && (
-            <PurchaseSummarySlab filters = {summaryDataFilters} setFilters = {setSummaryDataFilters} handleSumSearch={handlePurchaseSearch} allData={summaryData.allData} orgId={orgId} isHeadquarter={props.orgId? true : false} />
+            <PurchaseSummarySlab filters = {summaryDataFilters} setFilters = {setSummaryDataFilters} handleSumSearch={handlePurchaseSearch} allData={summaryData.allData} orgId={orgId} isHeadquarter={props.orgId === 'null' ? true : false} />
+        )
+      }
+      {
+        activeTab === "tab5" && (
+          <SopManual />
+        )
+      }
+      {
+        activeTab === "tab6" && (
+          <Faq />
         )
       }
     </div>
