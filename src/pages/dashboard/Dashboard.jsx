@@ -8,8 +8,8 @@ import { apiCall, convertToCurrency, sortAlphabetically } from "../../utils/Func
 import Loader from '../../components/Loader'
 import _ from "lodash"
 import { useSelector } from "react-redux";
-import SopManual from "./SopManual";
 import Faq from "./Faq";
+import SopManual from "./sopManual/SopManual";
 
 const currentDate = new Date(); 
 const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
