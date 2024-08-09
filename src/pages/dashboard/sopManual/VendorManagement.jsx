@@ -1,5 +1,5 @@
 import React from "react";
-import {CaretRightOutlined, MinusSquareFilled} from '@ant-design/icons'
+import {CaretRightOutlined} from '@ant-design/icons'
 
 const VendorManagement = () => {
   return (

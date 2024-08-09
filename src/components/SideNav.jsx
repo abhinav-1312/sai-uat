@@ -23,6 +23,17 @@ import { useSelector } from "react-redux";
 
 const { Content, Sider } = Layout;
 
+const siderStyle = {
+  overflow: 'auto',
+  height: '100vh',
+  position: 'fixed',
+  insetInlineStart: 0,
+  top: 0,
+  bottom: 0,
+  scrollbarWidth: 'thin',
+  scrollbarColor: 'unset',
+};
+
 const menuItems = [
   { key: "1", icon: <HomeOutlined />, label: "Dashboard", path: "/" },
   {
@@ -332,6 +343,7 @@ const SideNav = () => {
   );
 
   return (
+    // <Layout>
     <Layout style={{flex: 0}}>
       <Sider
         width={220}
@@ -342,6 +354,7 @@ const SideNav = () => {
           background: "#57cac3",
           color: "white",
           fontWeight: "bold",
+          // ...siderStyle
         }}
       >
         <Menu

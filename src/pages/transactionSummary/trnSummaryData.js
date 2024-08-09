@@ -42,7 +42,7 @@ const txnName = [
     },
   ]
 
-export const trnSummaryColumn = (handleViewClick, handlePrintClick) => {
+export const trnSummaryColumn = (handleViewClick, handlePrintClick, processStageFilter) => {
     return [
         {
             title: "Transaction No",
@@ -75,7 +75,7 @@ export const trnSummaryColumn = (handleViewClick, handlePrintClick) => {
             title: "Process Stage",
             key: "processStage",
             dataIndex: "processStage",
-            filters: [...txnName],
+            filters: [...processStageFilter],
             onFilter: (value, record) => {
               return record?.processStage === value
              },

@@ -12,6 +12,46 @@ const { Option } = Select;
 const dateFormat = "DD/MM/YYYY";
 
 const TransactionSummary = ({orgId}) => {
+  const txnName = [
+
+    {
+      text: "Return Note",
+      value: "RN"
+    },
+    {
+      text: "Issue Note",
+      value: "ISN"
+    },
+    {
+      text: "Outward Gate Pass",
+      value: "OGP"
+    },
+    {
+      text: "Inward Gate Pass",
+      value: "IGP"
+    },
+    {
+      text: "Material Inward Slip",
+      value: "IR"
+    },
+    {
+      text: "Inspection Note",
+      value: "IRN"
+    },
+    {
+      text: "Rejection Note",
+      value: "REJ"
+    },
+    {
+      text: "Acceptance Note",
+      value: "ACT"
+    },
+      {
+        text: "Goods Receive Note",
+        value: "GRN"
+      },
+    ]
+  const [processStageFilter, setProcessStageFilter] = useState([...txnName])
   const navigate = useNavigate();
   const {token} = useSelector(state => state.auth);
   const txnType = {
@@ -71,7 +111,7 @@ const TransactionSummary = ({orgId}) => {
   const handlePrintClick = (trnNo) => {
   };
 
-  const trnSumColumn = trnSummaryColumn(handleViewClick, handlePrintClick);
+  const trnSumColumn = trnSummaryColumn(handleViewClick, handlePrintClick, processStageFilter);
 
   const handleFormValueChange = (field, value) => {
     setFormData((prevValues) => {
@@ -160,6 +200,84 @@ const TransactionSummary = ({orgId}) => {
     window.location.reload()
   };
 
+  const handleTableChange = (_, filters) => {
+    console.log("_: ", _)
+    console.log("filters: ", filters)
+
+    if(!filters['processType']){
+      setProcessStageFilter([...txnName])
+    }
+    else{
+      const tempFilter = []
+      filters['processType'].forEach(filter => {
+        if(filter === 'IRP'){
+          if(!tempFilter.some(item => item.value === 'ISN'))
+            tempFilter.push({text: 'Issue Note', value: 'ISN'})
+
+          if(!tempFilter.some(item => item.value === 'OGP'))
+            tempFilter.push({text: 'Outward Gate Pass', value: 'OGP'})
+
+          if(!tempFilter.some(item => item.value === 'IGP'))
+            tempFilter.push({text: 'Inward Gate Pass', value: 'IGP'})
+
+          if(!tempFilter.some(item => item.value === 'RN'))
+            tempFilter.push({text: 'Return Note', value: 'RN'})
+
+          if(!tempFilter.some(item => item.value === 'GRN'))
+            tempFilter.push({text: 'Goods Receive Note', value: 'GRN'})
+        }
+        else if(filter === "PO"){
+          if(!tempFilter.some(item => item.value === 'IGP'))
+            tempFilter.push({text: 'Inward Gate Pass', value: 'IGP'})
+
+          if(!tempFilter.some(item => item.value === 'IR'))
+            tempFilter.push({text: 'Material Inward Slip', value: 'IR'})
+
+          if(!tempFilter.some(item => item.value === 'IRN'))
+            tempFilter.push({text: 'Inspection Note', value: 'IRN'})
+
+          if(!tempFilter.some(item => item.value === 'ACT'))
+            tempFilter.push({text: 'Acceptance Note', value: 'ACT'})
+
+          if(!tempFilter.some(item => item.value === 'GRN'))
+            tempFilter.push({text: 'Goods Receive Note', value: 'GRN'})
+
+          if(!tempFilter.some(item => item.value === 'REJ'))
+            tempFilter.push({text: 'Rejection Note', value: 'REJ'})
+
+          if(!tempFilter.some(item => item.value === 'OGP'))
+            tempFilter.push({text: 'Outward Gate Pass', value: 'OGP'})
+        }
+        else if(filter === 'IOP'){
+          if(!tempFilter.some(item => item.value === 'ISN'))
+            tempFilter.push({text: 'Issue Note', value: 'ISN'})
+
+          if(!tempFilter.some(item => item.value === 'OGP'))
+            tempFilter.push({text: 'Outward Gate Pass', value: 'OGP'})
+          
+          if(!tempFilter.some(item => item.value === 'IGP'))
+            tempFilter.push({text: 'Inward Gate Pass', value: 'IGP'})
+
+          if(!tempFilter.some(item => item.value === 'IR'))
+            tempFilter.push({text: 'Material Inward Slip', value: 'IR'})
+          
+          if(!tempFilter.some(item => item.value === 'IRN'))
+            tempFilter.push({text: 'Inspection Note', value: 'IRN'})
+
+          if(!tempFilter.some(item => item.value === 'ACT'))
+            tempFilter.push({text: 'Acceptance Note', value: 'ACT'})
+          
+          if(!tempFilter.some(item => item.value === 'GRN'))
+            tempFilter.push({text: 'Goods Receive Note', value: 'GRN'})
+          
+          if(!tempFilter.some(item => item.value === 'REJ'))
+            tempFilter.push({text: 'Rejection Note', value: 'REJ'})
+        }
+      })
+      setProcessStageFilter([...tempFilter])
+    }
+  }
+
   return (
     <>
       <h1 style={{ textAlign: "center" }}>Transaction Summary</h1>
@@ -234,6 +352,7 @@ const TransactionSummary = ({orgId}) => {
         dataSource={filteredData}
         columns={trnSumColumn}
         scroll={{ x: "max-content" }}
+        onChange={handleTableChange}
       />
     </>
   );

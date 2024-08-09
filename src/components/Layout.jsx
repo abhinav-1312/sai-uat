@@ -3,7 +3,6 @@ import { Button, theme, Layout, Breadcrumb } from "antd";
 import SAI_Logo from "./../assets/images/SAI_logo.svg";
 import SideNav from "./SideNav";
 import { Outlet, useNavigate } from "react-router-dom";
-import { Content } from "antd/es/layout/layout";
 import { useDispatch } from "react-redux";
 import { userLogout } from "../redux/slice/authSlice";
 import { clearDepartment } from "../redux/slice/departmentSlice";
@@ -16,8 +15,10 @@ import { clearUom } from "../redux/slice/uomSlice";
 import { clearUser } from "../redux/slice/userSlice";
 import { clearVendor } from "../redux/slice/vendorSlice";
 import { clearOrgMaster } from "../redux/slice/orgMasterSlice";
+// import Sider from "antd/es/layout/Sider";
 
-const { Header } = Layout;
+
+const { Header, Content, Footer, Sider } = Layout;
 const Template = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -101,6 +102,12 @@ const Template = () => {
         </Content>
       </Layout>
       </div>
+
+      {/* <Layout hasSider>
+        <Sider style={siderStyle}>
+          <SideNav />
+        </Sider>
+      </Layout> */}
       </>
   );
 };

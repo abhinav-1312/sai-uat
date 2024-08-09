@@ -59,8 +59,16 @@ const Dashboard = (props) => {
         const {responseData:itemData} = await apiCall("POST", url, token, {orgId: orgId ? orgId:null})
         const uniqueItemCount = new Set(itemData.map(item => item.itemCode)); // unique item in all data we got
 
-        console.log("Unique item: ", uniqueItemCount)
+        console.log("itemdata: ", itemData)
 
+        let orgWiseUniqueItemCnt = {}
+
+        itemData.forEach(record => {
+          if(!(record.orgId in orgWiseUniqueItemCnt)){
+            orgWiseUniqueItemCnt[record.orgId] = new Set()
+          }
+          orgWiseUniqueItemCnt[record.orgId].add(record.itemCode)
+        })
         // count unique items org wise
         const orgIdItemCodeMap = itemData.reduce((acc, item) => {
           if (!acc[item.orgId]) {
@@ -74,6 +82,12 @@ const Dashboard = (props) => {
       const orgIdUniqueItemCodeCounts = Object.fromEntries(
           Object.entries(orgIdItemCodeMap).map(([orgId, itemCodes]) => [orgId, itemCodes.size])
       );
+      const orgIdUniqueItemCodeCounts2 = Object.fromEntries(
+          Object.entries(orgWiseUniqueItemCnt).map(([orgId, itemCodes]) => [orgId, itemCodes.size])
+      );
+
+      console.log("Org 1: ", orgWiseUniqueItemCnt)
+      console.log("Org 2: ", orgIdUniqueItemCodeCounts2)
 
         setItemSlabData({
             allData: [...itemData],

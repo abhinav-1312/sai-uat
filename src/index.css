@@ -105,10 +105,6 @@ code {
   font-size: 20px;
 }
 
-.consignor-consignee-container{
-  /* padding: 1rem 0; */
-}
-
 .grid-2{
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
