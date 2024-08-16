@@ -5,6 +5,7 @@ import moment from "moment";
 import axios from "axios";
 import { apiHeader } from "../../utils/Functions";
 import { useSelector } from "react-redux";
+import Loader from "../../components/Loader";
 
 const { Option } = Select;
 
@@ -13,6 +14,7 @@ const UserForm = ({ onSubmit, initialValues }) => {
   const [departments, setDepartments] = useState([]);
   const [employeeId, setEmployeeId] = useState([]);
   const {token} = useSelector(state => state.auth);
+  const {data: orgMasterData} = useSelector(state => state.organizations)
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -48,6 +50,10 @@ const UserForm = ({ onSubmit, initialValues }) => {
     onSubmit(values);
     form.resetFields();
   };
+
+  if(!orgMasterData){
+    return <Loader />
+  }
 
   return (
     <Form
@@ -114,7 +120,7 @@ const UserForm = ({ onSubmit, initialValues }) => {
             ]}
           >
             <Select>
-              <Option value="5">SAI SONEPAT</Option>
+              {/* <Option value="5">SAI SONEPAT</Option>
               <Option value="6">SAI BHOPAL</Option>
               <Option value="9">SAI GANDHINAGAR</Option>
               <Option value="10">SAI BANGALORE</Option>
@@ -125,7 +131,16 @@ const UserForm = ({ onSubmit, initialValues }) => {
               <Option value="30">SAI LUCKNOW</Option>
               <Option value="31">SAI TRIVANDRUM</Option>
               <Option value="32">SAI MUMBAI</Option>
-              <Option value="33">SAI PATIALA</Option>
+              <Option value="33">SAI PATIALA</Option> */}
+              {
+                orgMasterData?.map(org => {
+                  return (
+                    <>
+                      <Option value={org.id} key={org.id}> {org.organizationName} </Option>
+                    </>
+                  )
+                })
+              }
             </Select>
           </Form.Item>
         </Col>

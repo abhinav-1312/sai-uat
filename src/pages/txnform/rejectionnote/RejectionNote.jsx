@@ -304,8 +304,6 @@ const RejectionNote = () => {
     }
   };
 
-  console.log("REJ FORM DATA: ", formData)
-
   const handleValuesChange = (_, allValues) => {
     setType(allValues.type);
   };

@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { apiCall, apiHeader } from "../../utils/Functions";
 import { useSelector } from "react-redux";
+import Loader from "../../components/Loader";
 
 const { Option } = Select;
 const dateFormat = "DD/MM/YYYY";
@@ -156,6 +157,9 @@ const TransactionSummary = ({orgId}) => {
       populateData();
   }, [populateData]);
 
+  
+
+
   const handleSearch = async () => {
     try {
       const formDataCopy = { ...formData };
@@ -201,8 +205,6 @@ const TransactionSummary = ({orgId}) => {
   };
 
   const handleTableChange = (_, filters) => {
-    console.log("_: ", _)
-    console.log("filters: ", filters)
 
     if(!filters['processType']){
       setProcessStageFilter([...txnName])
@@ -277,6 +279,8 @@ const TransactionSummary = ({orgId}) => {
       setProcessStageFilter([...tempFilter])
     }
   }
+
+
 
   return (
     <>

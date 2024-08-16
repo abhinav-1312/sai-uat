@@ -401,6 +401,10 @@ code {
   margin: 0.5rem 0;
 }
 
+.ant-form-item-label {
+  padding-bottom: 0 !important;
+}
+
 
 
 

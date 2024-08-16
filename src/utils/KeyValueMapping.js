@@ -16,3 +16,26 @@ export const processStage = {
     'REJ': "Rejection Note",
     'ACT': "Acceptance Note",
 }
+
+export const formDate = {
+    'RN': 'returnNoteDt',
+    'ISN': 'issueNoteDt',
+    'OGP': 'gatePassDate',
+    'IGP': 'gatePassDate',
+    'GRN': 'grnDate',
+    'IR': 'inspectionRptDate',
+    'IRN': 'inspectionRptDate',
+    'REJ': 'acptRejNodeDT',
+    'ACT': 'acptRejNodeDT'
+}
+export const formNo = {
+    'RN': 'returnNoteNo',
+    'ISN': 'issueNoteNo',
+    'OGP': 'gatePassNo',
+    'IGP': 'gatePassNo',
+    'GRN': 'grnNo',
+    'IR': 'inspectionRptNo',
+    'IRN': 'inspectionRptNo',
+    'REJ': 'acptRejNoteNo',
+    'ACT': 'acptRejNoteNo'
+}

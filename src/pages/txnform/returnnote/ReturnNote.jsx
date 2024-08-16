@@ -731,36 +731,32 @@
 
 
 // RetunNote.js
-import React, { useState, useEffect, useRef } from "react";
-import {
-  Form,
-  Input,
-  Select,
-  DatePicker,
-  Button,
-  Row,
-  Col,
-  AutoComplete,
-  Typography,
-  Modal,
-  message,
-} from "antd";
-import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
-import dayjs from "dayjs";
-import axios from "axios";
-import { apiHeader, daysDifference, printOrSaveAsPDF } from "../../../utils/Functions";
-import FormInputItem from "../../../components/FormInputItem";
-import { useSelector } from "react-redux";
-import FormHeading from "../../../components/FormHeading";
-import FormBody from "../../../components/FormBody";
-const dateFormat = "DD/MM/YYYY";
-// import {FormInputItem} from "../../../components/FormInputItem";
-// import { printOrSaveAsPDF } from "../../../utils/Functions";
+// import React, { useState, useEffect, useRef } from "react";
+// import {
+//   Form,
+//   Input,
+//   Select,
+//   DatePicker,
+//   Button,
+//   Row,
+//   Col,
+//   AutoComplete,
+//   Typography,
+//   Modal,
+//   message,
+// } from "antd";
+// import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
+// import dayjs from "dayjs";
+// import axios from "axios";
+// import { apiHeader, daysDifference, printOrSaveAsPDF } from "../../../utils/Functions";
+// import FormInputItem from "../../../components/FormInputItem";
+// import { useSelector } from "react-redux";
+// import FormHeading from "../../../components/FormHeading";
+// import FormBody from "../../../components/FormBody";
+// const dateFormat = "DD/MM/YYYY";
 
 
-// Hello
-
-const { Option } = Select;
+// const { Option } = Select;
 // const RetunNote = () => {
 //   Modal,
 //   message,
@@ -771,342 +767,342 @@ const { Option } = Select;
 
 // const dateFormat = "DD/MM/YYYY";
 
-const { Title } = Typography;
+// const { Title } = Typography;
 
-const RetunNote = () => {
-  const [buttonVisible, setButtonVisible] = useState(false)
-  const formRef = useRef()
-  const [Type, setType] = useState("1");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [itemData, setItemData] = useState([]);
-  const [uomMaster, setUomMaster] = useState([]);
-  const [formData, setFormData] = useState({
-    genDate: "",
-    genName: "",
-    issueDate: "",
-    issueName: "",
-    approvedDate: "",
-    approvedName: "",
-    returnNoteNo: "",
-    returnNoteDt: "",
-    processId: "",
-    issueNoteNo: "",
-    issueNoteDt: "",
-    type: "ISN",
-    regionalCenterCd: "",
-    regionalCenterName: "",
-    address: "",
-    zipcode: "",
-    consumerName: "",
-    contactNo: "",
-    termsCondition: "",
-    note: "",
-    items: [
-      {
-        srNo: 0,
-        itemCode: "",
-        itemDesc: "",
-        uom: "",
-        quantity: 0,
-        noOfDays: 0,
-        remarks: "",
-        conditionOfGoods: "",
-        budgetHeadProcurement: "",
-        locatorId: "",
-      },
-    ],
-    userId: "",
-  });
+// const RetunNote = () => {
+//   const [buttonVisible, setButtonVisible] = useState(false)
+//   const formRef = useRef()
+//   const [Type, setType] = useState("1");
+//   const [isModalOpen, setIsModalOpen] = useState(false);
+//   const [successMessage, setSuccessMessage] = useState("");
+//   const [errorMessage, setErrorMessage] = useState("");
+//   const [itemData, setItemData] = useState([]);
+//   const [uomMaster, setUomMaster] = useState([]);
+//   const [formData, setFormData] = useState({
+//     genDate: "",
+//     genName: "",
+//     issueDate: "",
+//     issueName: "",
+//     approvedDate: "",
+//     approvedName: "",
+//     returnNoteNo: "",
+//     returnNoteDt: "",
+//     processId: "",
+//     issueNoteNo: "",
+//     issueNoteDt: "",
+//     type: "ISN",
+//     regionalCenterCd: "",
+//     regionalCenterName: "",
+//     address: "",
+//     zipcode: "",
+//     consumerName: "",
+//     contactNo: "",
+//     termsCondition: "",
+//     note: "",
+//     items: [
+//       {
+//         srNo: 0,
+//         itemCode: "",
+//         itemDesc: "",
+//         uom: "",
+//         quantity: 0,
+//         noOfDays: 0,
+//         remarks: "",
+//         conditionOfGoods: "",
+//         budgetHeadProcurement: "",
+//         locatorId: "",
+//       },
+//     ],
+//     userId: "",
+//   });
 
-  console.log("FormDataa return note: ", formData)
+//   console.log("FormDataa return note: ", formData)
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
+  // const showModal = () => {
+  //   setIsModalOpen(true);
+  // };
 
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
+  // const handleOk = () => {
+  //   setIsModalOpen(false);
+  // };
 
-  const handleChange = (fieldName, value) => {
-    setFormData((prevValues) => ({
-      ...prevValues,
-      [fieldName]: value === "" ? null : value,
-    }));
-  };
+  // const handleChange = (fieldName, value) => {
+  //   setFormData((prevValues) => ({
+  //     ...prevValues,
+  //     [fieldName]: value === "" ? null : value,
+  //   }));
+  // };
 
-  const itemHandleChange = (fieldName, value, index) => {
-    setFormData((prevValues) => {
-      const updatedItems = [...(prevValues.items || [])];
-      updatedItems[index] = {
-        ...updatedItems[index],
-        [fieldName]: value === "" ? null : value,
+  // const itemHandleChange = (fieldName, value, index) => {
+  //   setFormData((prevValues) => {
+  //     const updatedItems = [...(prevValues.items || [])];
+  //     updatedItems[index] = {
+  //       ...updatedItems[index],
+  //       [fieldName]: value === "" ? null : value,
         // uom: "string",
         // conditionOfGoods: "string", // Hard-coded data
         // budgetHeadProcurement: "string", // Hard-coded data
         // locatorId: "string", // Hard-coded data
-      };
-      return {
-        ...prevValues,
-        items: updatedItems,
-      };
-    });
-  };
-  useEffect(() => {
-    fetchItemData();
-    fetchUserDetails();
-    fetchUomMaster();
-  }, []);
+  //     };
+  //     return {
+  //       ...prevValues,
+  //       items: updatedItems,
+  //     };
+  //   });
+  // };
+  // useEffect(() => {
+  //   fetchItemData();
+  //   fetchUserDetails();
+  //   fetchUomMaster();
+  // }, []);
 
-  const { organizationDetails, locationDetails, userDetails, token, userCd } = useSelector(state => state.auth)
+  // const { organizationDetails, locationDetails, userDetails, token, userCd } = useSelector(state => state.auth)
 
-  const fetchUomMaster = async () => {
-    try {
-      const uomMasterUrl =
-        "/master/getUOMMaster";
-      const uomMaster = await axios.get(uomMasterUrl, apiHeader("GET", token));
-      const { responseData: uomMasterData } = uomMaster.data;
-      setUomMaster([...uomMasterData]);
-    } catch (error) {
-      console.log("Error fetching Uom master details.", error);
-    }
-  };
+  // const fetchUomMaster = async () => {
+  //   try {
+  //     const uomMasterUrl =
+  //       "/master/getUOMMaster";
+  //     const uomMaster = await axios.get(uomMasterUrl, apiHeader("GET", token));
+  //     const { responseData: uomMasterData } = uomMaster.data;
+  //     setUomMaster([...uomMasterData]);
+  //   } catch (error) {
+  //     console.log("Error fetching Uom master details.", error);
+  //   }
+  // };
 
-  const fetchItemData = async () => {
-    try {
-      const apiUrl =
-        "/master/getItemMaster";
-      const response = await axios.get(apiUrl, apiHeader("GET", token));
-      const { responseData } = response.data;
-      setItemData(responseData);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-  const fetchUserDetails = async () => {
-      const currentDate = dayjs();
+  // const fetchItemData = async () => {
+  //   try {
+  //     const apiUrl =
+  //       "/master/getItemMaster";
+  //     const response = await axios.get(apiUrl, apiHeader("GET", token));
+  //     const { responseData } = response.data;
+  //     setItemData(responseData);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
+  // const fetchUserDetails = async () => {
+  //     const currentDate = dayjs();
       // Update form data with fetched values
-      setFormData({
-        genName: userDetails.firstName + " " + userDetails.lastName,
-        userId: userCd,
-        genDate: currentDate.format(dateFormat),
-        issueDate: currentDate.format(dateFormat),
-        approvedDate: currentDate.format(dateFormat),
-        returnNoteDt: currentDate.format(dateFormat),
-        returnNoteNo: "string",
-        type: 'IRP'
-      });
-  };
-  const handleIssueNoteNoChange = async (value) => {
-    try {
-      const apiUrl =
-        "/getSubProcessDtls";
-      const response = await axios.post(apiUrl, {
-        processId: value,
-        processStage: "IGP",
-      }, apiHeader("POST", token));
-      const responseData = response.data.responseData;
-      const { processData, itemList } = responseData;
+  //     setFormData({
+  //       genName: userDetails.firstName + " " + userDetails.lastName,
+  //       userId: userCd,
+  //       genDate: currentDate.format(dateFormat),
+  //       issueDate: currentDate.format(dateFormat),
+  //       approvedDate: currentDate.format(dateFormat),
+  //       returnNoteDt: currentDate.format(dateFormat),
+  //       returnNoteNo: "string",
+  //       type: 'IRP'
+  //     });
+  // };
+  // const handleIssueNoteNoChange = async (value) => {
+  //   try {
+  //     const apiUrl =
+  //       "/getSubProcessDtls";
+  //     const response = await axios.post(apiUrl, {
+  //       processId: value,
+  //       processStage: "IGP",
+  //     }, apiHeader("POST", token));
+  //     const responseData = response.data.responseData;
+  //     const { processData, itemList } = responseData;
 
-      if(processData !== null){
-        setFormData((prevFormData) => ({
-          ...prevFormData,
+  //     if(processData !== null){
+  //       setFormData((prevFormData) => ({
+  //         ...prevFormData,
   
-           regionalCenterCd: processData?.crRegionalCenterCd,
-          regionalCenterName: processData?.crRegionalCenterName,
-          address: processData?.crAddress,
-          zipcode: processData?.crZipcode,
+      //      regionalCenterCd: processData?.crRegionalCenterCd,
+      //     regionalCenterName: processData?.crRegionalCenterName,
+      //     address: processData?.crAddress,
+      //     zipcode: processData?.crZipcode,
   
-          processId: processData?.processId,
-          issueNoteDt: processData?.issueNoteDt || processData?.issueDate,
-          consumerName: processData?.consumerName,
-          contactNo: processData?.contactNo,
+      //     processId: processData?.processId,
+      //     issueNoteDt: processData?.issueNoteDt || processData?.issueDate,
+      //     consumerName: processData?.consumerName,
+      //     contactNo: processData?.contactNo,
   
-          termsCondition: processData?.termsCondition,
-          note: processData?.note,
+      //     termsCondition: processData?.termsCondition,
+      //     note: processData?.note,
   
-          items: itemList.map((item) => ({
-            srNo: item?.sNo,
-            id: item?.id || "Null",
-            itemId: item?.itemId,
-            itemCode: item?.itemCode,
-            itemDesc: item?.itemDesc,
-            uom: parseInt(item?.uom),
-            quantity: item?.quantity,
-            noOfDays: item?.requiredDays,
-            remarks: item?.remarks,
-            conditionOfGoods: item?.conditionOfGoods,
-            budgetHeadProcurement: item?.budgetHeadProcurement,
-            locatorId: item?.locatorId,
-          })),
-        }));
-      }
-      else{
-        const response = await axios.post(apiUrl, {
-          processId: value,
-          processStage: "ISN",
-        }, apiHeader("POST", token));
-        const responseData = response.data.responseData;
-        const { processData, itemList } = responseData;
+      //     items: itemList.map((item) => ({
+      //       srNo: item?.sNo,
+      //       id: item?.id || "Null",
+      //       itemId: item?.itemId,
+      //       itemCode: item?.itemCode,
+      //       itemDesc: item?.itemDesc,
+      //       uom: parseInt(item?.uom),
+      //       quantity: item?.quantity,
+      //       noOfDays: item?.requiredDays,
+      //       remarks: item?.remarks,
+      //       conditionOfGoods: item?.conditionOfGoods,
+      //       budgetHeadProcurement: item?.budgetHeadProcurement,
+      //       locatorId: item?.locatorId,
+      //     })),
+      //   }));
+      // }
+      // else{
+        // const response = await axios.post(apiUrl, {
+        //   processId: value,
+        //   processStage: "ISN",
+        // }, apiHeader("POST", token));
+        // const responseData = response.data.responseData;
+        // const { processData, itemList } = responseData;
 
-        setFormData((prevFormData) => ({
-          ...prevFormData,
+        // setFormData((prevFormData) => ({
+        //   ...prevFormData,
   
-           regionalCenterCd: processData?.crRegionalCenterCd,
-          regionalCenterName: processData?.crRegionalCenterName,
-          address: processData?.crAddress,
-          zipcode: processData?.crZipcode,
+        //    regionalCenterCd: processData?.crRegionalCenterCd,
+        //   regionalCenterName: processData?.crRegionalCenterName,
+        //   address: processData?.crAddress,
+        //   zipcode: processData?.crZipcode,
   
-          processId: processData?.processId,
-          issueNoteDt: processData?.issueNoteDt || processData?.issueDate,
-          consumerName: processData?.consumerName,
-          contactNo: processData?.contactNo,
+        //   processId: processData?.processId,
+        //   issueNoteDt: processData?.issueNoteDt || processData?.issueDate,
+        //   consumerName: processData?.consumerName,
+        //   contactNo: processData?.contactNo,
   
-          termsCondition: processData?.termsCondition,
-          note: processData?.note,
+        //   termsCondition: processData?.termsCondition,
+        //   note: processData?.note,
   
-          items: itemList.map((item) => ({
-            srNo: item?.sNo,
-            id: item?.id || "Null",
-            itemId: item?.itemId,
-            itemCode: item?.itemCode,
-            itemDesc: item?.itemDesc,
-            uom: parseInt(item?.uom),
-            quantity: item?.quantity,
-            noOfDays: item?.requiredDays,
-            remarks: item?.remarks,
-            conditionOfGoods: item?.conditionOfGoods,
-            budgetHeadProcurement: item?.budgetHeadProcurement,
-            locatorId: item?.locatorId,
-          })),
-        }));
-      }
-      // Handle response data as needed
-    } catch (error) {
-      console.error("Error fetching sub process details:", error);
-    }
-  };
+        //   items: itemList.map((item) => ({
+        //     srNo: item?.sNo,
+        //     id: item?.id || "Null",
+        //     itemId: item?.itemId,
+        //     itemCode: item?.itemCode,
+        //     itemDesc: item?.itemDesc,
+        //     uom: parseInt(item?.uom),
+        //     quantity: item?.quantity,
+        //     noOfDays: item?.requiredDays,
+        //     remarks: item?.remarks,
+        //     conditionOfGoods: item?.conditionOfGoods,
+        //     budgetHeadProcurement: item?.budgetHeadProcurement,
+        //     locatorId: item?.locatorId,
+        //   })),
+        // }));
+  //     }
+  //     // Handle response data as needed
+  //   } catch (error) {
+  //     console.error("Error fetching sub process details:", error);
+  //   }
+  // };
 
-  const onFinish = async (values) => {
-    if(!formData.genName || !formData.approvedName){
-      message.error("Please fill all the fields.")
-      return
-    }
-    try {
-      const formDataCopy = { ...formData };
+  // const onFinish = async (values) => {
+  //   if(!formData.genName || !formData.approvedName){
+  //     message.error("Please fill all the fields.")
+  //     return
+    // }
+    // try {
+    //   const formDataCopy = { ...formData };
 
       // Ensure all fields are present
-      const allFields = [
-        "genDate",
-        "genName",
-        "issueDate",
+      // const allFields = [
+      //   "genDate",
+      //   "genName",
+      //   "issueDate",
         // "issueName",
-        "approvedDate",
-        "approvedName",
-        "returnNoteNo",
-        "returnNoteDt",
-        "processId",
-        "issueNoteNo",
-        "issueNoteDt",
-        "type",
-        "regionalCenterCd",
-        "regionalCenterName",
-        "address",
-        "zipcode",
-        "consumerName",
-        "contactNo",
-        "termsCondition",
-        "note",
-        "items",
-        "userId",
-      ];
+      //   "approvedDate",
+      //   "approvedName",
+      //   "returnNoteNo",
+      //   "returnNoteDt",
+      //   "processId",
+      //   "issueNoteNo",
+      //   "issueNoteDt",
+      //   "type",
+      //   "regionalCenterCd",
+      //   "regionalCenterName",
+      //   "address",
+      //   "zipcode",
+      //   "consumerName",
+      //   "contactNo",
+      //   "termsCondition",
+      //   "note",
+      //   "items",
+      //   "userId",
+      // ];
 
-      allFields.forEach((field) => {
-        if (!(field in formDataCopy)) {
-          formDataCopy[field] = "";
-        }
-      });
+      // allFields.forEach((field) => {
+      //   if (!(field in formDataCopy)) {
+      //     formDataCopy[field] = "";
+      //   }
+      // });
 
-      const apiUrl =
-        "/saveReturnNote";
-      const response = await axios.post(apiUrl, formDataCopy, apiHeader("POST", token));
-      // Handle success response here
-      if (
-        response.status === 200 &&
-        response.data &&
-        response.data.responseStatus &&
-        response.data.responseStatus.message === "Success"
-      ) {
-        // Access the specific success message data if available
-        const { processId, processType, subProcessId } =
-          response.data.responseData;
-        setFormData((prevValues) => {
-          return {
-            ...prevValues,
-            returnNoteNo: processId,
-          };
-        });
-        setSuccessMessage(
-          `Return Note successfully! Return Note : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
-        );
-        showModal();
-        message.success(
-          `Return Note successfully! Process ID: ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
-        );
-        setButtonVisible(true)
-      } else {
+      // const apiUrl =
+      //   "/saveReturnNote";
+      // const response = await axios.post(apiUrl, formDataCopy, apiHeader("POST", token));
+      // // Handle success response here
+      // if (
+      //   response.status === 200 &&
+      //   response.data &&
+      //   response.data.responseStatus &&
+      //   response.data.responseStatus.message === "Success"
+      // ) {
+      //   // Access the specific success message data if available
+      //   const { processId, processType, subProcessId } =
+      //     response.data.responseData;
+      //   setFormData((prevValues) => {
+      //     return {
+      //       ...prevValues,
+      //       returnNoteNo: processId,
+      //     };
+      //   });
+      //   setSuccessMessage(
+      //     `Return Note successfully! Return Note : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
+      //   );
+      //   showModal();
+      //   message.success(
+      //     `Return Note successfully! Process ID: ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
+      //   );
+      //   setButtonVisible(true)
+      // } else {
         // Display a generic success message if specific data is not available
-        message.error("Failed to Return Note. Please try again later.");
-        console.log(response.data);
-      }
-    } catch (error) {
-      console.error("Error saving Return Note:", error);
+    //     message.error("Failed to Return Note. Please try again later.");
+    //     console.log(response.data);
+    //   }
+    // } catch (error) {
+    //   console.error("Error saving Return Note:", error);
       // Handle error response here
-    }
-  };
+  //   }
+  // };
 
-  const handleValuesChange = (_, allValues) => {
-    setType(allValues.type);
-  };
+  // const handleValuesChange = (_, allValues) => {
+  //   setType(allValues.type);
+  // };
 
-  const findColumnValue = (id, dataSource, sourceName) => {
-    const foundObject = dataSource.find((obj) => obj.id === id);
+  // const findColumnValue = (id, dataSource, sourceName) => {
+  //   const foundObject = dataSource.find((obj) => obj.id === id);
 
-    if (sourceName === "locationMaster")
-      return foundObject ? foundObject["locationName"] : "Undefined";
-    if (sourceName === "locatorMaster")
-      return foundObject ? foundObject["locatorDesc"] : "Undefined";
-    if (sourceName === "vendorMaster")
-      return foundObject ? foundObject["vendorName"] : "Undefined";
-    if (sourceName === "uomMaster")
-      return foundObject ? foundObject["uomName"] : "Undefined";
-  };
+  //   if (sourceName === "locationMaster")
+  //     return foundObject ? foundObject["locationName"] : "Undefined";
+  //   if (sourceName === "locatorMaster")
+  //     return foundObject ? foundObject["locatorDesc"] : "Undefined";
+  //   if (sourceName === "vendorMaster")
+  //     return foundObject ? foundObject["vendorName"] : "Undefined";
+  //   if (sourceName === "uomMaster")
+  //     return foundObject ? foundObject["uomName"] : "Undefined";
+  // };
 
-  const removeItem = (index) => {
-    setFormData((prevValues) => {
-      const updatedItems = prevValues.items;
-      updatedItems.splice(index, 1);
+  // const removeItem = (index) => {
+  //   setFormData((prevValues) => {
+  //     const updatedItems = prevValues.items;
+  //     updatedItems.splice(index, 1);
 
-      const updatedItems1 = updatedItems.map((item, key) => {
-        return { ...item, srNo: key };
-      });
+  //     const updatedItems1 = updatedItems.map((item, key) => {
+  //       return { ...item, srNo: key };
+  //     });
 
-      return {
-        ...prevValues,
-        items: updatedItems1,
-      };
-    });
-  };
+  //     return {
+  //       ...prevValues,
+  //       items: updatedItems1,
+  //     };
+  //   });
+  // };
 
-  return (
-    <div className="a4-container" ref={formRef}>
-      <FormHeading formTitle="Return Note" txnType="RN" date={formData.returnNoteDt} txnNo={formData.returnNoteNo === 'string' ? 'not defined' : formData.returnNoteNo} />
-      <FormBody formData={formData} txnType='RN' setFormData={setFormData}/>
-    </div>
-  )
-};
+  // return (
+    // <div className="a4-container" ref={formRef}>
+      // <FormHeading formTitle="Return Note" txnType="RN" date={formData.returnNoteDt} txnNo={formData.returnNoteNo === 'string' ? 'not defined' : formData.returnNoteNo} />
+      // <FormBody formData={formData} txnType='RN' setFormData={setFormData} formTitle="Return Note" />
+    // </div>
+//   )
+// };
 
-export default RetunNote;
+// export default RetunNote;
 

@@ -23,6 +23,7 @@ import Loader from "../../../components/Loader";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
+const {Search} = Input
 
 const AcceptanceNote = () => {
   const [buttonVisible, setButtonVisible] = useState(false)
@@ -449,9 +450,17 @@ const AcceptanceNote = () => {
               }
               name="inspectionreportno"
             >
-              <Input
+              {/* <Input
                 onChange={(e) => handleInspectionNOChange(e.target.value)}
               />
+              <Form.Item label={Type === "PO" ? "MIS NO. :" : "Inward Gate Pass No. :"} > */}
+              <Search
+                    name="inwardGatePass"
+                    label={Type === "PO" ? "MIS NO. :" : "Inward Gate Pass No. :"} 
+                    onSearch={handleInspectionNOChange}
+                    enterButton
+              />
+            {/* </Form.Item> */}
             </Form.Item>
             
             {

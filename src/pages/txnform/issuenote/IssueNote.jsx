@@ -12,6 +12,7 @@ import dayjs from "dayjs";
 import axios from "axios";
 
 import {
+  apiCall,
   apiHeader,
   mergeItemMasterAndOhq,
   removeItem,
@@ -25,6 +26,7 @@ import ItemSearch from "./ItemSearch";
 import { useLocation, useNavigate } from "react-router-dom";
 import { fetchUoms } from "../../../redux/slice/uomSlice";
 import { fetchLocators } from "../../../redux/slice/locatorSlice";
+import Loader from "../../../components/Loader";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { TextArea } = Input;
@@ -185,7 +187,6 @@ const IssueNote = () => {
   };
 
   useEffect(() => {
-    console.log("Rerendered")
     const fetchUomLoc = async () => {
       await dispatch(fetchUoms()).unwrap()
       await dispatch(fetchLocators()).unwrap()
@@ -241,6 +242,8 @@ const IssueNote = () => {
     itemList
   ]);
 
+  const {data: orgMaster} = useSelector(state => state.organizations)
+
   const handleCeRccChange = async (_, value) => {
     setFormData(prev => {
       return {
@@ -272,6 +275,30 @@ const IssueNote = () => {
       });
     }
   };
+
+  // let activeUsers = {}
+  // const fetchActiveUser = async () => {
+  //   orgMaster?.forEach(async org => {
+  //     // activeUsers[org.organizationName] = []
+  //     const {responseData: txnSummaryOrgwWise} = await apiCall('POST', '/txns/getTxnSummary', token, {orgId: org.id})
+  //     console.log('txnsumorgwise: ', txnSummaryOrgwWise)
+  //     activeUsers[org.organizationName] = txnSummaryOrgwWise
+  //     // txnSummaryOrgwWise.forEach( async txn => {
+  //     //   const {responseData: txnDtlsTxnWise} = await apiCall('POST', '/txns/getTxnDtls', token, {processId: txn.id})
+  //     //   Object.keys(txnDtlsTxnWise).forEach(key => {
+  //     //     if(key !== 'processId'){
+  //     //       if(key.data){
+  //     //         activeUsers['SAI SONEPAT'].push(key.data.genName)
+  //     //       }
+  //     //     }
+  //     //   })
+  //     // })
+  //   })
+
+  //   console.log("Active users : ", activeUsers)
+  // }
+
+  // fetchActiveUser()
 
   const onFinish = async () => {
     if(!formData.issueName || !formData.genName || !formData.approvedName){
@@ -365,6 +392,10 @@ const IssueNote = () => {
     localStorage.setItem("issueNote", JSON.stringify(formData));
     message.success("Issue Note saved as draft successfully.")
   };
+
+  if(!orgMaster){
+    return <Loader />
+  }
 
   return (
     <>

@@ -24,6 +24,7 @@ import { useSelector } from "react-redux";
 const dateFormat = "DD/MM/YYYY";
 const { Option } = Select;
 const { Title } = Typography;
+const {Search} = Input
 
 const InspectionNote = () => {
   const formRef = useRef()
@@ -123,18 +124,6 @@ const InspectionNote = () => {
     fetchUserDetails();
   }, []);
 
-  const fetchItemData = async () => {
-    try {
-      const apiUrl =
-        "/master/getItemMaster";
-      const response = await axios.get(apiUrl, apiHeader("GET", token));
-      const { responseData } = response.data;
-      setItemData(responseData);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
   const fetchUserDetails = async () => {
     // try {
     //   // const userCd = localStorage.getItem("userCd")
@@ -170,7 +159,7 @@ const InspectionNote = () => {
     // }
   };
   
-  const handleInwardGatePassChange = async (_fieldName, value) => {
+  const handleInwardGatePassChange = async (value) => {
     try {
       const apiUrl =
         "/getSubProcessDtls";
@@ -432,8 +421,15 @@ const InspectionNote = () => {
           <Col span={8}>
             <Form.Item></Form.Item>
 
-
-            <FormInputItem label={Type === "PO" ? "MIS NO. :" : "Inward Gate Pass No. :"} name="inwardGatePass" onChange={handleInwardGatePassChange} />
+            <Form.Item label={Type === "PO" ? "MIS NO. :" : "Inward Gate Pass No. :"} >
+              <Search
+                    name="inwardGatePass"
+                    label={Type === "PO" ? "MIS NO. :" : "Inward Gate Pass No. :"} 
+                    onSearch={handleInwardGatePassChange}
+                    enterButton
+              />
+            </Form.Item>
+            {/* <FormInputItem label={Type === "PO" ? "MIS NO. :" : "Inward Gate Pass No. :"} name="inwardGatePass" onChange={handleInwardGatePassChange} /> */}
             <FormInputItem label = "CHALLAN / INVOICE NO. :" value={formData.challanNo} readOnly={true} />
             <FormInputItem label = "MODE OF DELIVERY :" value={formData.modeOfDelivery} readOnly={true} />
             <FormInputItem label = "DATE OF DELIVERY :" value={formData.dateOfDeliveryDate} readOnly={true} />

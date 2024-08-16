@@ -1,26 +1,14 @@
 // LocationPage.js
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button, Modal, Input, message } from "antd";
 import { connect, useDispatch, useSelector } from "react-redux";
-import {
-  // fetchLocations,
-  // updateLocation,
-  // saveLocation,
-  // deleteLocation,
-} from "../../store/actions/LocationAction";
 import LocationTable from "./LocationTable";
 import LocationForm from "./LocationForm";
 import dayjs from "dayjs";
 import { deleteLocation, fetchLocations, saveLocation, updateLocation } from "../../redux/slice/locationSlice";
 import { apiCall } from "../../utils/Functions";
 
-const LocationPage = ({
-  // locations,
-  // fetchLocations,
-  // updateLocation,
-  // saveLocation,
-  // deleteLocation,
-}) => {
+const LocationPage = () => {
   const [visible, setVisible] = useState(false);
   const [editingLocation, setEditingLocation] = useState(null);
   const [searchText, setSearchText] = useState("");
@@ -29,14 +17,6 @@ const LocationPage = ({
   const dispatch = useDispatch()
 
   const getLocation = async (id) => {
-    // const itemResponse = await apiRequest(
-    //   "/master/getLocationMasterById",
-    //   "POST",
-    //   {
-    //     locationId: id,
-    //     userId: userCd,
-    //   }
-    // );
     try{
       const itemResponse = await apiCall("POST", "/master/getLocationMasterById", token, {locationId: id, userId: userCd})
       return itemResponse.responseData || [];

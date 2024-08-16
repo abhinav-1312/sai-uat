@@ -1,9 +1,14 @@
 import React from "react";
 import FormInputItem from "./FormInputItem";
 
-const RegionalCenterDetails = ({regionalCenterCd, regionalCenterName, address, zipcode, txnType, handleChange}) => {
+const RegionalCenterDetails = ({regionalCenterCd, regionalCenterName, address, zipcode, txnType, handleChange, heading}) => {
   return (
     <>
+        <div className="consignor-container">
+            <h3 className="consignor-consignee-heading">
+            {heading}
+              </h3>
+              
       <FormInputItem
         label="Regional Center Code"
         value={regionalCenterCd}
@@ -26,6 +31,7 @@ const RegionalCenterDetails = ({regionalCenterCd, regionalCenterName, address, z
         value={zipcode}
         readOnly={true}
       />
+      </div>
     </>
   );
 };

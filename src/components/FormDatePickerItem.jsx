@@ -5,6 +5,8 @@ import dayjs from 'dayjs';
 const dateFormat = "DD/MM/YYYY";
 
 const FormDatePickerItem = ({label, name, defaultValue, onChange, value, readOnly}) => {
+  const currentDate = dayjs();
+  const defVal = currentDate.format(dateFormat)
   // const [dateError, setDateError] = useState('');
   // const handleDateChange = (date, dateString) => {
   //   console.log("DATE, ", date)
@@ -38,10 +40,11 @@ const FormDatePickerItem = ({label, name, defaultValue, onChange, value, readOnl
 
       <DatePicker
       readOnly={readOnly}
-      defaultValue={dayjs(defaultValue, dateFormat, true)}
+      defaultValue={dayjs(defVal, dateFormat, true)}
+      // defaultValue={dayjs(defaultValue, dateFormat, true)}
       style={{ width: "100%" }}
       format={dateFormat}
-      value={value ? dayjs(value, dateFormat, true) : null}
+      value={value ? dayjs(value, dateFormat, true) : dayjs(defVal, dateFormat, true)}
       onChange={handleDateChange}
     />
 
