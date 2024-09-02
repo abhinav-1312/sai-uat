@@ -7,7 +7,6 @@ const ItemMasterMgmt = () => {
       <section className="section">
         <h2 className="section-title">Item Master Management</h2>
         <h3 className="subsection-title">
-          {" "}
           <CaretRightOutlined /> Objective
         </h3>
         <p className="section-text">
@@ -15,7 +14,6 @@ const ItemMasterMgmt = () => {
           Inventory Management System effectively.
         </p>
         <h3 className="subsection-title">
-          {" "}
           <CaretRightOutlined /> Step-by-Step Procedure
         </h3>
 

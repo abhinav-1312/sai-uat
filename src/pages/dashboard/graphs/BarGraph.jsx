@@ -6,12 +6,12 @@ import { useSelector } from 'react-redux';
 // Register Chart.js components
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
-const OrgWiseCountBar = ({labels, values}) => {
+const BarGraph = ({labels, values, legend, slab}) => {
     const {orgMasterObj} = useSelector(state => state.orgMaster)
-    const chartData = { labels: labels.map(record => orgMasterObj[record]),
+    const chartData = { labels: slab==="invSlab" ? labels : labels.map(record => orgMasterObj[record]),
         datasets: [
           {
-            label: 'Unique Item Count',
+            label: legend,
             data: values,
             backgroundColor: '#845EC2', // Darker blue for bars
             borderColor: '#845EC2', // Darker blue border
@@ -65,7 +65,7 @@ const OrgWiseCountBar = ({labels, values}) => {
               },
               title: {
                 display: true,
-                text: 'Unique Item Count', // Y-axis label
+                text: legend, // Y-axis label
                 color: 'black', // White color for the y-axis label
               },
               beginAtZero: true,
@@ -79,4 +79,4 @@ const OrgWiseCountBar = ({labels, values}) => {
   )
 }
 
-export default OrgWiseCountBar
+export default BarGraph

@@ -158,7 +158,7 @@ const AcceptanceNote = () => {
       //   processStage: "IRN",
       // }, apiHeader("POST", token));
 
-      const data = await apiCall("POST", `/getSubProcessDtls`, token, {processId: value, processStage: "IRN"})
+      const data = await apiCall("POST", `/getSubProcessDtls`, token, {processId: value, processStage: "IRN", rejectProcess: Type === "PO" ? false : true})
       const {responseData} = data;
       const { processData, itemList } = responseData;
       setFormData((prevFormData) => ({
@@ -199,7 +199,7 @@ const AcceptanceNote = () => {
           conditionOfGoods: item.conditionOfGoods,
           budgetHeadProcurement: item.budgetHeadProcurement,
           locatorId: item.locatorId,
-          acceptedQuantity: item.acceptedQuantity,
+          acceptedQuantity: item.acceptedQuantity || item.rejectedQuantity,
         })),
       }));
       // Handle response data as needed

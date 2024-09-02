@@ -166,6 +166,7 @@ const InspectionNote = () => {
       const response = await axios.post(apiUrl, {
         processId: value,
         processStage: Type === "PO" ? "IR" : "IGP",
+        rejectProcess: Type === "PO" ? false : true
       },  apiHeader("POST", token));
       const {responseData} = response.data;
       const { processData, itemList } = responseData;

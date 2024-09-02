@@ -491,6 +491,7 @@ const OutwardGatePass = () => {
     message.success("OGP data saved as draft successfully.");
   };
 
+    console.log("Formdata type: ", formData.type)
 
   return (
     <>
@@ -536,21 +537,21 @@ const OutwardGatePass = () => {
               <FormInputItem
                 readOnly={true}
                 label="Regional Center Code"
-                value={formData.crRegionalCenterCd}
+                value={formData.type === "PO" ? formData.ceRegionalCenterCd : formData.crRegionalCenterCd}
               />
               <FormInputItem
                 label="Regional Center Name"
-                value={formData.crRegionalCenterName}
+                value={formData.type === "PO" ? formData.ceRegionalCenterName :formData.crRegionalCenterName}
                 readOnly={true}
               />
               <FormInputItem
                 label="Address"
-                value={formData.crAddress}
+                value={formData.type === "PO" ? formData.ceAddress :formData.crAddress}
                 readOnly={true}
               />
               <FormInputItem
                 label="Zipcode"
-                value={formData.crZipcode}
+                value={formData.type === "PO" ? formData.ceZipcode :formData.crZipcode}
                 readOnly={true}
               />
             </div>

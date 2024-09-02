@@ -4,11 +4,16 @@ import { handleSearch } from "../../utils/Functions";
 import { useSelector } from "react-redux";
 import { RightOutlined} from '@ant-design/icons'
 import _ from 'lodash'
-import OrgWiseCountBar from "./graphs/OrgWiseCountBar";
+import OrgWiseCountBar from "./graphs/BarGraph";
 
 const { Search } = Input;
 
-const ItemSlab = ({allData, filteredData, setFilteredData, descFilterDropdown, subcatDropdown, countOrgWise, orgId}) => {
+const ItemSlab = ({allData, itemDescDropdownList, subCategoryDropdownList, countOrgWise, orgId}) => {
+  console.log("alldata", allData)
+  console.log("itemDescDropdownList", itemDescDropdownList)
+  console.log("subCategoryDropdownList", subCategoryDropdownList)
+  console.log("countOrgWise", countOrgWise)
+  const [filteredData, setFilteredData] = useState([...allData])
   const {orgMasterObj} = useSelector(state => state.orgMaster)
   const [filteredInfo, setFilteredInfo] = useState({});
   const [searchText, setSearchText] = useState("");
@@ -22,14 +27,14 @@ const ItemSlab = ({allData, filteredData, setFilteredData, descFilterDropdown, s
       title: "Item Description",
       dataIndex: "itemDescription",
       key: 'itemDescription',
-      filters:[...descFilterDropdown || []],
+      filters:itemDescDropdownList? itemDescDropdownList : [],
       onFilter: (value, record) => record?.itemDescription?.indexOf(value.split('-')[0]) === 0,
     },
     {
       title: "Subcategory",
       dataIndex: "subCategoryDesc",
       key: "subCategoryDesc",
-        filters: [...subcatDropdown || []],
+        filters: subCategoryDropdownList || [],
         onFilter: (value, record) => record?.subCategoryDesc?.indexOf(_.trim(value)) === 0,
     },
     {
@@ -110,7 +115,7 @@ const ItemSlab = ({allData, filteredData, setFilteredData, descFilterDropdown, s
     <div>
       {
         !orgId &&
-        <OrgWiseCountBar labels = {Object.keys(countOrgWise)} values = {Object.values(countOrgWise)} />
+        <OrgWiseCountBar labels = {Object.keys(countOrgWise)} values = {Object.values(countOrgWise)} legend="Unique Items" />
       }
       <div style={{ marginBottom: "1rem" }}>
         <Search

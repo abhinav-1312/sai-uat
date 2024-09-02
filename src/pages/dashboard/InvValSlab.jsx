@@ -3,17 +3,19 @@ import { Table, Input } from "antd";
 import { convertToCurrency, handleSearch } from "../../utils/Functions";
 import { RightOutlined } from "@ant-design/icons";
 import _ from "lodash";
+import BarGraph from "./graphs/BarGraph";
 
 const { Search } = Input;
 
 const InvValSlab = ({
   data,
-  filteredData,
-  setFilteredData,
-  itemDescDropdown,
-  subcatDropdown,
+  itemDescDropdownList,
+  subCategoryDropdownList,
+  orgId,
+  countOrgWise
 }) => {
   const [searchText, setSearchText] = useState("");
+  const [filteredData, setFilteredData] = useState([...data])
 
   const columns = [
     {
@@ -24,14 +26,14 @@ const InvValSlab = ({
       title: "Item Description",
       dataIndex: "itemName",
       key: "itemName",
-      filters: [...(itemDescDropdown || [])],
+      filters: [...(itemDescDropdownList || [])],
       onFilter: (value, record) => record?.itemName?.indexOf(value) === 0,
     },
     {
       title: "Subcategory",
       dataIndex: "subcategory",
       key: "subcategory",
-      filters: [...(subcatDropdown || [])],
+      filters: [...(subCategoryDropdownList || [])],
       onFilter: (value, record) => record?.subcategory?.indexOf(value) === 0,
     },
     {
@@ -101,6 +103,10 @@ const InvValSlab = ({
 
   return (
     <div>
+      {
+        !orgId &&
+        <BarGraph labels = {Object.keys(countOrgWise)} values = {Object.values(countOrgWise)} legend="Inventory Value (in Rupess)" slab="invSlab"/>
+      }
       <div style={{ marginBottom: "1rem" }}>
         <Search
           placeholder="Search items"

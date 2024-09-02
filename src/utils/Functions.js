@@ -1,8 +1,7 @@
 import {Table, Button, message} from "antd"
 import html2pdf from 'html2pdf.js';
 import axios from 'axios'
-import { useSelector } from "react-redux";
-import { useCallback } from "react";
+import _ from 'lodash';
 
 const sanitizeText = (text) => {
   // return text
@@ -435,4 +434,84 @@ export const sortAlphabetically = (arr) => {
   });
 
   return arr
+}
+
+export const populateTxnSlabData = async (startDate=null, endDate=null, itemCode=null, txnType=null, orgId = null, token) => {
+  if(!orgId){
+    let allTxn = []
+    const countOrgWise = {} // count no. of txn happened org wise
+    const { responseData } = await apiCall("POST", "/txns/getTxnSummaryForAllOrg", token, { startDate, endDate, itemCode, txnType, orgId }) 
+
+    responseData.forEach(record => {
+      allTxn = [...allTxn, ...record.respList]
+      countOrgWise[record.orgId] = record.respList.length
+    })
+    return {count: allTxn.length, allData: allTxn, countOrgWise: countOrgWise}
+  }
+  else{
+    const { responseData } = await apiCall("POST", "/txns/getTxnSummary", token, { startDate, endDate, itemCode, txnType, orgId }) 
+    return {count: responseData.length, allData: responseData, countOrgWise: {orgId: responseData.length}}
+  }
+}
+
+export const populateItemSlabData = async (orgId, token) => {
+  const {responseData} = await apiCall("POST", "/getFNSCategory", token, {orgId: orgId})
+  const uniqueItemListAllOrg = new Set() // unique list of items
+  const itemDescDropdownList = new Set() // item description dropdown filter data
+  const subCategoryDropdownList = new Set() // subcategory dropdown filter data
+  const uniqueItemOrgWiseMapping = {} // org wise unique items present 
+  
+  responseData.forEach(item => {
+    itemDescDropdownList.add(JSON.stringify({ text: _.trim(item.itemDescription), value: _.trim(item.itemDescription)}))
+    subCategoryDropdownList.add(JSON.stringify({text: _.trim(item.subCategoryDesc), value: _.trim(item.subCategoryDesc)}))
+    uniqueItemListAllOrg.add(item.itemCode)
+    if(!uniqueItemOrgWiseMapping[item.orgId]){
+      uniqueItemOrgWiseMapping[item.orgId] = new Set()
+    }
+    uniqueItemOrgWiseMapping[item.orgId].add(item.itemCode)
+  })
+
+  const uniqueItemOrgWiseMappingCount = Object.fromEntries(
+    Object.entries(uniqueItemOrgWiseMapping).map(([orgId, uniqueItemList]) => [orgId, uniqueItemList.size])
+  )
+
+  return {allData: responseData || [], count: uniqueItemListAllOrg.size, countOrgWise: uniqueItemOrgWiseMappingCount, itemDescDropdownList: sortAlphabetically(Array.from(itemDescDropdownList).map(str => JSON.parse(str))), subCategoryDropdownList: Array.from(subCategoryDropdownList).map(str=> JSON.parse(str))}
+} 
+
+export const populateInvSlabData = async (itemCode, orgId, token) => {
+  const {responseData} = await apiCall("POST", "/master/getOHQ", token, {itemCode: itemCode, userId: "userCd", orgId: orgId})
+  let totalValAllOrg = 0
+  const data = []
+  const countOrgWise = {} // location wise value
+  const itemDescDropdownList = new Set() // item description dropdown filter data
+  const subCategoryDropdownList = new Set() // subcategory dropdown filter data
+  responseData.forEach(record => {
+    let tempVal = 0
+    let tempQuantity = 0
+    record.qtyList.forEach(subRecord => {
+      tempVal = Math.round((tempVal + subRecord.totalValues)*100)/100
+      tempQuantity = tempQuantity + subRecord.quantity
+    })
+
+    if(!countOrgWise[record.locationName]){
+      countOrgWise[record.locationName] = 0
+    }
+
+    countOrgWise[record.locationName] = Math.round((countOrgWise[record.locationName] + tempVal)*100)/100
+
+    totalValAllOrg = Math.round((totalValAllOrg + tempVal)*100)/100
+    data.push({
+      itemCode: record.itemCode,
+      itemName: record.itemName,
+      subcategory: record.qtyList[0].subcategoryDesc,
+      value: convertToCurrency(tempVal),
+      quantity: tempQuantity,
+      locationName: record.locationName
+    })
+
+    itemDescDropdownList.add(JSON.stringify({text: _.trim(record.itemName), value: _.trim(record.itemName)}))
+    subCategoryDropdownList.add(JSON.stringify({text: _.trim(record.qtyList[0].subcategoryDesc), value: _.trim(record.qtyList[0].subcategoryDesc)}))
+  })
+
+  return {allData: data, count: convertToCurrency(totalValAllOrg), countOrgWise: countOrgWise, itemDescDropdownList: sortAlphabetically(Array.from(itemDescDropdownList).map(str => JSON.parse(str))), subCategoryDropdownList: Array.from(subCategoryDropdownList).map(str=> JSON.parse(str))}
 }

@@ -1,0 +1,96 @@
+[
+    {
+      "id": "Q1",
+      "question": "How do I deselect a selected item on an issue note?",
+      "answer": "If you have selected an unwanted item on an issue note and wish to deselect it, you can do so by clicking on the Delete button located in the specific item field within the table. This will remove the item from the Issue Note."
+    },
+    {
+      "id": "Q2",
+      "question": "Why is my form not getting submitted?",
+      "answer": [
+        "Ensure that all mandatory fields have been filled out correctly.",
+        "Verify that no required information is missing.",
+        "Try submitting the form again."
+      ]
+    },
+    {
+      "id": "Q3",
+      "question": "How do I check the available on-hand quantity in the Inventory Management System (IMS)?",
+      "answer": "To check available on-hand quantity in IMS, go to OHQ Master, search by item name or code, and view the available quantity with the locator."
+    },
+    {
+      "id": "Q4",
+      "question": "I created an Inward Gate Pass when receiving items from a vendor and submitted it successfully, but I forgot to print the gate pass and do not remember the Inward Gate Pass number. How can I retrieve the Inward Gate Pass number for further processing?",
+      "answer": [
+        "Access the Transaction Summary: Go to the Transaction Summary section in the system.",
+        "Locate Your Recent Transaction: Your most recent transaction will appear at the top of the transaction list.",
+        "View Transaction Details: Click on View next to the latest transaction to confirm the details.",
+        "Complete the Process: Use the latest transaction ID displayed to complete any further processing related to the Inward Gate Pass."
+      ]
+    },
+    {
+      "id": "Q5",
+      "question": "Why am I unable to search for an item on the issue note even though it is present in the system?",
+      "answer": "If the item you are searching for has an on-hand quantity of zero, the system will not display the item on the issue note. Ensure that the item has available stock before attempting to search for it on the issue note."
+    },
+    {
+      "id": "Q6",
+      "question": "Can I edit the brand, size, or color of a predefined item in the system?",
+      "answer": "No, the system does not allow you to edit the brand, size, or color of a predefined item. If you need to change the brand, size, or color, you must create a new item code for that item. The system does not permit editing of predefined item codes."
+    },
+    {
+      "id": "Q7",
+      "question": "I added a new item, but I can't find the brand, size, or color I need in the LOV. How can I add it?",
+      "answer": "To add a new brand, size, or color that is not available in the LOV (List of Values), you should follow the SOP for Quick Code. By using the Quick Code function, you can add the necessary brand, size, or color to the system. Once added, it will be available in the LOV for future use."
+    },
+    {
+      "id": "Q8",
+      "question": "How can I transfer my items from one locator to another?",
+      "answer": [
+        "Issue the Items: First, issue the item with the full quantity from the current locator.",
+        "Return the Items: After issuing, return the items back into the system.",
+        "Receive in New Locator: During the Goods Receipt Note (GRN) process, receive the returned items into the new locator."
+      ]
+    },
+    {
+      "id": "Q9",
+      "question": "How can a user manage scrap items in the Inventory Management System?",
+      "answer": [
+        "Create a Scrap Locator: First, create a new locator within the system with the name 'Scrap Locator.'",
+        "Receive Returnable Items: When a returnable item is received as scrap, create a Goods Receipt Note (GRN) for the return.",
+        "Assign the Item to the Scrap Locator: During the GRN creation process, assign the returned item to the 'Scrap Locator' to ensure it is properly categorized and managed as scrap."
+      ]
+    },
+    {
+      "id": "Q10",
+      "question": "Can we edit any identity, such as consumer name or vendor name, after submitting the form?",
+      "answer": "No, once the form is submitted, you cannot change any identity information, including consumer name, vendor name, or any other details."
+    },
+    {
+      "id": "Q11",
+      "question": "What should a user do if they forget to print an issue note or any other note, and the system has already been refreshed?",
+      "answer": [
+        "Navigate to the Transaction Summary in the Inventory Management System.",
+        "Locate the specific transaction related to the note you need to print.",
+        "In the Transaction Summary, you will find a Print option available for each note.",
+        "Click on the Print option to print the desired note."
+      ]
+    },
+    {
+      "id": "Q12",
+      "question": "When creating a vendor in the Vendor Creation module, all fields are mandatory. What should I do if I don't have all the required information about the vendor?",
+      "answer": "If you do not have all the required information about the vendor at the time of creation, you can temporarily fill in those fields with 'NA' (Not Available). Once you receive the missing information, you can update the vendor details by using the Edit option in the Vendor Creation module."
+    },
+    {
+      "id": "Q13",
+      "question": "What is required for the 'Number of Days' field in the Issue Note?",
+      "answer": "The 'Number of Days' field in the Issue Note is used to specify the duration for which the consumer needs the item. You should enter the number of days the consumer requires the item when filling out this field."
+    },
+    {
+      "id": "Q14",
+      "question": "Can a user issue both returnable and non-returnable items in a single issue note?",
+      "answer": "No, users cannot issue both returnable and non-returnable items in a single issue note. Separate issue notes must be used for each type. Additionally, the demand notes for returnable and non-returnable items must also be different."
+    }
+  ]
+
+  
