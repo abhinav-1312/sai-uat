@@ -168,17 +168,19 @@ const IssueNote = () => {
     });
   };
 
-
+console.log("FORMDATDA: ", formData)
 
   const { organizationDetails, locationDetails, userDetails, token, userCd } =
     useSelector((state) => state.auth);
 
   const updateFormData = (newItem) => {
+    console.log("new item: ", newItem)
     setFormData((prevValues) => {
       const updatedItems = [
         ...(prevValues.items || []),
         {
           ...newItem,
+          noOfDays: formData.processType === "NIRP" ? "0" : newItem.noOfDays,
           srNo: prevValues.items?.length ? prevValues.items.length + 1 : 1,
         },
       ];

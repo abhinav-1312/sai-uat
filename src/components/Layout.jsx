@@ -18,7 +18,7 @@ import { clearOrgMaster } from "../redux/slice/orgMasterSlice";
 // import Sider from "antd/es/layout/Sider";
 
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Header, Content } = Layout;
 const Template = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
