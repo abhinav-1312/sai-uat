@@ -390,6 +390,8 @@ console.log("FORMDATDA: ", formData)
     }
   };
 
+  console.log("Data: ", data)
+
   const saveDraft = () => {
     localStorage.setItem("issueNote", JSON.stringify(formData));
     message.success("Issue Note saved as draft successfully.")

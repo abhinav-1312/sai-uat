@@ -1,6 +1,6 @@
 import { Button, Popover, Table, Input } from 'antd';
 import React, { useState } from 'react'
-import { handleSearch } from '../../../utils/Functions';
+import { convertToCurrency, handleSearch } from '../../../utils/Functions';
 
 const { Search } = Input;
 
@@ -70,6 +70,12 @@ const ItemSearch = ({itemArray, updateFormData}) => {
                 title: "QUANTITY",
                 dataIndex: "quantity",
                 key: "quantity",
+              },
+              {
+                title: "Total Value",
+                dataIndex: "totalValues",
+                key: "totalValues",
+                render: (value) => convertToCurrency(value)
               },
               {
                 title: "ACTION",
