@@ -16,6 +16,7 @@ const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
 const Dashboard = (props) => {
     const {organizationDetails, token} = useSelector(state => state.auth)
     const orgId = props.orgId === 'null' ? null : ( (props.orgId && props.orgId !== 'null') ? props.orgId : organizationDetails?.id)
+    console.log("orgId dashboard: ", orgId)
     const [activeTab, setActiveTab] = useState("tab1")
     const [purSumLoading, setPurSumLoading] = useState(false)
 
@@ -23,8 +24,8 @@ const Dashboard = (props) => {
       count: 0,
       allData: [],
       countOrgWise: {},
-      itemDescDropdownList: {},
-      subCategoryDropdownList: {}
+      itemDescDropdownList: [],
+      subCategoryDropdownList: []
     })
     const [txnSlabData, setTxnSlabData] = useState({
       count: 0,
@@ -34,8 +35,8 @@ const Dashboard = (props) => {
       count: 0,
       allData: 0,
       countOrgWise: {},
-      itemDescDropdownList: {},
-      subCategoryDropdownList: {}
+      itemDescDropdownList: [],
+      subCategoryDropdownList: []
     })
 
     const [summaryData, setSummaryData] = useState(
@@ -79,7 +80,8 @@ const Dashboard = (props) => {
       }
     }, [orgId, token, summaryDataFilters])
 
-    const populateDashboard = useCallback(async () => {
+    // const populateDashboard = useCallback(async () => {
+    const populateDashboard = async () => {
       setLoadings(true)
       const [itemSlabData, txnSlabData, invSlabData] = await Promise.all([
         populateItemSlabData(orgId, token),
@@ -90,13 +92,15 @@ const Dashboard = (props) => {
       setTxnSlabData({...txnSlabData})
       setInvSlabData({...invSlabData})
       setLoadings(false)
-    }, [orgId, token])
+    }
+
+    console.log("ItemSlabData:", itemSlabData )
 
 
 
     useEffect(()=>{
       populateDashboard()
-    },[populateDashboard])
+    },[orgId])
 
     if(loadings){
       return <h1>Loadings</h1>
@@ -131,24 +135,24 @@ const Dashboard = (props) => {
 
       {
         activeTab === "tab1" && (
-          <ItemSlab countOrgWise={itemSlabData?.countOrgWise} count = {itemSlabData?.count} allData = {itemSlabData?.allData} itemDescDropdownList={itemSlabData?.itemDescDropdownList} subCategoryDropdownList={itemSlabData?.subCategoryDropdownList} orgId={orgId} />
+          <ItemSlab countOrgWise={itemSlabData?.countOrgWise} count = {itemSlabData?.count} allData = {itemSlabData?.allData} itemDescDropdownList={itemSlabData?.itemDescDropdownList} subCategoryDropdownList={itemSlabData?.subCategoryDropdownList || []} orgId={orgId} />
         )
       }
       {
         activeTab === "tab2" && (
-            <TransactionSlab allData = {txnSlabData.allData} orgId={orgId} setTxnSlabData={setTxnSlabData} countOrgWise={txnSlabData.countOrgWise}/>
+            <TransactionSlab allData = {txnSlabData?.allData} orgId={orgId} setTxnSlabData={setTxnSlabData} countOrgWise={txnSlabData?.countOrgWise}/>
         )
       }
       {
         activeTab === "tab3" && (
-          <InvValSlab data={invSlabData.allData} itemDescDropdownList={itemSlabData?.itemDescDropdownList} subCategoryDropdownList={itemSlabData?.subCategoryDropdownList} countOrgWise={invSlabData.countOrgWise} orgId={orgId}/>
+          <InvValSlab data={invSlabData?.allData} itemDescDropdownList={itemSlabData?.itemDescDropdownList} subCategoryDropdownList={itemSlabData?.subCategoryDropdownList} countOrgWise={invSlabData?.countOrgWise} orgId={orgId}/>
         )
       }
-      {
+      {/* {
         activeTab === "tab4" && (
-            <PurchaseSummarySlab filters = {summaryDataFilters} setFilters = {setSummaryDataFilters} handleSumSearch={handlePurchaseSearch} allData={summaryData.allData} orgId={orgId} isHeadquarter={props.orgId === 'null' ? true : false} />
+            <PurchaseSummarySlab filters = {summaryDataFilters || []} setFilters = {setSummaryDataFilters || []} handleSumSearch={handlePurchaseSearch} allData={summaryData?.allData} orgId={orgId} isHeadquarter={props.orgId === 'null' ? true : false} />
         )
-      }
+      } */}
       {
         activeTab === "tab5" && (
           <SopManual />
