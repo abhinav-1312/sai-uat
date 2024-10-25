@@ -38,6 +38,7 @@ import Layout from "../components/Layout";
 import PrivateRoutes from "./PrivateRoutes";
 import { useSelector } from "react-redux";
 import DashboardWrapper from "../pages/dashboard/DashboardWrapper";
+import IssueNoteCorrection from "../pages/txnform/correctionProcess/IssueNoteCorrection";
 
 const RoutesComponent = () => {
   const userRole = useSelector((state) => state.auth.userRole);
@@ -81,6 +82,7 @@ const RoutesComponent = () => {
       <Route path="/trans/inspectionNote" element={<InspectionNote />} />
       <Route path="/trans/acceptance" element={<AcceptanceNote />} />
       <Route path="/trans/rejection" element={<RejectionNote />} />
+      <Route path="/crn/issueNote" element={<IssueNoteCorrection />} />
       {<Route path="/itemsearch" element={<Itemdemandsearch />} />}
     </>
   );
@@ -111,6 +113,7 @@ const RoutesComponent = () => {
       <Route path="/trans/inspectionNote" element={<InspectionNote />} />
       <Route path="/trans/acceptance" element={<AcceptanceNote />} />
       <Route path="/trans/rejection" element={<RejectionNote />} />
+      <Route path="/crn/issueNote" element={<IssueNoteCorrection />} />
       {<Route path="/itemsearch" element={<Itemdemandsearch />} />}
     </>
   );

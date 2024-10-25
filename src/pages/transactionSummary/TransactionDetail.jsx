@@ -13,6 +13,7 @@ import IsnTable from "./detailData/IsnTable";
 import ReturnTable from "./detailData/ReturnTable";
 import MisTable from "./detailData/MisTable";
 import { useSelector } from "react-redux";
+import { CSVLink } from "react-csv";
 
 const TransactionDetail = () => {
   const navigate = useNavigate();
@@ -37,7 +38,17 @@ const TransactionDetail = () => {
   const [grnData, setGrnData] = useState(null);
   const [ogpData, setOgpData] = useState(null);
   const [rejectData, setRejectData] = useState(null);
+  const [isnCsv, setIsnCsv] = useState(null);
+  const [ogpCsv, setOgpCsv] = useState(null);
+  const [igpCsv, setIgpCsv] = useState(null);
+  const [rnCsv, setRnCsv] = useState(null);
+  const [grnCsv, setGrnCsv] = useState(null);
+  const [inspCsv, setInspCsv] = useState(null);
+  const [misCsv, setMisCsv] = useState(null);
+  const [acptCsv, setAcptCsv] = useState(null);
+  const [rejCsv, setRejCsv] = useState(null);
   const {token} = useSelector(state => state.auth);
+
 
   const populateHqData = async (orgId)=> {
     const trnDetailUrl =
@@ -117,6 +128,17 @@ const TransactionDetail = () => {
     })
   }
 
+  let finalCsvData = [];
+  if(isnCsv) finalCsvData = [...finalCsvData, ...isnCsv]
+  if(ogpCsv) finalCsvData = [...finalCsvData, ...ogpCsv]
+  if(igpCsv) finalCsvData = [...finalCsvData, ...igpCsv]
+  if(rnCsv) finalCsvData = [...finalCsvData, ...rnCsv]
+  if(grnCsv) finalCsvData = [...finalCsvData, ...grnCsv]
+  if(misCsv) finalCsvData = [...finalCsvData, ...misCsv]
+  if(inspCsv) finalCsvData = [...finalCsvData, ...inspCsv]
+  if(acptCsv) finalCsvData = [...finalCsvData, ...acptCsv]
+  if(rejCsv) finalCsvData = [...finalCsvData, ...rejCsv]
+
   useEffect(() => {
     if(orgId){
       populateHqData(orgId)
@@ -127,6 +149,19 @@ const TransactionDetail = () => {
   }, []);
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+      {
+        finalCsvData.length > 0 && (
+          <CSVLink 
+        data={finalCsvData} 
+        filename="table-data.csv" 
+        style={{ marginBottom: 16, border: "1px solid", width: "max-content", padding: "1rem" }}
+        className="ant-btn ant-btn-primary"
+         // Apply Ant Design button styles
+      >
+        Export to CSV
+      </CSVLink>
+        )
+      }
       <div
         style={{
           display: "flex",
@@ -158,6 +193,8 @@ const TransactionDetail = () => {
               processType="isn"
               data={isnData?.data}
               itemList={isnData?.itemList}
+              csv = {isnCsv} // data converted to csv format
+              setCsv = {setIsnCsv}
             />
           ) : (
             "No data available."
@@ -180,6 +217,7 @@ const TransactionDetail = () => {
               processType="ogp"
               data={ogpData?.data}
               itemList={ogpData?.itemList}
+              setCsv = {setOgpCsv}
             />
           ) : (
             "No data available."
@@ -196,6 +234,7 @@ const TransactionDetail = () => {
               processType="igp"
               data={igpData?.data}
               itemList={igpData?.itemList}
+              setCsv = {setIgpCsv}
             />
           ) : (
             "No data available."
@@ -212,6 +251,7 @@ const TransactionDetail = () => {
               processType="rn"
               data={returnData?.data}
               itemList={returnData?.itemList}
+              setCsv = {setRnCsv}
             />
           ) : (
             "No data available."
@@ -228,6 +268,7 @@ const TransactionDetail = () => {
               processType="grn"
               data={grnData?.data}
               itemList={grnData?.itemList}
+              setCsv = {setGrnCsv}
             />
           ) : (
             "No data available."
@@ -244,6 +285,7 @@ const TransactionDetail = () => {
               processType="act"
               data={acceptData?.data}
               itemList={acceptData?.itemList}
+              setCsv = {setAcptCsv}
             />
           ) : (
             "No data available."
@@ -260,6 +302,7 @@ const TransactionDetail = () => {
               processType="ir"
               data={misData?.data}
               itemList={misData?.itemList}
+              setCsv = {setMisCsv}
             />
           ) : (
             "No data available."
@@ -276,6 +319,7 @@ const TransactionDetail = () => {
               processType="irn"
               data={inspectionNoteData?.data}
               itemList={inspectionNoteData?.itemList}
+              setCsv = {setInspCsv}
             />
           ) : (
             "No data available."
@@ -292,6 +336,7 @@ const TransactionDetail = () => {
               processType="rej"
               data={rejectData?.data}
               itemList={rejectData?.itemList}
+              setCsv = {setRejCsv}
             />
           ) : (
             "No data available."

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { apiHeader, convertArrayToObject, convertEpochToDateString } from '../../../utils/Functions'
+import { apiHeader, convertArrayToObject, generateCsvData } from '../../../utils/Functions'
 import axios from 'axios'
 import DetailData from './DetailData'
 import { useSelector } from 'react-redux'
 
-const IgpTable = ({type, data, itemList}) => {
+const IgpTable = ({type, data, itemList, setCsv}) => {
 
     const {token} = useSelector(state => state.auth);
     const [uomObj, setUomObj] = useState({})
@@ -16,14 +16,6 @@ const IgpTable = ({type, data, itemList}) => {
         const locatorMasterUrl = "/master/getLocatorMaster";
     
         try{
-            // const {data}= await axios.get(uomMasterUrl, apiHeader("GET", token))
-            // const {responseData} = data
-            // console.log("Response data: ", responseData)
-            
-            // const uomMod =  convertArrayToObject(responseData, "id", "uomName")
-
-            // setUomObj({...uomMod})
-
             const [uomMaster, locatorMaster] = await Promise.all([axios.get(uomMasterUrl, apiHeader("GET", token)), axios.get(locatorMasterUrl, apiHeader("GET", token))]);
             const { responseData: uomMasterData } = uomMaster.data;
             const { responseData: locatorMasterData } = locatorMaster.data;
@@ -41,6 +33,8 @@ const IgpTable = ({type, data, itemList}) => {
 
     useEffect(()=>{
         fetchUom()
+        const csvData = generateCsvData("Inward Gate Pass", dataColumnsUpdated, data, itemListColumnUpdated, itemList)
+        setCsv(csvData);
     }, [])
     const orgConsignorDetails = [
         {
@@ -239,10 +233,13 @@ const IgpTable = ({type, data, itemList}) => {
         }
     ]
 
+    const dataColumnsUpdated = type === "PO" ? [...dataColumn, ...poExtraColumns] : (type === "IOP" ? [...dataColumn, ...interOrgExtraColumn] : [...dataColumn, ...irpExtraColumn])
+    const itemListColumnUpdated = type === "PO" ? itemListColumn : (type === "IOP" ? itemListColumn : [...itemListColumn, irpItemListExtra])
+
 
 
   return (
-    <DetailData dataColumn={type === "PO" ? [...dataColumn, ...poExtraColumns] :(type === "IOP" ? [...dataColumn, ...interOrgExtraColumn] : [...dataColumn, ...irpExtraColumn] )} itemListColumn={type === "PO" ? itemListColumn : (type === "IOP" ? itemListColumn : [...itemListColumn, ...irpItemListExtra])} data={data} itemList={itemList}/>
+    <DetailData dataColumn={dataColumnsUpdated} itemListColumn={itemListColumnUpdated} data={data} itemList={itemList}/>
   )
 }
 

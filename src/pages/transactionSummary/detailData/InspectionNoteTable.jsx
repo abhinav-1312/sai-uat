@@ -3,12 +3,13 @@ import {
   apiHeader,
   convertArrayToObject,
   convertEpochToDateString,
+  generateCsvData,
 } from "../../../utils/Functions";
 import axios from "axios";
 import DetailData from "./DetailData";
 import { useSelector } from "react-redux";
 
-const InspectionNoteTable = ({type, data, itemList}) => {
+const InspectionNoteTable = ({type, data, itemList, setCsv}) => {
   const {token} = useSelector(state => state.auth);
   const [uomObj, setUomObj] = useState({});
   const [locatorObj, setLocatorObj] = useState({});
@@ -42,6 +43,8 @@ const InspectionNoteTable = ({type, data, itemList}) => {
 
   useEffect(() => {
     fetchUom();
+    const csvData = generateCsvData("Inspection Note", dataColumnsUpdated, data, itemListColumn, itemList)
+    setCsv(csvData)
   }, []);
   const orgConsignorDetails = [
     {
@@ -227,8 +230,10 @@ const InspectionNoteTable = ({type, data, itemList}) => {
     },
   ];
 
+  const dataColumnsUpdated = type === "PO" ? [...dataColumn, ...poExtraColumns] :(type === "IRP" ? [...dataColumn, irpExtraColumn] : [...dataColumn, ...interOrgExtraColumn] )
+
   return(
-    <DetailData dataColumn={type === "PO" ? [...dataColumn, ...poExtraColumns] :(type === "IRP" ? [...dataColumn, irpExtraColumn] : [...dataColumn, ...interOrgExtraColumn] )} itemListColumn={itemListColumn} data={data} itemList={itemList}/>
+    <DetailData dataColumn={dataColumnsUpdated} itemListColumn={itemListColumn} data={data} itemList={itemList}/>
   )
 };
 

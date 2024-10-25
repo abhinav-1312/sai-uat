@@ -515,3 +515,35 @@ export const populateInvSlabData = async (itemCode, orgId, token) => {
 
   return {allData: data, count: convertToCurrency(totalValAllOrg), countOrgWise: countOrgWise, itemDescDropdownList: sortAlphabetically(Array.from(itemDescDropdownList).map(str => JSON.parse(str))), subCategoryDropdownList: Array.from(subCategoryDropdownList).map(str=> JSON.parse(str))}
 }
+
+export const saveDraft = (itemName, formData) => {
+  localStorage.setItem(itemName, JSON.stringify(formData));
+  message.success("IGP data saved as draft successfully.");
+};
+
+export const generateCsvData = (heading, crCeDtlsCol, crCeDataObj, itemCol, itemData) => {
+  const crCeDataArray = [crCeDataObj]
+  console.log("data: ", itemCol)
+  return [
+    [heading.toUpperCase()],
+    crCeDtlsCol.map(col => col.title),
+    ...crCeDataArray.map(row => {
+      const csvRows = {};
+      crCeDtlsCol.forEach(col => {
+        csvRows[col.title] = row[col.dataIndex]
+      })
+      return Object.values(csvRows)
+    }), 
+    ["ITEM DETAILS"],
+    itemCol.map(col => col.title),
+    ...itemData.map(row => {
+      const csvRows = {};
+      itemCol.forEach(col => {
+        csvRows[col.title] = row[col.dataIndex]
+      })
+      return Object.values(csvRows)
+    })
+    , 
+    [] // leave a blank row below
+  ]
+}

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import DetailData from './DetailData'
 import axios from 'axios'
-import { apiHeader, convertArrayToObject, daysDifference } from '../../../utils/Functions'
+import { apiHeader, convertArrayToObject, daysDifference, generateCsvData } from '../../../utils/Functions'
 import { useSelector } from 'react-redux'
 
-const ReturnTable = ({data, itemList}) => {
+const ReturnTable = ({data, itemList, setCsv}) => {
 
     const {token} = useSelector(state => state.auth);
     const [uomObj, setUomObj] = useState({})
@@ -33,6 +33,8 @@ console.log("UOM OBJ: ",uomObj)
 
 useEffect(()=>{
     fetchUomLocatorMaster()
+    const csvData = generateCsvData("Return Note", dataColumns, data, itemListColumns, itemList)
+    setCsv(csvData)
 }, [])
 
  const orgConsignorDetails = [

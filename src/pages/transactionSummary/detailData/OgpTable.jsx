@@ -1,15 +1,17 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { apiHeader, convertArrayToObject, convertEpochToDateString, fetchUomLocatorMaster } from '../../../utils/Functions'
+import { apiHeader, convertArrayToObject, convertEpochToDateString, fetchUomLocatorMaster, generateCsvData } from '../../../utils/Functions'
 import DetailData from './DetailData'
 
 
-const OgpTable = ({type, data, itemList}) => {
+const OgpTable = ({type, data, itemList, setCsv}) => {
     const [uomObj, setUomObj] = useState({})
     const [locatorObj, setLocatorObj] = useState({})
 
     useEffect(()=>{
         fetchUomLocatorMaster(setUomObj, setLocatorObj)
+        const csvData = generateCsvData("Outward Gate Pass", dataColumnsUpdated, data, itemListColumns, itemList);
+        setCsv(csvData)
     }, [])
 
     const consumerDetails = [
@@ -104,7 +106,7 @@ const OgpTable = ({type, data, itemList}) => {
         }
     ]
 
-    const dataColumns = [
+    let dataColumns = [
         {
             title: "Outward Gate Pass No.",
             dataIndex: "processId"
@@ -234,8 +236,10 @@ const OgpTable = ({type, data, itemList}) => {
         ...irpItemListExtra
     ]
 
+    const dataColumnsUpdated = type === "PO" ? [...dataColumns, ...poExtraColumns] : (type === "IOP" ? [...dataColumns, interOrgExtraColumns] : [...dataColumns, ...irpExtraColumns])
+
   return (
-    <DetailData dataColumn={type === "PO" ? [...dataColumns, ...poExtraColumns]  : ( type === "IOP" ? [...dataColumns, ...interOrgExtraColumns] : [...dataColumns, ...irpExtraColumns] )} itemListColumn={itemListColumns} data={data} itemList={itemList}/>
+    <DetailData dataColumn={dataColumnsUpdated} itemListColumn={itemListColumns} data={data} itemList={itemList}/>
   )
 }
 

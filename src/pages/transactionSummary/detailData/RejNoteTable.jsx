@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { apiHeader, convertArrayToObject, convertEpochToDateString } from '../../../utils/Functions'
+import { apiHeader, convertArrayToObject, convertEpochToDateString, generateCsvData } from '../../../utils/Functions'
 import DetailData from './DetailData'
 import axios from 'axios'
 import { useSelector } from 'react-redux'
 
-const RejNoteTable = ({data, type, itemList}) => {
+const RejNoteTable = ({data, type, itemList, setCsv}) => {
 
     const {token} = useSelector(state => state.auth);
     const [uomObj, setUomObj] = useState({})
@@ -31,6 +31,8 @@ const RejNoteTable = ({data, type, itemList}) => {
 
     useEffect(()=>{
         fetchUom()
+        const csvData = generateCsvData("Rejection Note", dataColumnsUpdated, data, itemListColumn, itemList)
+        setCsv(csvData)
     }, [])
 
     const itemDetails = [
@@ -171,8 +173,10 @@ const RejNoteTable = ({data, type, itemList}) => {
         }
     ]
 
+    const dataColumnsUpdated = type === "PO" ? [...dataColumns, ...poExtraColumns]  : [...dataColumns, ...interOrgExtraColumns]
+
   return (
-    <DetailData dataColumn={type === "PO" ? [...dataColumns, ...poExtraColumns]  : [...dataColumns, ...interOrgExtraColumns]} itemListColumn={itemListColumn} data={data} itemList={itemList}/>
+    <DetailData dataColumn={dataColumnsUpdated} itemListColumn={itemListColumn} data={data} itemList={itemList}/>
   )
 }
 

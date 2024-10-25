@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 // import { consumerDetails, itemDetails, orgConsignorDetails, supplierDetails } from './../CommonColumns'
 import DetailData from './DetailData'
-import { apiHeader, convertArrayToObject, convertEpochToDateString } from '../../../utils/Functions'
+import { apiHeader, convertArrayToObject, convertEpochToDateString, generateCsvData } from '../../../utils/Functions'
 import axios from 'axios'
 import { useSelector } from 'react-redux'
 
-const GrnTable = ({type, data, itemList}) => {
+const GrnTable = ({type, data, itemList, setCsv}) => {
     const {token} = useSelector(state => state.auth);
     const [uomObj, setUomObj] = useState({})
     const [locatorObj, setLocatorObj] = useState({})
@@ -33,6 +33,8 @@ const GrnTable = ({type, data, itemList}) => {
 
     useEffect(()=>{
         fetchUom()
+        const csvData = generateCsvData("Goods Receive Note", dataColumnsUpdated, data, itemListColumn, itemList)
+        setCsv(csvData)
     }, [])
     const orgConsignorDetails = [
         {
@@ -205,8 +207,11 @@ const GrnTable = ({type, data, itemList}) => {
             render : (id) => locatorObj[parseInt(id)]
         }
     ]
+
+    const dataColumnsUpdated = type === "PO" ? [...dataColumn, poExtraColumns] : (type === "IRP" ? [...dataColumn, ...consumerDetails, ...irpExtraColumn, ...orgConsignorDetails] : [...dataColumn, ...orgConsignorDetails, ...orgConsigneeDetails])
+    const itemListColumnsUpdated = type === "PO" ? [...itemListColumn, {title: "Unit Price", dataIndex: "unitPrice"}] : itemListColumn;
   return (
-    <DetailData dataColumn={type === "PO" ? [...dataColumn,...poExtraColumns, ] :(type === "IRP" ? [...dataColumn, ...consumerDetails, ...irpExtraColumn, ...orgConsignorDetails] : [...dataColumn, ...orgConsignorDetails, ...orgConsigneeDetails] )} itemListColumn={type === "PO" ? [...itemListColumn, {title: "Unit Price", dataIndex: "unitPrice"}] : itemListColumn} data={data} itemList={itemList}/>
+    <DetailData dataColumn={dataColumnsUpdated} itemListColumn={itemListColumnsUpdated} data={data} itemList={itemList}/>
   )
 }
 

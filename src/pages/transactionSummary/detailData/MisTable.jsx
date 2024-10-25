@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { apiHeader, convertArrayToObject, fetchUomLocatorMaster } from '../../../utils/Functions';
+import { apiHeader, convertArrayToObject, fetchUomLocatorMaster, generateCsvData } from '../../../utils/Functions';
 import axios from 'axios';
 import DetailData from './DetailData';
 
-const MisTable = ({type, data, itemList}) => {
+const MisTable = ({type, data, itemList, setCsv}) => {
     const [uomObj, setUomObj] = useState({});
     const [locatorObj, setLocatorObj] = useState({});
     useEffect(() => {
     //   fetchUom();
     fetchUomLocatorMaster(setUomObj, setLocatorObj)
+    const csvData = generateCsvData("Material Inspection Slip", dataColumnsUpdated, data, itemListColumn, itemList)
+    setCsv(csvData)
     }, []);
     const orgConsignorDetails = [
       {
@@ -177,9 +179,11 @@ const MisTable = ({type, data, itemList}) => {
         dataIndex: "remarks",
       },
     ];
+
+    const dataColumnsUpdated = type === "PO" ? [...dataColumn, ...poExtraColumns] :(type === "IRP" ? [...dataColumn, irpExtraColumn] : [...dataColumn, ...interOrgExtraColumn] )
   
     return(
-      <DetailData dataColumn={type === "PO" ? [...dataColumn, ...poExtraColumns] :(type === "IRP" ? [...dataColumn, irpExtraColumn] : [...dataColumn, ...interOrgExtraColumn] )} itemListColumn={itemListColumn} data={data} itemList={itemList}/>
+      <DetailData dataColumn={dataColumnsUpdated} itemListColumn={itemListColumn} data={data} itemList={itemList}/>
     )
 }
 
