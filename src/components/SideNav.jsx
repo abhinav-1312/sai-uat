@@ -177,7 +177,7 @@ const menuItems = [
     label: "Correction Process",
     path: "/transaction",
     children: [
-      { key: "25.1", label: "Issue Note", path: "/trans/issue" },
+      { key: "25.1", label: "Issue Note", path: "/crn/issueNote" },
       { key: "25.2", label: "Return Note", path: "/trans/return" },
       { key: "25.3", label: "GRN", path: "/trans/grn" },
     ]
@@ -335,7 +335,7 @@ const SideNav = () => {
   const renderSubMenu = (item) => (
     <Menu.SubMenu key={item.key} icon={item.icon} title={item.label}>
       {item.children.map((subItem) => (
-        <Menu.Item key={subItem.key}>
+        <Menu.Item key={subItem.key} icon={item.icon}>
           <Link to={subItem.path}>{subItem.label}</Link>
         </Menu.Item>
       ))}
