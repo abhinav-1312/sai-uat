@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "antd";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -14,6 +14,7 @@ import ReturnTable from "./detailData/ReturnTable";
 import MisTable from "./detailData/MisTable";
 import { useSelector } from "react-redux";
 import { CSVLink } from "react-csv";
+import { useReactToPrint } from "react-to-print";
 
 const TransactionDetail = () => {
   const navigate = useNavigate();
@@ -22,6 +23,8 @@ const TransactionDetail = () => {
   const trnOrgIdCombined = urlArr[0].split("-")
   const orgId = trnOrgIdCombined.length === 2 ? trnOrgIdCombined[1] : null
   const trnNo = trnOrgIdCombined[0];
+
+  const txnRef = useRef()
 
   const arrayToConvert = urlArr.slice(1);
   const objectFromArr = arrayToConvert.reduce((acc, key) => {
@@ -139,6 +142,7 @@ const TransactionDetail = () => {
   if(acptCsv) finalCsvData = [...finalCsvData, ...acptCsv]
   if(rejCsv) finalCsvData = [...finalCsvData, ...rejCsv]
 
+
   useEffect(() => {
     if(orgId){
       populateHqData(orgId)
@@ -148,18 +152,20 @@ const TransactionDetail = () => {
     }
   }, []);
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }} ref={txnRef}>
       {
         finalCsvData.length > 0 && (
+          <>
           <CSVLink 
         data={finalCsvData} 
         filename="table-data.csv" 
         style={{ marginBottom: 16, border: "1px solid", width: "max-content", padding: "1rem" }}
         className="ant-btn ant-btn-primary"
-         // Apply Ant Design button styles
-      >
+        // Apply Ant Design button styles
+        >
         Export to CSV
       </CSVLink>
+        </>
         )
       }
       <div

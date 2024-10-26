@@ -178,8 +178,7 @@ const menuItems = [
     path: "/transaction",
     children: [
       { key: "25.1", label: "Issue Note", path: "/crn/issueNote" },
-      { key: "25.2", label: "Return Note", path: "/trans/return" },
-      { key: "25.3", label: "GRN", path: "/trans/grn" },
+      { key: "25.3", label: "GRN", path: "/crn/grn" },
     ]
 
   }

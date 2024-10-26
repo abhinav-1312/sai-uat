@@ -2,7 +2,8 @@ export const processType = {
     "PO" : "Purchase Order",
     "IRP" : "Issue Return Process",
     "NIRP" : "Non Returnable Issue Return Process",
-    "IOP" : "Inter Org Transfer"
+    "IOP" : "Inter Org Transfer",
+    "CRN" : "Correction Process"
 }
 
 export const processStage = {

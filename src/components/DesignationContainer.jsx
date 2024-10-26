@@ -3,7 +3,7 @@ import FormInputItem from './FormInputItem'
 import FormDatePickerItem from './FormDatePickerItem'
 import dayjs from "dayjs";
 
-const DesignationContainer = ({formType, genByVisible, genName, genDate, handleChange, issueVisible, issueName, issueDate}) => {
+const DesignationContainer = ({formType, genByVisible, genName, genDate, handleChange, issueVisible, issueName, issueDate, approvedVisible}) => {
   return (
     <div className='designations-container'>
       {
@@ -43,6 +43,26 @@ const DesignationContainer = ({formType, genByVisible, genName, genDate, handleC
             name="issueDate"
             onChange={handleChange}
             value={issueDate}
+          />
+      </div>
+      }
+
+      {
+        approvedVisible && 
+        <div className="each-desg">
+        <h4>
+          Approved By
+        </h4>
+        <FormInputItem
+          placeholder="Name and Signature"
+          name="approvedName"
+          onChange={handleChange}
+        />
+
+          <FormDatePickerItem
+            defaultValue={dayjs()}
+            name="approvedDate"
+            onChange={handleChange}
           />
       </div>
       }

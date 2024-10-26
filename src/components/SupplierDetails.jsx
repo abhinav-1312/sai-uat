@@ -15,16 +15,19 @@ const SupplierDetails = ({
         <FormInputItem
           label="Supplier Code"
           name="supplierCode"
-          value={supplierCode}
+          // value={supplierCode}
           onChange={onChange}
+          required
         />
 
         <FormInputItem
           label="Supplier Name"
-          value={supplierName}
-          readOnly={true}
+          // value={supplierName}
+          // readOnly={true}
+          name='supplierName'
+          required
         />
-        <FormInputItem label="Address" value={address} readOnly={true} />
+        <FormInputItem label="Address" value={address} readOnly={true} required name='crAddress' />
       </div>
     </>
   );

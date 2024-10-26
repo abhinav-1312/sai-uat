@@ -67,6 +67,10 @@ export const trnSummaryColumn = (handleViewClick, handlePrintClick, processStage
                 text: "Inter Org Process",
                 value: "IOP"
               },
+              {
+                text: "Correction Process",
+                value: "CRN"
+              },
             ],
             onFilter: (value, record) => record.processType.indexOf(value) === 0,
             render: (value) => processType[value]

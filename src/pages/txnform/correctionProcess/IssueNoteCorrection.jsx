@@ -17,6 +17,7 @@ import TermsConditionContainer from "../../../components/TermsConditionContainer
 import DesignationContainer from "../../../components/DesignationContainer";
 import ButtonContainer from "../../../components/ButtonContainer";
 import useHandlePrint from "../../../components/useHandlePrint";
+import OtherDetails from "../../../components/OtherDetails";
 
 const dateFormat = "DD/MM/YYYY";
 const currentDate = dayjs();
@@ -31,14 +32,32 @@ const IssueNoteCorrection = () => {
   const { data: itemData } = useSelector((state) => state.item);
   const { data: ohqData } = useSelector((state) => state.ohq);
 
+  const [submitBtnEnabled, setSubmitBtnEnabled] = useState(true)
+  const [printBtnEnabled, setPrintBtnEnabled] = useState(false);
+
   const data = useMemo(() => mergeItemMasterAndOhq(itemData, ohqData), [itemData, ohqData]);
   const onFinish = async () => {
-    message.error("Error submitting form. Please try again.")
+    setSubmitBtnEnabled(false)
     try{
-     const data = await apiCall("POST", "/doCorrectionProcess", token, formData);
+     const data = await apiCall("POST", "/doCorrectionProcess", token, {issueNoteDtls: formData, grnDtls: null});
+     if(data?.responseData?.issueNoteResponse?.processId){
+      setFormData(prev => {
+        return {
+          ...prev,
+          processId: data?.responseData?.issueNoteResponse?.processId
+        }
+      })
+      message.success(`Issue Note Correction successful with process ID: ${data?.responseData?.issueNoteResponse?.processId}`)
+      setPrintBtnEnabled(true)
+     }
+     else{
+      message.error("Error submitting form. Please try again.")
+      setSubmitBtnEnabled(true)
+     }
     }
     catch(error){
       message.error("Error submitting form. Please try again.")
+      setSubmitBtnEnabled(true)
     }
   }
 
@@ -52,10 +71,17 @@ const IssueNoteCorrection = () => {
     consumerName: userDetails?.firstName + " " + userDetails?.lastName,
     genName: userDetails?.firstName + " " + userDetails?.lastName,
     contactNo: "",
-    type: "IRP",
+    type: "CRN",
     demandNoteDt: currentDate.format(dateFormat),
     userId: userCd,
-    processType: "IRP",
+    processType: "CRN",
+    issueDate: "25/10/2024",
+    issueNoteDt: "25/10/2024",
+    approvedDate: "25/10/2024",
+    issueNoteNo: "string",
+    demandNoteNo: "",
+    approvedName: "string",
+    issueName: userCd,
     items: [
     ]
   });
@@ -118,7 +144,7 @@ const IssueNoteCorrection = () => {
 
 
   return (
-    <FormContainer onFinish={onFinish} ref={formRef}>
+    <FormContainer onFinish={onFinish} ref={formRef} submitBtnEnabled={submitBtnEnabled} printBtnEnabled={printBtnEnabled}>
       <FormHeading
         formTitle={"Correction Process Issue Note"}
         date={formData.genDate}
@@ -149,6 +175,10 @@ const IssueNoteCorrection = () => {
           // readOnly={txnType === 'ISN' ? false : true}
         />
           </div>
+
+          <OtherDetails>
+            <FormInputItem label="Demand Note No." name="demandNoteNo" onChange={handleChange} />
+          </OtherDetails>
         </CrCeDtlContainer>
 
         <ItemDetailsContainer

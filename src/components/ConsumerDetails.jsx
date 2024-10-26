@@ -6,22 +6,22 @@ const ConsumerDetails = ({consumerName, contactNo, txnType, handleChange, headin
     <>
     <div className="consignor-container">
             <h3 className="consignor-consignee-heading">
-            {heading}
+            "Consignee Details"
               </h3>
               
         <FormInputItem
           label="Consumer Name"
           name="consumerName"
-          value={consumerName}
+          // value={consumerName}
           onChange={handleChange}
-          readOnly={txnType === 'ISN' ? false : true}
+          // readOnly={txnType === 'ISN' ? false : true}
         />
         <FormInputItem
           label="Contact No."
           name="contactNo"
-          value={contactNo}
+          // value={contactNo}
           onChange={handleChange}
-          readOnly={txnType === 'ISN' ? false : true}
+          // readOnly={txnType === 'ISN' ? false : true}
         />
 
 </div>

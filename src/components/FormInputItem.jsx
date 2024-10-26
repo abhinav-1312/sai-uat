@@ -1,16 +1,17 @@
 import React from 'react'
 import {Form, Input} from "antd"
 
-const FormInputItem = ({label, name, value, onChange, readOnly, disabled, className, placeholder, rules }) => {
+const FormInputItem = ({label, name, value, onChange, readOnly, disabled, className, placeholder, rules, required }) => {
   const handleChange = (e) => {
     if(onChange)
       onChange(name, e.target.value)
   }
   return (
     <Form.Item label={label} className={className}
-      rules = {rules}
+      name={name}
+      rules={[{ required: required ? true : false, message: 'Please input the value!' }]}
     >
-      <Input value={value} onChange={handleChange} readOnly={readOnly} disabled={disabled} placeholder={placeholder}/>
+      <Input onChange={handleChange} readOnly={readOnly} disabled={disabled} placeholder={placeholder}/>
     </Form.Item>
   )
 }

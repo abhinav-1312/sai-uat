@@ -3,7 +3,7 @@ import ButtonContainer from "./ButtonContainer";
 import { useReactToPrint } from "react-to-print";
 import { message } from "antd";
 
-const FormContainer = ({ children, onFinish }) => {
+const FormContainer = ({ children, onFinish, submitBtnEnabled, printBtnEnabled }) => {
   const ref = useRef()
   const handlePrint = useReactToPrint({
     content: () => ref.current,
@@ -15,7 +15,7 @@ const FormContainer = ({ children, onFinish }) => {
       {children}
 
       <div style={{ marginTop: "1rem" }}>
-        <ButtonContainer handlePrint={handlePrint} onFinish={onFinish} />
+        <ButtonContainer handlePrint={handlePrint} onFinish={onFinish} submitBtnEnabled={submitBtnEnabled} printBtnEnabled={printBtnEnabled} />
       </div>
     </div>
   );

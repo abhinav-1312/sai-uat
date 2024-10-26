@@ -43,6 +43,7 @@ const ButtonContainer = ({
             backgroundColor: "#4CAF50",
           }}
           icon={<SaveOutlined />}
+          disabled={submitBtnEnabled ? false : true}
         >
           Submit
         </Button>
@@ -70,7 +71,7 @@ const ButtonContainer = ({
           onClick={handlePrint}
           type="primary"
           icon={<PrinterOutlined />}
-          disabled={true}
+          disabled={printBtnEnabled ? false : true}
         >
           Print
         </Button>
