@@ -6,15 +6,34 @@ import {
   CloudDownloadOutlined,
   PrinterOutlined,
 } from "@ant-design/icons";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const ButtonContainer = ({
-  handleFormReset,
   submitBtnEnabled,
   onFinish,
-  saveDraft,
   printBtnEnabled,
   handlePrint,
+  draftDataName,
+  draftBtnEnabled,
+  formData,
+  disabled
 }) => {
+  const navigate = useNavigate();
+  const location = useLocation()
+  const saveDraft = () => {
+    localStorage.setItem(draftDataName, JSON.stringify(formData))
+  }
+
+  const handleReset = () => {
+    localStorage.removeItem(draftDataName);
+    navigate(location.pathname,
+      {
+        state: {data: null, itemList: null}
+      }
+    )
+    window.location.reload();
+  }
+
   return (
     <div className="button-container">
       <Tooltip title="Clear form">
@@ -22,8 +41,7 @@ const ButtonContainer = ({
           type="primary"
           danger
           icon={<UndoOutlined />}
-          // onClick={handleFormReset}
-          onClick={()=> window.location.reload()}
+          onClick={handleReset}
         >
           Reset
         </Button>
@@ -43,13 +61,13 @@ const ButtonContainer = ({
             backgroundColor: "#4CAF50",
           }}
           icon={<SaveOutlined />}
-          disabled={submitBtnEnabled ? false : true}
+          disabled={disabled ? true : (submitBtnEnabled ? false : true)}
         >
           Submit
         </Button>
       </Tooltip>
 
-      {/* <Tooltip title={"Save the form as draft."}>
+      <Tooltip title={"Save the form as draft."}>
         <Button
           onClick={saveDraft}
           type="primary"
@@ -57,10 +75,11 @@ const ButtonContainer = ({
             backgroundColor: "#eed202",
           }}
           icon={<CloudDownloadOutlined />}
+          disabled={disabled ? true : (draftBtnEnabled ? false : true)}
         >
           Save draft
         </Button>
-      </Tooltip> */}
+      </Tooltip>
 
       <Tooltip
         title={

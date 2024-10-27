@@ -2,10 +2,6 @@ import React from "react";
 import FormInputItem from "./FormInputItem";
 
 const RegionalCenterDetails = ({
-  regionalCenterCd,
-  regionalCenterName,
-  address,
-  zipcode,
   txnType,
   handleChange,
   heading,
@@ -13,6 +9,7 @@ const RegionalCenterDetails = ({
   rcName,
   adrName,
   zipName,
+  readOnly
 }) => {
   return (
     <>
@@ -21,29 +18,25 @@ const RegionalCenterDetails = ({
 
         <FormInputItem
           label="Regional Center Code"
-          // value={regionalCenterCd}
-          readOnly={txnType === "ISN" ? false : true}
+          readOnly={readOnly ? true : false}
           onChange={handleChange}
           name={cdName}
           required
         />
         <FormInputItem
           label="Regional Center Name"
-          // value={regionalCenterName}
           readOnly={true}
           name={rcName}
           required
         />
         <FormInputItem
           label="Address"
-          // value={address}
           readOnly={true}
           name={adrName}
           required
         />
         <FormInputItem
           label="Zipcode"
-          // value={zipcode}
           readOnly={true}
           name={zipName}
           required

@@ -40,3 +40,19 @@ export const formNo = {
     'REJ': 'acptRejNoteNo',
     'ACT': 'acptRejNoteNo'
 }
+
+export const processTypeIsnOptionList= [
+{
+    value: "IRP",
+    desc: "Issue Return Process"
+},
+{
+    value: "NIRP",
+    desc: "Non Returnable Issue Return"
+},
+{
+    value:  "IOP",
+    desc: "Inter Org Process"
+}
+
+]

@@ -523,7 +523,6 @@ export const saveDraft = (itemName, formData) => {
 
 export const generateCsvData = (heading, crCeDtlsCol, crCeDataObj, itemCol, itemData) => {
   const crCeDataArray = [crCeDataObj]
-  console.log("data: ", itemCol)
   return [
     [heading.toUpperCase()],
     crCeDtlsCol.map(col => col.title),
@@ -547,3 +546,32 @@ export const generateCsvData = (heading, crCeDtlsCol, crCeDataObj, itemCol, item
     [] // leave a blank row below
   ]
 }
+
+export const updateFormData = (newItem, setFormData) => {
+  setFormData((prevValues) => {
+    const updatedItems = [
+      ...(prevValues.items || []),
+      {
+        ...newItem,
+        noOfDays: prevValues.processType === "NIRP" ? "0" : (newItem.noOfDays ? newItem.noOfDays : "1"),
+        srNo: prevValues.items?.length ? prevValues.items.length + 1 : 1,
+      },
+    ];
+    return { ...prevValues, items: updatedItems };
+  });
+};
+
+export const itemHandleChange = (fieldName, value, index, setFormData) => {
+  // quantity logic to be applied
+  setFormData((prevValues) => {
+    const updatedItems = prevValues.items;
+    updatedItems[index] = {
+      ...updatedItems[index],
+      [fieldName]: value,
+    };
+    return {
+      ...prevValues,
+      items: updatedItems,
+    };
+  });
+};

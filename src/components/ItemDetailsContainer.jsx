@@ -5,14 +5,14 @@ const ItemDetailsContainer = ({
   children,
   itemSearch,
   itemArray,
-  updateFormData,
+  setFormData
 }) => {
   return (
     <div className="item-details-container">
       <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
         <h3>Item Details</h3>
         {itemSearch && (
-          <ItemSearch itemArray={itemArray} updateFormData={updateFormData} />
+          <ItemSearch itemArray={itemArray} setFormData={setFormData} />
         )}
       </div>
       {children}

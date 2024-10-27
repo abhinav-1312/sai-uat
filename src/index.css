@@ -137,10 +137,7 @@ code {
 }
 
 .designations-container{
-  /* display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-  gap: 4rem; */
-  display: flex;
+  display: flex !important;
   flex-wrap: wrap;
   justify-content: space-between;
 }

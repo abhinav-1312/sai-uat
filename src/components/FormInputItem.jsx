@@ -3,8 +3,12 @@ import {Form, Input} from "antd"
 
 const FormInputItem = ({label, name, value, onChange, readOnly, disabled, className, placeholder, rules, required }) => {
   const handleChange = (e) => {
+
     if(onChange)
-      onChange(name, e.target.value)
+      if(typeof name === 'string')
+        onChange(name, e.target.value)
+      else
+        onChange(name[2], e.target.value)
   }
   return (
     <Form.Item label={label} className={className}

@@ -1,7 +1,7 @@
 import React from 'react'
 import FormInputItem from './FormInputItem'
 
-const ConsumerDetails = ({consumerName, contactNo, txnType, handleChange, heading}) => {
+const ConsumerDetails = ({ handleChange, readOnly}) => {
   return (
     <>
     <div className="consignor-container">
@@ -12,16 +12,14 @@ const ConsumerDetails = ({consumerName, contactNo, txnType, handleChange, headin
         <FormInputItem
           label="Consumer Name"
           name="consumerName"
-          // value={consumerName}
           onChange={handleChange}
-          // readOnly={txnType === 'ISN' ? false : true}
+          readOnly={readOnly ? true : false}
         />
         <FormInputItem
           label="Contact No."
           name="contactNo"
-          // value={contactNo}
           onChange={handleChange}
-          // readOnly={txnType === 'ISN' ? false : true}
+          readOnly={readOnly ? true : false}
         />
 
 </div>

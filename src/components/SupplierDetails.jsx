@@ -27,7 +27,7 @@ const SupplierDetails = ({
           name='supplierName'
           required
         />
-        <FormInputItem label="Address" value={address} readOnly={true} required name='crAddress' />
+        <FormInputItem label="Address" readOnly={true} required name='crAddress' />
       </div>
     </>
   );

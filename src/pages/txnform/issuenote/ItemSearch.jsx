@@ -1,10 +1,10 @@
 import { Button, Popover, Table, Input } from 'antd';
 import React, { useState } from 'react'
-import { convertToCurrency, handleSearch } from '../../../utils/Functions';
+import { convertToCurrency, handleSearch, updateFormData } from '../../../utils/Functions';
 
 const { Search } = Input;
 
-const ItemSearch = ({itemArray, updateFormData}) => {
+const ItemSearch = ({itemArray, setFormData}) => {
     const [selectedItems, setSelectedItems] = useState([]); // State to hold selected item data
     const [filteredData, setFilteredData] = useState(null)
     const [tableOpen, setTableOpen] = useState(false)
@@ -24,9 +24,7 @@ const ItemSearch = ({itemArray, updateFormData}) => {
             ...prevItems,
             { ...recordCopy, locatorId: subRecord.locatorId },
           ]); // Update selected items state
-        //   setFormData((prevValues) => {
             const newItem = {
-            //   srNo: prevValues.items?.length ? prevValues.items.length + 1 : 1,
               itemCode: record.itemMasterCd,
               itemId: record.id,
               itemDesc: record.itemMasterDesc,
@@ -39,14 +37,8 @@ const ItemSearch = ({itemArray, updateFormData}) => {
               locatorId: subRecord.locatorId,
               locatorDesc: subRecord.locatorDesc,
               remarks: "",
-              // qtyList: record.qtyList
             };
-
-            
-        //     const updatedItems = [...(prevValues.items || []), newItem];
-        //     return { ...prevValues, items: updatedItems };
-        // });
-        updateFormData(newItem)
+        updateFormData(newItem, setFormData)
         } else {
           // If item is already selected, deselect it
           const updatedItems = [...selectedItems];
