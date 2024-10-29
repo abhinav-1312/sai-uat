@@ -44,7 +44,7 @@ const GrnCorrection = () => {
 
   const [submitBtnEnabled, setSubmitBtnEnabled] = useState(true);
   const [printBtnEnabled, setPrintBtnEnabled] = useState(false);
-  const [draftBtnEnabled, setDraftBtnEnabled] = useState(true)
+  const [draftBtnEnabled, setDraftBtnEnabled] = useState(true);
 
   const [formData, setFormData] = useState({
     genDate: currentDate.format(dateFormat),
@@ -68,7 +68,7 @@ const GrnCorrection = () => {
 
   useEffect(() => {
     dispatch(fetchOhq());
-  }, []);
+  }, [dispatch]);
 
   const onFinish = async () => {
     setSubmitBtnEnabled(false);
@@ -88,6 +88,9 @@ const GrnCorrection = () => {
           };
         });
         setPrintBtnEnabled(true);
+        setSubmitBtnEnabled(false)
+        setDraftBtnEnabled(false)
+        localStorage.removeItem("grnDraft")
       } else {
         message.error("GRN correction failed. Please try again.");
         setSubmitBtnEnabled(true);
@@ -234,9 +237,18 @@ const GrnCorrection = () => {
         <DesignationContainer
           genByVisible
           approvedVisible
+          genDateValue={formData.genDate}
+          approvedDateValue={formData.approvedDate}
           handleChange={handleChange}
         />
-        <ButtonContainer handlePrint={handlePrint} onFinish={onFinish} printBtnEnabled={printBtnEnabled} submitBtnEnabled={submitBtnEnabled} draftBtnEnabled={draftBtnEnabled} draftDataName="crnGrnDraft" />
+        <ButtonContainer
+          handlePrint={handlePrint}
+          onFinish={onFinish}
+          printBtnEnabled={printBtnEnabled}
+          submitBtnEnabled={submitBtnEnabled}
+          draftBtnEnabled={draftBtnEnabled}
+          draftDataName="crnGrnDraft"
+        />
       </FormBody>
     </FormContainer>
   );

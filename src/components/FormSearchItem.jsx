@@ -23,7 +23,7 @@ const FormSearchItem = ({
         <Search
           onSearch={onSearch}
           onChange={(e) => onChange(name, e.target.value)}
-          value={value}
+          // value={value}
           enterButton
         />
       </Form.Item>

@@ -1,4 +1,4 @@
-import { Button, Tooltip } from "antd";
+import { Button, message, Tooltip } from "antd";
 import React from "react";
 import {
   UndoOutlined,
@@ -22,6 +22,7 @@ const ButtonContainer = ({
   const location = useLocation()
   const saveDraft = () => {
     localStorage.setItem(draftDataName, JSON.stringify(formData))
+    message.success("The form has been saved as a draft successfully.")
   }
 
   const handleReset = () => {
@@ -32,6 +33,8 @@ const ButtonContainer = ({
       }
     )
     window.location.reload();
+
+    message.success("The form has been reset, and any saved drafts have been cleared.")
   }
 
   return (

@@ -1,59 +1,70 @@
 // InspectionNote.js
 import React, { useState, useEffect, useRef } from "react";
 import {
-  Form,
-  Input,
-  Select,
-  DatePicker,
   Button,
-  Row,
-  Col,
-  Typography,
   Modal,
   message,
 } from "antd";
-import { MinusCircleOutlined } from "@ant-design/icons";
+import { DeleteOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
-import { apiHeader } from "../../../utils/Functions";
+import { apiHeader, itemHandleChange, removeItem } from "../../../utils/Functions";
 import FormInputItem from "../../../components/FormInputItem";
-import FormDatePickerItem from "../../../components/FormDatePickerItem";
-import { convertArrayToObject, printOrSaveAsPDF } from "../../../utils/Functions";
 import { useSelector } from "react-redux";
+import FormContainer from "../../../components/FormContainer";
+import FormHeading from "../../../components/FormHeading";
+import FormBody from "../../../components/FormBody";
+import useHandlePrint from "../../../components/useHandlePrint";
+import CrCeDtlContainer from "../../../components/CrCeDtlContainer";
+import RegionalCenterDetails from "../../../components/RegionalCenterDetails";
+import SupplierDetails from "../../../components/SupplierDetails";
+import OtherDetails from "../../../components/OtherDetails";
+import FormSearchItem from "../../../components/FormSearchItem";
+import InputDatePickerCombo from "../../../components/InputDatePickerCombo";
+import ItemDetailsContainer from "../../../components/ItemDetailsContainer";
+import DesignationContainer from "../../../components/DesignationContainer";
+import ButtonContainer from "../../../components/ButtonContainer";
+import { processTypeAcptOptionList } from "../../../utils/KeyValueMapping";
+import FormSelectItem from "../../../components/FormSelectItem";
+import { useLocation } from "react-router-dom";
 
 const dateFormat = "DD/MM/YYYY";
-const { Option } = Select;
-const { Title } = Typography;
-const {Search} = Input
+const currentDate = dayjs();
 
 const InspectionNote = () => {
-  const formRef = useRef()
-  const [buttonVisible, setButtonVisible] = useState(false)
-  const [Type, setType] = useState("PO");
+
+  const location = useLocation()
+
+  const formRef = useRef();
+  const formBodyRef = useRef();
+  const handlePrint = useHandlePrint(formRef);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [uomMaster, setUomMaster] = useState({})
-  const [locatorMaster, setLocatorMaster] = useState({})
-  const [itemData, setItemData] = useState([]);
+  const { organizationDetails, locationDetails, userDetails, token, userCd } =
+    useSelector((state) => state.auth);
+  const {locatorObj} = useSelector(state => state.locators)
+  const {uomObj} = useSelector(state => state.uoms)
   const [formData, setFormData] = useState({
-    genDate: "",
-    genName: "",
-    issueDate: "",
+    genDate: currentDate.format(dateFormat),
+    genName: userDetails?.firstName + " " + userDetails?.lastName,
+    issueDate: currentDate.format(dateFormat),
     issueName: "",
-    approvedDate: "",
+    approvedDate: currentDate.format(dateFormat),
     approvedName: "",
     processId: 0,
-    type: "",
+    type: "PO",
+    processType: "PO",
+    processTypeDesc: "Purchase Order",
     typeOfInspection: "",
     inspectionRptNo: "",
-    inspectionRptDate: "",
+    inspectionRptDate: currentDate.format(dateFormat),
     invoiceNo: "",
     inwardGatePass: "",
-    ceRegionalCenterCd: "",
-    ceRegionalCenterName: "",
-    ceAddress: "",
-    ceZipcode: "",
+    ceRegionalCenterCd: organizationDetails?.id,
+    ceRegionalCenterName: organizationDetails?.organizationName,
+    ceAddress: organizationDetails?.locationAddr,
+    ceZipcode: locationDetails?.zipcode,
     crRegionalCenterCd: "",
     crRegionalCenterName: "",
     crAddress: "",
@@ -63,11 +74,11 @@ const InspectionNote = () => {
     supplierCd: "",
     address: "",
     contactNo: "",
-    dateOfDeliveryDate: "",
-    dateOfInspectionDate: "",
+    dateOfDeliveryDate: currentDate.format(dateFormat),
+    dateOfInspectionDate: currentDate.format(dateFormat),
     note: "",
     conditionOfGoods: "",
-    userId: "",
+    userId: userCd,
     items: [
       // {
       //   srNo: 0,
@@ -87,88 +98,30 @@ const InspectionNote = () => {
     ],
   });
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
   const handleOk = () => {
     setIsModalOpen(false);
   };
 
   const handleChange = (fieldName, value) => {
-    console.log("HandleChange called: ", fieldName, value)
     setFormData((prevValues) => ({
       ...prevValues,
       [fieldName]: value === "" ? null : value,
     }));
   };
 
-  const itemHandleChange = (fieldName, value, index) => {
-    setFormData((prevValues) => {
-      const updatedItems = [...(prevValues.items || [])];
-      updatedItems[index] = {
-        ...updatedItems[index],
-        [fieldName]: value === "" ? null : value,
-      };
-      return {
-        ...prevValues,
-        items: updatedItems,
-      };
-    });
-  };
-  const { organizationDetails, locationDetails, userDetails, token, userCd } = useSelector(state => state.auth)
 
-  useEffect(() => {
-    // fetchItemData();
-    fetchUomLocatorMaster()
-    fetchUserDetails();
-  }, []);
-
-  const fetchUserDetails = async () => {
-    // try {
-    //   // const userCd = localStorage.getItem("userCd")
-    //   // const password = localStorage.getItem("password")
-    //   const apiUrl =
-    //     "/login/authenticate";
-    //   const response = await axios.post(apiUrl, {
-    //     userCd,
-    //     password,
-    //   });
-
-      // const { responseData } = response.data;
-      // const { organizationDetails, locationDetails } = responseData;
-      // const { userDetails } = responseData;
-      // console.log("Fetched data:", organizationDetails);
-      const currentDate = dayjs();
-      // Update form data with fetched values
-      setFormData({
-        ceRegionalCenterCd: organizationDetails.id,
-        ceRegionalCenterName: organizationDetails.organizationName,
-        ceAddress: organizationDetails.locationAddr,
-        ceZipcode: locationDetails.zipcode,
-        genName: userDetails.firstName + " " + userDetails.lastName,
-        userId: userCd,
-        genDate: currentDate.format(dateFormat),
-        issueDate: currentDate.format(dateFormat),
-        approvedDate: currentDate.format(dateFormat),
-        inspectionRptDate: currentDate.format(dateFormat),
-        inspectionRptNo: "string",
-      });
-    // } catch (error) {
-    //   console.error("Error fetching data:", error);
-    // }
-  };
-  
-  const handleInwardGatePassChange = async (value) => {
+  const handleIgpDataSearch = async (value) => {
     try {
-      const apiUrl =
-        "/getSubProcessDtls";
-      const response = await axios.post(apiUrl, {
-        processId: value,
-        processStage: Type === "PO" ? "IR" : "IGP",
-        rejectProcess: Type === "PO" ? false : true
-      },  apiHeader("POST", token));
-      const {responseData} = response.data;
+      const apiUrl = "/getSubProcessDtls";
+      const response = await axios.post(
+        apiUrl,
+        {
+          processId: value,
+          processStage: formData.processType === "PO" ? "IR" : "IGP",
+        },
+        apiHeader("POST", token)
+      );
+      const { responseData } = response.data;
       const { processData, itemList } = responseData;
       setFormData((prevFormData) => ({
         ...prevFormData,
@@ -204,15 +157,16 @@ const InspectionNote = () => {
           itemCode: item?.itemCode,
           itemDesc: item?.itemDesc,
           uom: parseInt(item?.uom),
-          // quantity: item?.quantity,
+          uomDesc: uomObj[parseInt(item?.uom)],
           noOfDays: item?.requiredDays,
           remarks: item?.remarks,
           conditionOfGoods: item?.conditionOfGoods,
           budgetHeadProcurement: item?.budgetHeadProcurement,
           locatorId: item?.locatorId,
+          locatorDesc: locatorObj[parseInt(item?.locatorId)],
           inspectedQuantity: item?.quantity,
           acceptedQuantity: 0,
-          rejectedQuantity: 0
+          rejectedQuantity: 0,
         })),
       }));
       // Handle response data as needed
@@ -222,49 +176,17 @@ const InspectionNote = () => {
     }
   };
 
-  console.log("FOrmDataaaaaa: ", formData)
-
-  const fetchUomLocatorMaster = async () => {
-    try {
-      const uomMasterUrl =
-        "/master/getUOMMaster";
-      const locatorMasterUrl =
-        "/master/getLocatorMaster";
-      const [uomMaster, locatorMaster] = await Promise.all([axios.get(uomMasterUrl, apiHeader("GET", token)), axios.get(locatorMasterUrl, apiHeader("GET", token))]);
-      const { responseData: uomMasterData } = uomMaster.data;
-      const { responseData: locatorMasterData } = locatorMaster.data;
-      const uomObject = convertArrayToObject(uomMasterData, "id", "uomName" )
-      const locatorObj = convertArrayToObject(locatorMasterData, "id", "locatorDesc")
-      setUomMaster({...uomObject});
-      setLocatorMaster({...locatorObj})
-    } catch (error) {
-      console.log("Error fetching Uom master details.", error);
-    }
-  };
-
-  const removeItem = (index) => {
-    setFormData(prevValues=>{
-      const updatedItems = prevValues.items
-      updatedItems.splice(index, 1)
-      
-      const updatedItems1 = updatedItems.map((item, key)=>{
-        return {...item, srNo: key+1}
-      })
-
-      return {...prevValues, items: updatedItems1}
-    })
-  }
+  const [printBtnEnabled, setPrintBtnEnabled] = useState(false);
+  const [submitBtnEnabled, setSubmitBtnEnabled] = useState(true);
+  const [draftBtnEnabled, setDraftBtnEnabled] = useState(true);
+  const [isTxnData, setIsTxnData] = useState(false);
 
   const onFinish = async (values) => {
+    if (!formData.genName || !formData.approvedName) {
+      message.error("Please fill all the fields.");
+      return;
+    }
 
-    if(!formData.genName || !formData.approvedName){
-      message.error("Please fill all the fields.")
-      return
-    }
-    else{
-      console.log("ELSEEEE")
-    }
-    
     try {
       const formDataCopy = { ...formData };
       const allFields = [
@@ -306,10 +228,12 @@ const InspectionNote = () => {
         }
       });
 
-      const apiUrl =
-        "/saveNewInspectionReport";
-      const response = await axios.post(apiUrl, formDataCopy, apiHeader("POST", token));
-      console.log("Received values:", values);
+      const apiUrl = "/saveNewInspectionReport";
+      const response = await axios.post(
+        apiUrl,
+        formDataCopy,
+        apiHeader("POST", token)
+      );
       if (
         response.status === 200 &&
         response.data &&
@@ -323,270 +247,244 @@ const InspectionNote = () => {
           return {
             ...prevValues,
             inspectionRptNo: processId,
-          }
+          };
         });
-        setButtonVisible(true)
         setSuccessMessage(
           `Inspection Note : ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
         );
-        showModal();
-        message.success(
-          `Inspection Note  successfully! Process ID: ${processId}, Process Type: ${processType}, Sub Process ID: ${subProcessId}`
-        );
+        setIsModalOpen(true);
+        setPrintBtnEnabled(true);
+        setIsModalOpen(true);
+        setDraftBtnEnabled(false);
+        localStorage.removeItem("inspDraft");
       } else {
         // Display a generic success message if specific data is not available
-        message.error("Failed to Inspection Note . Please try again later.");
+        message.error(response.data.responseStatus.errorType || "Failed to Inspection Note . Please try again later.");
       }
     } catch (error) {
-      console.error("Error saving Inspection Note :", error);
       message.error("Failed to Inspection Note . Please try again later.");
     }
   };
 
-  console.log("FROMDATAA: ", formData.dateOfInspectionDate)
+  useEffect(() => {
+    if (formBodyRef.current) formBodyRef.current.updateField(formData);
+  }, [formData]);
 
-  // ... (other JSX and return statement)
-  const handleValuesChange = (_, allValues) => {
-    setType(allValues.type);
-  };
+   // when form is loaded and a form is saved as draft
+   useEffect(() => {
+    const formData = localStorage.getItem("inspDraft");
+    if (formData) {
+      setFormData(JSON.parse(formData));
+      message.success("Form data loaded from draft.")
+    }
+  }, []);
+
+   // when form is loaded and it is redirect by pressing print option on txn summary
+   useEffect(() => {
+    const txnData = location.state;
+
+    if (txnData && txnData.data && txnData.itemList) {
+      setFormData({
+        ...txnData?.data,
+        processTypeDesc:
+          txnData?.data?.type === "IRP"
+            ? "Returnable"
+            : txnData?.data?.type === "NIRP"
+            ? "Non Returnable"
+            : txnData?.data?.type === "PO"
+            ? "Purchase Order"
+            : "Inter Org Transfer",
+        items: txnData?.itemList,
+      });
+
+      setDraftBtnEnabled(false);
+      setSubmitBtnEnabled(false);
+      setPrintBtnEnabled(true);
+      setIsTxnData(true);
+    }
+  }, [location.state]);
 
   return (
-    <div className="goods-receive-note-form-container" ref={formRef}>
-      <h1>Sports Authority of India - Inspection Note</h1>
-      <Form
-        onFinish={onFinish}
-        className="goods-recieve-note-form"
-        onValuesChange={handleValuesChange}
-        layout="vertical"
-      >
-        <Row>
-          <Col span={6} offset={18}>
-            <Form.Item label="DATE" name="inspectionNoteDate">
-              <DatePicker
-                defaultValue={dayjs()}
-                format={dateFormat}
-                style={{ width: "100%" }}
-                name="inspectionNoteDate"
-                onChange={(date, dateString) =>
-                  handleChange("inspectionNoteDate", dateString)
-                }
-              ></DatePicker>
-            </Form.Item>
-          </Col>
-          <Col span={6}>
-            <Form.Item label="TYPE" name="type">
-              <Select onChange={(value) => handleChange("type", value)}>
-                <Option value="PO">1. Purchase Order</Option>
-                <Option value="IOP">2. Intern-Org Transaction</Option>
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={6} offset={12}>
-            <FormInputItem label = "Inspection Note No." value={formData.inspectionRptNo === "string" ? "not defined" : formData.inspectionRptNo} />
-          </Col>
-        </Row>
+    <>
+      <FormContainer ref={formRef}>
+        <FormHeading
+          formTitle="Inspection Note"
+          date={formData.dateOfInspectionDate}
+          txnType="IR"
+          txnNo={
+            formData.inspectionRptNo === "string"
+              ? ""
+              : formData.inspectionRptNo
+          }
+        />
+        <FormBody ref={formBodyRef} formData={formData} onFinish={onFinish}>
+          <CrCeDtlContainer>
+            <RegionalCenterDetails
+              heading="Consignee Details"
+              cdName="ceRegionalCenterCd"
+              rcName="ceRegionalCenterName"
+              adrName="ceAddress"
+              zipName="ceZipcode"
+              readOnly
+            />
 
-        <Row gutter={24}>
-          <Col span={8}>
-            <Title strong level={3} underline type="danger">
-              {Type === "PO" ? "CONSIGNEE DETAIL :-" : "CONSIGNOR DETAIL :-" }
-            </Title>
+            {formData.processType === "PO" && <SupplierDetails supplierCodeName="supplierCd" readOnly />}
 
-            <FormInputItem label = "REGIONAL CENTER CODE :" value={Type==="PO" ? formData.ceRegionalCenterCd : formData.crRegionalCenterCd} readOnly={true} />
-            <FormInputItem label = "REGIONAL CENTER NAME :" value={Type==="PO" ? formData.ceRegionalCenterName : formData.crRegionalCenterName} readOnly={true} />
-            <FormInputItem label = "ADDRESS :" value={Type==="PO" ? formData.ceAddress : formData.crAddress} readOnly={true} />
-            <FormInputItem label = "ZIP CODE :" value={Type==="PO" ? formData.ceZipcode: formData.crZipcode} readOnly={true} />
-
-          </Col>
-          <Col span={8}>
-            <Title strong underline level={3} type="danger">
-            {Type === "PO" ? "CONSIGNOR DETAIL :-" : "CONSIGNEE DETAIL :-" }
-            </Title>
-            {Type === "PO" && (
-              <> 
-                <FormInputItem label="SUPPLIER CODE :" value={formData.supplierCd} />
-                <FormInputItem label="SUPPLIER NAME :" value={formData.supplierName} />
-                <FormInputItem label="ADDRESS :" value={formData.crAddress || "Not defined"} />
-              </>
+            {formData.processType === "IOP" && (
+              <RegionalCenterDetails
+                heading="Consignor Details"
+                cdName="crRegionalCenterCd"
+                rcName="crRegionalCenterName"
+                adrName="crAddress"
+                zipName="crZipcode"
+                readOnly
+              />
             )}
 
-            {Type === "IOP" && (
-              <>
-                <FormInputItem label="REGIONAL CENTER CODE:" value={formData.ceRegionalCenterCd} readOnly={true} />
-                <FormInputItem label="REGIONAL CENTER NAME :" value={formData.ceRegionalCenterName} readOnly={true} />
-                <FormInputItem label="ADDRESS :" value={formData.ceAddress || "Not defined"} readOnly={true} />
-                <FormInputItem label="ZIP CODE :" value={formData.ceZipcode || "Not defined"} readOnly={true} />
-              </>
-            )}
-          </Col>
-          <Col span={8}>
-            <Form.Item></Form.Item>
-
-            <Form.Item label={Type === "PO" ? "MIS NO. :" : "Inward Gate Pass No. :"} >
-              <Search
-                    name="inwardGatePass"
-                    label={Type === "PO" ? "MIS NO. :" : "Inward Gate Pass No. :"} 
-                    onSearch={handleInwardGatePassChange}
-                    enterButton
+            <OtherDetails>
+            <FormSelectItem
+                name="processTypeDesc"
+                label="Select Process Type"
+                optionArray={processTypeAcptOptionList}
+                formField="processType"
+                onChange={handleChange}
+                readOnly={isTxnData}
               />
-            </Form.Item>
-            {/* <FormInputItem label={Type === "PO" ? "MIS NO. :" : "Inward Gate Pass No. :"} name="inwardGatePass" onChange={handleInwardGatePassChange} /> */}
-            <FormInputItem label = "CHALLAN / INVOICE NO. :" value={formData.challanNo} readOnly={true} />
-            <FormInputItem label = "MODE OF DELIVERY :" value={formData.modeOfDelivery} readOnly={true} />
-            <FormInputItem label = "DATE OF DELIVERY :" value={formData.dateOfDeliveryDate} readOnly={true} />
-            <FormDatePickerItem label="DATE OF INSPECTION :" name="dateOfInspectionDate" onChange={handleChange} value={formData.dateOfInspectionDate} />
-            <FormInputItem label="TYPE OF INSPECTION :" name="typeOfInspection" onChange={handleChange} value={formData.typeOfInspection}/>
-          </Col>
-        </Row>
-
-        {/*Item Details*/}
-        <h2>ITEM DETAILS</h2>
-
-        <Form.List name="itemDetails" initialValue={formData.items || [{}]}>
-          {(fields, { add, remove }) => (
-            <>
-              {formData?.items?.length > 0 &&
-                formData.items.map((item, key) => {
-                  return (
-
-                    <div key={key} style={{ marginBottom: 16, border: '1px solid #d9d9d9', padding: 16, borderRadius: 4, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',gap:'20px' }}>
-                      
-                      <FormInputItem label="Serial No. :" value={item.srNo} readOnly={true}/>
-                      <FormInputItem label="ITEM CODE :" value={item.itemCode} readOnly={true}/>
-                      <FormInputItem label="ITEM DESCRIPTION :" value={item.itemDesc} readOnly={true}/>
-                      <FormInputItem label="UOM :" value={uomMaster[item.uom]} readOnly={true}/>
-                        <Form.Item label="INSPECTED QUANTITY">
-                          <Input value={item.inspectedQuantity} onChange={(e)=>itemHandleChange("inspectedQuantity", e.target.value, key)} />
-                        </Form.Item>
-                        <Form.Item label="ACCEPTED QUANTITY">
-                          <Input value={item.acceptedQuantity} onChange={(e)=>itemHandleChange("acceptedQuantity", e.target.value, key)} />
-                        </Form.Item>
-                        <Form.Item label="REJECTED QUANTITY">
-                          <Input value={item.rejectedQuantity} onChange={(e)=>itemHandleChange("rejectedQuantity", e.target.value, key)} />
-                        </Form.Item>
-
-                        {
-                          Type !== "PO" && Type !== "IOP" && 
-                          <FormInputItem label="LOCATOR DESCRPTION" value={locatorMaster[item.locatorId]} />
-                        }
-
-                        <Form.Item label="REMARK">
-                          <Input value={item.remarks} onChange={(e)=>itemHandleChange("remarks", e.target.value, key)} />
-                        </Form.Item>
-
-                        <Col span={1}>
-                          <MinusCircleOutlined onClick={() => removeItem(key)} style={{ marginTop: 8 }} />
-                        </Col>
-                    </div>
-                  );
-                })}
-            </>
-
-          )}
-        </Form.List>
-
-        {/* Note and Signature */}
-        <div
-          style={{
-            display: "flex",
-            width: "100%",
-            justifyContent: "space-between",
-          }}
-        >
-          <div>
-            <div className="goods-receive-note-signature">GENERATED BY</div>
-            <div className="goods-receive-note-signature">
-              NAME & DESIGNATION :
-              <Form>
-                <Input
-                  value={formData.genName}
-                  name="genName"
-                  onChange={(e) => handleChange("genName", e.target.value)}
-                />
-              </Form>
-            </div>
-            <div className="goods-receive-note-signature">
-              DATE & TIME :
-              <DatePicker
-                defaultValue={dayjs()}
-                format={dateFormat}
-                style={{ width: "58%" }}
-                name="genDate"
-                onChange={(date, dateString) =>
-                  handleChange("genDate", dateString)
-                }
+              <FormSearchItem
+                label={formData.processType === "PO" ? "MIS No." : "Inward Gate Pass No."} 
+                name="acceptanceNoteNo"
+                onSearch={handleIgpDataSearch}
+                onChange={handleChange}
+                readOnly={isTxnData}
               />
-            </div>
-          </div>
-
-          <div>
-            <div className="goods-receive-note-signature">APPROVED BY</div>
-            <div className="goods-receive-note-signature">
-              NAME & SIGNATURE :
-              <Form>
-                <Input
-                  name="approvedName"
-                  onChange={(e) => handleChange("approvedName", e.target.value)}
-                />
-              </Form>
-            </div>
-            <div className="goods-receive-note-signature">
-              DATE & TIME :
-              <DatePicker
-                defaultValue={dayjs()}
-                format={dateFormat}
-                style={{ width: "58%" }}
-                name="approveDate"
-                onChange={(date, dateString) =>
-                  handleChange("issueDate", dateString)
-                }
+              <FormInputItem
+                label="Challan / Invoice No."
+                name="challanNo"
+                readonly
               />
-            </div>
-          </div>
-        </div>
-        {/* Submit Button */}
-        <div className="goods-receive-note-button-container">
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="save"
-              style={{ width: "200px", margin: 16 }}
-            >
-              SAVE
-            </Button>
-          </Form.Item>
+              <InputDatePickerCombo
+                inputLabel="Mode Of Delivery"
+                inputName="modeOfDelivery"
+                onChange={handleChange}
+                dateLabel="Date Of Delivery"
+                dateValue={formData.dateOfDeliveryDate}
+                dateName="dateOfDeliveryDate"
+                readOnly
+              />
+              <InputDatePickerCombo
+                inputLabel="Type Of Inspection"
+                inputName="typeOfInspection"
+                onChange={handleChange}
+                dateLabel="Date Of Inspection"
+                dateName="dateOfInspectionDate"
+                dateValue={formData.dateOfInspectionDate}
+                readOnly={isTxnData}
+              />
+            </OtherDetails>
+          </CrCeDtlContainer>
 
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              style={{
-                backgroundColor: "#4CAF50",
-                borderColor: "#4CAF50",
-                width: "200px",
-                margin: 16,
-              }}
-            >
-              SUBMIT
-            </Button>
-          </Form.Item>
-          <Form.Item>
-          <Button disabled={!buttonVisible} onClick={()=> printOrSaveAsPDF(formRef)} type="primary" danger style={{ width: '200px', margin: 16, alignContent: 'end' }}>
-              PRINT
-            </Button>
-          </Form.Item>
-        </div>
+          <ItemDetailsContainer>
+            {formData?.items?.map((item, key) => {
+              return (
+                <div className="each-item-detail-container">
+                  <div className="each-item-detail-container-grid">
+                    <FormInputItem
+                      label="S. No."
+                      name={
+                        item.srNo
+                          ? ["items", key, "srNo"]
+                          : ["items", key, "sNo"]
+                      }
+                      readOnly={true}
+                    />
+                    <FormInputItem
+                      label="Item Code"
+                      name={["items", key, "itemCode"]}
+                      readOnly={true}
+                    />
+                    <FormInputItem
+                      label="Item Description"
+                      className="item-desc-cell"
+                      name={["items", key, "itemDesc"]}
+                      readOnly={true}
+                    />
+                    <FormInputItem
+                      label="Unit of Measurement"
+                      name={["items", key, "uomDesc"]}
+                      readOnly={true}
+                    />
+
+                    <FormInputItem
+                      label="Inspected Quantity"
+                      name={["items", key, "inspectedQuantity"]}
+                      readOnly
+                    />
+                    <FormInputItem
+                      label="Accepted Quantity"
+                      name={["items", key, "acceptedQuantity"]}
+                      onChange={(fieldName, value) =>
+                        itemHandleChange(fieldName, value, key, setFormData)
+                      }
+                      readOnly={isTxnData}
+                    />
+                    <FormInputItem
+                      label="Rejected Quantity"
+                      name={["items", key, "rejectedQuantity"]}
+                      onChange={(fieldName, value) =>
+                        itemHandleChange(fieldName, value, key, setFormData)
+                      }
+                      readOnly={isTxnData}
+                    />
+
+                    <FormInputItem
+                      name={["items", key, "remarks"]}
+                      label="Remarks"
+                      onChange={(fieldName, value) =>
+                        itemHandleChange(fieldName, value, key, setFormData)
+                      }
+                      readOnly={isTxnData}
+                    />
+                  </div>
+
+                  <Button
+                    icon={<DeleteOutlined />}
+                    className="delete-button"
+                    onClick={() => removeItem(key, setFormData)}
+                    disabled={isTxnData}
+                  />
+                </div>
+              );
+            })}
+          </ItemDetailsContainer>
+          <DesignationContainer
+            genByVisible
+            approvedVisible
+            genDateValue={formData.genDate} 
+            approvedDateValue={formData.approvedDate}
+            handleChange={handleChange}
+            readOnly={isTxnData}
+          />
+          <ButtonContainer
+            handlePrint={handlePrint}
+            onFinish={onFinish}
+            submitBtnEnabled={submitBtnEnabled}
+            printBtnEnabled={printBtnEnabled}
+            draftDataName="inspDraft"
+            formData={formData}
+            draftBtnEnabled={draftBtnEnabled}
+            disabled={isTxnData}
+          />
+        </FormBody>
+
         <Modal
-          title="Insepction Report  saved successfully"
-          visible={isModalOpen}
+          title="Inspection Note saved successfully."
+          open={isModalOpen}
           onOk={handleOk}
         >
           {successMessage && <p>{successMessage}</p>}
-          {errorMessage && <p>{errorMessage}</p>}
         </Modal>
-      </Form>
-      {/* ... (rest of the form structure) */}
-    </div>
+      </FormContainer>
+    </>
   );
 };
 

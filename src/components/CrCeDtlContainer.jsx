@@ -1,6 +1,6 @@
 import React from 'react'
 
-const CrCeDtlContainer = ({children}) => {
+const CrCeDtlContainer = ({children, formData}) => {
   return (
     <div 
         style={{

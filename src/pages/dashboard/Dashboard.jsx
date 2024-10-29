@@ -94,9 +94,6 @@ const Dashboard = (props) => {
       setLoadings(false)
     }
 
-    console.log("ItemSlabData:", itemSlabData )
-
-
 
     useEffect(()=>{
       populateDashboard()

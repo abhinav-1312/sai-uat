@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { apiHeader } from "../../utils/Functions";
 import { ExportOutlined } from "@ant-design/icons";
 import axios from "axios";
-import dayjs from "dayjs";
 import { CSVLink } from 'react-csv';
 import moment from "moment";
 import { useSelector } from "react-redux";
@@ -244,8 +243,6 @@ const StockLedger = ({orgId}) => {
       message.error("Error occured while fetching stock ledger. Please try again.")
     }
   };
-
-  console.log("Ledger: ", ledger)
 
   const disabledDate = (current) => {
     // Disable dates that are after today

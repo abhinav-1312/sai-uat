@@ -1,6 +1,6 @@
 import React from "react";
 
-const OtherDetails = ({ children }) => {
+const OtherDetails = ({ children, xyz }) => {
   return (
     <>
       <div className="other-container">

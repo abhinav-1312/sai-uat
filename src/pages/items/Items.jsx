@@ -1,6 +1,6 @@
 // ItemsPage.js
 import React, { useState, useEffect, useCallback } from "react";
-import { Button, Modal, Input, message } from "antd";
+import { Button, Modal, Input } from "antd";
 import ItemsTable from "./ItemsTable";
 import ItemsForm from "./ItemsForm";
 import dayjs from "dayjs";
@@ -192,15 +192,6 @@ const ItemsPage = () => {
     if (!tempItem.itemMasterCd) {
       delete tempItem.itemMasterCd;
     }
-
-    if(itemDepVar){
-      if(itemDepVar.categoryVal === tempItem.category && 
-        itemDepVar.subCategoryVal === tempItem.subCategory &&
-        itemDepVar.typeVal === tempItem.type &&
-        itemDepVar.disciplineVal === tempItem.disciplines &&
-        Number(itemDepVar.uomVal) === tempItem.uomId &&
-        itemDepVar.usageCatgeoryVal === tempItem.usageCategory
-      ) {
           if (editingItem) {
             if (selectedId) {
               tempItem["itemMasterId"] = selectedId;
@@ -221,144 +212,8 @@ const ItemsPage = () => {
               tempItem
             );
           }
-      }
-      else{
-        message.error("Please put the correct values.")
-        setValidateDepVar({
-          validateCategory: itemDepVar.categoryVal !== tempItem.category ? true : false,
-          validateSubCategory: itemDepVar.subCategoryVal !== tempItem.subCategory ? true : false,
-          validateType: itemDepVar.typeVal !== tempItem.type ? true : false,
-          validateDiscipline: itemDepVar.disciplineVal !== tempItem.disciplines ? true : false,
-          validateUom: Number(itemDepVar.uomVal) !== tempItem.uomId ? true : false,
-          validateUsageCategory: itemDepVar.usageCategoryVal !== tempItem.usageCategory ? true : false
-        })
-      }
-    }else{
-      if (editingItem) {
-        if (selectedId) {
-          tempItem["itemMasterId"] = selectedId;
-        }
-  
-        await apiCall(
-          "POST",
-          "/master/updateItemMaster",
-          token,
-          tempItem
-        );
-      } else {
-        // Implement create logic here
-        await apiCall(
-          "POST",
-          "/master/saveItemMaster",
-          token,
-          tempItem
-        );
-      }
-    }
-
-
     dispatch(fetchItemData())
-
-
-    // setVisible(false);
   };
-
-  // console.log("Itemdepvar: ", itemDepVar)
-  // console.log("Validate: ", validateDepVar)
-
-  const fetchTypes = async (selectedCategory, selectedSubCategory) => {
-    try {
-      const {responseData} = await apiCall("POST",
-        "/genparam/getAllItemTypeByDtls",
-        token,
-        {
-          categoryCode: selectedCategory,
-          subCategoryCode: selectedSubCategory,
-        },
-      );
-      // const data = response?.data?.responseData || [];
-      return responseData || [];
-    } catch (error) {
-      console.error("Error fetching types:", error);
-    }
-  };
-
-  const fetchDisciplines = async (selectedCategory, selectedSubCategory, selectedType) => {
-    try {
-      const {responseData} = await apiCall("POST",
-        "/genparam/getAllDisciplineByDtls",
-        token,
-        {
-          categoryCode: selectedCategory,
-          subCategoryCode: selectedSubCategory,
-          typeCode: selectedType,
-        },
-      );
-      return responseData || [];
-    } catch (error) {
-      console.error("Error fetching disciplines:", error);
-    }
-  };
-
-  const fetchSubCategories = async (selectedCategory) => {
-    try {
-      const {responseData} = await apiCall("POST",
-        "/genparam/getAllSubCategoriesByDtls",
-        token,
-        {
-          categoryCode: selectedCategory,
-        },
-      );
-      // const data = responseData || [];
-      // Assuming the response contains an array of subcategory options
-      // const subcategoryOptions = data.map((subcategory) => ({
-      //   key: subcategory.subCategoryCode,
-      //   value: subcategory.subCategoryDesc,
-      // }));
-      // setSubCategoryOptions(subcategoryOptions);
-      return responseData || [];
-    } catch (error) {
-      console.error("Error fetching subcategories:", error);
-    }
-  };
-
-  const setItemDependentValues = async (data, formValues)=> {
-    // console.log("data: ", data, formValues)
-    const {uomId, category, subCategory, type, disciplines, usageCategory} = data
-    const [subCategoryOptions, typeOptions, disciplineOptions] = await Promise.all([fetchSubCategories(category), fetchTypes(category, subCategory), fetchDisciplines(category, subCategory, type)])
-    const uomDesc = uomObj[parseInt(uomId)]
-    const categoryDesc = categories.find(record => record.paramVal === category)?.paramDesc
-    const subCategoryDesc = subCategoryOptions?.find(record => record.subCategoryCode === subCategory)?.subCategoryDesc
-    const typeDesc = typeOptions?.find(record => record.typeCode === type)?.typeDesc
-    const disciplineDesc = disciplineOptions?.find(record => record.disciplineCode === disciplines)?.disciplineName
-    const usageCategoryDesc = usageCategories?.find(record => record.paramVal === usageCategory)?.paramDesc
-
-    if(category !== formValues.category || 
-      subCategory !== formValues.subCategory ||
-      type !== formValues.type ||
-      disciplines !== formValues.disciplines ||
-      Number(itemDepVar.uomVal) !== Number(formValues.uomId) ||
-      usageCategory !== formValues.usageCategory
-    ) {
-      message.error("Variables input for the item name doesnt match. Please correct and submit again.")
-      setItemDepVar({
-        uomVal:  uomId,
-        categoryVal: category,
-        subCategoryVal : subCategory,
-        typeVal: type,
-        disciplineVal: disciplines,
-        usageCatgeoryVal: usageCategory,
-        uomDesc,
-        categoryDesc,
-        subCategoryDesc,
-        typeDesc,
-        disciplineDesc,
-        usageCategoryDesc
-      })
-    }
-
-
-  }
 
   if(!itemData || !vendorData || !locationData || !locatorData || !uomData || !vendorObj || !uomObj){
     return <Loader />
@@ -429,8 +284,10 @@ const ItemsPage = () => {
           usageCategories={usageCategories}
           sizes={sizes}
           disciplines={allDisciplines}
-          setItemDependentValues = {setItemDependentValues}
+          // setItemDependentValues = {setItemDependentValues}
           validateDepVar = {validateDepVar}
+          setValidateDepVar={setValidateDepVar}
+          setItemDepVar = {setItemDepVar}
         />
         {
           itemDepVar &&

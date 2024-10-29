@@ -15,7 +15,7 @@ import {
 } from "../../../utils/Functions";
 import FormInputItem from "../../../components/FormInputItem";
 import { fetchOhq } from "../../../redux/slice/ohqSlice";
-import { Button, message, Typography } from "antd";
+import { Button, message } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import TermsConditionContainer from "../../../components/TermsConditionContainer";
 import DesignationContainer from "../../../components/DesignationContainer";
@@ -218,6 +218,8 @@ const IssueNoteCorrection = () => {
         <DesignationContainer
           genByVisible
           approvedVisible
+          genDateValue={formData.genDate} 
+          approvedDateValue={formData.approvedDate}
           handleChange={handleChange}
         />
         <ButtonContainer

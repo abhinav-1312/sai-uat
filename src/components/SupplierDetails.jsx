@@ -2,32 +2,26 @@ import React from "react";
 import FormInputItem from "./FormInputItem";
 
 const SupplierDetails = ({
-  heading,
-  supplierCode,
-  onChange,
-  supplierName,
-  address,
+  handleChange,
+  supplierCodeName,
+  readOnly,
 }) => {
   return (
     <>
       <div className="consignor-container">
-        <h3 className="consignor-consignee-heading">{heading}</h3>
+        <h3 className="consignor-consignee-heading">Consignor Details</h3>
         <FormInputItem
           label="Supplier Code"
-          name="supplierCode"
-          // value={supplierCode}
-          onChange={onChange}
-          required
+          name={supplierCodeName ? supplierCodeName : "supplierCode" }
+          readOnly={readOnly ? true : false}
+          onChange={handleChange}
         />
-
         <FormInputItem
           label="Supplier Name"
-          // value={supplierName}
-          // readOnly={true}
-          name='supplierName'
-          required
+          name="supplierName"
+          readOnly={true}
         />
-        <FormInputItem label="Address" readOnly={true} required name='crAddress' />
+        <FormInputItem label="Address" name="crAddress" readOnly={true} />
       </div>
     </>
   );

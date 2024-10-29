@@ -7,7 +7,6 @@ import { useSelector } from "react-redux";
 import {SearchOutlined, RightOutlined} from '@ant-design/icons'
 import _ from 'lodash'
 import { processStage, processType } from "../../utils/KeyValueMapping";
-import dayjs from 'dayjs';
 import OrgWiseCountBar from "./graphs/BarGraph";
 
 const { Option } = Select;

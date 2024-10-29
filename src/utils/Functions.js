@@ -260,7 +260,7 @@ export const renderLocatorOHQ = (obj) => {
           {
             title: "LOCATOR DESCRIPTION",
             dataIndex: "locatorDesc",
-            key: "locatorDesc"
+            key: "locatorDesc",
           },
           {
             title: "QUANTITY",
@@ -354,14 +354,15 @@ export const convertArrayToObject = (array, _makeKey, valueKey ) => {
   };
 
   export const daysDifference = (issueDate, receivingDate) => {
+    console.log("issuedate: ", issueDate)
     const issueDtparts = issueDate.split("/");
-    const receivingDtparts = issueDate.split("/");
+    const receivingDtparts = receivingDate.split("/");
     const issueDay = parseInt(issueDtparts[0], 10);
     const issueMonth = parseInt(issueDtparts[1], 10);
     const issueYear = parseInt(issueDtparts[2], 10);
-    const receivingDay = parseInt(issueDtparts[0], 10);
-    const receivingMonth = parseInt(issueDtparts[1], 10);
-    const receivingYear = parseInt(issueDtparts[2], 10);
+    const receivingDay = parseInt(receivingDtparts[0], 10);
+    const receivingMonth = parseInt(receivingDtparts[1], 10);
+    const receivingYear = parseInt(receivingDtparts[2], 10);
     const issueDateMod = new Date(issueYear, issueMonth - 1, issueDay); // JavaScript months are 0-indexed
     const receivingDateMod = new Date(receivingYear, receivingMonth - 1, receivingDay); // JavaScript months are 0-indexed
     // constGet the current date
@@ -562,16 +563,25 @@ export const updateFormData = (newItem, setFormData) => {
 };
 
 export const itemHandleChange = (fieldName, value, index, setFormData) => {
-  // quantity logic to be applied
   setFormData((prevValues) => {
-    const updatedItems = prevValues.items;
-    updatedItems[index] = {
-      ...updatedItems[index],
-      [fieldName]: value,
-    };
+    const updatedItems = [...(prevValues.items || [])];
+    
+    if (fieldName === "unitPrice" && /^\d*\.?\d*$/.test(value)) {
+      updatedItems[index] = {
+        ...updatedItems[index],
+        [fieldName]: value === "" ? 0 : value,
+      };
+    } else {
+      updatedItems[index] = {
+        ...updatedItems[index],
+        [fieldName]: value,
+      };
+    }
+
     return {
       ...prevValues,
       items: updatedItems,
     };
   });
 };
+

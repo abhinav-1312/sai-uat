@@ -44,12 +44,14 @@ const TermsConditionContainer = ({
       {conditionOfGoodsVisible && (
         <div>
           <h3>Condition of Goods</h3>
+          <Form.Item name="conditionOfGoods">
           <TextArea
-            autoSize={{ minRows: 4, maxRows: 16 }}
-            value={conditionOfGoods}
-            onChange={(e) => handleChange("conditionOfGoods", e.target.value)}
-            readOnly={readOnly}
+          autoSize={{ minRows: 4, maxRows: 16 }}
+          value={conditionOfGoods}
+          onChange={(e) => handleChange("conditionOfGoods", e.target.value)}
+          readOnly={readOnly}
           />
+          </Form.Item>
         </div>
       )}
     </div>

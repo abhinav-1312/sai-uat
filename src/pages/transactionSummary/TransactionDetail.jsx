@@ -14,7 +14,8 @@ import ReturnTable from "./detailData/ReturnTable";
 import MisTable from "./detailData/MisTable";
 import { useSelector } from "react-redux";
 import { CSVLink } from "react-csv";
-import { useReactToPrint } from "react-to-print";
+
+const style = {display: "flex", gap: "1rem", marginBottom: "0.5rem", alignItems: "center"}
 
 const TransactionDetail = () => {
   const navigate = useNavigate();
@@ -31,6 +32,8 @@ const TransactionDetail = () => {
     acc[key] = true;
     return acc;
   }, {});
+
+  const {organizationDetails} = useSelector(state => state.auth)
 
   const [acceptData, setAcceptData] = useState(null);
   const [returnData, setReturnData] = useState(null);
@@ -74,7 +77,6 @@ const TransactionDetail = () => {
       inspectionNewRptData,
     } = responseData;
     setAcceptData(acceptData);
-    setReturnData(rndata);
     setIgpData(igpdata);
     setMisData(inspectionRptData);
     setIsnData(isndata);
@@ -82,11 +84,25 @@ const TransactionDetail = () => {
     setGrnData(grndata);
     setRejectData(rejectData);
     setInspectionNoteData(inspectionNewRptData);
+    setReturnData({
+      data: rndata.data,
+      itemList: rndata.itemList ? rndata.itemList.map((item) => {
+        const issueNoteDt = rndata.data ? rndata.data.issueNoteDt : null;
+        const genDate = rndata.data ? rndata.data.genDate : null;
+    
+        return {
+          ...item,
+          issueNoteDt,
+          genDate,
+        };
+      }) : [] // Return an empty array instead of null for itemList
+    });
   }
 
   const handleNavigate = () => {
       navigate(-1)
   }
+
 
   const populateData = async () => {
     const trnDetailUrl =
@@ -109,7 +125,6 @@ const TransactionDetail = () => {
       inspectionNewRptData,
     } = responseData;
     setAcceptData(acceptData);
-    setReturnData(rndata);
     setIgpData(igpdata);
     setMisData(inspectionRptData);
     setIsnData(isndata);
@@ -117,17 +132,40 @@ const TransactionDetail = () => {
     setGrnData(grndata);
     setRejectData(rejectData);
     setInspectionNoteData(inspectionNewRptData);
+    setReturnData({
+      data: rndata.data,
+      itemList: rndata.itemList ? rndata.itemList.map((item) => {
+        const issueNoteDt = rndata.data ? rndata.data.issueNoteDt : null;
+        const genDate = rndata.data ? rndata.data.genDate : null;
+    
+        return {
+          ...item,
+          issueNoteDt,
+          genDate,
+        };
+      }) : [] // Return an empty array instead of null for itemList
+    });
+    
   };
 
   const handleIsnPrint = () => {
     navigate('/trans/issue', {
-      state: { isnData: isnData.data, itemList: isnData.itemList }, // Pass data as state
+      state: { data: isnData.data, itemList: isnData.itemList }, // Pass data as state
     });
   }
 
   const handleOgpPrint = () => {
     navigate('/trans/outward', {
       state: {ogpData: ogpData.data, itemList: ogpData.itemList}
+    })
+  }
+
+  const handleRnPrint = () => {
+    navigate("/trans/return", {
+      state: {
+        data: returnData.data,
+        itemList: returnData.itemList
+      }
     })
   }
 
@@ -158,10 +196,9 @@ const TransactionDetail = () => {
           <>
           <CSVLink 
         data={finalCsvData} 
-        filename="table-data.csv" 
+        filename={`transaction_detail_${organizationDetails?.organizationName}.csv` }
         style={{ marginBottom: 16, border: "1px solid", width: "max-content", padding: "1rem" }}
         className="ant-btn ant-btn-primary"
-        // Apply Ant Design button styles
         >
         Export to CSV
       </CSVLink>
@@ -186,7 +223,7 @@ const TransactionDetail = () => {
 
       {objectFromArr["ISN"] && (
         <div>
-          <div style={{display: "flex", gap: "1rem", marginBottom: "0.5rem"}}>
+          <div style={style}>
           <h2>Issue Note</h2>
           {
             isnData?.data &&
@@ -210,7 +247,7 @@ const TransactionDetail = () => {
 
       {objectFromArr["OGP"] && (
         <div>
-          <div style={{display: "flex", gap: "1rem", marginBottom: "0.5rem"}}>
+          <div style={style}>
           <h2>Outward Gate Pass</h2>
           {
             ogpData?.data &&
@@ -233,6 +270,7 @@ const TransactionDetail = () => {
 
       {objectFromArr["IGP"] && (
         <div>
+          div
           <h2>Inward Gate Pass</h2>
           {igpData?.data ? (
             <IgpTable
@@ -250,7 +288,14 @@ const TransactionDetail = () => {
 
       {objectFromArr["RN"] && (
         <div>
+          <div style={style}>
+
           <h2>Return Note</h2>
+          {
+            returnData?.data &&
+            <Button danger onClick = {handleRnPrint}> Print </Button>
+          }
+          </div>
           {returnData?.data ? (
             <ReturnTable
               type={returnData?.data?.type}

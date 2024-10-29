@@ -49,7 +49,7 @@ import { Form } from 'antd';
 import React from 'react';
 
 const FormBody = React.forwardRef((props, ref) => {
-  const { children, formData } = props; // Destructure props
+  const { children, formData, onFinish } = props; // Destructure props
 
   const [form] = Form.useForm();
 
@@ -61,12 +61,14 @@ const FormBody = React.forwardRef((props, ref) => {
     updateField: updateField,
   }));
 
+
   return (
     <>
       <Form
         form={form}
         layout="vertical"
         initialValues={formData}
+        onFinish={onFinish}
       >
         <div
           style={{

@@ -2,20 +2,23 @@ import React from "react";
 import FormInputItem from "./FormInputItem";
 import FormDatePickerItem from "./FormDatePickerItem";
 
-const InputDatePickerCombo = ({inputLabel, inputName, inputValue, onChange, dateLabel, dateName, dateValue}) => {
+const InputDatePickerCombo = ({inputLabel, inputName, inputValue, onChange, dateLabel, dateName, dateValue, required, readOnly}) => {
   return (
     <div className="other-details-2cols">
       <FormInputItem
         label={inputLabel}
         name={inputName}
-        value={inputValue}
         onChange={onChange}
+        required={required ? true : false}
+        readOnly={readOnly}
       />
       <FormDatePickerItem 
+        defaultValue={dateValue}
         label={dateLabel}
         name={dateName}
         onChange={onChange}
-        value={dateValue}
+        readOnly={readOnly}
+        required={required ? true : false}
       />
     </div>
   );

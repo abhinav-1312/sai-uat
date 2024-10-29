@@ -9,10 +9,6 @@ import OrgWiseCountBar from "./graphs/BarGraph";
 const { Search } = Input;
 
 const ItemSlab = ({allData, itemDescDropdownList, subCategoryDropdownList, countOrgWise, orgId}) => {
-  console.log("alldata", allData)
-  console.log("itemDescDropdownList", itemDescDropdownList)
-  console.log("subCategoryDropdownList", subCategoryDropdownList)
-  console.log("countOrgWise", countOrgWise)
   const [filteredData, setFilteredData] = useState([...allData])
   const {orgMasterObj} = useSelector(state => state.orgMaster)
   const [filteredInfo, setFilteredInfo] = useState({});

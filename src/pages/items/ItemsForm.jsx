@@ -26,12 +26,12 @@ const ItemsForm = ({
   vendors,
   brands,
   colors,
-  itemNames,
   sizes,
   categories,
   usageCategories,
-  setItemDependentValues,
-  validateDepVar
+  validateDepVar,
+  setValidateDepVar,
+  setItemDepVar
 }) => {
   const [form] = Form.useForm();
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -46,6 +46,7 @@ const ItemsForm = ({
   const [itemDescriptionDisabled, setItemDescriptionDisabled] = useState(true);
 
   const {token} = useSelector(state => state.auth)
+  const {uomObj} = useSelector(state => state.uoms)
 
   const handleCategoryChange = (value) => {
     setSelectedCategory(value);
@@ -194,65 +195,140 @@ const ItemsForm = ({
     token,
   ]);
 
+  const fetchTypes = async (selectedCategory, selectedSubCategory) => {
+    try {
+      const {responseData} = await apiCall("POST",
+        "/genparam/getAllItemTypeByDtls",
+        token,
+        {
+          categoryCode: selectedCategory,
+          subCategoryCode: selectedSubCategory,
+        },
+      );
+      return responseData || [];
+    } catch (error) {
+      console.error("Error fetching types:", error);
+    }
+  };
+
+  const fetchDisciplines = async (selectedCategory, selectedSubCategory, selectedType) => {
+    try {
+      const {responseData} = await apiCall("POST",
+        "/genparam/getAllDisciplineByDtls",
+        token,
+        {
+          categoryCode: selectedCategory,
+          subCategoryCode: selectedSubCategory,
+          typeCode: selectedType,
+        },
+      );
+      return responseData || [];
+    } catch (error) {
+      console.error("Error fetching disciplines:", error);
+    }
+  };
+
+
+  const fetchSubCategories = async (selectedCategory) => {
+    try {
+      const {responseData} = await apiCall("POST",
+        "/genparam/getAllSubCategoriesByDtls",
+        token,
+        {
+          categoryCode: selectedCategory,
+        },
+      );
+      return responseData || [];
+    } catch (error) {
+      console.error("Error fetching subcategories:", error);
+    }
+  };
+
   const onFinish = async (values) => {
     const itemMasterDescCopy = values.itemMasterDesc[0]
+    const combinedCodeAndDesc = itemMasterDescCopy.split("$#")
 
     try{
-      const {responseData, responseStatus} = await apiCall("POST", '/master/validateDuplicateItemName', token, {itemName:itemMasterDescCopy})
-      if(responseData) 
-        setItemDependentValues(responseData, values)
-      else{
-        if(responseStatus.message === "Failed" && responseStatus.statusCode === 400){
-          message.error(responseStatus.errorType)
-          return
-        }
-      }
-      console.log('Responsedata: ', responseData)
-      if(typeof(itemMasterDescCopy === "string")){
-        console.log("inside if")
-        const combinedCodeAndDesc = itemMasterDescCopy.split("$#")
+      const {responseData, responseStatus} = await apiCall("POST", '/master/validateDuplicateItemName', token, {itemName: combinedCodeAndDesc.length === 1 ? combinedCodeAndDesc[0] : combinedCodeAndDesc[1]});
+      // item already exists in the organization
+      if(responseStatus && responseStatus.errorType === "Item Code doest not exist."){
+        message.error("Item code does not exist.")
         if(combinedCodeAndDesc.length === 1){
-          console.log("inside if if")
           values = { ...values, itemName: null, itemMasterDesc: itemMasterDescCopy };
+          onSubmit(values)
         }
         else{
-          console.log("inside if else")
           const itemName= combinedCodeAndDesc[0];
           const itemMasterDesc = combinedCodeAndDesc[1];
           values = { ...values, itemName, itemMasterDesc };
+          onSubmit(values)
         }
-        // console.log("VAlues after: ", values)
-        onSubmit(values);
+        return;
       }
-      else{
-        console.log("inside else")
-        values = {...values, itemMasterCd: null, itemMasterDesc: itemMasterDescCopy[0]}
-        onSubmit(values)
+      // item code does not exists anywhere i.e. item has not been created yet by any organization
+      else if(responseStatus && responseStatus.errorType === "Item Code doest not exist."){
+        onSubmit({...values, itemName: null, itemMasterDesc: combinedCodeAndDesc[0]})
+        return;
       }
-      // return
-    }catch(error){
-      message.error("Item already exist in the organization. Please check item master.")
-      console.log("Error on item name validation.", error)
-      return
+      // item code exists (item is created) but in other organization, so need to check values
+      if(responseData){
+        const {uomId, category, subCategory, type, disciplines, usageCategory} = responseData
+        const [subCategoryOptions, typeOptions, disciplineOptions] = await Promise.all([fetchSubCategories(category), fetchTypes(category, subCategory), fetchDisciplines(category, subCategory, type)])
+        const uomDesc = uomObj[parseInt(uomId)];
+        const categoryDesc = categories.find(record => Number(record.paramVal) === Number(category))?.paramDesc
+        const subCategoryDesc = subCategoryOptions?.find(record => Number(record.subCategoryCode) === Number(subCategory))?.subCategoryDesc
+        const typeDesc = typeOptions?.find(record => Number(record.typeCode) === Number(values.type))?.typeDesc
+        const disciplineDesc = disciplineOptions?.find(record => Number(record.disciplineCode) === Number(disciplines))?.disciplineName
+        const usageCategoryDesc = usageCategories?.find(record => Number(record.paramVal) === Number(usageCategory))?.paramDesc
+
+        if(category !== values.category || 
+          subCategory !== values.subCategory ||
+          type !== values.type ||
+          disciplines !== values.disciplines ||
+          Number(uomId) !== Number(values.uomId) ||
+          usageCategory !== values.usageCategory
+        ) {
+          message.error("Variables input for the item name doesnt match. Please correct and submit again.")
+          setItemDepVar({
+            uomVal:  uomId,
+            categoryVal: category,
+            subCategoryVal : subCategory,
+            typeVal: type,
+            disciplineVal: disciplines,
+            usageCatgeoryVal: usageCategory,
+            uomDesc,
+            categoryDesc,
+            subCategoryDesc,
+            typeDesc,
+            disciplineDesc,
+            usageCategoryDesc
+          })
+
+          setValidateDepVar({
+            validateCategory: category !== values.category ? true : false,
+            validateSubCategory: subCategory !== values.subCategory ? true : false,
+            validateType: type !== values.type ? true : false,
+            validateDiscipline: disciplines !== values.disciplines ? true : false,
+            validateUom:  Number(uomId) !== Number(values.uomId) ? true : false,
+            validateUsageCategory: usageCategory !== values.usageCategory ? true : false
+          })
+        }else{
+          if(combinedCodeAndDesc.length === 1){
+            values = { ...values, itemName: null, itemMasterDesc: itemMasterDescCopy };
+            onSubmit(values)
+          }
+          else{
+            const itemName= combinedCodeAndDesc[0];
+            const itemMasterDesc = combinedCodeAndDesc[1];
+            values = { ...values, itemName, itemMasterDesc };
+            onSubmit(values)
+          }
+        }
+      }
     }
-    // return
-    // console.log("ITemmaster desc: ", values.itemMasterDesc)
-    // console.log("Values: ", values);
-    // form.resetFields();
+    catch(error){
+    }
   };
-
-  // const handleInputChange = (value) => {
-  //   setItemDescVal(value)
-  // }
-  const onChange = (value) => {
-    console.log(`selected ${value}`);
-  };
-  const onSearch = (value) => {
-    console.log("search:", value);
-  };
-
-  const filterOption = (input, option) =>
-    (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
 
   return (
     <Form
@@ -383,23 +459,6 @@ const ItemsForm = ({
             </Select>
           </Form.Item>
         </Col>
-        {/* <Col span={8}>
-          <Form.Item
-            name="uomId"
-            label="UOM"
-            rules={[{ required: true, message: "Please enter UOM" }]}
-          >
-            <Select>
-              {uoms?.map((uom, index) => {
-                return (
-                  <Option key={index} value={uom.id}>
-                    {uom.uomName}
-                  </Option>
-                );
-              })}
-            </Select>
-          </Form.Item>
-        </Col> */}
       </Row>
 
       <Row gutter={16}>
@@ -454,23 +513,6 @@ const ItemsForm = ({
             </Select>
           </Form.Item>
         </Col>
-        {/* <Col span={8}>
-          <Form.Item
-            name="locatorId"
-            label="Locator Description"
-            rules={[{ required: true, message: "Please enter Locator Code" }]}
-          >
-            <Select>
-              {locators?.map((locator, index) => {
-                return (
-                  <Option key={index} value={locator.id}>
-                    {locator.locatorDesc}
-                  </Option>
-                );
-              })}
-            </Select>
-          </Form.Item>
-        </Col> */}
       </Row>
 
       <Row gutter={16}>
@@ -520,77 +562,9 @@ const ItemsForm = ({
             </Select>
           </Form.Item>
         </Col>
-        {/* <Col span={8}>
-          <Form.Item
-            name="category"
-            label="Category"
-            rules={[{ required: true, message: "Please enter Category" }]}
-          >
-            <Select onChange={handleCategoryChange}>
-              {categories.map((category, index) => {
-                return (
-                  <Option key={index} value={category.paramVal}>
-                    {category.paramDesc}
-                  </Option>
-                );
-              })}
-            </Select>
-          </Form.Item>
-        </Col> */}
       </Row>
 
       <Row gutter={16}>
-        {/* <Col span={8}>
-          <Form.Item
-            name="subCategory"
-            label="SUB-CATEGORY"
-            rules={[{ required: true, message: "Please enter SUB-CATEGORY" }]}
-          >
-            <Select
-              disabled={!selectedCategory}
-              onChange={handleSubCategoryChange}
-            >
-              {subCategoryOptions.map((option) => (
-                <Option key={option.key} value={option.key}>
-                  {option.value}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Col> */}
-        {/* <Col span={8}>
-          <Form.Item
-            name="type"
-            label=" Type"
-            rules={[{ required: true, message: "Please enter Item Type" }]}
-          >
-            <Select disabled={!selectedSubCategory} onChange={handleTypeChange}>
-              {typeOptions?.map((option) => (
-                <Option key={option.key} value={option.key}>
-                  {option.value}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Col> */}
-        {/* <Col span={8}>
-          <Form.Item
-            name="disciplines"
-            label="Disciplines"
-            rules={[{ required: true, message: "Please enter Disciplines" }]}
-          >
-            <Select
-              disabled={disciplinesDisabled}
-              onChange={handleDisciplineChange}
-            >
-              {disciplineOptions.map((discipline) => (
-                <Option key={discipline.key} value={discipline.key}>
-                  {discipline.value}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Col> */}
       </Row>
 
       <Row gutter={16}>

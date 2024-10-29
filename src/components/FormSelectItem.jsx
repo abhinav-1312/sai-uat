@@ -9,13 +9,15 @@ const FormSelectItem = ({
   formField,
   required,
   name,
-  readOnly
+  readOnly,
+  placeholder,
+  style
 }) => {
   return (
     <>
-      <Form.Item label={label} name={name} required={required}>
-        <Select onChange={(value) => onChange(formField, value)} disabled={readOnly ? true : false}>
-          {optionArray.map((option) => {
+      <Form.Item label={label} name={name} required={required} style={style}>
+        <Select onChange={(value) => onChange(formField, value)} disabled={readOnly ? true : false} placeholder={placeholder}>
+          {optionArray?.map((option) => {
             return (
               <Option key={option.value} value={option.value}>
                 {" "}

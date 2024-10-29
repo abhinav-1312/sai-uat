@@ -56,3 +56,41 @@ export const processTypeIsnOptionList= [
 }
 
 ]
+
+export const processTypeGrnOptionList= [
+{
+    value: "IRP",
+    desc: "Issue Return Process"
+},
+{
+    value: "PO",
+    desc: "Purchase Order"
+},
+{
+    value:  "IOP",
+    desc: "Inter Org Process"
+}
+
+]
+
+export const iopTypeOptionList = [
+    {
+        value: "Accepted Items",
+        desc: "Accepted Items"
+    },
+    {
+        value: "Rejected Items",
+        desc: "Rejected Items"
+    }
+]
+
+export const processTypeAcptOptionList = [
+    {
+        value: "PO",
+        desc: "Purchase Order"
+    },
+    {
+        value: "IOP",
+        desc: "Inter Org Transfer"
+    }
+]

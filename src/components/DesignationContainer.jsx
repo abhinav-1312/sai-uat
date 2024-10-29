@@ -1,20 +1,19 @@
 import React from "react";
 import FormInputItem from "./FormInputItem";
 import FormDatePickerItem from "./FormDatePickerItem";
-import dayjs from "dayjs";
 
 const DesignationContainer = ({
   formType,
   genByVisible,
-  genName,
-  genDate,
+  genDateValue,
   handleChange,
   issueVisible,
-  issueName,
-  issueDate,
+  issueDateValue,
   approvedVisible,
+  approvedDateValue,
   processType,
   readOnly
+
 }) => {
   return (
     <div className="designations-container">
@@ -24,12 +23,12 @@ const DesignationContainer = ({
           <FormInputItem
             placeholder="Name and Designation"
             name="genName"
-            readOnly={readOnly}
+            readOnly
           />
           <FormDatePickerItem
             name="genDate"
             onChange={handleChange}
-            value={genDate}
+            defaultValue={genDateValue}
             readOnly={readOnly}
           />
         </div>
@@ -37,7 +36,12 @@ const DesignationContainer = ({
 
       {approvedVisible && (
         <div className="each-desg">
-          <h4>Approved By</h4>
+          <h4>
+
+            {
+              formType === "RN" ? "Returned / Submitted By" : "Approved By"
+            }
+          </h4>
           <FormInputItem
             placeholder="Name and Signature"
             name="approvedName"
@@ -46,7 +50,7 @@ const DesignationContainer = ({
           />
 
           <FormDatePickerItem
-            defaultValue={dayjs()}
+            defaultValue={approvedDateValue}
             name="approvedDate"
             onChange={handleChange}
             readOnly={readOnly}
@@ -54,7 +58,7 @@ const DesignationContainer = ({
         </div>
       )}
 
-      {issueVisible && formType !== "PO" && (
+      {issueVisible && (
         <div className="each-desg">
           <h4>
             {processType === "IRP" ||
@@ -66,16 +70,14 @@ const DesignationContainer = ({
           <FormInputItem
             placeholder="Name and Signature"
             name="issueName"
-            value={issueName}
             onChange={handleChange}
             readOnly={readOnly}
           />
 
           <FormDatePickerItem
-            defaultValue={dayjs()}
             name="issueDate"
             onChange={handleChange}
-            value={issueDate}
+            defaultValue={issueDateValue}
             readOnly={readOnly}
           />
         </div>
