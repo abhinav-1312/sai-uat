@@ -408,11 +408,16 @@ const InwardGatePass = () => {
     if (txnData && txnData.data && txnData.itemList) {
       setFormData({
         ...txnData?.data,
+        gatePassNo: txnData.data.processId,
+        outwardGatePass: txnData.data.processId,
+        processType: txnData?.data?.type,
         processTypeDesc:
           txnData?.data?.type === "IRP"
-            ? "Returnable"
+            ? "Issue Return Process"
             : txnData?.data?.type === "NIRP"
             ? "Non Returnable"
+            : txnData?.data?.type === "PO"
+            ? "Purchase Order"
             : "Inter Org Transfer",
         items: txnData?.itemList,
       });
@@ -574,7 +579,7 @@ const InwardGatePass = () => {
           </OtherDetails>
         </CrCeDtlContainer>
         <ItemDetailsContainer
-          itemSearch={formData.type === "PO" ? true : false}
+          itemSearch={(formData.type === "PO" && !isTxnData) ? true : false}
           itemArray={data}
           setFormData={setFormData}
         >
@@ -649,9 +654,9 @@ const InwardGatePass = () => {
                 </div>
                 <Button
                   icon={<DeleteOutlined />}
-                  className="delete-button"
+                  className="delete-button exclude-print"
                   onClick={() => removeItem(key, setFormData)}
-                  disabled={isTxnData}
+                  style={{ display: isTxnData ? "none" : "block" }}
                 />
               </div>
             );
@@ -666,7 +671,7 @@ const InwardGatePass = () => {
         <DesignationContainer
           genByVisible
           issueVisible
-          genDateValue={formData.genDate} 
+          genDateValue={formData.genDate}
           issueDateValue={formData.issueDate}
           readOnly={isTxnData}
           handleChange={handleChange}

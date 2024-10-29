@@ -439,9 +439,12 @@ const OutwardGatePass = () => {
     if (txnData && txnData.data && txnData.itemList) {
       setFormData({
         ...txnData?.data,
+        issueNoteNo: txnData.data.processId,
+        gatePassNo: txnData.data.processId,
+        processType: txnData?.data?.type,
         processTypeDesc:
           txnData?.data?.type === "IRP"
-            ? "Returnable"
+            ? "Issue Return Process"
             : txnData?.data?.type === "NIRP"
             ? "Non Returnable"
             : txnData?.data?.type === "PO"
@@ -456,6 +459,8 @@ const OutwardGatePass = () => {
       setIsTxnData(true);
     }
   }, [location.state]);
+
+  console.log("FormData: ", formData)
 
   return (
     <>
@@ -671,9 +676,9 @@ const OutwardGatePass = () => {
                   </div>
                   <Button
                     icon={<DeleteOutlined />}
-                    className="delete-button"
+                    className="delete-button exclude-print"
                     onClick={() => removeItem(key, setFormData)}
-                    disabled={isTxnData}
+                    style={{display: isTxnData ? "none" : "block"}}
                   />
                 </div>
               );

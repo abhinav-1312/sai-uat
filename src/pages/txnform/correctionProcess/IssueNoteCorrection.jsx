@@ -109,7 +109,7 @@ const IssueNoteCorrection = () => {
 
   useEffect(() => {
     dispatch(fetchOhq());
-  }, []);
+  }, [dispatch]);
 
   console.log(formData);
 

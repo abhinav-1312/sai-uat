@@ -48,6 +48,7 @@
 import React from "react";
 import { Form, DatePicker } from "antd";
 import dayjs from "dayjs";
+import FormInputItem from "./FormInputItem";
 
 const dateFormat = "DD/MM/YYYY";
 
@@ -73,6 +74,10 @@ const FormDatePickerItem = ({
     }
   };
 
+  if(readOnly){
+    return <FormInputItem label={label} value={defaultValue} name={name} readOnly />
+  }
+
   return (
     <Form.Item
       label={label}
@@ -82,7 +87,6 @@ const FormDatePickerItem = ({
       initialValue={initialValue} // Set initial value
     >
       <DatePicker
-        disabled={readOnly}
         style={{ width: "100%" }}
         format={dateFormat}
         onChange={handleDateChange}

@@ -1,14 +1,11 @@
-import React from 'react'
-import FormInputItem from './FormInputItem'
+import React from "react";
+import FormInputItem from "./FormInputItem";
 
-const ConsumerDetails = ({ handleChange, readOnly}) => {
+const ConsumerDetails = ({ handleChange, readOnly }) => {
   return (
     <>
-    <div className="consignor-container">
-            <h3 className="consignor-consignee-heading">
-            "Consignee Details"
-              </h3>
-              
+      <div className="consignor-container">
+        <h3 className="consignor-consignee-heading">Consignee Details</h3>
         <FormInputItem
           label="Consumer Name"
           name="consumerName"
@@ -21,10 +18,9 @@ const ConsumerDetails = ({ handleChange, readOnly}) => {
           onChange={handleChange}
           readOnly={readOnly ? true : false}
         />
-
-</div>
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default ConsumerDetails
+export default ConsumerDetails;

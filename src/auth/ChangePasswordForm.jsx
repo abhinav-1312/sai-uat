@@ -2,8 +2,8 @@ import React from 'react'
 import { Form, Input, Button, message } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
-import SAI_Logo from "./../assets/images/SAI_logo.svg";
 import axios from 'axios';
+import AuthPageLayout from '../components/AuthPageLayout';
 
 const ChangePasswordForm = () => {
     const [form] = Form.useForm();
@@ -36,7 +36,6 @@ const ChangePasswordForm = () => {
             message.error("Password changed successfully.")
             navigate("/login")
           }catch(error){
-            console.log("Error occured while changing password.", error)
             message.error("Error occured while changing password.")
           }
         }
@@ -44,53 +43,60 @@ const ChangePasswordForm = () => {
     
 
   return (
+    <AuthPageLayout>
     <Form
-    className='login-container'
       form={form}
       name="change_password"
       onFinish={handleSubmit}
       initialValues={{ remember: true }}
+      size='large'
+      layout='vertical'
     >
-        <img src={SAI_Logo} alt="SAI LOGO" className="logo" style={{marginBottom: "2rem"}} />
       <Form.Item
-      style={{width: "25%"}}
         name="userCd"
+        label="User ID"
         rules={[{ required: true, message: 'Please input your User ID!' }]}
       >
-        <Input prefix={<UserOutlined />} placeholder="User ID" />
+        <Input prefix={<UserOutlined />} placeholder="SAI User" />
       </Form.Item>
+      <br />
       <Form.Item
-      style={{width: "25%"}}
         name="oldPassword"
+        label="Old Password"
         rules={[{ required: true, message: 'Please input your old password!' }]}
       >
-        <Input.Password prefix={<LockOutlined />} placeholder="Old Password" />
+        <Input.Password prefix={<LockOutlined />} placeholder="*****" />
       </Form.Item>
+      <br />
       <Form.Item
-      style={{width: "25%"}}
         name="newPassword"
+        label="New Password"
         rules={[{ required: true, message: 'Please input your new password!' }]}
       >
-        <Input.Password prefix={<LockOutlined />} placeholder="New Password" />
+        <Input.Password prefix={<LockOutlined />} placeholder="*******" />
       </Form.Item>
+      <br />
       <Form.Item
-      style={{width: "25%"}}
         name="confirmPassword"
+        label="Confirm Password"
         dependencies={['newPassword']}
         rules={[
           { required: true, message: 'Please confirm your new password!' },
         ]}
       >
-        <Input.Password prefix={<LockOutlined />} placeholder="Confirm New Password" />
-      </Form.Item>
-      <Form.Item style={{width: "25%"}}>
+        <Input.Password prefix={<LockOutlined />} placeholder="*******" />
+      </Form.Item >
+      <br />
+      <Form.Item>
         <Button type="primary" htmlType="submit" style={{width: "100%"}}>
           Change Password
         </Button>
       </Form.Item>
-
+        <div style={{marginBottom: "0.3rem"}}></div>
       <Link to="/login"> Return to Login </Link>
     </Form>
+
+    </AuthPageLayout>
   )
 }
 

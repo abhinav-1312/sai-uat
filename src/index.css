@@ -112,7 +112,7 @@ code {
 }
 
 .each-item-detail-container{
-  border: 1px solid black;
+  border: 1px solid #cfcccc;
   padding: 1rem;
   position: relative;
 }
@@ -168,9 +168,16 @@ code {
 @media print {
   .a4-container{
     transform: scaleX(1);
+    background: #ffffff;
   }
-  .button-container{
+  .button-container, .exclude-print{
     display: none;
+  }
+  .consignor-consignee-heading{
+    color: #000000 !important;
+  }
+  .ant-form-item-required::before{
+    display: none !important;
   }
 }
 

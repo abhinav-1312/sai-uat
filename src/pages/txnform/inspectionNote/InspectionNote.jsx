@@ -286,9 +286,13 @@ const InspectionNote = () => {
     if (txnData && txnData.data && txnData.itemList) {
       setFormData({
         ...txnData?.data,
+        inspectionRptNo: txnData?.data?.processId,
+        acceptanceNoteNo: txnData?.data?.processId,
+        processType: txnData?.data?.type,
+        dateOfInspectionDate: txnData?.data?.inspectionRptDt,
         processTypeDesc:
           txnData?.data?.type === "IRP"
-            ? "Returnable"
+            ? "Issue Return Process"
             : txnData?.data?.type === "NIRP"
             ? "Non Returnable"
             : txnData?.data?.type === "PO"
@@ -304,13 +308,15 @@ const InspectionNote = () => {
     }
   }, [location.state]);
 
+  console.log("formdataaa: ", formData)
+
   return (
     <>
       <FormContainer ref={formRef}>
         <FormHeading
           formTitle="Inspection Note"
           date={formData.dateOfInspectionDate}
-          txnType="IR"
+          txnType="IN"
           txnNo={
             formData.inspectionRptNo === "string"
               ? ""
@@ -363,19 +369,19 @@ const InspectionNote = () => {
                 readonly
               />
               <InputDatePickerCombo
-                inputLabel="Mode Of Delivery"
+                inputLabel="Delivery Mode"
                 inputName="modeOfDelivery"
                 onChange={handleChange}
-                dateLabel="Date Of Delivery"
+                dateLabel="Delivery Date"
                 dateValue={formData.dateOfDeliveryDate}
                 dateName="dateOfDeliveryDate"
                 readOnly
               />
               <InputDatePickerCombo
-                inputLabel="Type Of Inspection"
+                inputLabel="Inspection Type"
                 inputName="typeOfInspection"
                 onChange={handleChange}
-                dateLabel="Date Of Inspection"
+                dateLabel="Inspection Date"
                 dateName="dateOfInspectionDate"
                 dateValue={formData.dateOfInspectionDate}
                 readOnly={isTxnData}

@@ -1,10 +1,6 @@
 // GoodsReceiveNoteForm.js
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Button,
-  Modal,
-  message,
-} from "antd";
+import { Button, Modal, message } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import "./GoodsReceiveNoteForm.css";
 import dayjs from "dayjs";
@@ -42,7 +38,6 @@ const dateFormat = "DD/MM/YYYY";
 const currentDate = dayjs();
 
 const GoodsReceiveNoteForm = () => {
-
   const location = useLocation();
 
   const formBodyRef = useRef();
@@ -51,7 +46,7 @@ const GoodsReceiveNoteForm = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
-  
+
   const [printBtnEnabled, setPrintBtnEnabled] = useState(false);
   const [submitBtnEnabled, setSubmitBtnEnabled] = useState(true);
   const [draftBtnEnabled, setDraftBtnEnabled] = useState(true);
@@ -62,7 +57,7 @@ const GoodsReceiveNoteForm = () => {
   const { data: itemData } = useSelector((state) => state.item);
   const { organizationDetails, locationDetails, userDetails, token, userCd } =
     useSelector((state) => state.auth);
-    
+
   const [formData, setFormData] = useState({
     issueName: "",
     approvedName: "",
@@ -116,10 +111,8 @@ const GoodsReceiveNoteForm = () => {
     note: "",
   });
 
-  
-
   const deepClone = (obj) => {
-    if (obj === null || typeof obj !== 'object') {
+    if (obj === null || typeof obj !== "object") {
       return obj;
     }
 
@@ -132,59 +125,64 @@ const GoodsReceiveNoteForm = () => {
     }
 
     return clone;
-  }
+  };
 
   const handleOk = () => {
     setIsModalOpen(false);
   };
 
   const locatorOptionList = locatorObj
-  ? Object.keys(locatorObj).map((key) => {
-      // dropdown while assigning locator to quantity
-      return {
-        value: key,
-        desc: locatorObj[key],
-      };
-    })
-  : [];
+    ? Object.keys(locatorObj).map((key) => {
+        // dropdown while assigning locator to quantity
+        return {
+          value: key,
+          desc: locatorObj[key],
+        };
+      })
+    : [];
 
   const onFinish = async (values) => {
-    setSubmitBtnEnabled(false)
-    if(!formData.issueName || !formData.genName){
-      message.error("Please fill all the fields.")
-      setSubmitBtnEnabled(true)
-      return
+    setSubmitBtnEnabled(false);
+    if (!formData.issueName || !formData.genName) {
+      message.error("Please fill all the fields.");
+      setSubmitBtnEnabled(true);
+      return;
     }
-    let found = false
-    const tempFormData = deepClone(formData)
-    tempFormData.items?.forEach(item=>{
-      const {quantity, remQuantity} = item;
-      if(quantity-remQuantity > 0){
-        message.error("Please locate a locator to all quantity")
+    let found = false;
+    const tempFormData = deepClone(formData);
+    tempFormData.items?.forEach((item) => {
+      const { quantity, remQuantity } = item;
+      if (quantity - remQuantity > 0) {
+        message.error("Please locate a locator to all quantity");
         found = true;
-        setSubmitBtnEnabled(true)
-        return
+        setSubmitBtnEnabled(true);
+        return;
       }
-    })
+    });
 
-    if(found) return
+    if (found) return;
 
     const updatedForm = deepClone(formData);
-    const updatedItems = updatedForm.items?.map(item=>{
-      const itemObj = item
-      const {qtyList} = item
-      delete itemObj.quantity
-      delete itemObj.remQuantity
-      delete itemObj.qtyList
+    const updatedItems = updatedForm.items?.map((item) => {
+      const itemObj = item;
+      const { qtyList } = item;
+      delete itemObj.quantity;
+      delete itemObj.remQuantity;
+      delete itemObj.qtyList;
 
-      const insideArray = qtyList?.map(qtyObj=>{
-        return {...itemObj, quantity: qtyObj.quantity, locatorId: qtyObj.locatorId, unitPrice: parseFloat(itemObj.unitPrice)}
-      })
+      const insideArray = qtyList?.map((qtyObj) => {
+        return {
+          ...itemObj,
+          quantity: qtyObj.quantity,
+          locatorId: qtyObj.locatorId,
+          unitPrice: parseFloat(itemObj.unitPrice),
+        };
+      });
 
-      return insideArray
-    })
+      return insideArray;
+    });
 
-  const flatItemsArray = updatedItems?.flatMap(innerArray => innerArray);
+    const flatItemsArray = updatedItems?.flatMap((innerArray) => innerArray);
 
     try {
       const formDataCopy = { ...formData, items: flatItemsArray };
@@ -223,7 +221,7 @@ const GoodsReceiveNoteForm = () => {
         "conditionOfGoods",
         "note",
         "items",
-        "unitPrice"
+        "unitPrice",
       ];
 
       allFields.forEach((field) => {
@@ -232,9 +230,13 @@ const GoodsReceiveNoteForm = () => {
         }
       });
 
-      const apiUrl =
-        "/saveGRN";
-      const {responseStatus, responseData} = await apiCall("POST", apiUrl, token, formDataCopy)
+      const apiUrl = "/saveGRN";
+      const { responseStatus, responseData } = await apiCall(
+        "POST",
+        apiUrl,
+        token,
+        formDataCopy
+      );
       if (
         responseStatus.statusCode === 200 &&
         responseStatus.message === "Success"
@@ -251,23 +253,21 @@ const GoodsReceiveNoteForm = () => {
         setSuccessMessage(
           ` Goods Receive Note saved successfully! \n Process ID: ${processId}, \n Process Type: ${processType}, \n Sub Process ID: ${subProcessId}`
         );
-        setIsModalOpen(true)
+        setIsModalOpen(true);
         setPrintBtnEnabled(true);
-        setIsModalOpen(true)
-        setDraftBtnEnabled(false)
-        localStorage.removeItem("grnDraft")
-
+        setIsModalOpen(true);
+        setDraftBtnEnabled(false);
+        localStorage.removeItem("grnDraft");
       } else {
         // Display a generic success message if specific data is not available
         message.error("Failed to Goods Receive Note. Please try again later.");
-        setSubmitBtnEnabled(true)
-
+        setSubmitBtnEnabled(true);
       }
       // Handle success response here
     } catch (error) {
       console.log("Error saving Goods Receive Note:", error);
       message.error("Failed to Goods Receive Note. Please try again later.");
-      setSubmitBtnEnabled(true)
+      setSubmitBtnEnabled(true);
     }
   };
 
@@ -350,14 +350,18 @@ const GoodsReceiveNoteForm = () => {
   };
 
   // function handles data fetch for IRP, PO and Accepted Items for IOP
-  const handleReturnAcceptDataSearch = async (value, processStage, rejectProcess = false) => {
+  const handleReturnAcceptDataSearch = async (
+    value,
+    processStage,
+    rejectProcess = false
+  ) => {
     try {
       const subProcessDtlUrl = "/getSubProcessDtls";
 
       const data = await apiCall("POST", subProcessDtlUrl, token, {
         processId: value,
         processStage,
-        rejectProcess
+        rejectProcess,
       });
 
       const { responseData } = data;
@@ -434,27 +438,32 @@ const GoodsReceiveNoteForm = () => {
     if (formBodyRef.current) formBodyRef.current.updateField(formData);
   }, [formData]);
 
-   // when form is loaded and a form is saved as draft
-   useEffect(() => {
+  // when form is loaded and a form is saved as draft
+  useEffect(() => {
     const formData = localStorage.getItem("grnDraft");
     if (formData) {
       setFormData(JSON.parse(formData));
-      message.success("Form data loaded from draft.")
+      message.success("Form data loaded from draft.");
     }
   }, []);
 
-   // when form is loaded and it is redirect by pressing print option on txn summary
-   useEffect(() => {
+  // when form is loaded and it is redirect by pressing print option on txn summary
+  useEffect(() => {
     const txnData = location.state;
 
     if (txnData && txnData.data && txnData.itemList) {
       setFormData({
         ...txnData?.data,
+        noa: txnData?.data?.noaNo,
+        grnNo: txnData?.data?.processId,
+        processType: txnData?.data?.type,
         processTypeDesc:
           txnData?.data?.type === "IRP"
-            ? "Returnable"
+            ? "Issue Return Process"
             : txnData?.data?.type === "NIRP"
             ? "Non Returnable"
+            : txnData?.data?.type === "PO"
+            ? "Purchase Order"
             : "Inter Org Transfer",
         items: txnData?.itemList,
       });
@@ -531,7 +540,9 @@ const GoodsReceiveNoteForm = () => {
                 <FormSearchItem
                   label="Return Note No."
                   name="returnVoucher"
-                  onSearch={(value) => handleReturnAcceptDataSearch(value, "RN")}
+                  onSearch={(value) =>
+                    handleReturnAcceptDataSearch(value, "RN")
+                  }
                   onChange={handleChange}
                   readOnly={isTxnData}
                 />
@@ -541,7 +552,9 @@ const GoodsReceiveNoteForm = () => {
                   <FormSearchItem
                     label="Acceptance Note No."
                     name="acceptanceNoteNo"
-                    onSearch={(value) => handleReturnAcceptDataSearch(value, "ACT")}
+                    onSearch={(value) =>
+                      handleReturnAcceptDataSearch(value, "ACT")
+                    }
                     onChange={handleChange}
                     readOnly={isTxnData}
                   />
@@ -578,7 +591,9 @@ const GoodsReceiveNoteForm = () => {
                   <FormSearchItem
                     label="Acceptance Note No."
                     name="acceptanceNoteNo"
-                    onSearch={(value) => handleReturnAcceptDataSearch(value, "ACT")}
+                    onSearch={(value) =>
+                      handleReturnAcceptDataSearch(value, "ACT")
+                    }
                     onChange={handleChange}
                     readOnly={isTxnData}
                   />
@@ -588,7 +603,9 @@ const GoodsReceiveNoteForm = () => {
                   <FormSearchItem
                     label="Inward Gate Pass No."
                     name="inwardGatePass"
-                    onSearch={(value) => handleReturnAcceptDataSearch(value, "IGP", true)}
+                    onSearch={(value) =>
+                      handleReturnAcceptDataSearch(value, "IGP", true)
+                    }
                     onChange={handleChange}
                     readOnly={isTxnData}
                   />
@@ -656,7 +673,14 @@ const GoodsReceiveNoteForm = () => {
                     }
                     readOnly={isTxnData}
                   />
-                  <div style={{ gridColumn: "span 4", width: "50%" }}>
+                  <div
+                    className="exclude-print"
+                    style={{
+                      gridColumn: "span 4",
+                      width: "50%",
+                      display: isTxnData ? "none" : "block",
+                    }}
+                  >
                     <h3>
                       ITEMS LEFT TO ASSIGN A LOCATOR:{" "}
                       {item.quantity - item.remQuantity}
@@ -701,7 +725,12 @@ const GoodsReceiveNoteForm = () => {
                       </div>
                     ))}
                   </div>
-                  <Button onClick={() => addLocator(key)} disabled={isTxnData}>
+                  <Button
+                    className="exclude-print"
+                    style={{ display: isTxnData ? "none" : "block" }}
+                    onClick={() => addLocator(key)}
+                    disabled={isTxnData}
+                  >
                     Add more locator
                   </Button>
 
@@ -727,7 +756,7 @@ const GoodsReceiveNoteForm = () => {
           <DesignationContainer
             genByVisible
             issueVisible
-            genDateValue={formData.genDate} 
+            genDateValue={formData.genDate}
             issueDateValue={formData.issueDate}
             formType="PO"
             handleChange={handleChange}

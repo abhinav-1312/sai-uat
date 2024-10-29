@@ -267,11 +267,15 @@ const IssueNote = () => {
       if (txnData && txnData.data && txnData.itemList) {
         setFormData({
           ...txnData?.data,
+          issueNoteNo: txnData.data.processId,
+          processType: txnData?.data?.type,
           processTypeDesc:
             txnData?.data?.type === "IRP"
-              ? "Returnable"
+              ? "Issue Return Process"
               : txnData?.data?.type === "NIRP"
               ? "Non Returnable"
+              : txnData?.data?.type === "PO"
+              ? "Purchase Order"
               : "Inter Org Transfer",
           items: txnData?.itemList,
         });

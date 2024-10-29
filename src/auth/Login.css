@@ -1,17 +1,54 @@
 .login-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: auto auto;
+  /* justify-content: center; */
   align-items: center;
   text-align: center;
   min-height: 100vh;
+  width: 100%;
+}
+
+.logo-container{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #00004a45;
+  height: 100%;
 }
 .logo {
-  width: 300px;
+  width: 80%;
   height: auto;
 }
 
 .btnLogin {
-  width: 200px;
+  width: 100%;
   height: auto;
+}
+
+.form-container{
+  width: 50%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.checkbox-container{
+  font-size: 1rem;
+}
+
+label{
+  font-size: 1.1rem !important;
+  font-weight: 600;
+}
+
+a{
+  font-size: 1rem !important;
+}
+
+.remember-change-combined{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }

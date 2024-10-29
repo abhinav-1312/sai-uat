@@ -301,11 +301,17 @@ const RejectionNote = () => {
     if (txnData && txnData.data && txnData.itemList) {
       setFormData({
         ...txnData?.data,
+        processType: txnData?.data?.type,
+        noaDate: txnData?.data?.noaDateFormat,
+        acptRejNoteNo: txnData?.data?.processId,
+        acptRejNodeDT: txnData?.data?.acptRejNoteDT,
         processTypeDesc:
           txnData?.data?.type === "IRP"
-            ? "Returnable"
+            ? "Issue Return Process"
             : txnData?.data?.type === "NIRP"
             ? "Non Returnable"
+            : txnData?.data?.type === "PO"
+            ? "Purchase Order"
             : "Inter Org Transfer",
         items: txnData?.itemList,
       });

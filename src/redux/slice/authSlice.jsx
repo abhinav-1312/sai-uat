@@ -68,10 +68,8 @@ export const login = createAsyncThunk(
             const { token } = data.responseData;
             const { organizationDetails, locationDetails, userDetails } = data.responseData;
             const userRole = userRoleMap[userType]
-            console.log("Login successful")
             return {userCd, userRole, token, organizationDetails, locationDetails, userDetails}
         }catch(error){
-            console.log("Error while loggin in.", error)
             message.error("Some error occured while logging in. Please try again.")
         }
     }

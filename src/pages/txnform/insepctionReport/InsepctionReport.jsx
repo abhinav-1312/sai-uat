@@ -286,9 +286,15 @@ const InsepctionReport = () => {
     if (txnData && txnData.data && txnData.itemList) {
       setFormData({
         ...txnData?.data,
+        inspectionRptNo: txnData?.data?.processId,
+        inspectionRptDate: txnData?.data?.inspectionRptDt,
+        inwardGatepass: txnData?.data?.processId,
+        processType: txnData?.data?.type,
+        dateOfDeliveryDate: txnData?.data?.dateOfDelivery,
+        invoiceNo: txnData?.data?.challanNo,
         processTypeDesc:
           txnData?.data?.type === "IRP"
-            ? "Returnable"
+            ? "Issue Return Process"
             : txnData?.data?.type === "NIRP"
             ? "Non Returnable"
             : txnData?.data?.type === "PO"
@@ -312,7 +318,7 @@ const InsepctionReport = () => {
     <FormContainer ref={formRef}>
       <FormHeading
         formTitle="Material Inward Slip"
-        txn="IR"
+        txnType="MIS"
         date={formData.inspectionRptDate}
         txnNo={
           formData.inspectionRptNo === "string" ? "" : formData.inspectionRptNo
@@ -358,11 +364,11 @@ const InsepctionReport = () => {
               readonly
             />
             <InputDatePickerCombo
-              inputLabel="Mode Of Delivery"
+              inputLabel="Delivery Mode"
               inputName="modeOfDelivery"
               onChange={handleChange}
               dateValue={formData.dateOfDeliveryDate}
-              dateLabel="Date Of Delivery"
+              dateLabel="Delivery Date"
               dateName="dateOfDeliveryDate"
               readOnly
             />

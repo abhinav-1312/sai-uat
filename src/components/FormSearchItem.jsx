@@ -1,6 +1,7 @@
 import { Form } from "antd";
 import Input from "antd/es/input/Input";
 import React from "react";
+import FormInputItem from "./FormInputItem";
 
 const { Search } = Input;
 const FormSearchItem = ({
@@ -8,11 +9,16 @@ const FormSearchItem = ({
   name,
   onChange,
   onSearch,
-  value,
   required,
+  readOnly
 }) => {
   return (
     <>
+    {
+      readOnly ? (
+        <FormInputItem name={name} readOnly label={label} />
+      )
+      :
       <Form.Item
         label={label}
         name={name}
@@ -23,10 +29,11 @@ const FormSearchItem = ({
         <Search
           onSearch={onSearch}
           onChange={(e) => onChange(name, e.target.value)}
-          // value={value}
           enterButton
         />
       </Form.Item>
+      
+    }
     </>
   );
 };
