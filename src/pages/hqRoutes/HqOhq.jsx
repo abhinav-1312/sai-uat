@@ -13,7 +13,6 @@ const HqOhq = () => {
         localStorage.setItem("orgId", orgId)
     }
     const handleRadioChange = (value) => {
-      console.log("Selected value: ", value)
       if(value === "2"){
         setOrgId(null)
       }

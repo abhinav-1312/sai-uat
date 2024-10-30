@@ -95,55 +95,6 @@ const RetunNote = () => {
   const handleIssueNoteNoChange = async (value) => {
     try {
       const apiUrl = "/getSubProcessDtls";
-      const response = await axios.post(
-        apiUrl,
-        {
-          processId: value,
-          processStage: "IGP",
-        },
-        apiHeader("POST", token)
-      );
-      const responseData = response.data.responseData;
-      const { processData, itemList } = responseData;
-
-      if (processData !== null) {
-        setFormData((prevFormData) => ({
-          ...prevFormData,
-
-          regionalCenterCd: processData?.crRegionalCenterCd,
-          regionalCenterName: processData?.crRegionalCenterName,
-          address: processData?.crAddress,
-          zipcode: processData?.crZipcode,
-
-          processId: processData?.processId,
-          issueNoteDt: processData?.issueNoteDt || processData?.issueDate,
-          consumerName: processData?.consumerName,
-          contactNo: processData?.contactNo,
-
-          termsCondition: processData?.termsCondition,
-          note: processData?.note,
-
-          items: itemList.map((item) => ({
-            srNo: item?.sNo,
-            id: item?.id || "Null",
-            itemId: item?.itemId,
-            itemCode: item?.itemCode,
-            itemDesc: item?.itemDesc,
-            uom: parseInt(item?.uom),
-            uomDesc: uomObj[parseInt(item.uom)],
-            returnedAfterDays: daysDifference(
-              processData.issueNoteDt || processData?.issueDate,
-              formData.returnNoteDt
-            ),
-            quantity: item?.quantity,
-            noOfDays: item?.requiredDays,
-            remarks: item?.remarks,
-            conditionOfGoods: item?.conditionOfGoods,
-            budgetHeadProcurement: item?.budgetHeadProcurement,
-            locatorId: item?.locatorId,
-          })),
-        }));
-      } else {
         const response = await axios.post(
           apiUrl,
           {
@@ -191,7 +142,6 @@ const RetunNote = () => {
             locatorId: item?.locatorId,
           })),
         }));
-      }
       // Handle response data as needed
     } catch (error) {
       console.error("Error fetching sub process details:", error);
@@ -444,7 +394,7 @@ const RetunNote = () => {
             genByVisible
             approvedVisible
             genDateValue={formData.genDate} 
-            issueDateValue={formData.issueDate}
+            approvedDateValue={formData.approvedDate}
             formType="RN"
             handleChange={handleChange}
             readOnly={isTxnData}

@@ -35,8 +35,6 @@ const QuickCodeForm = () => {
   };
 
   const handleSubmit = () => {
-    // Perform your submission logic here
-    console.log({ configDtoList, configType });
   };
 
   return (

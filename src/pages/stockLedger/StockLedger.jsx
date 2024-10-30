@@ -45,7 +45,6 @@ const StockLedger = ({orgId}) => {
       setItemData([...modData]);
     }
     catch(error){
-      console.log("error", error)
       message.error("Some error occured. Please try again")
     }
   };
@@ -66,7 +65,6 @@ const StockLedger = ({orgId}) => {
       setItemData([...modData]);
     }
     catch(error){
-      console.log("error", error)
       message.error("Some error occured. Please try again")
     }
   }
@@ -97,7 +95,6 @@ const StockLedger = ({orgId}) => {
 
     }
     catch(error){
-      console.log("Error occured: ", error)
       message.error("Error occured. Please try again.")
     }
   }
@@ -128,7 +125,6 @@ const StockLedger = ({orgId}) => {
 
     }
     catch(error){
-      console.log("Error occured: ", error)
       message.error("Error occured. Please try again.")
     }
   };
@@ -239,7 +235,6 @@ const StockLedger = ({orgId}) => {
 
       }
     }catch(error){
-      console.log("Error: ", error)
       message.error("Error occured while fetching stock ledger. Please try again.")
     }
   };

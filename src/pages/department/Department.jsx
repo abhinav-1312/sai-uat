@@ -27,21 +27,17 @@ const DepartmentPage = ({
   const dispatch = useDispatch()
 
   useEffect(() => {
-    // Fetch data from Redux store on component mount
+
     dispatch(fetchDepartments())
-    // fetchDepartments();
   }, []);
 
   const handleEdit = (department) => {
-    console.log(department);
     setEditingDepartment(department);
     setVisible(true);
   };
 
   const handleDelete = (departmentId) => {
-    // Implement delete logic using the Redux action
     dispatch(deleteDepartment(departmentId))
-    // deleteDepartment(departmentId);
   };
 
   const handleFormSubmit = async (values) => {

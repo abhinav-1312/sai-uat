@@ -25,7 +25,6 @@ const SaveIndependentVariables = () => {
         const {responseStatus, responseData} = await apiCall("POST", url, token, payload)
         message.success("Independent variable added successfully")
       }catch(error){
-        console.log(error)
         message.error("Error adding the independent variable.")
       }finally{
         setLoading(false)

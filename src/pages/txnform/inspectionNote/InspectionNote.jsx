@@ -308,8 +308,6 @@ const InspectionNote = () => {
     }
   }, [location.state]);
 
-  console.log("formdataaa: ", formData)
-
   return (
     <>
       <FormContainer ref={formRef}>

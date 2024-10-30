@@ -211,7 +211,6 @@ const TransactionSummary = ({ orgId }) => {
       generateCsvForTxnDtls(txnDtlsData);
     } catch (error) {
       message.error("Error occured while fetching data. Please try again.");
-      console.log("Populate data error.", error);
     }
   }, [orgId, token]);
 

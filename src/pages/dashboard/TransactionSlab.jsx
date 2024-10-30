@@ -289,8 +289,7 @@ const TransactionSlab = ({allData, setTxnSlabData, orgId, countOrgWise}) => {
             }
           })
         }catch(error){
-          message.error("Some error occured fetching the data.")
-          console.log("Error: ", error)
+          message.error("Error occured while fetching txn slab data.")
         }
       }
       else{
@@ -313,7 +312,6 @@ const TransactionSlab = ({allData, setTxnSlabData, orgId, countOrgWise}) => {
           })
         }catch(error){
           message.error("Some error occured fetching the data.")
-          console.log("Error: ", error)
         }
       }
     }
@@ -329,7 +327,6 @@ const TransactionSlab = ({allData, setTxnSlabData, orgId, countOrgWise}) => {
         })
       } catch (error) {
         message.error("Error occured while fetching data. Please try again.");
-        console.log("Populate data error.", error);
       }
     }
   }

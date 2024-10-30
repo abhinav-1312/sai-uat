@@ -51,7 +51,6 @@ const Ohq = ({ orgId, organization }) => {
 
       setTotVal(convertToCurrency(sum));
     } catch (error) {
-      console.log("Error", error);
       message.error("Error occured while fetching data. Please try again.");
     }
   };
@@ -205,8 +204,6 @@ const Ohq = ({ orgId, organization }) => {
 
     setFilteredData(tempData.filter((record) => record.qtyList.length > 0));
   };
-
-  console.log("Fitlerdata: ", filteredData);
 
   // Function to convert array of objects to CSV format
   const convertArrayToCSV = (items) => {

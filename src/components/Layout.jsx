@@ -23,14 +23,6 @@ const Template = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const Logout = () => {
-    // localStorage.removeItem("userCd");
-    // localStorage.removeItem("userType");
-    // localStorage.removeItem("userRoles");
-    // localStorage.removeItem("token");
-    // // navigate('/login', { replace: true });
-    // <Navigate to='/login' replace/>
-    // console.log("Navigate called")
-    // window.location.reload();
     dispatch(userLogout())
     dispatch(clearDepartment())
     dispatch(clearEmployee())
@@ -47,16 +39,7 @@ const Template = () => {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
-
-  // const isLoggedIn = useSelector((state) => {
-  //   console.log("Statas", state)
-  //   return state.auth.token !== null
-  // })
-
-  // if(!isLoggedIn){
-  //   return <Navigate to="/login" replace />
-  // }
-
+  
   return (
     <>
       <Header

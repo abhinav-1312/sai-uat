@@ -4,25 +4,21 @@ import { apiHeader, convertArrayToObject } from "../../utils/Functions";
 const token = localStorage.getItem("token")
 let uomObj;
 
-const fetchUom = async () => {
-    // console.log("Fetch uom called")
-    const uomMasterUrl =
-        "/master/getUOMMaster";
+// const fetchUom = async () => {
+//     const uomMasterUrl =
+//         "/master/getUOMMaster";
 
-    try{
-        const {data} = await axios.get(uomMasterUrl, apiHeader("GET", token))
-        const {responseData} = data
-        // console.log("Response data: ", responseData)
-        
-        uomObj =  convertArrayToObject(responseData, "id", "uomName")
+//     try{
+//         const {data} = await axios.get(uomMasterUrl, apiHeader("GET", token))
+//         const {responseData} = data
+//         uomObj =  convertArrayToObject(responseData, "id", "uomName")
+//     }
+//     catch(error){
+//         console.log("Error")
+//     }
+// }
 
-    }
-    catch(error){
-        console.log("Error")
-    }
-}
-
-fetchUom()
+// fetchUom()
 
 // const uomObj = fetchUom()
 console.log("UOM OBJ: ",uomObj)

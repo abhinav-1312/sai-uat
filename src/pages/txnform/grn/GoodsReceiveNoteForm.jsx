@@ -259,13 +259,10 @@ const GoodsReceiveNoteForm = () => {
         setDraftBtnEnabled(false);
         localStorage.removeItem("grnDraft");
       } else {
-        // Display a generic success message if specific data is not available
-        message.error("Failed to Goods Receive Note. Please try again later.");
+        message.error(responseStatus.errorType || "Failed to Goods Receive Note. Please try again later.");
         setSubmitBtnEnabled(true);
       }
-      // Handle success response here
     } catch (error) {
-      console.log("Error saving Goods Receive Note:", error);
       message.error("Failed to Goods Receive Note. Please try again later.");
       setSubmitBtnEnabled(true);
     }

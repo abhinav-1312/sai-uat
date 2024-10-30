@@ -245,8 +245,6 @@ const AcceptanceNote = () => {
     }
   }, [location.state]);
 
-  console.log("formdata: ", formData)
-
   if (!uomObj) {
     return <Loader />;
   }
@@ -318,7 +316,7 @@ const AcceptanceNote = () => {
           formTitle="Acceptance Note"
           date={formData.acptRejNodeDT}
           txnType="ACT"
-          txnNo={formData.acptRejNoteNo}
+          txnNo={formData.acptRejNoteNo === "string" ? "" : formData.acptRejNoteNo}
         />
         <FormBody ref={formBodyRef} formData={formData} onFinish={onFinish}>
           <CrCeDtlContainer>
@@ -334,7 +332,7 @@ const AcceptanceNote = () => {
               <SupplierDetails readOnly />
             ) : (
               <RegionalCenterDetails
-                heading="Consignore Details"
+                heading="Consignor Details"
                 cdName="crRegionalCenterCd"
                 rcName="crRegionalCenterName"
                 adrName="crAddress"

@@ -197,39 +197,7 @@ export const iopInspDataColumns = [...dataColumn, ...interOrgExtraColumn]
 export const poIopInspItemListColumns = itemListColumn
 
 const InspectionNoteTable = ({type, data, itemList, setCsv}) => {
-  const {token} = useSelector(state => state.auth);
-  const [uomObj, setUomObj] = useState({});
-  const [locatorObj, setLocatorObj] = useState({});
-
-  const fetchUom = async () => {
-    const uomMasterUrl =
-      "/master/getUOMMaster";
-    const locatorMasterUrl =
-      "/master/getLocatorMaster";
-
-    try {
-      const [uomMaster, locatorMaster] = await Promise.all([
-        axios.get(uomMasterUrl, apiHeader("GET", token)),
-        axios.get(locatorMasterUrl, apiHeader("GET", token)),
-      ]);
-      const { responseData: uomMasterData } = uomMaster.data;
-      const { responseData: locatorMasterData } = locatorMaster.data;
-      const uomMod = convertArrayToObject(uomMasterData, "id", "uomName");
-      const locatorMod = convertArrayToObject(
-        locatorMasterData,
-        "id",
-        "locatorDesc"
-      );
-
-      setUomObj({ ...uomMod });
-      setLocatorObj({ ...locatorMod });
-    } catch (error) {
-      console.log("Error", error);
-    }
-  };
-
   useEffect(() => {
-    fetchUom();
     const csvData = generateCsvData("Inspection Note", dataColumnsUpdated, data, itemListColumn, itemList)
     setCsv(csvData)
   }, []);

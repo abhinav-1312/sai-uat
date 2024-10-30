@@ -7,7 +7,6 @@ import { useCallback, useEffect, useState } from "react";
 import ItemSlab from './ItemSlab'
 import TransactionSlab from './TransactionSlab'
 import InvValSlab from './InvValSlab'
-import PurchaseSummarySlab from './PurchaseSummarySlab'
 
 const currentDate = new Date(); 
 const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
@@ -16,7 +15,6 @@ const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
 const Dashboard = (props) => {
     const {organizationDetails, token} = useSelector(state => state.auth)
     const orgId = props.orgId === 'null' ? null : ( (props.orgId && props.orgId !== 'null') ? props.orgId : organizationDetails?.id)
-    console.log("orgId dashboard: ", orgId)
     const [activeTab, setActiveTab] = useState("tab1")
     const [purSumLoading, setPurSumLoading] = useState(false)
 
@@ -73,7 +71,7 @@ const Dashboard = (props) => {
           count: convertToCurrency(totVal)
         })
       }catch(error){
-        console.log("Error fetching purchase summary.", error)
+        message.error("Error fetching purchase summary.")
       }
       finally{
         setPurSumLoading(false)

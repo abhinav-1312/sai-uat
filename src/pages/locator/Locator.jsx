@@ -30,7 +30,6 @@ const LocatorPage = ({
   }, []);
 
   const handleEdit = (locator) => {
-    console.log(locator);
     setEditingLocator(locator);
     setVisible(true);
   };

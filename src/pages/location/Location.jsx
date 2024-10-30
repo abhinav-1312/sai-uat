@@ -21,7 +21,6 @@ const LocationPage = () => {
       const itemResponse = await apiCall("POST", "/master/getLocationMasterById", token, {locationId: id, userId: userCd})
       return itemResponse.responseData || [];
     }catch(error){
-      console.log("Error fetching location by id.", error)
       message.error("Error fetching location by id.")
     }
   }
@@ -46,7 +45,7 @@ const LocationPage = () => {
       dispatch(deleteLocation({locationId, userId: userCd})).umwrap();
       dispatch(fetchLocations())
     }catch(error){
-      console.log("Errpr deleting location.", error)
+      message.error("Error deleting location.")
     }
 
   };
@@ -64,7 +63,6 @@ const LocationPage = () => {
       setVisible(false); // Close the modal
       setEditingLocation(null); // Reset the editing location
     } catch (error) {
-      console.error("Error:", error);
       message.error("Error occured while adding or saving location.")
     }
   };
@@ -110,7 +108,6 @@ const LocationPage = () => {
         onCancel={() => {
           setEditingLocation(null);
           setVisible(false);
-          console.log("Clicked")
         }}
         footer={null}
       >

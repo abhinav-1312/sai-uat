@@ -111,8 +111,6 @@ const IssueNoteCorrection = () => {
     dispatch(fetchOhq());
   }, [dispatch]);
 
-  console.log(formData);
-
   useEffect(() => {
     if (formBodyRef.current) formBodyRef.current.updateField(formData);
   }, [formData]);
