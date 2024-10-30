@@ -647,7 +647,7 @@ const OutwardGatePass = () => {
                       onChange={(fieldName, value) =>
                         itemHandleChange(fieldName, value, key, setFormData)
                       }
-                      readOnly
+                      readOnly={isTxnData}
                     />
 
                     {(formData.type === "IRP" || formData.type === "IOP") && (
