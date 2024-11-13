@@ -4,7 +4,6 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
-import store from "./store/store";
 import toolkitStore, { persistor } from "./redux/index";
 import { PersistGate } from "redux-persist/integration/react";
 import "antd/dist/reset.css";
@@ -15,9 +14,7 @@ axios.defaults.baseURL = "https://uat-sai-app.azurewebsites.net/sai-inv-mgmt"
 root.render(
     <PersistGate persistor={persistor}>
   <Provider store={toolkitStore}>
-      {/* <Provider store={store}> */}
         <App />
-      {/* </Provider> */}
   </Provider>
     </PersistGate>
 );

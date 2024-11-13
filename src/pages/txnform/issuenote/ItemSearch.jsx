@@ -37,6 +37,7 @@ const ItemSearch = ({itemArray, setFormData}) => {
               locatorId: subRecord.locatorId,
               locatorDesc: subRecord.locatorDesc,
               remarks: "",
+              totalValue: record.price || 0
             };
         updateFormData(newItem, setFormData)
         } else {

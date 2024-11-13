@@ -1,23 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal, Input, message } from "antd";
 import { connect, useDispatch, useSelector } from "react-redux";
-import {
-  // fetchLocators,
-  // updateLocator,
-  // saveLocator,
-  // deleteLocator,
-} from "../../store/actions/LocatorActions";
 import LocatorTable from "./LocatorTable";
 import LocatorForm from "./LocatorForm";
 import { deleteLocator, fetchLocators, saveLocator, updateLocator } from "../../redux/slice/locatorSlice";
 
-const LocatorPage = ({
-  // locators,
-  // fetchLocators,
-  // updateLocator,
-  // saveLocator,
-  // deleteLocator,
-}) => {
+const LocatorPage = () => {
   const [visible, setVisible] = useState(false);
   const [editingLocator, setEditingLocator] = useState(null);
   const [searchText, setSearchText] = useState("");
@@ -26,7 +14,7 @@ const LocatorPage = ({
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(fetchLocators());
+    // dispatch(fetchLocators());
   }, []);
 
   const handleEdit = (locator) => {

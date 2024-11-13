@@ -2,29 +2,11 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal, Input, message } from "antd";
 import { connect, useDispatch, useSelector } from "react-redux";
-import {
-  // fetchUOM,
-  // updateUOM,
-  // saveUOM,
-  // deleteUOM,
-} from "../../store/actions/UOMActions";
 import UOMTable from "./UOMTable";
 import UOMForm from "./UOMForm";
 import { deleteUom, fetchUoms, saveUom, updateUom } from "../../redux/slice/uomSlice";
 
-const initialUOMs = [
-  {
-    id: 1,
-    uomCode: "EA",
-    uomName: "EACH",
-    uomDescription: "EACH",
-    className: "QUANTITY",
-    baseUomName: "EACH",
-    endDate: null,
-  },
-];
-
-const UOMPage = ({ }) => {
+const UOMPage = () => {
   const [visible, setVisible] = useState(false);
   const [editingUOM, setEditingUOM] = useState(null);
   const [searchText, setSearchText] = useState("");
@@ -34,7 +16,7 @@ const UOMPage = ({ }) => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(fetchUoms());
+    // dispatch(fetchUoms());
   }, []);
 
   const handleEdit = (uom) => {

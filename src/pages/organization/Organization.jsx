@@ -1,58 +1,53 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button, Modal, Input, message } from "antd";
 import { connect, useDispatch, useSelector } from "react-redux";
-import {
-  // updateOrganization,
-  // saveOrganization,
-  // deleteOrganization,
-} from "../../store/actions/OrganizationActions";
 import OrganizationTable from "./OrganizationTable";
 import OrganizationForm from "./OrganizationForm";
-import { deleteOrganization, fetchOrganizations, saveOrganization, updateOrganization } from "../../redux/slice/organizationSlice";
+import {
+  deleteOrganization,
+  fetchOrganizations,
+  saveOrganization,
+  updateOrganization,
+} from "../../redux/slice/organizationSlice";
 
-const OrganizationPage = ({
-  // organizations,
-  // fetchOrganizations,
-  // updateOrganization,
-  // saveOrganization,
-  // deleteOrganization,
-}) => {
+const OrganizationPage = () => {
   const [visible, setVisible] = useState(false);
   const [editingOrganization, setEditingOrganization] = useState(null);
   const [searchText, setSearchText] = useState("");
-  // const [organizations, setOrganizations] = useState(null)
-  const dispatch = useDispatch()
-  const userCd = useSelector(state => state.auth.userCd)
+  const dispatch = useDispatch();
+  const userCd = useSelector((state) => state.auth.userCd);
 
-   const organizations = useSelector(state => state.organizations.data)
-  
-  
+  const organizations = useSelector((state) => state.organizations.data);
+
   const handleEdit = (organization) => {
     setEditingOrganization(organization);
     setVisible(true);
   };
 
   const handleDelete = async (organizationId) => {
-    
-    await dispatch(deleteOrganization({id: organizationId, userId: userCd })).unwrap()
-    dispatch(fetchOrganizations())
+    await dispatch(
+      deleteOrganization({ id: organizationId, userId: userCd })
+    ).unwrap();
+    dispatch(fetchOrganizations());
   };
 
   const handleFormSubmit = async (values) => {
     try {
       if (editingOrganization) {
-        await dispatch(updateOrganization({organizationId: editingOrganization.id, values})).unwrap()
+        await dispatch(
+          updateOrganization({ organizationId: editingOrganization.id, values })
+        ).unwrap();
       } else {
-        await dispatch(saveOrganization(values)).unwrap()
+        await dispatch(saveOrganization(values)).unwrap();
       }
 
-      dispatch(fetchOrganizations())
+      dispatch(fetchOrganizations());
 
       setVisible(false);
       setEditingOrganization(null);
     } catch (error) {
       console.error("Error:", error);
-      message.error("Error occured while editing organization.")
+      message.error("Error occured while editing organization.");
     }
   };
 
@@ -80,13 +75,13 @@ const OrganizationPage = ({
         </Button>
       </div>
       <OrganizationTable
-    
         organizations={organizations?.filter((organization) =>
           Object.values(organization).some(
             (value) =>
               typeof value === "string" &&
               value.toLowerCase().includes(searchText.toLowerCase())
-          ))}
+          )
+        )}
         onEdit={handleEdit}
         onDelete={handleDelete}
       />

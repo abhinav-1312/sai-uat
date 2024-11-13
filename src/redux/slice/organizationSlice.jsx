@@ -1,12 +1,12 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
-import { BASE_URL } from '../../utils/BaseUrl';
-import { apiCall } from '../../utils/Functions';
+import { apiCall, convertArrayToObject } from '../../utils/Functions';
 import { message } from 'antd';
 
 const organizationSlice = createSlice({
     name: "organizations",
     initialState: {
-        data: null
+        data: null,
+        orgMasterObj: null
     },
     reducers: {
         clearOrganization(state, action){
@@ -23,6 +23,7 @@ const organizationSlice = createSlice({
           .addCase(fetchOrganizations.fulfilled, (state, action) => {
             state.loading = false;
             state.data = action.payload
+            state.orgMasterObj = convertArrayToObject(action.payload, "id", "organizationName")
           })
           .addCase(fetchOrganizations.rejected, (state, action) => {
             state.loading = false;

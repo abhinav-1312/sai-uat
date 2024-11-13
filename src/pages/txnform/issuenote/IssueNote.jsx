@@ -54,6 +54,8 @@ const IssueNote = () => {
     [itemData, ohqData]
   );
 
+  console.log("DATA: ", data)
+
   const [printBtnEnabled, setPrintBtnEnabled] = useState(false);
   const [submitBtnEnabled, setSubmitBtnEnabled] = useState(true);
   const [draftBtnEnabled, setDraftBtnEnabled] = useState(true);
@@ -286,6 +288,24 @@ const IssueNote = () => {
         setIsTxnData(true);
       }
     }, [location.state]);
+
+    const handleIsnQuantityChange = (fieldName, value, index) => {
+      const {itemCode} = formData.items[index];
+      const price = data?.find(item => item.itemMasterCd === itemCode)?.qtyList[0]?.price;
+
+      setFormData(prev => {
+        const updatedItems = prev.items;
+        updatedItems[index].quantity = value;
+        updatedItems[index].totalValue = (value*price).toFixed(2)
+        return {
+          ...prev,
+          items: updatedItems
+        }
+      })
+      console.log("RPcie: ", price)
+    }
+
+    console.log("Formdata: ", formData.items);
   
     // when form is loaded and a form is saved as draft
     useEffect(() => {
@@ -404,9 +424,14 @@ const IssueNote = () => {
                     label={"Required Quantity"}
                     value={item.quantity}
                     name={["items", key, "quantity"]}
-                    onChange={(fieldName, value) =>
-                      itemHandleChange(fieldName, value, key, setFormData)
-                    }
+                    onChange={(fieldName, value) => handleIsnQuantityChange(fieldName, value, key)}
+                    readOnly={isTxnData}
+                  />
+                  <FormInputItem
+                    label={"Total Value"}
+                    value={item.totalValue}
+                    name={["items", key, "totalValue"]}
+                    // onChange={(fieldName, value) => handleIsnQuantityChange(fieldName, value, key)}
                     readOnly={isTxnData}
                   />
                   <FormInputItem

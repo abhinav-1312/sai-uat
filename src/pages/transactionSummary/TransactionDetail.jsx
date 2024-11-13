@@ -469,7 +469,7 @@ const TransactionDetail = () => {
   const populateData = async (orgId) => {
     const { data } = await axios.post(
       "/txns/getTxnDtls",
-      { processId: trnNo, orgId },
+      { processId: Number(trnNo), orgId: null, itemCode: null},
       apiHeader("POST", token)
     );
     const responseData = data.responseData;

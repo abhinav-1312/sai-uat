@@ -1,5 +1,4 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
-import { BASE_URL } from '../../utils/BaseUrl';
 import { apiCall } from '../../utils/Functions';
 import { message } from 'antd';
 

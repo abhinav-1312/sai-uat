@@ -10,7 +10,7 @@ const { Search } = Input;
 
 const ItemSlab = ({allData, itemDescDropdownList, subCategoryDropdownList, countOrgWise, orgId}) => {
   const [filteredData, setFilteredData] = useState([...allData])
-  const {orgMasterObj} = useSelector(state => state.orgMaster)
+  const {orgMasterObj} = useSelector(state => state.organizations)
   const [filteredInfo, setFilteredInfo] = useState({});
   const [searchText, setSearchText] = useState("");
 
@@ -65,7 +65,11 @@ const ItemSlab = ({allData, itemDescDropdownList, subCategoryDropdownList, count
     setFilteredInfo(filters); // Update filteredInfo state with applied filters
   };
 
-  if(!allData || !orgMasterObj){
+  if(!allData 
+    // || 
+    // !orgMasterObj
+  )
+    {
     return (
       <h3>Loading</h3>
     )

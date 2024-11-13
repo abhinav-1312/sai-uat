@@ -14,7 +14,7 @@ import { clearOrganization } from "../redux/slice/organizationSlice";
 import { clearUom } from "../redux/slice/uomSlice";
 import { clearUser } from "../redux/slice/userSlice";
 import { clearVendor } from "../redux/slice/vendorSlice";
-import { clearOrgMaster } from "../redux/slice/orgMasterSlice";
+// import { clearOrgMaster } from "../redux/slice/orgMasterSlice";
 // import Sider from "antd/es/layout/Sider";
 
 
@@ -33,7 +33,7 @@ const Template = () => {
     dispatch(clearUom())
     dispatch(clearUser())
     dispatch(clearVendor())
-    dispatch(clearOrgMaster())
+    // dispatch(clearOrgMaster())
     navigate('/login')
   };
   const {

@@ -65,7 +65,7 @@ const txnName = [
 
 
 const TransactionSlab = ({allData, setTxnSlabData, orgId, countOrgWise}) => {
-  const {orgMasterObj} = useSelector(state => state.orgMaster)
+  const {orgMasterObj} = useSelector(state => state.organizations)
   const [txnFilters, setTxnFilters] = useState({
     txnType: null,
     startDate: null,

@@ -5,30 +5,22 @@ import { connect, useDispatch, useSelector } from "react-redux";
 import DepartmentTable from "./DepartmentTable";
 import DepartmentForm from "./DepartmentForm";
 import {
-  // fetchDepartments,
-  // updateDepartment,
-  // saveDepartment,
-  // deleteDepartment,
-} from "../../store/actions/DepartmentActions";
-import { deleteDepartment, fetchDepartments, saveDepartment, updateDepartment } from "../../redux/slice/departmentSlice";
+  deleteDepartment,
+  fetchDepartments,
+  saveDepartment,
+  updateDepartment,
+} from "../../redux/slice/departmentSlice";
 
-const DepartmentPage = ({
-  // departments,
-  // fetchDepartments,
-  // updateDepartment,
-  // saveDepartment,
-  // deleteDepartment,
-}) => {
+const DepartmentPage = () => {
   const [visible, setVisible] = useState(false);
   const [editingDepartment, setEditingDepartment] = useState(null);
   const [searchText, setSearchText] = useState("");
 
-  const departments = useSelector(state => state.departments.data)
-  const dispatch = useDispatch()
+  const departments = useSelector((state) => state.departments.data);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-
-    dispatch(fetchDepartments())
+    // dispatch(fetchDepartments());
   }, []);
 
   const handleEdit = (department) => {
@@ -37,14 +29,16 @@ const DepartmentPage = ({
   };
 
   const handleDelete = (departmentId) => {
-    dispatch(deleteDepartment(departmentId))
+    dispatch(deleteDepartment(departmentId));
   };
 
   const handleFormSubmit = async (values) => {
     try {
       if (editingDepartment) {
         // Update logic using the Redux action
-        await dispatch(updateDepartment({departmentId: editingDepartment.id, values})).unwrap();
+        await dispatch(
+          updateDepartment({ departmentId: editingDepartment.id, values })
+        ).unwrap();
       } else {
         // Create logic using the Redux action
         await dispatch(saveDepartment(values)).unwrap();
@@ -54,7 +48,7 @@ const DepartmentPage = ({
       setEditingDepartment(null); // Reset the editing department
     } catch (error) {
       console.error("Error:", error);
-      message.error("Error while saving or updating department.")
+      message.error("Error while saving or updating department.");
     }
   };
 

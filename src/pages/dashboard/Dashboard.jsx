@@ -97,9 +97,9 @@ const Dashboard = (props) => {
       populateDashboard()
     },[orgId])
 
-    if(loadings){
-      return <h1>Loadings</h1>
-    }
+    // if(loadings){
+    //   return <h1>Loadings</h1>
+    // }
 
   return (
     <div style={{display: "flex", flexDirection: "column", gap: "4rem"}}>

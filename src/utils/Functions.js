@@ -1,4 +1,4 @@
-import {Table, Button, message} from "antd"
+import {Table, message} from "antd"
 import html2pdf from 'html2pdf.js';
 import axios from 'axios'
 import _ from 'lodash';
@@ -516,11 +516,6 @@ export const populateInvSlabData = async (itemCode, orgId, token) => {
 
   return {allData: data, count: convertToCurrency(totalValAllOrg), countOrgWise: countOrgWise, itemDescDropdownList: sortAlphabetically(Array.from(itemDescDropdownList).map(str => JSON.parse(str))), subCategoryDropdownList: Array.from(subCategoryDropdownList).map(str=> JSON.parse(str))}
 }
-
-export const saveDraft = (itemName, formData) => {
-  localStorage.setItem(itemName, JSON.stringify(formData));
-  message.success("IGP data saved as draft successfully.");
-};
 
 export const generateCsvData = (heading, crCeDtlsCol, crCeDataObj, itemCol, itemData) => {
   const crCeDataArray = [crCeDataObj]

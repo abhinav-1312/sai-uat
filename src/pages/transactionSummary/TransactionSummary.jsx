@@ -196,21 +196,22 @@ const TransactionSummary = ({ orgId }) => {
         }
       );
       setFilteredData([...(responseData || [])].reverse());
-      const txnDtlsData = await Promise.all(
-        responseData.map(async (record) => {
-          const { responseData } = await apiCall(
-            "POST",
-            "/txns/getTxnDtls",
-            token,
-            { processId: record.id }
-          );
-          return responseData;
-        })
-      );
+      // const txnDtlsData = await Promise.all(
+      //   responseData.map(async (record) => {
+      //     const { responseData } = await apiCall(
+      //       "POST",
+      //       "/txns/getTxnDtls",
+      //       token,
+      //       { processId: Number(record.id) }
+      //     );
+      //     return responseData;
+      //   })
+      // );
 
-      generateCsvForTxnDtls(txnDtlsData);
+      // generateCsvForTxnDtls(txnDtlsData);
     } catch (error) {
       message.error("Error occured while fetching data. Please try again.");
+      console.log("error: ", error)
     }
   }, [orgId, token]);
 
@@ -235,7 +236,7 @@ const TransactionSummary = ({ orgId }) => {
               "POST",
               "/txns/getTxnDtls",
               token,
-              { processId: record.id }
+              { processId: Number(record.id) }
             );
             return responseData;
           })
@@ -250,19 +251,19 @@ const TransactionSummary = ({ orgId }) => {
         );
         const { responseData } = data;
         setFilteredData([...(responseData || [])].reverse());
-        const txnDtlsData = await Promise.all(
-          responseData.map(async (record) => {
-            const { responseData } = await apiCall(
-              "POST",
-              "/txns/getTxnDtls",
-              token,
-              { processId: record.id }
-            );
-            return responseData;
-          })
-        );
+        // const txnDtlsData = await Promise.all(
+        //   responseData.map(async (record) => {
+        //     const { responseData } = await apiCall(
+        //       "POST",
+        //       "/txns/getTxnDtls",
+        //       token,
+        //       { processId: Number(record.id) }
+        //     );
+        //     return responseData;
+        //   })
+        // );
   
-        generateCsvForTxnDtls(txnDtlsData);
+        // generateCsvForTxnDtls(txnDtlsData);
       }
     } catch (error) {
       message.error("Some error occured. Please try again.");

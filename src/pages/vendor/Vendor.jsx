@@ -1,33 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal, Input, message } from "antd";
 import { connect, useDispatch, useSelector } from "react-redux";
-import {
-  // fetchVendors,
-  // updateVendor,
-  // saveVendor,
-  // deleteVendor,
-} from "../../store/actions/VendorActions";
 import VendorTable from "./VendorTable";
 import VendorForm from "./VendorForm";
-import { deleteVendor, fetchVendors, saveVendor, updateVendor } from "../../redux/slice/vendorSlice";
+import {
+  deleteVendor,
+  fetchVendors,
+  saveVendor,
+  updateVendor,
+} from "../../redux/slice/vendorSlice";
 
-const VendorPage = ({
-  // vendors,
-  // fetchVendors,
-  // updateVendor,
-  // saveVendor,
-  // deleteVendor,
-}) => {
+const VendorPage = () => {
   const [visible, setVisible] = useState(false);
   const [editingVendor, setEditingVendor] = useState(null);
   const [searchText, setSearchText] = useState("");
 
-  const userCd = useSelector(state => state.auth.userCd)
-  const vendors = useSelector(state => state.vendors.data)
-  const dispatch = useDispatch()
+  const userCd = useSelector((state) => state.auth.userCd);
+  const vendors = useSelector((state) => state.vendors.data);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchVendors());
+    // dispatch(fetchVendors());
   }, []);
 
   const handleEdit = (vendor) => {
@@ -36,13 +29,15 @@ const VendorPage = ({
   };
 
   const handleDelete = (vendorId) => {
-    dispatch(deleteVendor({vendorId, userId: userCd}));
+    dispatch(deleteVendor({ vendorId, userId: userCd }));
   };
 
   const handleFormSubmit = async (values) => {
     try {
       if (editingVendor) {
-        await dispatch(updateVendor({vendorId: editingVendor.id, values})).unwrap();
+        await dispatch(
+          updateVendor({ vendorId: editingVendor.id, values })
+        ).unwrap();
       } else {
         await dispatch(saveVendor(values)).unwrap();
       }
@@ -50,7 +45,7 @@ const VendorPage = ({
       setEditingVendor(null);
     } catch (error) {
       console.error("Error:", error);
-      message.error("Error occured while saving or updating vendor.")
+      message.error("Error occured while saving or updating vendor.");
     }
   };
 

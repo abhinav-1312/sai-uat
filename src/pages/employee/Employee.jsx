@@ -1,32 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal, Input, message } from "antd";
 import { connect, useDispatch, useSelector } from "react-redux";
-import {
-  // fetchEmployees,
-  // updateEmployee,
-  // saveEmployee,
-  // deleteEmployee,
-} from "../../store/actions/EmployeeActions";
 import EmployeeTable from "./EmployeeTable";
 import EmployeeForm from "./EmployeeForm";
 import dayjs from "dayjs";
-import { deleteEmployee, fetchEmployees, saveEmployee, updateEmployee } from "../../redux/slice/employeeSlice";
+import {
+  deleteEmployee,
+  fetchEmployees,
+  saveEmployee,
+  updateEmployee,
+} from "../../redux/slice/employeeSlice";
 
-const EmployeePage = ({
-  // employees,
-  // fetchEmployees,
-  // updateEmployee,
-  // saveEmployee,
-  // deleteEmployee,
-}) => {
+const EmployeePage = () => {
   const [visible, setVisible] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [searchText, setSearchText] = useState("");
-  const employees = useSelector(state => state.employees.data)
-  const userCd = useSelector(state => state.auth.userCd)
-  const dispatch = useDispatch()
+  const employees = useSelector((state) => state.employees.data);
+  const userCd = useSelector((state) => state.auth.userCd);
+  const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(fetchEmployees());
+    // dispatch(fetchEmployees());
   }, []);
 
   const handleEdit = (employee) => {
@@ -43,13 +36,15 @@ const EmployeePage = ({
   };
 
   const handleDelete = (employeeId) => {
-    dispatch(deleteEmployee({employeeId, userId: userCd}));
+    dispatch(deleteEmployee({ employeeId, userId: userCd }));
   };
 
   const handleFormSubmit = async (values) => {
     try {
       if (editingEmployee) {
-        await dispatch(updateEmployee({employeeId: editingEmployee.id, values})).unwrap();
+        await dispatch(
+          updateEmployee({ employeeId: editingEmployee.id, values })
+        ).unwrap();
       } else {
         await dispatch(saveEmployee(values)).unwrap();
       }
@@ -58,7 +53,7 @@ const EmployeePage = ({
       setEditingEmployee(null);
     } catch (error) {
       console.error("Error while editing or saving employee", error);
-      message.error("Error while editing or saving employee.")
+      message.error("Error while editing or saving employee.");
     }
   };
 

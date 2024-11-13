@@ -1,5 +1,4 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
-import { BASE_URL } from '../../utils/BaseUrl';
 import { apiCall } from '../../utils/Functions';
 import { message } from 'antd';
 
@@ -37,6 +36,7 @@ export const fetchDepartments = createAsyncThunk(
     async (_, {getState}) => {
         try{
             // const {token} = "1234"
+            console.log("Called dept disp")
             const {token} = getState().auth
             const {responseData} = await apiCall("GET", `/master/getDeptMaster`, token)
             return responseData

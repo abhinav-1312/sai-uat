@@ -23,14 +23,6 @@ const SignIn = () => {
   const handleLogin = async (values) => {
     await dispatch(login(values)).unwrap();
     navigate("/");
-    dispatch(fetchDepartments());
-    dispatch(fetchEmployees());
-    dispatch(fetchLocations());
-    dispatch(fetchLocators());
-    dispatch(fetchUsers());
-    dispatch(fetchVendors());
-    dispatch(fetchOrganizations());
-    dispatch(fetchUoms());
   };
 
 

@@ -15,7 +15,7 @@ const { Option } = Select;
 
 const PurchaseSummarySlab = ({filters, setFilters, allData, handleSumSearch, isHeadquarter}) => {
     const {token} = useSelector(state => state.auth)
-    const {orgMasterObj} = useSelector(state => state.orgMaster)
+    const {orgMasterObj} = useSelector(state => state.organizations)
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef(null);

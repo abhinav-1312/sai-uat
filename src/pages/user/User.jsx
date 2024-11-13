@@ -2,49 +2,21 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal, Input, message } from "antd";
 import { connect, useDispatch, useSelector } from "react-redux";
-import {
-  // fetchUsers,
-  // updateUser,
-  // saveUser,
-  // deleteUser,
-} from "../../store/actions/UsersActions";
 import UserTable from "./UserTable";
 import UserForm from "./UserForm";
 import { deleteUser, fetchUsers, saveUser, updateUser } from "../../redux/slice/userSlice";
 
-const initialUsers = [
-  {
-    id: 1,
-    organizationId: "O001",
-    userId: "U001",
-    userFirstName: "John",
-    userLastName: "Doe",
-    password: "password123",
-    userType: "Admin",
-    department: "IT",
-    emailId: "john.doe@example.com",
-    contactNo: "9876543210",
-    endDate: "25/05/2024",
-    createUserId: "12345",
-    // userStatus: "Active",
-    // privileges: "Full Access",
-  },
-  // Add more dummy data as needed
-];
-
-const UserPage = ({ 
-  // users, fetchUsers, updateUser, saveUser, deleteUser 
-}) => {
+const UserPage = (
+) => {
   const [visible, setVisible] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [searchText, setSearchText] = useState("");
 
-  const userCd = useSelector(state => state.auth.userCd)
   const users = useSelector(state => state.users.data)
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(fetchUsers());
+    // dispatch(fetchUsers());
   }, []);
 
   const handleEdit = (user) => {

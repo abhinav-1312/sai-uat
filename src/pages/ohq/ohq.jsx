@@ -12,23 +12,25 @@ import FormSelectItem from "../../components/FormSelectItem";
 import { CSVLink } from "react-csv";
 
 const Ohq = ({ orgId, organization }) => {
-  const [searchKeyword, setSearchKeyword] = useState(null)
-  const [selectedLocator, setSelectedLocator] = useState(null)
+  const [searchKeyword, setSearchKeyword] = useState(null);
+  const [selectedLocator, setSelectedLocator] = useState(null);
   const [itemData, setItemData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [totVal, setTotVal] = useState(0);
   const { token, userCd: userId } = useSelector((state) => state.auth);
   const { data: locatorMaster } = useSelector((state) => state.locators);
 
-  // const locatorOptionArray = [ {value: "All Locators", desc: "All Locators"}, ...locatorMaster?.map(locator => {
-  let locatorOptionArray = locatorMaster?.map((locator) => {
-    return {
-      value: locator.locatorDesc,
-      desc: locator.locatorDesc,
-    };
-  });
+  const [locatorOptionArray, setLocatorOptionArray] = useState([]);
+  const [subCategoryOptionArray, setSubCategoryOptionArray] = useState([]);
+  const [uomOptionArray, setUomOptionArray] = useState([]);
+  const [itemNameOptionArray, setItemNameOptionArray] = useState([]);
 
-  // locatorOptionArray = [{value: "All Locators", desc: "All Locators"}, ...locatorOptionArray]
+  const [filters, setFilters] = useState({
+    locator: null,
+    uom: null,
+    subCategory: null,
+    itemName: null,
+  });
 
   const populateItemData = async () => {
     try {
@@ -41,14 +43,45 @@ const Ohq = ({ orgId, organization }) => {
       setItemData([...responseData] || []);
       setFilteredData([...responseData] || []);
 
-      // calculate total value
-      let sum = 0;
+      let sum = 0; // total value
+
+      const itemNameSet = new Set();
+      const subCategorySet = new Set();
+      const uomSet = new Set();
+      const locatorSet = new Set();
+
+      const locatorOptionArray = [];
+      const itemNameOptionArray = [];
+      const subCategoryOptionArray = [];
+      const uomOptionArray = [];
+
       responseData?.forEach((item) => {
+        itemNameSet.add(item.itemName);
+        subCategorySet.add(item.qtyList?.[0].subcategoryDesc);
+        uomSet.add(item.uomDesc);
         item.qtyList.forEach((loc) => {
+          locatorSet.add(loc.locatorDesc);
           sum = sum + loc.totalValues;
         });
       });
 
+      itemNameSet.forEach((item) => {
+        itemNameOptionArray.push({ desc: item, value: item });
+      });
+      subCategorySet.forEach((sc) => {
+        subCategoryOptionArray.push({ value: sc, desc: sc });
+      });
+      uomSet.forEach((uom) => {
+        uomOptionArray.push({ value: uom, desc: uom });
+      });
+      locatorSet.forEach((loc) => {
+        locatorOptionArray.push({ value: loc, desc: loc });
+      });
+
+      setLocatorOptionArray(locatorOptionArray);
+      setUomOptionArray(uomOptionArray);
+      setSubCategoryOptionArray(subCategoryOptionArray);
+      setItemNameOptionArray(itemNameOptionArray);
       setTotVal(convertToCurrency(sum));
     } catch (error) {
       message.error("Error occured while fetching data. Please try again.");
@@ -59,9 +92,9 @@ const Ohq = ({ orgId, organization }) => {
     try {
       const { data } = await axios.post(
         "/master/getOHQ",
-        { itemCode: null, userId, orgId },
+        { itemCode: null, userId, orgId }, // sending itemCode 'null' gives all available data
         apiHeader("POST", token)
-      ); // sending itemCode 'null' gives all available data
+      );
       const { responseData } = data;
       setItemData([...responseData] || []);
       setFilteredData([...responseData] || []);
@@ -90,7 +123,6 @@ const Ohq = ({ orgId, organization }) => {
       const { responseData } = data;
       const newArray = [];
 
-      // const modData = []
       responseData?.forEach((item) => {
         item.qtyList.forEach((obj) => {
           const objFound = newArray.find(
@@ -188,7 +220,7 @@ const Ohq = ({ orgId, organization }) => {
   ];
 
   const handleLocatorFilterChange = (_, value) => {
-    setSelectedLocator(value)
+    setSelectedLocator(value);
     if (value === "All Locators") {
       // setFilteredData([...itemData])
       return;
@@ -208,8 +240,11 @@ const Ohq = ({ orgId, organization }) => {
   // Function to convert array of objects to CSV format
   const convertArrayToCSV = (items) => {
     if (!items || items.length <= 0) return null;
-    const searchKeyWord = ["Search Keyword", "N/A"]
-    const selectedLoc = ["Selected Locator", "N/A"]
+    const selectedLoc = ["Selected Locator", filters.locator || "NA"];
+    const selectedUom = ["Selected UOM", filters.uom || "NA"];
+    const selectedSubcategory = ["Selected Sub Category", filters.subCategory || "NA"];
+    const selectedItemName = ["Selected Item Name", filters.itemName || "NA"];
+
     const header = [
       "Item Code",
       "Item Description",
@@ -234,97 +269,146 @@ const Ohq = ({ orgId, organization }) => {
 
     // Combine header and rows into CSV format
     const csvContent = [
-      searchKeyWord.join(","),
       selectedLoc.join(","),
+      selectedUom.join(","),
+      selectedSubcategory.join(","),
+      selectedItemName.join(","),
       header.join(","), // Join header with commas
       ...rows.map((row) => row.join(",")), // Join each row with commas
     ].join("\n"); // Join header and rows with new lines
 
     return csvContent;
-  }
+  };
   const csvData = convertArrayToCSV(filteredData);
   const { organizationDetails } = useSelector((state) => state.auth);
 
-  return (
-    <>
-      <h1 style={{ textAlign: "center" }}> On Hand Quantity for Items </h1>
+  const handleFilterChange = (key, value) => {
+    console.log("KEY: ", key, value);
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
 
-      <div
+  const applyFilter = () => {
+    let filtered = [...itemData]; // Start with all itemData
+
+    // Apply filters
+    if (filters.locator) {
+      const tempData = filtered.map(record => {
+        return {
+          ...record,
+          qtyList: record.qtyList.filter((subRecord) => subRecord.locatorDesc === filters.locator)
+        }
+      })
+
+      filtered = tempData.filter((record) => record.qtyList.length > 0)
+    }
+
+    if (filters.uom) {
+      filtered = filtered.filter((item) => item.uomDesc === filters.uom);
+    }
+
+    if (filters.subCategory) {
+      const tempData = filtered.map(record => {
+        return {
+          ...record,
+          qtyList: record.qtyList.filter((subRecord) => subRecord.subcategoryDesc === filters.subCategory)
+        }
+      })
+
+      filtered = tempData.filter((record) => record.qtyList.length > 0)
+    }
+
+    if (filters.itemName) {
+      filtered = filtered.filter((item) => item.itemName === filters.itemName);
+    }
+
+    // Update filteredData state with the filtered results
+    setFilteredData(filtered);
+  };
+
+
+  return (
+    <div style={{display: "flex", flexDirection: "column", gap: "1rem"}}>
+      <h1 style={{ textAlign: "center" }}> <strong>On Hand Quantity for Items</strong></h1>
+
+     <div
         style={{
-          display: "flex",
-          // gridTemplateColumns: "auto auto",
-          alignItems: "center",
-          justifyContent: "space-between"
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(10rem, 1fr))",
+          gap: "0 1rem",
+          border: "1px solid #dcdcdc",
+          background: "#8080800f",
+          padding: "2rem 1rem",
+          borderRadius: "5px"
         }}
       >
-          <Input.Search
-            placeholder="Search item"
-            allowClear
-            enterButton="Search"
-            size="medium"
-            onSearch={(e) =>
-              handleSearch(e.target?.value || null, itemData, setFilteredData)
-            }
-            onChange={(e) => {
-              setSearchKeyword(e.target?.value || null)
-              return handleSearch(e.target?.value || null, itemData, setFilteredData)
-            }
-            }
-            style={{ width: "30%", margin: "1rem 0" }}
-          />
+        <FormSelectItem
+          formField="itemName"
+          onChange={handleFilterChange}
+          optionArray={itemNameOptionArray}
+          placeholder="Select Item Name"
+        />
+        <FormSelectItem
+          formField="subCategory"
+          onChange={handleFilterChange}
+          optionArray={subCategoryOptionArray}
+          placeholder="Select Sub-Category"
+        />
+        <FormSelectItem
+          formField="locator"
+          onChange={handleFilterChange}
+          optionArray={locatorOptionArray}
+          placeholder="Select Locator"
+        />
+        <FormSelectItem
+          formField="uom"
+          onChange={handleFilterChange}
+          optionArray={uomOptionArray}
+          placeholder="Select UOM"
+        />
 
-          <FormSelectItem
-            style={{ width: "30%" }}
-            onChange={handleLocatorFilterChange}
-            optionArray={locatorOptionArray}
-            placeholder="Select Locator"
-          />
+        <Button onClick={applyFilter} type="primary">
+          Submit
+        </Button>
 
-          <Button
-            style={{ width: "max-content" }}
-            onClick={() => window.location.reload()}
-            type="primary"
-            danger
-          >
-            Reset
-          </Button>
+        <Button onClick={() => window.location.reload()} type="primary" danger>
+          Reset
+        </Button>
 
-          {csvData ? (
-            <CSVLink
-              data={csvData}
-              filename={`ohq_${organizationDetails?.organizationName}.csv`}
-              style={{
-                display: "flex",
-                alignItems: "center"
-              }}
-              className="ant-btn css-dev-only-do-not-override-1r287do ant-btn-primary ant-btn"
-            >
-              Export To CSV
-            </CSVLink>
-          ) : (
-            <Button
-              type="primary"
-              loading
-            >
-              Generating CSV Data
-            </Button>
-          )}
         <div></div>
       </div>
 
       <div
         style={{
-          textAlign: "right",
-          margin: "1rem 0"
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
         }}
       >
-
-        <div style={{}}>
-          <h2> <strong>  Total value for all items: </strong> {totVal} </h2>
-        </div>
+        <h2>
+          <strong> Total value for all items: </strong> {totVal}{" "}
+        </h2>
+        {csvData ? (
+          <CSVLink
+            data={csvData}
+            filename={`ohq_${organizationDetails?.organizationName}.csv`}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              border: "1px solid",
+              padding: "1rem",
+            }}
+            className="ant-btn ant-btn-primary"
+          >
+            Export To CSV
+          </CSVLink>
+        ) : (
+          <Button type="primary" loading>
+            Generating CSV Data
+          </Button>
+        )}
       </div>
       <Table dataSource={filteredData} columns={columns} />
-    </>
+    </div>
   );
 };
 

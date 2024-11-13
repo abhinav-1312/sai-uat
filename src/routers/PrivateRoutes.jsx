@@ -10,7 +10,7 @@ import { fetchVendors } from '../redux/slice/vendorSlice'
 import { fetchOrganizations } from '../redux/slice/organizationSlice'
 import { fetchUoms } from '../redux/slice/uomSlice'
 import { fetchItemData } from '../redux/slice/itemSlice'
-import { fetchOrgMaster } from '../redux/slice/orgMasterSlice'
+// import { fetchOrgMaster } from '../redux/slice/orgMasterSlice'
 
 const PrivateRoutes = () => {
     const isLoggedIn = useSelector(state => state.auth.token !== null)
@@ -27,7 +27,7 @@ const PrivateRoutes = () => {
       dispatch(fetchOrganizations())
       dispatch(fetchUoms())
       dispatch(fetchItemData())
-      dispatch(fetchOrgMaster())
+      // dispatch(fetchOrgMaster())
     }, [dispatch])
 
     useEffect(() => {

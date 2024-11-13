@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 
 const BarGraph = ({labels, values, legend, slab}) => {
-    const {orgMasterObj} = useSelector(state => state.orgMaster)
+  const {orgMasterObj} = useSelector(state => state.organizations)
     const chartData = { labels: slab==="invSlab" ? labels : labels.map(record => orgMasterObj[record]),
         datasets: [
           {

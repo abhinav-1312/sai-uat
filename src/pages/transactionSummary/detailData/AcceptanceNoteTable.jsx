@@ -1,14 +1,9 @@
-import React, { useEffect, useState } from "react";
-// import { itemDetails, orgConsigneeDetails, orgConsignorDetails, supplierDetails } from './../CommonColumns'
+import React, { useEffect } from "react";
 import {
-  apiHeader,
-  convertArrayToObject,
   convertEpochToDateString,
   generateCsvData,
 } from "../../../utils/Functions";
 import DetailData from "./DetailData";
-import axios from "axios";
-import { useSelector } from "react-redux";
 
 const orgConsignorDetails = [
   {
@@ -149,22 +144,22 @@ export const poAcptDataColumns = [...actDataTableColumns, ...supplierDetails];
 export const irpPoIopAcptItemListColumns = actItemTableColumn;
 
 const AcceptanceNoteTable = ({ type, data, itemList, setCsv }) => {
-  useEffect(() => {
-    const csvData = generateCsvData(
-      "Acceptance Note",
-      dataColumnsUpdated,
-      data,
-      actItemTableColumn,
-      itemList
-    );
-    setCsv(csvData);
-  }, []);
-
-  const dataColumnsUpdated =
+    
+    const dataColumnsUpdated =
     type === "PO"
-      ? [...actDataTableColumns, ...supplierDetails]
-      : [...actDataTableColumns, ...orgConsignorDetails];
-
+    ? [...actDataTableColumns, ...supplierDetails]
+    : [...actDataTableColumns, ...orgConsignorDetails];
+    
+    useEffect(() => {
+      const csvData = generateCsvData(
+        "Acceptance Note",
+        dataColumnsUpdated,
+        data,
+        actItemTableColumn,
+        itemList
+      );
+      setCsv(csvData);
+    }, []);
   return (
     <DetailData
       dataColumn={dataColumnsUpdated}
