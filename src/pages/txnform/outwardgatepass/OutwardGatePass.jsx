@@ -25,7 +25,6 @@ import ConsumerDetails from "../../../components/ConsumerDetails";
 import SupplierDetails from "../../../components/SupplierDetails";
 import FormSelectItem from "../../../components/FormSelectItem";
 import {
-  iopTypeOptionList,
   processTypeGrnOptionList,
 } from "../../../utils/KeyValueMapping";
 import FormSearchItem from "../../../components/FormSearchItem";
@@ -37,6 +36,17 @@ import DesignationContainer from "../../../components/DesignationContainer";
 const dateFormat = "DD/MM/YYYY";
 
 const currentDate = dayjs();
+
+const typeOptionList = [
+  {
+      desc: "Issued Items",
+      value: "Accepted Items"
+  },
+  {
+      desc: "Rejected Items",
+      value: "Rejected Items"
+  }
+]
 
 const OutwardGatePass = () => {
   const [printBtnEnabled, setPrintBtnEnabled] = useState(false);
@@ -460,8 +470,6 @@ const OutwardGatePass = () => {
     }
   }, [location.state]);
 
-  console.log("FormData: ", formData)
-
   return (
     <>
       <FormContainer ref={formRef}>
@@ -551,7 +559,7 @@ const OutwardGatePass = () => {
                     label="Select Note Type"
                     name="noteType"
                     onChange={handleChange}
-                    optionArray={iopTypeOptionList}
+                    optionArray={typeOptionList}
                     formField="noteType"
                     readOnly={isTxnData}
                   />
@@ -561,7 +569,7 @@ const OutwardGatePass = () => {
               {formData.processType === "IOP" &&
                 formData.noteType === "Accepted Items" && (
                   <FormSearchItem
-                    label="Outward Gate Pass No."
+                    label="Issue Note No."
                     name="outwardGatePass"
                     onSearch={(value) => handleIssueDataSearch(value)}
                     onChange={handleChange}

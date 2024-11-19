@@ -42,7 +42,6 @@ export const fetchVendors = createAsyncThunk(
             return responseData
         }
         catch(error){
-            console.log("Error occured while fetching vendor details.", error)
             message.error("Error occured while fetching vendor details.")
         }
     }
@@ -57,7 +56,6 @@ export const updateVendor = createAsyncThunk(
             
         }
         catch(error){
-            console.log("Error occured while updating vendor.", error)
             message.error("Error occured while updating vendor.")
         }
     }
@@ -71,7 +69,6 @@ export const saveVendor = createAsyncThunk(
             
         }
         catch(error){
-            console.log("Error occured while adding vendor.", error)
             message.error("Error occured while adding vendor.")
         }
     }
@@ -85,7 +82,6 @@ export const deleteVendor = createAsyncThunk(
             
         }
         catch(error){
-            console.log("Error occured while deleting UOM.", error)
             message.error("Error occured while deleting UOM.")
         }
     }

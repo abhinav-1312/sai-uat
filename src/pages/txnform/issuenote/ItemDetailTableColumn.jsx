@@ -163,7 +163,6 @@ export const renderLocatorISN = (obj, selectedItems, setSelectedItems, setFormDa
                       ? "warning"
                       : "primary"
                   }
-                  // onClick={() => console.log("Action clicked")}
                   onClick={() => handleSelectItem(record, selectedItems, setSelectedItems, setFormData)}
                 >
                   {selectedItems?.some((item) => item.id === record.id)

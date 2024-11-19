@@ -1,25 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Button, Input, message, Table } from "antd";
+import { Button, Input, message, Select, Table } from "antd";
 import axios from "axios";
 import {
   apiHeader,
   convertToCurrency,
-  handleSearch,
   renderLocatorOHQ,
 } from "../../utils/Functions";
 import { useSelector } from "react-redux";
 import FormSelectItem from "../../components/FormSelectItem";
 import { CSVLink } from "react-csv";
+const { Option } = Select;
 
 const Ohq = ({ orgId, organization }) => {
-  const [searchKeyword, setSearchKeyword] = useState(null);
-  const [selectedLocator, setSelectedLocator] = useState(null);
   const [itemData, setItemData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [totVal, setTotVal] = useState(0);
   const { token, userCd: userId } = useSelector((state) => state.auth);
-  const { data: locatorMaster } = useSelector((state) => state.locators);
-
   const [locatorOptionArray, setLocatorOptionArray] = useState([]);
   const [subCategoryOptionArray, setSubCategoryOptionArray] = useState([]);
   const [uomOptionArray, setUomOptionArray] = useState([]);
@@ -219,30 +215,15 @@ const Ohq = ({ orgId, organization }) => {
     },
   ];
 
-  const handleLocatorFilterChange = (_, value) => {
-    setSelectedLocator(value);
-    if (value === "All Locators") {
-      // setFilteredData([...itemData])
-      return;
-    }
-    const tempData = filteredData.map((record) => {
-      return {
-        ...record,
-        qtyList: record.qtyList.filter(
-          (subRecord) => subRecord.locatorDesc === value
-        ),
-      };
-    });
-
-    setFilteredData(tempData.filter((record) => record.qtyList.length > 0));
-  };
-
   // Function to convert array of objects to CSV format
   const convertArrayToCSV = (items) => {
     if (!items || items.length <= 0) return null;
     const selectedLoc = ["Selected Locator", filters.locator || "NA"];
     const selectedUom = ["Selected UOM", filters.uom || "NA"];
-    const selectedSubcategory = ["Selected Sub Category", filters.subCategory || "NA"];
+    const selectedSubcategory = [
+      "Selected Sub Category",
+      filters.subCategory || "NA",
+    ];
     const selectedItemName = ["Selected Item Name", filters.itemName || "NA"];
 
     const header = [
@@ -283,7 +264,6 @@ const Ohq = ({ orgId, organization }) => {
   const { organizationDetails } = useSelector((state) => state.auth);
 
   const handleFilterChange = (key, value) => {
-    console.log("KEY: ", key, value);
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -292,14 +272,16 @@ const Ohq = ({ orgId, organization }) => {
 
     // Apply filters
     if (filters.locator) {
-      const tempData = filtered.map(record => {
+      const tempData = filtered.map((record) => {
         return {
           ...record,
-          qtyList: record.qtyList.filter((subRecord) => subRecord.locatorDesc === filters.locator)
-        }
-      })
+          qtyList: record.qtyList.filter(
+            (subRecord) => subRecord.locatorDesc === filters.locator
+          ),
+        };
+      });
 
-      filtered = tempData.filter((record) => record.qtyList.length > 0)
+      filtered = tempData.filter((record) => record.qtyList.length > 0);
     }
 
     if (filters.uom) {
@@ -307,14 +289,16 @@ const Ohq = ({ orgId, organization }) => {
     }
 
     if (filters.subCategory) {
-      const tempData = filtered.map(record => {
+      const tempData = filtered.map((record) => {
         return {
           ...record,
-          qtyList: record.qtyList.filter((subRecord) => subRecord.subcategoryDesc === filters.subCategory)
-        }
-      })
+          qtyList: record.qtyList.filter(
+            (subRecord) => subRecord.subcategoryDesc === filters.subCategory
+          ),
+        };
+      });
 
-      filtered = tempData.filter((record) => record.qtyList.length > 0)
+      filtered = tempData.filter((record) => record.qtyList.length > 0);
     }
 
     if (filters.itemName) {
@@ -325,12 +309,14 @@ const Ohq = ({ orgId, organization }) => {
     setFilteredData(filtered);
   };
 
-
   return (
-    <div style={{display: "flex", flexDirection: "column", gap: "1rem"}}>
-      <h1 style={{ textAlign: "center" }}> <strong>On Hand Quantity for Items</strong></h1>
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <h1 style={{ textAlign: "center" }}>
+        {" "}
+        <strong>On Hand Quantity for Items</strong>
+      </h1>
 
-     <div
+      <div
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fit, minmax(10rem, 1fr))",
@@ -338,15 +324,31 @@ const Ohq = ({ orgId, organization }) => {
           border: "1px solid #dcdcdc",
           background: "#8080800f",
           padding: "2rem 1rem",
-          borderRadius: "5px"
+          borderRadius: "5px",
         }}
       >
-        <FormSelectItem
-          formField="itemName"
-          onChange={handleFilterChange}
-          optionArray={itemNameOptionArray}
+        <Select
+          onChange={(value) => handleFilterChange("itemName", value[0])}
           placeholder="Select Item Name"
-        />
+          showSearch
+          mode="tags"
+          optionFilterProp="children"
+          filterOption={(input, option) =>
+            option.children.toLowerCase().includes(input.toLowerCase())
+          }
+          filterSort={(optionA, optionB) =>
+            optionA.children
+              .toLowerCase()
+              .localeCompare(optionB.children.toLowerCase())
+          }
+        >
+          {itemNameOptionArray?.map((item) => (
+            <Option key={item.key} value={item.value}>
+              {item.desc}
+            </Option>
+          ))}
+        </Select>
+
         <FormSelectItem
           formField="subCategory"
           onChange={handleFilterChange}

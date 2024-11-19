@@ -38,7 +38,6 @@ export const fetchOhq = createAsyncThunk(
             return responseData
         }
         catch(error){
-            console.log("Error occured while fetching ohq details.", error)
             message.error("Error occured while fetching ohq details.")
         }
     }

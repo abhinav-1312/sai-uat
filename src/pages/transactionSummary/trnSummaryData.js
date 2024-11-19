@@ -64,7 +64,7 @@ export const trnSummaryColumn = (handleViewClick, handlePrintClick, processStage
                 value: "PO"
               },
               {
-                text: "Inter Org Process",
+                text: "Inter Org Transfer",
                 value: "IOP"
               },
               {

@@ -47,7 +47,6 @@ export const apiCall = async (method, url, token, payload=null) => {
       return data
     }
     catch(error){
-      console.log("Error occured.", error)
       message.error("Some error occured.")
     }
   }
@@ -56,33 +55,10 @@ export const apiCall = async (method, url, token, payload=null) => {
       const {data} = await axios.post(url, payload, header)
       return data
     }catch(error){
-      console.log("Error occured.", error)
       message.error("Some error occured.")
     }
   }
 }
-
-// export const mergeItemMasterAndOhq = (itemMasterArr, ohqArr) => {
-//   return itemMasterArr?.map((item) => {
-//     const itemCodeMatch = ohqArr?.find(
-//       (itemOhq) => itemOhq.itemCode === item.itemMasterCd
-//     );
-//     if (itemCodeMatch) {
-//       const newQtyList = itemCodeMatch.qtyList.filter(
-//         (obj) => obj.quantity !== 0
-//       );
-
-//       if (newQtyList.length > 0)
-//         console.log("NEW QTY LIST: ", item.itemMasterDesc, newQtyList)
-//         return {
-//           ...item,
-//           qtyList: newQtyList,
-//           locationId: itemCodeMatch.locationId,
-//           locationDesc: itemCodeMatch.locationName,
-//         };
-//     }
-//   });
-// };
 
 export const mergeItemMasterAndOhq = (itemMasterArr, ohqArr, form = null) => {
   // Ensure input arrays are valid and handle cases where they are not provided
@@ -118,41 +94,6 @@ export const mergeItemMasterAndOhq = (itemMasterArr, ohqArr, form = null) => {
     }
   }).filter(item => item !== undefined);
 };
-
-
-// export const handleSearch = (searchText, itemData, setHook) => {
-//   setSearch(searchText)
-//   const filtered = itemData.filter((parentObject) =>
-//     recursiveSearch(parentObject, searchText)
-//   );
-//   setHook([...filtered]);
-// };
-
-// const recursiveSearch = (object, searchText) => {
-//   for (let key in object) {
-//     const value = object[key];
-//     if (typeof value === "object") {
-//       if (Array.isArray(value)) {
-//         for (let item of value) {
-//           if (recursiveSearch(item, searchText)) {
-//             return true;
-//           }
-//         }
-//       } else {
-//         if (recursiveSearch(value, searchText)) {
-//           return true;
-//         }
-//       }
-//     } else if (
-//       value &&
-//       value.toString().toLowerCase().includes(searchText.toLowerCase())
-//     ) {
-//       return true;
-//     }
-//   }
-//   return false;
-// };
-
 
 const recursiveSearch = (object, searchText) => {
   for (let key in object) {
@@ -193,36 +134,11 @@ export const handleSelectItem = (
   selectHook,
   setSelectHook,
   updateArrayHook,
-  // setTableHook
 ) => {
-    // setTableHook(false);
-
-  // Check if the item is already selected
-
   selectHook = selectHook || []
   const index = selectHook?.findIndex((item) => item.id === valueObj.id);
   if (index === -1) {
     setSelectHook((prevItems) => [...prevItems, valueObj]); // Update selected items state
-    // add data to formData hook
-    // setItemDetail((prevData) => {
-    //   const newItem = {
-    //     srNo: prevData.length ? prevData.length + 1 : 1,
-    //     itemCode: record.itemMasterCd,
-    //     itemId: record.id,
-    //     itemDesc: record.itemMasterDesc,
-    //     uom: record.uomId,
-    //     uomDesc : record.uomDtls.baseUom,
-    //     quantity: 1,
-    //     noOfDays: 1,
-    //     remarks: "",
-    //     conditionOfGoods: "",
-    //     budgetHeadProcurement: "",
-    //     qtyList: record.qtyList
-    //   };
-    //   const updatedItems = [...(prevData || []), newItem];
-    //   return [...updatedItems]
-    // });
-
     updateArrayHook((prevValues) => {
       const newItem = {
         srNo: prevValues.items?.length ? prevValues.items.length + 1 : 1,
@@ -349,12 +265,10 @@ export const convertArrayToObject = (array, _makeKey, valueKey ) => {
       setUomHook({ ...uomObject });
       setLocatorHook({...locatorObj})
     } catch (error) {
-      console.log("Error fetching Uom master details.", error);
     }
   };
 
   export const daysDifference = (issueDate, receivingDate) => {
-    console.log("issuedate: ", issueDate)
     const issueDtparts = issueDate.split("/");
     const receivingDtparts = receivingDate.split("/");
     const issueDay = parseInt(issueDtparts[0], 10);

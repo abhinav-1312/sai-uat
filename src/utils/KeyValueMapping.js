@@ -44,15 +44,15 @@ export const formNo = {
 export const processTypeIsnOptionList= [
 {
     value: "IRP",
-    desc: "Issue Return Process"
+    desc: "Returnable"
 },
 {
     value: "NIRP",
-    desc: "Non Returnable Issue Return"
+    desc: "Non Returnable"
 },
 {
     value:  "IOP",
-    desc: "Inter Org Process"
+    desc: "Inter Org Transfer"
 }
 
 ]
@@ -68,7 +68,7 @@ export const processTypeGrnOptionList= [
 },
 {
     value:  "IOP",
-    desc: "Inter Org Process"
+    desc: "Inter Org Transfer"
 }
 
 ]

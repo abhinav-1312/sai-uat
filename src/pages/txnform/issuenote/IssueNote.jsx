@@ -54,8 +54,6 @@ const IssueNote = () => {
     [itemData, ohqData]
   );
 
-  console.log("DATA: ", data)
-
   const [printBtnEnabled, setPrintBtnEnabled] = useState(false);
   const [submitBtnEnabled, setSubmitBtnEnabled] = useState(true);
   const [draftBtnEnabled, setDraftBtnEnabled] = useState(true);
@@ -149,7 +147,6 @@ const IssueNote = () => {
   }, [dispatch]);
 
   const handleCeRccChange = async (_, value) => {
-    console.log("Called: ", _, value)
     setFormData((prev) => {
       return {
         ...prev,
@@ -302,10 +299,7 @@ const IssueNote = () => {
           items: updatedItems
         }
       })
-      console.log("RPcie: ", price)
     }
-
-    console.log("Formdata: ", formData.items);
   
     // when form is loaded and a form is saved as draft
     useEffect(() => {

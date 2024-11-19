@@ -42,7 +42,6 @@ export const fetchOrganizations = createAsyncThunk(
             return responseData
         }
         catch(error){
-            console.log("Error occured while fetching organizations.", error)
             message.error("Error occured while fetching organizations.")
         }
     }
@@ -58,7 +57,6 @@ export const updateOrganization = createAsyncThunk(
             
         }
         catch(error){
-            console.log("Error occured while updating organizations.", error)
             message.error("Error occured while updating organization.")
         }
     }
@@ -73,7 +71,6 @@ export const saveOrganization = createAsyncThunk(
             
         }
         catch(error){
-            console.log("Error occured while adding organization.", error)
             message.error("Error occured while adding organization.")
         }
     }
@@ -87,7 +84,6 @@ export const deleteOrganization = createAsyncThunk(
             message.error("ORganization deleted successfully.")
         }
         catch(error){
-            console.log("Error occured while deleting organization.", error)
             message.error("Error occured while deleting organization.")
         }
     }

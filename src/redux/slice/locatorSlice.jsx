@@ -43,7 +43,6 @@ export const fetchLocators = createAsyncThunk(
             return responseData
         }
         catch(error){
-            console.log("Error occured while fetching locator details.", error)
             message.error("Error occured while fetching locator details.")
         }
     }
@@ -58,7 +57,6 @@ export const updateLocator = createAsyncThunk(
             
         }
         catch(error){
-            console.log("Error occured while updating locator.", error)
             message.error("Error occured while updating locator.")
         }
     }
@@ -72,7 +70,6 @@ export const saveLocator = createAsyncThunk(
             
         }
         catch(error){
-            console.log("Error occured while adding locator.", error)
             message.error("Error occured while adding locator.")
         }
     }
@@ -86,7 +83,6 @@ export const deleteLocator = createAsyncThunk(
             
         }
         catch(error){
-            console.log("Error occured while deleting locator.", error)
             message.error("Error occured while deleting locator.")
         }
     }

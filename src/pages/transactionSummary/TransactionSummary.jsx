@@ -55,9 +55,15 @@ import {
   poInspDataColumns,
   poIopInspItemListColumns,
 } from "./detailData/InspectionNoteTable";
+import FormInputItem from "../../components/FormInputItem";
+import FormDatePickerItem from "../../components/FormDatePickerItem";
+import dayjs from "dayjs";
 
 const { Option } = Select;
 const dateFormat = "DD/MM/YYYY";
+const currentDate = dayjs()
+const currentDateString = currentDate.format(dateFormat);
+const dateStringWeekBefore = currentDate.subtract(7, 'day').format(dateFormat);
 
 const TransactionSummary = ({ orgId }) => {
   const txnName = [
@@ -114,8 +120,8 @@ const TransactionSummary = ({ orgId }) => {
   };
 
   const [formData, setFormData] = useState({
-    startDate: null,
-    endDate: null,
+    endDate: currentDateString,
+    startDate: dateStringWeekBefore,
     txnType: null,
     itemCode: null,
   });
@@ -188,30 +194,29 @@ const TransactionSummary = ({ orgId }) => {
         "/txns/getTxnSummary",
         token,
         {
-          startDate: null,
-          endDate: null,
+          startDate: formData.startDate,
+          endDate: formData.endDate,
           itemCode: null,
           txnType: null,
           orgId: orgId ? orgId : null,
         }
       );
       setFilteredData([...(responseData || [])].reverse());
-      // const txnDtlsData = await Promise.all(
-      //   responseData.map(async (record) => {
-      //     const { responseData } = await apiCall(
-      //       "POST",
-      //       "/txns/getTxnDtls",
-      //       token,
-      //       { processId: Number(record.id) }
-      //     );
-      //     return responseData;
-      //   })
-      // );
+      const txnDtlsData = await Promise.all(
+        responseData.map(async (record) => {
+          const { responseData } = await apiCall(
+            "POST",
+            "/txns/getTxnDtls",
+            token,
+            { processId: Number(record.id) }
+          );
+          return responseData;
+        })
+      );
 
-      // generateCsvForTxnDtls(txnDtlsData);
+      generateCsvForTxnDtls(txnDtlsData);
     } catch (error) {
       message.error("Error occured while fetching data. Please try again.");
-      console.log("error: ", error)
     }
   }, [orgId, token]);
 
@@ -251,19 +256,19 @@ const TransactionSummary = ({ orgId }) => {
         );
         const { responseData } = data;
         setFilteredData([...(responseData || [])].reverse());
-        // const txnDtlsData = await Promise.all(
-        //   responseData.map(async (record) => {
-        //     const { responseData } = await apiCall(
-        //       "POST",
-        //       "/txns/getTxnDtls",
-        //       token,
-        //       { processId: Number(record.id) }
-        //     );
-        //     return responseData;
-        //   })
-        // );
+        const txnDtlsData = await Promise.all(
+          responseData.map(async (record) => {
+            const { responseData } = await apiCall(
+              "POST",
+              "/txns/getTxnDtls",
+              token,
+              { processId: Number(record.id) }
+            );
+            return responseData;
+          })
+        );
   
-        // generateCsvForTxnDtls(txnDtlsData);
+        generateCsvForTxnDtls(txnDtlsData);
       }
     } catch (error) {
       message.error("Some error occured. Please try again.");
@@ -641,16 +646,10 @@ const TransactionSummary = ({ orgId }) => {
             gridTemplateColumns: "repeat(2, 1fr)",
             gap: "1rem",
           }}
+          initialValues={formData}
         >
           <div>
-            <Form.Item label="Item Code">
-              <Input
-                value={formData.itemCode}
-                onChange={(e) =>
-                  handleFormValueChange("itemCode", e.target.value)
-                }
-              />
-            </Form.Item>
+            <FormInputItem label="Item Code" name="itemCode" onChange={handleFormValueChange} />
           </div>
 
           <div>
@@ -667,26 +666,8 @@ const TransactionSummary = ({ orgId }) => {
               </Select>
             </Form.Item>
           </div>
-
-          <Form.Item label="From Date">
-            <DatePicker
-              format={dateFormat}
-              style={{ width: "100%" }}
-              onChange={(date, dateString) =>
-                handleFormValueChange("startDate", dateString)
-              }
-            />
-          </Form.Item>
-
-          <Form.Item label="To Date">
-            <DatePicker
-              format={dateFormat}
-              style={{ width: "100%" }}
-              onChange={(date, dateString) =>
-                handleFormValueChange("endDate", dateString)
-              }
-            />
-          </Form.Item>
+          <FormDatePickerItem name="startDate" defaultValue={currentDateString} label="From Date" onChange={handleFormValueChange} />
+          <FormDatePickerItem name="endDate" defaultValue={dateStringWeekBefore} label="To Date" onChange={handleFormValueChange} />
           <Button type="primary" onClick={() => handleSearch()}>
             Search
           </Button>

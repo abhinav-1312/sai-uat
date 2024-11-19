@@ -38,7 +38,6 @@ export const fetchItemData = createAsyncThunk(
             const {responseData} = await apiCall("GET", `/master/getItemMaster`, token)
             return responseData
         }catch(error){
-            console.log("Error occured while fetching item data.", error)
             message.error("Error occured while fetching item data.")
         }
     }

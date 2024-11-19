@@ -43,7 +43,6 @@ export const fetchUoms = createAsyncThunk(
             return responseData
         }
         catch(error){
-            console.log("Error occured while fetching UOM details.", error)
             message.error("Error occured while fetching UOM details.")
         }
     }
@@ -58,7 +57,6 @@ export const updateUom = createAsyncThunk(
             
         }
         catch(error){
-            console.log("Error occured while updating UOM.", error)
             message.error("Error occured while updating UOM.")
         }
     }
@@ -72,7 +70,6 @@ export const saveUom = createAsyncThunk(
             
         }
         catch(error){
-            console.log("Error occured while adding UOM.", error)
             message.error("Error occured while adding UOM.")
         }
     }
@@ -86,7 +83,6 @@ export const deleteUom = createAsyncThunk(
             
         }
         catch(error){
-            console.log("Error occured while deleting UOM.", error)
             message.error("Error occured while deleting UOM.")
         }
     }

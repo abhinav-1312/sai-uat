@@ -148,7 +148,7 @@ const InwardGatePass = () => {
         });
       }
     } catch (error) {
-      console.log("Not getting vendor", error);
+      message.error("Error fetching vendor.")
     }
   };
 

@@ -40,7 +40,6 @@ export const fetchEmployees = createAsyncThunk(
             return responseData
         }
         catch(error){
-            console.log("Error occured while fetching employees data.", error)
             message.error("Error occured while fetching employees data.")
         }
     }
@@ -55,7 +54,6 @@ export const updateEmployee = createAsyncThunk(
             
         }
         catch(error){
-            console.log("Error occured while updating employee.", error)
             message.error("Error occured while updating employee.")
         }
     }
@@ -69,7 +67,6 @@ export const saveEmployee = createAsyncThunk(
             
         }
         catch(error){
-            console.log("Error occured while adding employee.", error)
             message.error("Error occured while adding employee.")
         }
     }
@@ -83,7 +80,6 @@ export const deleteEmployee = createAsyncThunk(
             
         }
         catch(error){
-            console.log("Error occured while deleting organization.", error)
             message.error("Error occured while deleting organization.")
         }
     }

@@ -40,7 +40,6 @@ export const fetchUsers = createAsyncThunk(
             return responseData
         }
         catch(error){
-            console.log("Error occured while fetching user details.", error)
             message.error("Error occured while fetching user details.")
         }
     }
@@ -55,7 +54,6 @@ export const updateUser = createAsyncThunk(
             
         }
         catch(error){
-            console.log("Error occured while updating user.", error)
             message.error("Error occured while updating user.")
         }
     }
@@ -69,7 +67,6 @@ export const saveUser = createAsyncThunk(
             
         }
         catch(error){
-            console.log("Error occured while adding user.", error)
             message.error("Error occured while adding user.")
         }
     }
@@ -83,7 +80,6 @@ export const deleteUser = createAsyncThunk(
             
         }
         catch(error){
-            console.log("Error occured while deleting user.", error)
             message.error("Error occured while deleting user.")
         }
     }

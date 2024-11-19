@@ -110,7 +110,7 @@ const RejectionNote = () => {
             ? "Issue Return Process"
             : value === "PO"
             ? "Purchase Order"
-            : "Inter Org Process";
+            : "Inter Org Transfer";
       }
 
       return newData;

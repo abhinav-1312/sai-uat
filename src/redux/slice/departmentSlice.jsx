@@ -35,14 +35,11 @@ export const fetchDepartments = createAsyncThunk(
     'departments/fetchDepartments',
     async (_, {getState}) => {
         try{
-            // const {token} = "1234"
-            console.log("Called dept disp")
             const {token} = getState().auth
             const {responseData} = await apiCall("GET", `/master/getDeptMaster`, token)
             return responseData
         }
         catch(error){
-            console.log("Error occured while fetching departments.", error)
             message.error("Error occured while fetching departments.")
         }
     }
@@ -57,7 +54,6 @@ export const updateDepartment = createAsyncThunk(
             
         }
         catch(error){
-            console.log("Error occured while updating department.", error)
             message.error("Error occured while updating department.")
         }
     }
@@ -71,7 +67,6 @@ export const saveDepartment = createAsyncThunk(
             
         }
         catch(error){
-            console.log("Error occured while adding department.", error)
             message.error("Error occured while adding department.")
         }
     }
@@ -85,7 +80,6 @@ export const deleteDepartment = createAsyncThunk(
             
         }
         catch(error){
-            console.log("Error occured while deleting organization.", error)
             message.error("Error occured while deleting organization.")
         }
     }

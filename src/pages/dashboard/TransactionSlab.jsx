@@ -219,7 +219,7 @@ const TransactionSlab = ({allData, setTxnSlabData, orgId, countOrgWise}) => {
             value: "PO"
           },
           {
-            text: "Inter Org Process",
+            text: "Inter Org Transfer",
             value: "IOP"
           },
         ],
