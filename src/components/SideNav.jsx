@@ -126,7 +126,6 @@ const menuItems = [
       { key: "8.9", label: "Acceptance Note", path: "/trans/acceptance" },
       { key: "8.1", label: "GRN", path: "/trans/grn" },
       { key: "8.10", label: "Rejection Note", path: "/trans/rejection" },
-      { key: "8.7", label: "Return Note", path: "/trans/return" },
     ],
   },
   {
