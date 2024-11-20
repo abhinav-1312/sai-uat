@@ -103,6 +103,14 @@ const InspectionNote = () => {
   };
 
   const handleChange = (fieldName, value) => {
+    if(fieldName === "processType"){
+      setFormData((prevValues) => ({
+        ...prevValues,
+        [fieldName]: value === "" ? null : value,
+        processTypeDesc: value === "PO" ? "Purchase Order" : "Inter Org Transfer"
+      }));
+      return;
+    }
     setFormData((prevValues) => ({
       ...prevValues,
       [fieldName]: value === "" ? null : value,

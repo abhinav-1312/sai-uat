@@ -32,12 +32,22 @@ import TermsConditionContainer from "../../../components/TermsConditionContainer
 import DesignationContainer from "../../../components/DesignationContainer";
 import ButtonContainer from "../../../components/ButtonContainer";
 import {
-  iopTypeOptionList,
   processTypeGrnOptionList,
 } from "../../../utils/KeyValueMapping";
 
 const currentDate = dayjs();
 const dateFormat = "DD/MM/YYYY";
+
+const iopTypeOptionList = [
+  {
+      value: "Accepted Items",
+      desc: "Issued Items"
+  },
+  {
+      value: "Rejected Items",
+      desc: "Rejected Items"
+  }
+]
 
 const InwardGatePass = () => {
   const location = useLocation();

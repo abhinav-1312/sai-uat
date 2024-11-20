@@ -55,17 +55,17 @@ import {
   poInspDataColumns,
   poIopInspItemListColumns,
 } from "./detailData/InspectionNoteTable";
-import FormInputItem from "../../components/FormInputItem";
-import FormDatePickerItem from "../../components/FormDatePickerItem";
 import dayjs from "dayjs";
 
 const { Option } = Select;
 const dateFormat = "DD/MM/YYYY";
-const currentDate = dayjs()
-const currentDateString = currentDate.format(dateFormat);
-const dateStringWeekBefore = currentDate.subtract(7, 'day').format(dateFormat);
+const currentDate = dayjs();
+const currenDateString = currentDate.format(dateFormat);
+const oneWeekBefore = currentDate.subtract(7, "day"); // One week before
+const oneWeekBeforeString = oneWeekBefore.format(dateFormat);
 
 const TransactionSummary = ({ orgId }) => {
+  const [form] = Form.useForm();
   const txnName = [
     {
       text: "Return Note",
@@ -119,12 +119,12 @@ const TransactionSummary = ({ orgId }) => {
     ACT: "Acceptance Note",
   };
 
-  const [formData, setFormData] = useState({
-    endDate: currentDateString,
-    startDate: dateStringWeekBefore,
-    txnType: null,
-    itemCode: null,
-  });
+  // const [formData, setFormData] = useState({
+  //   endDate: currentDateString,
+  //   startDate: dateStringWeekBefore,
+  //   txnType: null,
+  //   itemCode: null,
+  // });
 
   const [showTxn, setShowTxn] = useState({
     RN: true,
@@ -167,21 +167,25 @@ const TransactionSummary = ({ orgId }) => {
     processStageFilter
   );
 
-  const handleFormValueChange = (field, value) => {
-    setFormData((prevValues) => {
-      return {
-        ...prevValues,
-        [field]: value,
-      };
-    });
-    if (field === "txnType") {
-      setShowTxn((prevState) => ({
-        ...Object.keys(prevState).reduce((acc, key) => {
-          acc[key] = key === value; // Set "field" key to true, rest to false
-          return acc;
-        }, {}),
-      }));
-    }
+  // const handleFormValueChange = (field, value) => {
+  //   setFormData((prevValues) => {
+  //     return {
+  //       ...prevValues,
+  //       [field]: value,
+  //     };
+  //   });
+  //   if (field === "txnType") {
+  //     setShowTxn((prevState) => ({
+  //       ...Object.keys(prevState).reduce((acc, key) => {
+  //         acc[key] = key === value; // Set "field" key to true, rest to false
+  //         return acc;
+  //       }, {}),
+  //     }));
+  //   }
+  // };
+
+  const resetForm = () => {
+    window.location.reload();
   };
 
   const [filteredData, setFilteredData] = useState([]);
@@ -194,8 +198,8 @@ const TransactionSummary = ({ orgId }) => {
         "/txns/getTxnSummary",
         token,
         {
-          startDate: formData.startDate,
-          endDate: formData.endDate,
+          startDate: oneWeekBeforeString,
+          endDate: currenDateString,
           itemCode: null,
           txnType: null,
           orgId: orgId ? orgId : null,
@@ -224,13 +228,15 @@ const TransactionSummary = ({ orgId }) => {
     populateData();
   }, [populateData]);
 
-  const handleSearch = async () => {
+  const handleSearch = async (values) => {
+    const startDate = dayjs(values.startDate).format("DD/MM/YYYY");
+    const endDate = dayjs(values.endDate).format("DD/MM/YYYY");
+    const { txnType, itemCode } = values;
     try {
-      const formDataCopy = { ...formData };
       if (orgId) {
         const { data } = await axios.post(
           "/txns/getTxnSummary",
-          { ...formDataCopy, orgId },
+          { startDate, endDate, txnType, itemCode, orgId },
           apiHeader("POST", token)
         );
         const { responseData } = data;
@@ -246,12 +252,12 @@ const TransactionSummary = ({ orgId }) => {
             return responseData;
           })
         );
-  
+
         generateCsvForTxnDtls(txnDtlsData);
       } else {
         const { data } = await axios.post(
           "/txns/getTxnSummary",
-          formDataCopy,
+          { startDate, endDate, txnType, itemCode },
           apiHeader("POST", token)
         );
         const { responseData } = data;
@@ -267,29 +273,12 @@ const TransactionSummary = ({ orgId }) => {
             return responseData;
           })
         );
-  
+
         generateCsvForTxnDtls(txnDtlsData);
       }
     } catch (error) {
       message.error("Some error occured. Please try again.");
     }
-  };
-
-  const handleReset = () => {
-    setFormData({
-      itemCode: null,
-      startDate: null,
-      endDate: null,
-      txnType: null,
-    });
-    setShowTxn((prevState) => ({
-      ...Object.keys(prevState).reduce((acc, key) => {
-        acc[key] = true; // Set "field" key to true, rest to false
-        return acc;
-      }, {}),
-    }));
-
-    window.location.reload();
   };
 
   const generateCsvForTxnDtls = (txnDtlsData) => {
@@ -594,43 +583,39 @@ const TransactionSummary = ({ orgId }) => {
       setProcessStageFilter([...tempFilter]);
     }
   };
-
-  const {organizationDetails} = useSelector(state => state.auth)
+  const { organizationDetails } = useSelector((state) => state.auth);
 
   return (
     <>
       <div style={{ textAlign: "center", position: "relative" }}>
-        <h1>
-        Transaction Summary
-        </h1>
+        <h1>Transaction Summary</h1>
 
         {finalCsvData.length > 0 ? (
-        <CSVLink
-          data={finalCsvData}
-          filename={`transaction_detail_${organizationDetails?.organizationName}.csv` }
-          style={{
-            marginBottom: 16,
-            border: "1px solid",
-            width: "max-content",
-            padding: "1rem",
-            position: "absolute",
-            right: 0,
-            top: "-0.5rem"
-          }}
-          className="ant-btn ant-btn-primary"
+          <CSVLink
+            data={finalCsvData}
+            filename={`transaction_detail_${organizationDetails?.organizationName}.csv`}
+            style={{
+              marginBottom: 16,
+              border: "1px solid",
+              width: "max-content",
+              padding: "1rem",
+              position: "absolute",
+              right: 0,
+              top: "-0.5rem",
+            }}
+            className="ant-btn ant-btn-primary"
           >
-          Export to csv
-        </CSVLink>
-      )
-      : (
-        <Button type="primary" loading style={{ top: "-0.5rem", right: "0", position: "absolute"}}>
+            Export to csv
+          </CSVLink>
+        ) : (
+          <Button
+            type="primary"
+            loading
+            style={{ top: "-0.5rem", right: "0", position: "absolute" }}
+          >
             Generating CSV Data
           </Button>
-
-      )
-      }
-
-
+        )}
       </div>
       <div
         style={{
@@ -646,32 +631,48 @@ const TransactionSummary = ({ orgId }) => {
             gridTemplateColumns: "repeat(2, 1fr)",
             gap: "1rem",
           }}
-          initialValues={formData}
+          layout="vertical"
+          onFinish={handleSearch}
+          initialValues={{
+            startDate: oneWeekBefore,
+            endDate: currentDate,
+            itemCode: null,
+            txnType: null,
+          }}
         >
-          <div>
-            <FormInputItem label="Item Code" name="itemCode" onChange={handleFormValueChange} />
-          </div>
+          <Form.Item label="Start Date" name="startDate">
+            <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />
+          </Form.Item>
 
-          <div>
-            <Form.Item label="Transaction Type">
-              <Select
-                value={formData.txnType}
-                onChange={(value) => handleFormValueChange("txnType", value)}
-              >
-                {Object.entries(txnType).map(([key, value]) => (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </div>
-          <FormDatePickerItem name="startDate" defaultValue={currentDateString} label="From Date" onChange={handleFormValueChange} />
-          <FormDatePickerItem name="endDate" defaultValue={dateStringWeekBefore} label="To Date" onChange={handleFormValueChange} />
-          <Button type="primary" onClick={() => handleSearch()}>
-            Search
-          </Button>
-          <Button onClick={() => handleReset()}>Reset</Button>
+          <Form.Item label="End Date" name="endDate">
+            <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />
+          </Form.Item>
+
+          <Form.Item label="Item Code" name="itemCode">
+            <Input placeholder="Enter item code" />
+          </Form.Item>
+
+          <Form.Item label="Transaction Type" name="txnType">
+            <Select placeholder="Select an option">
+              {Object.entries(txnType).map(([key, value]) => (
+                <Option key={key} value={key}>
+                  {value}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item>
+            <Button type="primary" htmlType="submit" style={{width: "100%"}}>
+              Submit
+            </Button>
+          </Form.Item>
+
+          <Form.Item>
+            <Button htmlType="button" onClick={resetForm} style={{width: "100%"}}>
+              Reset
+            </Button>
+          </Form.Item>
         </Form>
       </div>
 

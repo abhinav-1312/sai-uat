@@ -14,7 +14,8 @@ const DesignationContainer = ({
   processType,
   readOnly
 
-}) => {
+}) => 
+  {
   return (
     <div className="designations-container">
       {genByVisible && (

@@ -60,7 +60,7 @@ export const processTypeIsnOptionList= [
 export const processTypeGrnOptionList= [
 {
     value: "IRP",
-    desc: "Issue Return Process"
+    desc: "Issue/Return"
 },
 {
     value: "PO",

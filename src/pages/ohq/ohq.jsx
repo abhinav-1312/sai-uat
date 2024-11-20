@@ -328,10 +328,10 @@ const Ohq = ({ orgId, organization }) => {
         }}
       >
         <Select
-          onChange={(value) => handleFilterChange("itemName", value[0])}
+          onChange={(value) => handleFilterChange("itemName", value)}
           placeholder="Select Item Name"
           showSearch
-          mode="tags"
+          // mode="tags"
           optionFilterProp="children"
           filterOption={(input, option) =>
             option.children.toLowerCase().includes(input.toLowerCase())
