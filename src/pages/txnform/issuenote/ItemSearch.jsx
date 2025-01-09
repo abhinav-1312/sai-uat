@@ -192,13 +192,14 @@ const ItemSearch = ({itemArray, setFormData}) => {
 
       const content = (
         // <Table dataSource={filteredData} columns={tableColumns} />
-        <Table pagination={{ pageSize: 3 }}
+        <Table pagination={{ pageSize: 1 }}
                         dataSource={filteredData}
                         columns={tableColumns}
                         scroll={{ x: "max-content" }}
                         style={{
-                          width: "600px",
+                          width: "inherit",
                           display: tableOpen ? "block" : "none",
+                          height: "2rem"
                         }} />
       )
 
@@ -210,7 +211,7 @@ const ItemSearch = ({itemArray, setFormData}) => {
         trigger="click"
         open={tableOpen}
         onOpenChange={(v) => setTableOpen(v)}
-        style={{ width: "200px" }}
+        style={{ width: "200px", height:"5rem" }}
               placement="right"
       >
         <Search

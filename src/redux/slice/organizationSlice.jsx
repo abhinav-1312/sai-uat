@@ -34,7 +34,7 @@ const organizationSlice = createSlice({
 
 export const fetchOrganizations = createAsyncThunk(
     'organizations/fetchOrganizations',
-    async (_, {getState}) => {
+    async (_, {getState, rejectWithValue}) => {
         try{
             // const {token} = "1234"
             const {token} = getState().auth
@@ -43,6 +43,7 @@ export const fetchOrganizations = createAsyncThunk(
         }
         catch(error){
             message.error("Error occured while fetching organizations.")
+            return rejectWithValue("")
         }
     }
 )

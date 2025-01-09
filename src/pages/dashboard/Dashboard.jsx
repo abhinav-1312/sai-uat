@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import ItemSlab from './ItemSlab'
 import TransactionSlab from './TransactionSlab'
 import InvValSlab from './InvValSlab'
+import PurchaseSummarySlab from "./PurchaseSummarySlab";
 
 const currentDate = new Date(); 
 const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
@@ -92,6 +93,8 @@ const Dashboard = (props) => {
       setLoadings(false)
     }
 
+    console.log("Itemslabdata: ", itemSlabData)
+
 
     useEffect(()=>{
       populateDashboard()
@@ -143,11 +146,11 @@ const Dashboard = (props) => {
           <InvValSlab data={invSlabData?.allData} itemDescDropdownList={itemSlabData?.itemDescDropdownList} subCategoryDropdownList={itemSlabData?.subCategoryDropdownList} countOrgWise={invSlabData?.countOrgWise} orgId={orgId}/>
         )
       }
-      {/* {
+      {
         activeTab === "tab4" && (
             <PurchaseSummarySlab filters = {summaryDataFilters || []} setFilters = {setSummaryDataFilters || []} handleSumSearch={handlePurchaseSearch} allData={summaryData?.allData} orgId={orgId} isHeadquarter={props.orgId === 'null' ? true : false} />
         )
-      } */}
+      }
       {
         activeTab === "tab5" && (
           <SopManual />

@@ -447,6 +447,8 @@ const InwardGatePass = () => {
     return <h2> Loading please wait...</h2>;
   }
 
+  console.log("Data: ", data)
+
   return (
     <FormContainer onFinish={onFinish} ref={formRef}>
       <FormHeading

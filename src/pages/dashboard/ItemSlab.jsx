@@ -1,5 +1,5 @@
 import { Table, Input } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { handleSearch } from "../../utils/Functions";
 import { useSelector } from "react-redux";
 import { RightOutlined} from '@ant-design/icons'
@@ -9,10 +9,12 @@ import OrgWiseCountBar from "./graphs/BarGraph";
 const { Search } = Input;
 
 const ItemSlab = ({allData, itemDescDropdownList, subCategoryDropdownList, countOrgWise, orgId}) => {
-  const [filteredData, setFilteredData] = useState([...allData])
+  const [filteredData, setFilteredData] = useState();
   const {orgMasterObj} = useSelector(state => state.organizations)
   const [filteredInfo, setFilteredInfo] = useState({});
   const [searchText, setSearchText] = useState("");
+
+  console.log("FilteredData: ", filteredData)
 
   const columns = [
     {
@@ -65,6 +67,10 @@ const ItemSlab = ({allData, itemDescDropdownList, subCategoryDropdownList, count
     setFilteredInfo(filters); // Update filteredInfo state with applied filters
   };
 
+  useEffect(() =>{
+    setFilteredData(allData || [])
+  }, [allData])
+
   if(!allData 
     // || 
     // !orgMasterObj
@@ -74,6 +80,8 @@ const ItemSlab = ({allData, itemDescDropdownList, subCategoryDropdownList, count
       <h3>Loading</h3>
     )
   }
+
+  
 
   // Calculate number of rows matching filters
   const modData = allData?.filter(record => {
@@ -85,6 +93,8 @@ const ItemSlab = ({allData, itemDescDropdownList, subCategoryDropdownList, count
       return true; // If no filter applied for this column, return true
     });
   });
+
+  
 
 
   const renderAppliedFilters = () => {
@@ -108,7 +118,6 @@ const ItemSlab = ({allData, itemDescDropdownList, subCategoryDropdownList, count
       </div>
     );
   };
-
 
  
   return (

@@ -538,8 +538,7 @@ const OutwardGatePass = () => {
                 <FormSearchItem
                   label="Issue Note No."
                   name="issueNoteNo"
-                  onSearch={handleIssueDataSearch}
-                  onChange={handleChange}
+                  
                   readOnly={isTxnData}
                 />
               )}

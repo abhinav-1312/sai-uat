@@ -54,6 +54,15 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       });
+
+      builder.addCase('organizations/fetchOrganizations/rejected', (state, action) => {
+        state.userCd= null
+        state.userRole= null
+        state.token= null
+        state.organizationDetails= null
+        state.locationDetails= null
+        state.userDetails= null
+      });
     }
 })
 

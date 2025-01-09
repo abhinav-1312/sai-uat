@@ -6,9 +6,9 @@ import Loader from "./Loader";
 const { Option } = Select;
 
 const OrgSearchFilter = ({handleChange}) => {
-  const {data: orgData} = useSelector(state => state.orgMaster)
-
-    if(!orgData){
+  const data = useSelector(state => state.organizations)
+  const orgData = data?.data || [];
+    if(!orgData.length){
       return <Loader />
     }
   return (

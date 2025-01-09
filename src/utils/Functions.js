@@ -355,9 +355,11 @@ export const populateTxnSlabData = async (startDate=null, endDate=null, itemCode
   if(!orgId){
     let allTxn = []
     const countOrgWise = {} // count no. of txn happened org wise
-    const { responseData } = await apiCall("POST", "/txns/getTxnSummaryForAllOrg", token, { startDate, endDate, itemCode, txnType, orgId }) 
+    const data = await apiCall("POST", "/txns/getTxnSummaryForAllOrg", token, { startDate, endDate, itemCode, txnType, orgId }) 
 
-    responseData.forEach(record => {
+    const responseData = data?.responseData
+
+    responseData?.forEach(record => {
       allTxn = [...allTxn, ...record.respList]
       countOrgWise[record.orgId] = record.respList.length
     })
@@ -370,13 +372,14 @@ export const populateTxnSlabData = async (startDate=null, endDate=null, itemCode
 }
 
 export const populateItemSlabData = async (orgId, token) => {
-  const {responseData} = await apiCall("POST", "/getFNSCategory", token, {orgId: orgId})
+  const data = await apiCall("POST", "/getFNSCategory", token, {orgId: orgId})
+  const responseData = data?.responseData;
   const uniqueItemListAllOrg = new Set() // unique list of items
   const itemDescDropdownList = new Set() // item description dropdown filter data
   const subCategoryDropdownList = new Set() // subcategory dropdown filter data
   const uniqueItemOrgWiseMapping = {} // org wise unique items present 
   
-  responseData.forEach(item => {
+  responseData?.forEach(item => {
     itemDescDropdownList.add(JSON.stringify({ text: _.trim(item.itemDescription), value: _.trim(item.itemDescription)}))
     subCategoryDropdownList.add(JSON.stringify({text: _.trim(item.subCategoryDesc), value: _.trim(item.subCategoryDesc)}))
     uniqueItemListAllOrg.add(item.itemCode)
@@ -394,13 +397,14 @@ export const populateItemSlabData = async (orgId, token) => {
 } 
 
 export const populateInvSlabData = async (itemCode, orgId, token) => {
-  const {responseData} = await apiCall("POST", "/master/getOHQ", token, {itemCode: itemCode, userId: "userCd", orgId: orgId})
+  const data1 = await apiCall("POST", "/master/getOHQ", token, {itemCode: itemCode, userId: "userCd", orgId: orgId})
+  const responseData = data1?.responseData
   let totalValAllOrg = 0
   const data = []
   const countOrgWise = {} // location wise value
   const itemDescDropdownList = new Set() // item description dropdown filter data
   const subCategoryDropdownList = new Set() // subcategory dropdown filter data
-  responseData.forEach(record => {
+  responseData?.forEach(record => {
     let tempVal = 0
     let tempQuantity = 0
     record.qtyList.forEach(subRecord => {
