@@ -287,15 +287,8 @@ const TransactionSummary = ({ orgId }) => {
     }
   };
   const generateCsvForTxnDtls = (txnDtlsData) => {
-    console.log("FENERATE CALLED")
     let finalCsvData = [];
-    console.log("TXN DTLS: ", txnDtlsData)
     txnDtlsData.forEach((record) => {
-      if(record.processId === 8880 || record.processId === 9016 || record.processId === 9051){
-        return;
-      }
-
-      console.log("RECORD ID: ", record.processId)
       Object.keys(record).forEach((key) => {
         if (key === "isndata" && record[key]) {
           if (
