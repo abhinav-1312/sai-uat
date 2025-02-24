@@ -41,7 +41,7 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
-        const { userRole, userCd, token, organizationDetails, locationDetails, userDetails } = action.payload;
+        const { userRole, userCd, token, organizationDetails, locationDetails, userDetails } = action?.payload;
         state.userRole = userRole
         state.userCd = userCd
         state.token = token
@@ -52,7 +52,7 @@ const authSlice = createSlice({
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        // state.error = action.error.message;
       });
 
       builder.addCase('organizations/fetchOrganizations/rejected', (state, action) => {
@@ -69,17 +69,20 @@ const authSlice = createSlice({
 export const login = createAsyncThunk(
 
     'auth/login',
-    async (formData) => {
+    async (formData, {rejectWithValue}) => {
         try {
             const url = "/login/authenticate"
             const {data} = await axios.post(url, formData)
-            const { userCd, userType } = data.responseData.userDetails;
-            const { token } = data.responseData;
-            const { organizationDetails, locationDetails, userDetails } = data.responseData;
-            const userRole = userRoleMap[userType]
-            return {userCd, userRole, token, organizationDetails, locationDetails, userDetails}
+              console.log("DATAA234: ", data)
+              const { userCd, userType } = data?.responseData?.userDetails;
+              const { token } = data?.responseData;
+              const { organizationDetails, locationDetails, userDetails } = data?.responseData;
+              const userRole = userRoleMap[userType]
+              return {userCd, userRole, token, organizationDetails, locationDetails, userDetails}
         }catch(error){
-            message.error("Some error occured while logging in. Please try again.")
+          console.log("ERROR: ", error)
+            message.error("Invalid credentials. Please try again.")
+            return rejectWithValue("")
         }
     }
 )

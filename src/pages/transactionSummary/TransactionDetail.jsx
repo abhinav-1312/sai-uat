@@ -408,7 +408,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "antd";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { apiHeader } from "../../utils/Functions";
 import { useSelector } from "react-redux";
@@ -432,6 +432,8 @@ const style = {
 
 const TransactionDetail = () => {
   const navigate = useNavigate();
+  const {state} = useLocation();
+  console.log("STAE: ", state)
   const { trnno: url } = useParams();
   const urlArr = url.split("_");
   const trnOrgIdCombined = urlArr[0].split("-");
@@ -467,9 +469,10 @@ const TransactionDetail = () => {
   });
 
   const populateData = async (orgId) => {
+    const {itemCode, processId, processStage} = state;
     const { data } = await axios.post(
       "/txns/getTxnDtls",
-      { processId: Number(trnNo), orgId: null, itemCode: null},
+      { processId, orgId, itemCode, processStage},
       apiHeader("POST", token)
     );
     const responseData = data.responseData;
@@ -484,9 +487,9 @@ const TransactionDetail = () => {
       rejectData: responseData.rejectData,
       inspectionNoteData: responseData.inspectionNewRptData,
       returnData: {
-        data: responseData.rndata.data,
+        data: responseData?.rndata?.data,
         itemList:
-          responseData.rndata.itemList?.map((item) => ({
+          responseData?.rndata?.itemList?.map((item) => ({
             ...item,
             issueNoteDt: responseData.rndata.data?.issueNoteDt,
             genDate: responseData.rndata.data?.genDate,
@@ -516,7 +519,7 @@ const TransactionDetail = () => {
           <Button
             danger
             onClick={() =>
-              navigate(route, { state: { data: data.data, itemList } })
+              navigate(route, { state: { data: data?.data, itemList } })
             }
           >
             Print

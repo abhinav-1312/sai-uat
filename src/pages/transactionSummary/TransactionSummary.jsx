@@ -65,6 +65,8 @@ const oneWeekBefore = currentDate.subtract(7, "day"); // One week before
 const oneWeekBeforeString = oneWeekBefore.format(dateFormat);
 
 const TransactionSummary = ({ orgId }) => {
+  const [selectedTxnType, setSelectedTxnType] = useState(null);
+  const [selectedItemCode, setSelectedItemCode] = useState(null);
   const [form] = Form.useForm();
   const txnName = [
     {
@@ -153,11 +155,13 @@ const TransactionSummary = ({ orgId }) => {
     }
     const url = arr.join("_");
     if (orgId) {
-      navigate(`/hqTxnSummary/${url}`);
+      navigate(`/hqTxnSummary/${url}`, { state: {orgId, prpcessStage: selectedTxnType, processId: trnNo, itemCode: selectedItemCode } } );
     } else {
-      navigate(`/trnsummary/${url}`);
+      navigate(`/trnsummary/${url}`, { state: {orgId, processStage: selectedTxnType, processId: trnNo, itemCode: selectedItemCode } });
     }
-  };
+  }; 
+  
+  console.log('SELECTED TXN TPE: ', selectedItemCode)
 
   const handlePrintClick = (trnNo) => {};
 
@@ -229,58 +233,54 @@ const TransactionSummary = ({ orgId }) => {
   }, [populateData]);
 
   const handleSearch = async (values) => {
-    const startDate = dayjs(values.startDate).format("DD/MM/YYYY");
-    const endDate = dayjs(values.endDate).format("DD/MM/YYYY");
-    const { txnType, itemCode } = values;
     try {
-      if (orgId) {
-        const { data } = await axios.post(
-          "/txns/getTxnSummary",
-          { startDate, endDate, txnType, itemCode, orgId },
-          apiHeader("POST", token)
-        );
-        const { responseData } = data;
-        setFilteredData([...(responseData || [])].reverse());
-        const txnDtlsData = await Promise.all(
-          responseData.map(async (record) => {
-            const { responseData } = await apiCall(
-              "POST",
-              "/txns/getTxnDtls",
-              token,
-              { processId: Number(record.id) }
-            );
-            return responseData;
-          })
-        );
+      const startDate = dayjs(values.startDate).format("DD/MM/YYYY");
+      const endDate = dayjs(values.endDate).format("DD/MM/YYYY");
+      const { txnType, itemCode } = values;
 
-        generateCsvForTxnDtls(txnDtlsData);
-      } else {
-        const { data } = await axios.post(
-          "/txns/getTxnSummary",
-          { startDate, endDate, txnType, itemCode },
-          apiHeader("POST", token)
-        );
-        const { responseData } = data;
-        setFilteredData([...(responseData || [])].reverse());
-        const txnDtlsData = await Promise.all(
-          responseData.map(async (record) => {
-            const { responseData } = await apiCall(
-              "POST",
-              "/txns/getTxnDtls",
-              token,
-              { processId: Number(record.id) }
-            );
-            return responseData;
-          })
-        );
-
-        generateCsvForTxnDtls(txnDtlsData);
-      }
+      setSelectedTxnType(txnType);
+      setSelectedItemCode(itemCode);
+      
+      // Build the request body, including orgId if it exists.
+      const requestBody = {
+        startDate,
+        endDate,
+        txnType,
+        itemCode,
+        ...(orgId && { orgId })
+      };
+      
+      // Make the summary API call
+      const { data } = await axios.post(
+        "/txns/getTxnSummary",
+        requestBody,
+        apiHeader("POST", token)
+      );
+      
+      const { responseData } = data;
+      const summaryData = responseData || [];
+      // Reverse the data and update state
+      setFilteredData([...summaryData].reverse());
+      
+      // Get transaction details for each record
+      const txnDtlsData = await Promise.all(
+        summaryData.map(async (record) => {
+          const { responseData: txnDetails } = await apiCall(
+            "POST",
+            "/txns/getTxnDtls",
+            token,
+            { processId: Number(record.id) }
+          );
+          return txnDetails;
+        })
+      );
+      
+      // Generate CSV from the transaction details data
+      generateCsvForTxnDtls(txnDtlsData);
     } catch (error) {
-      message.error("Some error occured. Please try again.");
+      message.error("Some error occurred. Please try again.");
     }
   };
-
   const generateCsvForTxnDtls = (txnDtlsData) => {
     let finalCsvData = [];
     txnDtlsData.forEach((record) => {

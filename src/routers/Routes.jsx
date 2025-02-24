@@ -60,6 +60,7 @@ const RoutesComponent = () => {
       <Route path="/items" element={<Items />} />
       <Route path="/ohq" element={<OHQ />} />
       <Route path="/trnsummary" element={<TransactionSummary />} />
+      <Route path="/trnsummary/dtl" element={<TransactionDetail />} />
       <Route path="/trnsummary/:trnno" element={<TransactionDetail />} />
       <Route path="/stockLedger" element={<StockLedger />} />
       <Route path="/locator" element={<Locator />} />

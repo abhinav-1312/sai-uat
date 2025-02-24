@@ -21,8 +21,11 @@ const SignIn = () => {
   const dispatch = useDispatch();
 
   const handleLogin = async (values) => {
-    await dispatch(login(values)).unwrap();
-    navigate("/");
+    try{
+      await dispatch(login(values)).unwrap();
+      navigate("/");
+    }
+    catch(error){}
   };
 
 
