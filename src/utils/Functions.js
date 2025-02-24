@@ -48,6 +48,7 @@ export const apiCall = async (method, url, token, payload=null) => {
     }
     catch(error){
       message.error("Some error occured.")
+      console.log("Error: ", error)
     }
   }
   else if(method === "POST"){
@@ -56,6 +57,7 @@ export const apiCall = async (method, url, token, payload=null) => {
       return data
     }catch(error){
       message.error("Some error occured.")
+      console.log("Error: ", error)
     }
   }
 }
@@ -435,31 +437,60 @@ export const populateInvSlabData = async (itemCode, orgId, token) => {
   return {allData: data, count: convertToCurrency(totalValAllOrg), countOrgWise: countOrgWise, itemDescDropdownList: sortAlphabetically(Array.from(itemDescDropdownList).map(str => JSON.parse(str))), subCategoryDropdownList: Array.from(subCategoryDropdownList).map(str=> JSON.parse(str))}
 }
 
+// export const generateCsvData = (heading, crCeDtlsCol, crCeDataObj, itemCol, itemData) => {
+//   const crCeDataArray = [crCeDataObj]
+//   return [
+//     [heading.toUpperCase()],
+//     crCeDtlsCol?.map(col => col.title),
+//     ...crCeDataArray.map(row => {
+//       const csvRows = {};
+//       crCeDtlsCol?.forEach(col => {
+//         csvRows[col.title] = row[col.dataIndex]
+//       })
+//       return Object.values(csvRows)
+//     }), 
+//     ["ITEM DETAILS"],
+//     itemCol?.map(col => col.title),
+//     ...itemData.map(row => {
+//       const csvRows = {};
+//       itemCol?.forEach(col => {
+//         csvRows[col.title] = row[col.dataIndex]
+//       })
+//       return Object.values(csvRows)
+//     })
+//     , 
+//     [] // leave a blank row below
+//   ]
+// }
+
 export const generateCsvData = (heading, crCeDtlsCol, crCeDataObj, itemCol, itemData) => {
-  const crCeDataArray = [crCeDataObj]
+  // Ensure crCeDataArray is empty if crCeDataObj is null
+  const crCeDataArray = crCeDataObj ? [crCeDataObj] : [];
+  
   return [
     [heading.toUpperCase()],
-    crCeDtlsCol.map(col => col.title),
+    crCeDtlsCol?.map(col => col.title) || [],
     ...crCeDataArray.map(row => {
       const csvRows = {};
-      crCeDtlsCol.forEach(col => {
-        csvRows[col.title] = row[col.dataIndex]
-      })
-      return Object.values(csvRows)
-    }), 
+      crCeDtlsCol?.forEach(col => {
+        // Check if row exists before trying to access its properties
+        csvRows[col.title] = row ? row[col.dataIndex] : "";
+      });
+      return Object.values(csvRows);
+    }),
     ["ITEM DETAILS"],
-    itemCol.map(col => col.title),
-    ...itemData.map(row => {
+    itemCol?.map(col => col.title) || [],
+    ...(itemData ? itemData.map(row => {
       const csvRows = {};
-      itemCol.forEach(col => {
-        csvRows[col.title] = row[col.dataIndex]
-      })
-      return Object.values(csvRows)
-    })
-    , 
+      itemCol?.forEach(col => {
+        csvRows[col.title] = row ? row[col.dataIndex] : "";
+      });
+      return Object.values(csvRows);
+    }) : []),
     [] // leave a blank row below
-  ]
+  ];
 }
+
 
 export const updateFormData = (newItem, setFormData) => {
   setFormData((prevValues) => {

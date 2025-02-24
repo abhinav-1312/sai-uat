@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { apiCall, apiHeader, generateCsvData } from "../../utils/Functions";
 import { useSelector } from "react-redux";
+
 import {
   iopIsnDataColumns,
   irpIopItemListColumns,
@@ -56,6 +57,7 @@ import {
   poIopInspItemListColumns,
 } from "./detailData/InspectionNoteTable";
 import dayjs from "dayjs";
+import { processStage } from "../../utils/KeyValueMapping";
 
 const { Option } = Select;
 const dateFormat = "DD/MM/YYYY";
@@ -189,23 +191,25 @@ const TransactionSummary = ({ orgId }) => {
   // };
 
   const resetForm = () => {
+    localStorage.removeItem("txnSummaryFilter");
     window.location.reload();
   };
 
   const [filteredData, setFilteredData] = useState([]);
   const [finalCsvData, setFinalCsvData] = useState([]);
 
-  const populateData = useCallback(async () => {
+  const populateData = useCallback(async (startDate=null, endDate=null, itemCode=null, txnType=null) => {
+    console.log("POPULATE DATA");
     try {
       const { responseData } = await apiCall(
         "POST",
         "/txns/getTxnSummary",
         token,
         {
-          startDate: oneWeekBeforeString,
-          endDate: currenDateString,
-          itemCode: null,
-          txnType: null,
+          startDate: startDate || oneWeekBeforeString,
+          endDate: endDate || currenDateString,
+          itemCode: itemCode,
+          txnType: txnType,
           orgId: orgId ? orgId : null,
         }
       );
@@ -216,7 +220,7 @@ const TransactionSummary = ({ orgId }) => {
             "POST",
             "/txns/getTxnDtls",
             token,
-            { processId: Number(record.id) }
+            { processId: Number(record.id), itemCode, processStage: txnType, orgId }
           );
           return responseData;
         })
@@ -225,14 +229,12 @@ const TransactionSummary = ({ orgId }) => {
       generateCsvForTxnDtls(txnDtlsData);
     } catch (error) {
       message.error("Error occured while fetching data. Please try again.");
+      console.log("Error: ", error);
     }
   }, [orgId, token]);
 
-  useEffect(() => {
-    populateData();
-  }, [populateData]);
-
   const handleSearch = async (values) => {
+
     try {
       const startDate = dayjs(values.startDate).format("DD/MM/YYYY");
       const endDate = dayjs(values.endDate).format("DD/MM/YYYY");
@@ -269,7 +271,7 @@ const TransactionSummary = ({ orgId }) => {
             "POST",
             "/txns/getTxnDtls",
             token,
-            { processId: Number(record.id) }
+            { processId: Number(record.id), processStage: txnType, itemCode, orgId }
           );
           return txnDetails;
         })
@@ -277,40 +279,50 @@ const TransactionSummary = ({ orgId }) => {
       
       // Generate CSV from the transaction details data
       generateCsvForTxnDtls(txnDtlsData);
+
+      localStorage.setItem("txnSummaryFilter", JSON.stringify({itemCode, txnType, startDate, endDate}));
     } catch (error) {
       message.error("Some error occurred. Please try again.");
+      console.log("Error: ", error);
     }
   };
   const generateCsvForTxnDtls = (txnDtlsData) => {
+    console.log("FENERATE CALLED")
     let finalCsvData = [];
+    console.log("TXN DTLS: ", txnDtlsData)
     txnDtlsData.forEach((record) => {
+      if(record.processId === 8880 || record.processId === 9016 || record.processId === 9051){
+        return;
+      }
+
+      console.log("RECORD ID: ", record.processId)
       Object.keys(record).forEach((key) => {
-        if (key === "isndata" && record[key].data) {
+        if (key === "isndata" && record[key]) {
           if (
-            record[key].data.type === "IRP" ||
-            record[key].data.type === "NIRP"
+            record[key]?.data?.type === "IRP" ||
+            record[key]?.data?.type === "NIRP"
           ) {
             const csvData = generateCsvData(
               "Issue Note",
               irpIsnDataColumns,
-              record[key].data,
+              record[key]?.data,
               irpIopItemListColumns,
-              record[key].itemList
+              record[key]?.itemList
             );
             finalCsvData = [...finalCsvData, ...csvData];
           } else {
             const csvData = generateCsvData(
               "Issue Note",
               iopIsnDataColumns,
-              record[key].data,
+              record[key]?.data,
               irpIopItemListColumns,
               record[key].itemList
             );
             finalCsvData = [...finalCsvData, ...csvData];
           }
-        } else if (key === "ogpdata" && record[key].data) {
+        } else if (key === "ogpdata" && record[key] && record[key]?.data) {
           if (
-            record[key].data.type === "IRP" ||
+            record[key]?.data?.type === "IRP" ||
             record[key].data.type === "NIRP"
           ) {
             const csvData = generateCsvData(
@@ -340,7 +352,7 @@ const TransactionSummary = ({ orgId }) => {
             );
             finalCsvData = [...finalCsvData, ...csvData];
           }
-        } else if (key === "igpdata" && record[key].data) {
+        } else if (key === "igpdata" && record[key] && record[key]?.data) {
           if (
             record[key].data.type === "IRP" ||
             record[key].data.type === "NIRP"
@@ -372,7 +384,7 @@ const TransactionSummary = ({ orgId }) => {
             );
             finalCsvData = [...finalCsvData, ...csvData];
           }
-        } else if (key === "rndata" && record[key].data) {
+        } else if (key === "rndata" && record[key] && record[key]?.data) {
           const csvData = generateCsvData(
             "Return Note",
             irpPoIopRnDataColumns,
@@ -381,7 +393,7 @@ const TransactionSummary = ({ orgId }) => {
             record[key].itemList
           );
           finalCsvData = [...finalCsvData, ...csvData];
-        } else if (key === "grndata" && record[key].data) {
+        } else if (key === "grndata" && record[key] && record[key]?.data) {
           if (
             record[key].data.type === "IRP" ||
             record[key].data.type === "NIRP"
@@ -413,7 +425,7 @@ const TransactionSummary = ({ orgId }) => {
             );
             finalCsvData = [...finalCsvData, ...csvData];
           }
-        } else if (key === "acceptData" && record[key].data) {
+        } else if (key === "acceptData" && record[key] && record[key]?.data) {
           if (
             record[key].data.type === "IRP" ||
             record[key].data.type === "NIRP"
@@ -435,7 +447,7 @@ const TransactionSummary = ({ orgId }) => {
               record[key].itemList
             );
             finalCsvData = [...finalCsvData, ...csvData];
-          } else if (record[key].data.type === "IOP") {
+          } else if (record[key]?.data?.type === "IOP") {
             const csvData = generateCsvData(
               "Acceptance Note",
               irpIopAcptDataColumns,
@@ -445,8 +457,8 @@ const TransactionSummary = ({ orgId }) => {
             );
             finalCsvData = [...finalCsvData, ...csvData];
           }
-        } else if (key === "rejectData" && record[key].data) {
-          if (record[key].data.type === "PO") {
+        } else if (key === "rejectData" && record[key] && record[key]?.data) {
+          if (record[key]?.data?.type === "PO") {
             const csvData = generateCsvData(
               "Rejection Note",
               poRejDataColumns,
@@ -455,7 +467,7 @@ const TransactionSummary = ({ orgId }) => {
               record[key].itemList
             );
             finalCsvData = [...finalCsvData, ...csvData];
-          } else if (record[key].data.type === "IOP") {
+          } else if (record[key]?.data?.type === "IOP") {
             const csvData = generateCsvData(
               "Rejection Note",
               iopRejDataColumns,
@@ -465,7 +477,7 @@ const TransactionSummary = ({ orgId }) => {
             );
             finalCsvData = [...finalCsvData, ...csvData];
           }
-        } else if (key === "inspectionRptData" && record[key].data) {
+        } else if (key === "inspectionRptData" && record[key] && record[key]?.data) {
           if (record[key].data.type === "PO") {
             const csvData = generateCsvData(
               "Material Inward Slip",
@@ -485,7 +497,7 @@ const TransactionSummary = ({ orgId }) => {
             );
             finalCsvData = [...finalCsvData, ...csvData];
           }
-        } else if (key === "inspectionNewRptData" && record[key].data) {
+        } else if (key === "inspectionNewRptData" && record[key] && record[key]?.data) {
           if (record[key].data.type === "PO") {
             const csvData = generateCsvData(
               "Inspection Note",
@@ -585,6 +597,33 @@ const TransactionSummary = ({ orgId }) => {
   };
   const { organizationDetails } = useSelector((state) => state.auth);
 
+useEffect(() => {
+  const filter = JSON.parse(localStorage.getItem("txnSummaryFilter"));
+  const startDate = filter?.startDate
+  const endDate = filter?.endDate
+  console.log("Filter: ", filter);
+  if (filter) {
+    // Convert string dates to Day.js objects if they exist
+    if (filter.startDate) {
+      filter.startDate = dayjs(filter.startDate, "DD/MM/YYYY");
+    }
+    else{
+      filter.startDate = oneWeekBefore;
+    }
+    if (filter.endDate) {
+      filter.endDate = dayjs(filter.endDate, "DD/MM/YYYY");
+    }
+    else{
+      filter.endDate = currentDate;
+    }
+  }
+  populateData(startDate, endDate, filter?.itemCode, filter?.txnType);
+  form.setFieldsValue(filter);
+  setSelectedItemCode(filter?.itemCode);
+  setSelectedTxnType(filter?.txnType);
+  console.log("SET CALLED");
+}, [form, populateData]);
+
   return (
     <>
       <div style={{ textAlign: "center", position: "relative" }}>
@@ -626,6 +665,7 @@ const TransactionSummary = ({ orgId }) => {
         }}
       >
         <Form
+        form={form}
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(2, 1fr)",
