@@ -10,9 +10,11 @@ import { useReactToPrint } from "react-to-print";
 const { TextArea } = Input;
 
 const DemandNoteForm = () => {
+  const [form] = Form.useForm();
   const formRef = useRef();
   const [counter, setCounter] = useState(1);
 
+  
   const handlePrint = useReactToPrint({
     content: () => formRef.current,
   });
@@ -25,6 +27,7 @@ const DemandNoteForm = () => {
     consignorAddress: "",
     consignorZipCode: "",
   });
+  console.log(":FORMDATA: ", formData)
 
   const fetchData = useCallback(async () => {
     setFormData({
@@ -52,12 +55,16 @@ const DemandNoteForm = () => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+  useEffect(() => {
+    form.setFieldsValue(formData);
+  }, [form, formData])
 
   return (
     <div className="a4-container" ref={formRef}>
       <h2 className="a4-heading">Sports Authority Of India - Demand Note</h2>
 
       <Form
+      form={form}
         layout="vertical"
         style={{
           display: "flex",
@@ -69,12 +76,13 @@ const DemandNoteForm = () => {
         <div className="consignor-consignee-container grid-2">
           <FormInputItem
             label="Regional Center Code"
-            value={formData.regionalCenterCode}
+            // value={formData.regionalCenterCode}
+            name="regionalCenterCode"
           />
           <FormInputItem label="Demand Note No." />
           <FormInputItem
             label="Regional Center Name"
-            value={formData.regionalCenterName}
+            name="regionalCenterName"
           />
           <FormDatePickerItem
             name="demandNoteDt"
@@ -83,9 +91,9 @@ const DemandNoteForm = () => {
             onChange={handleChange}
             value={formData.demandNoteDt}
           />
-          <FormInputItem label="Address" value={formData.consignorAddress} />
+          <FormInputItem label="Address" name="consignorAddress" />
           <FormInputItem label="Consumer Name" />
-          <FormInputItem label="Zipcode" value={formData.consignorZipCode} />
+          <FormInputItem label="Zipcode" name="consignorZipCode" />
           <FormInputItem label="Contact No." />
         </div>
 

@@ -197,9 +197,9 @@ const ItemSearch = ({itemArray, setFormData}) => {
                         columns={tableColumns}
                         scroll={{ x: "max-content" }}
                         style={{
-                          width: "inherit",
+                          // width: "inherit",
                           display: tableOpen ? "block" : "none",
-                          height: "2rem"
+                          // height: "inherit"
                         }} />
       )
 
@@ -211,7 +211,7 @@ const ItemSearch = ({itemArray, setFormData}) => {
         trigger="click"
         open={tableOpen}
         onOpenChange={(v) => setTableOpen(v)}
-        style={{ width: "200px", height:"5rem" }}
+        // style={{ width: "100px !important", height:"5rem" }}
               placement="right"
       >
         <Search

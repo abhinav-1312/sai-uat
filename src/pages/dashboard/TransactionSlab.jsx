@@ -405,8 +405,8 @@ const TransactionSlab = ({allData, setTxnSlabData, orgId, countOrgWise}) => {
           )
           }
 
-          <FormDatePickerItem label="From Date" name="startDate" value={txnFilters.startDate} onChange={handleFilterChange}/>
-          <FormDatePickerItem label="To Date" name="endDate" value={txnFilters.endDate} onChange={handleFilterChange} />
+          <FormDatePickerItem label="From Date" name="startDate" defaultValue={txnFilters.startDate} onChange={handleFilterChange}/>
+          <FormDatePickerItem label="To Date" name="endDate" defaultValue={txnFilters.endDate} onChange={handleFilterChange} />
           <Button primary style={{backgroundColor: "#ff8a00", fontWeight: "bold"}} onClick={handleTxnSearch}> Search </Button>
           <Button primary style={{fontWeight: "bold"}} onClick={handleTxnReset}> Reset </Button>
       </div>

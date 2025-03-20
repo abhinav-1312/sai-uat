@@ -288,8 +288,8 @@ const PurchaseSummarySlab = ({filters, setFilters, allData, handleSumSearch, isH
     <>
       <div className="slab-content">
         <div className='pur-sum'>
-          <FormDatePickerItem label="Start Date" name="startDate" value={filters.startDate} onChange={handleChange} />
-          <FormDatePickerItem label="End Date" name="endDate" value={filters.endDate} onChange={handleChange} />
+          <FormDatePickerItem label="Start Date" name="startDate" defaultValue={filters.startDate} onChange={handleChange} />
+          <FormDatePickerItem label="End Date" name="endDate" defaultValue={filters.endDate} onChange={handleChange} />
           <FormInputItem label="Item Code" name="itemCode" value={filters.itemCode} onChange={handleChange} />
 
           <Form.Item label = "Select Category">

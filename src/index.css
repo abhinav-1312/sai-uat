@@ -563,3 +563,7 @@ code {
 .faq-answer li {
   margin: 5px 0;
 }
+
+.ant-popover-inner{
+  width: 40rem;
+}
