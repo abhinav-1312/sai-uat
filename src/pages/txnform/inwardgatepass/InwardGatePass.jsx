@@ -211,6 +211,7 @@ const InwardGatePass = () => {
     }
   };
 
+
   const handleChange = (fieldName, value) => {
     if (fieldName === "processType") {
       populateRcDtls(value);
@@ -446,8 +447,6 @@ const InwardGatePass = () => {
   if (!locatorObj || !ohqData || !itemData || !uomObj) {
     return <h2> Loading please wait...</h2>;
   }
-
-  console.log("Data: ", data)
 
   return (
     <FormContainer onFinish={onFinish} ref={formRef}>

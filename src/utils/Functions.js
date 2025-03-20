@@ -63,6 +63,7 @@ export const apiCall = async (method, url, token, payload=null) => {
 }
 
 export const mergeItemMasterAndOhq = (itemMasterArr, ohqArr, form = null) => {
+  console.log("CALLED, ", form)
   // Ensure input arrays are valid and handle cases where they are not provided
   if (!Array.isArray(itemMasterArr) || !Array.isArray(ohqArr)) {
     console.error("Invalid input arrays");
@@ -70,6 +71,10 @@ export const mergeItemMasterAndOhq = (itemMasterArr, ohqArr, form = null) => {
   }
 
   return itemMasterArr.map((item) => {
+    // console.log("ITem: ", item)
+    if(item.itemMasterCd === "21299951139939991"){
+      console.log("CORN: ", item)
+    }
     const itemCodeMatch = ohqArr.find(
       (itemOhq) => itemOhq.itemCode === item.itemMasterCd
     );

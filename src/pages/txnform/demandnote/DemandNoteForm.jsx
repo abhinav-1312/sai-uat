@@ -112,7 +112,10 @@ const DemandNoteForm = () => {
             return (
               <div key={index} className="each-item-detail-container">
                 <div className="each-item-detail-container-grid">
-                  <FormInputItem label="S. No." value={index + 1} />
+                  {/* <FormInputItem label="S. No." value={index + 1} /> */}
+                  <Form.Item label="S.No">
+                  <Input value={index + 1} />
+                    </Form.Item>
                   <FormInputItem label="Item Code" />
                   <FormInputItem
                     label="Item Description"

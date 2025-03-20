@@ -29,7 +29,7 @@ const ItemSearch = ({itemArray, setFormData}) => {
               itemId: record.id,
               itemDesc: record.itemMasterDesc,
               uom: record.uomId,
-              uomDesc: record.uomDtls.baseUom,
+              uomDesc: record.uomDtls.uomDesc,
               quantity: 1,
               noOfDays: 1,
               conditionOfGoods: "",
@@ -118,7 +118,7 @@ const ItemSearch = ({itemArray, setFormData}) => {
           title: "UOM DESCRIPTION",
           dataIndex: "uomDtls",
           key: "uomDtls",
-          render: (uomDtls) => uomDtls?.baseUom,
+          render: (uomDtls) => uomDtls?.uomDesc,
         },
         {
           title: "LOCATION",
