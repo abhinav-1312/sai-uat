@@ -354,7 +354,11 @@ const ItemsForm = ({
             label="Category"
             rules={[{ required: true, message: "Please enter Category" }]}
           >
-            <Select onChange={handleCategoryChange}
+            <Select onChange={handleCategoryChange} showSearch
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                option?.children?.toLowerCase().includes(input.toLowerCase())
+              }
               style={{
                 borderColor: validateDepVar.validateCategory ? 'red' : undefined,
               }}
@@ -379,6 +383,11 @@ const ItemsForm = ({
           help={validateDepVar.validateSubCategory ? 'Please enter correct value.' : ''}
           >
             <Select
+            showSearch
+            optionFilterProp="children"
+              filterOption={(input, option) =>
+                option?.children?.toLowerCase().includes(input.toLowerCase())
+              }
               disabled={!selectedCategory}
               onChange={handleSubCategoryChange}
               style={{
@@ -402,7 +411,11 @@ const ItemsForm = ({
             validateStatus={validateDepVar.validateType ? 'error' : ''}
           help={validateDepVar.validateType ? 'Please enter correct value.' : ''}
           >
-            <Select disabled={!selectedSubCategory} onChange={handleTypeChange}
+            <Select disabled={!selectedSubCategory} onChange={handleTypeChange} showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              option?.children?.toLowerCase().includes(input.toLowerCase())
+            }
               style={{
                 borderColor: validateDepVar.validatType ? 'red' : undefined,
               }}
@@ -424,7 +437,11 @@ const ItemsForm = ({
             validateStatus={validateDepVar.validateDiscipline ? 'error' : ''}
           help={validateDepVar.validateDiscipline ? 'Please enter correct value.' : ''}
           >
-            <Select
+            <Select showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              option?.children?.toLowerCase().includes(input.toLowerCase())
+            }
               disabled={disciplinesDisabled}
               onChange={handleDisciplineChange}
               style={{
@@ -450,7 +467,10 @@ const ItemsForm = ({
               { required: true, message: "Please enter Item Description" },
             ]}
           >
-            <Select disabled={itemDescriptionDisabled} mode="tags">
+            <Select disabled={itemDescriptionDisabled} mode="tags" showSearch optionFilterProp="children"
+              filterOption={(input, option) =>
+                option?.children?.toLowerCase().includes(input.toLowerCase())
+              }>
               {itemDescriptionOptions?.map((item) => (
                 <Option key={item.key} value={item.key+"$#"+item.value}>
                   {item.value}
@@ -467,10 +487,14 @@ const ItemsForm = ({
             name="uomId"
             label="UOM"
             rules={[{ required: true, message: "Please enter UOM" }]}
-            validateStatus={validateDepVar.validateUom ? 'error' : ''}
-            help={validateDepVar.validateUom ? 'Please enter correct value.' : ''}
+            // validateStatus={validateDepVar.validateUom ? 'error' : ''}
+            // help={validateDepVar.validateUom ? 'Please enter correct value.' : ''}
           >
-            <Select
+            <Select showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              option?.children?.toLowerCase().includes(input.toLowerCase())
+            }
               style={{
                 borderColor: validateDepVar.validateUom ? 'red' : undefined,
               }}
@@ -502,7 +526,10 @@ const ItemsForm = ({
             label="Location"
             rules={[{ required: true, message: "Please enter Location" }]}
           >
-            <Select>
+            <Select showSearch optionFilterProp="children"
+              filterOption={(input, option) =>
+                option?.children?.toLowerCase().includes(input.toLowerCase())
+              }>
               {locations?.map((location, index) => {
                 return (
                   <Option key={index} value={location.id}>
@@ -523,7 +550,10 @@ const ItemsForm = ({
             label="Locator Desc."
             rules={[{ required: true, message: "Please enter Locator Code" }]}
           >
-            <Select>
+            <Select showSearch optionFilterProp="children"
+              filterOption={(input, option) =>
+                option?.children?.toLowerCase().includes(input.toLowerCase())
+              }>
               {locators?.map((locator, index) => {
                 return (
                   <Option key={index} value={locator.id}>
@@ -551,7 +581,10 @@ const ItemsForm = ({
               { required: true, message: "Please enter Supplier Detail" },
             ]}
           >
-            <Select>
+            <Select showSearch optionFilterProp="children"
+              filterOption={(input, option) =>
+                option?.children?.toLowerCase().includes(input.toLowerCase())
+              }>
               {vendors?.map((vendor, index) => {
                 return (
                   <Option key={index} value={vendor.id}>
@@ -574,7 +607,10 @@ const ItemsForm = ({
             label="Brand"
             rules={[{ required: true, message: "Please enter Brand " }]}
           >
-            <Select>
+            <Select showSearch optionFilterProp="children"
+              filterOption={(input, option) =>
+                option?.children?.toLowerCase().includes(input.toLowerCase())
+              }>
               {brands?.map((brand, index) => {
                 return (
                   <Option key={index} value={brand.paramVal}>
@@ -591,7 +627,12 @@ const ItemsForm = ({
             label="Size "
             rules={[{ required: true, message: "Please enter Size" }]}
           >
-            <Select>
+            <Select showSearch
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                option?.children?.toLowerCase().includes(input.toLowerCase())
+              }
+            >
               {sizes?.map((size, index) => {
                 return (
                   <Option key={index} value={size.paramVal}>
@@ -608,7 +649,12 @@ const ItemsForm = ({
             label="Colour"
             rules={[{ required: true, message: "Please enter Colour" }]}
           >
-            <Select>
+            <Select showSearch
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                option?.children?.toLowerCase().includes(input.toLowerCase())
+              }
+            >
               {colors?.map((color, index) => {
                 return (
                   <Option key={index} value={color.paramVal}>
@@ -664,7 +710,11 @@ const ItemsForm = ({
             validateStatus={validateDepVar.validateUsageCategory ? 'error' : ''}
             help={validateDepVar.validateUsageCategory ? 'Please enter correct value.' : ''}
           >
-            <Select
+            <Select showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              option?.children?.toLowerCase().includes(input.toLowerCase())
+            }
               style={{
                 borderColor: validateDepVar.validateUsageCategory ? 'red' : undefined,
               }}
@@ -685,7 +735,7 @@ const ItemsForm = ({
             label="Status"
             rules={[{ required: true, message: "Please select Status" }]}
           >
-            <Select>
+            <Select showSearch>
               <Option value="A">Active</Option>
               <Option value="IA">Inactive</Option>
             </Select>
