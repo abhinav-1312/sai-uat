@@ -1,6 +1,6 @@
 // ItemsPage.js
 import React, { useState, useEffect, useCallback } from "react";
-import { Button, Modal, Input } from "antd";
+import { Button, Modal, Input, message } from "antd";
 import ItemsTable from "./ItemsTable";
 import ItemsForm from "./ItemsForm";
 import dayjs from "dayjs";
@@ -204,6 +204,8 @@ const ItemsPage = () => {
             token,
             tempItem
           );
+
+          message.success("Item updated successfully");
         } else {
           // Implement create logic here
           await apiCall(
@@ -212,6 +214,8 @@ const ItemsPage = () => {
             token,
             tempItem
           );
+
+          message.success("Item added successfully");
         }
         dispatch(fetchItemData());
         setVisible(false); // Close the modal after successful submission
