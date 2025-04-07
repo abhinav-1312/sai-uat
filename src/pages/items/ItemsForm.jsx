@@ -51,7 +51,7 @@ const ItemsForm = ({
   const handleCategoryChange = (value) => {
     setSelectedCategory(value);
     setSelectedSubCategory(null);
-  setSelectedType(null);
+    setSelectedType(null);
     setSelectedDiscipline(null);
     setDisciplinesDisabled(true);
     setItemDescriptionDisabled(true);
@@ -68,7 +68,7 @@ const ItemsForm = ({
   const handleTypeChange = (value) => {
     setSelectedType(value);
     setSelectedDiscipline(null);
-    setDisciplinesDisabled(true);
+    setDisciplinesDisabled(false);
     setItemDescriptionDisabled(true);
   };
 
@@ -251,7 +251,7 @@ const ItemsForm = ({
     try{
       const {responseData, responseStatus} = await apiCall("POST", '/master/validateDuplicateItemName', token, {itemName: combinedCodeAndDesc.length === 1 ? combinedCodeAndDesc[0] : combinedCodeAndDesc[1]});
       // item already exists in the organization
-      if(responseStatus && responseStatus.errorType === "Item Code doest not exist."){
+      if(responseStatus && responseStatus.errorType === "Item Code already exist"){
         message.error("Item code does not exist.")
         if(combinedCodeAndDesc.length === 1){
           values = { ...values, itemName: null, itemMasterDesc: itemMasterDescCopy };
@@ -285,7 +285,7 @@ const ItemsForm = ({
           subCategory !== values.subCategory ||
           type !== values.type ||
           disciplines !== values.disciplines ||
-          Number(uomId) !== Number(values.uomId) ||
+          // Number(uomId) !== Number(values.uomId) ||
           usageCategory !== values.usageCategory
         ) {
           message.error("Variables input for the item name doesnt match. Please correct and submit again.")
@@ -309,7 +309,7 @@ const ItemsForm = ({
             validateSubCategory: subCategory !== values.subCategory ? true : false,
             validateType: type !== values.type ? true : false,
             validateDiscipline: disciplines !== values.disciplines ? true : false,
-            validateUom:  Number(uomId) !== Number(values.uomId) ? true : false,
+            // validateUom:  Number(uomId) !== Number(values.uomId) ? true : false,
             validateUsageCategory: usageCategory !== values.usageCategory ? true : false
           })
         }else{
@@ -327,8 +327,13 @@ const ItemsForm = ({
       }
     }
     catch(error){
+      console.log("inside errr")
     }
   };
+
+  console.log("Validate dep var: ", validateDepVar)
+
+  console.log("SELECED SUBCAT: ", !selectedSubCategory)
 
   return (
     <Form

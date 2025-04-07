@@ -180,40 +180,46 @@ const ItemsPage = () => {
 
 
   const handleFormSubmit = async (values) => {
-    setEditingItem(null);
-    const tempItem = {
-      ...values,
-
-      uomId: Number(values.uomId),
-      createUserId: userCd,
-      endDate: values.endDate.format("DD/MM/YYYY"),
-    };
-
-    if (!tempItem.itemMasterCd) {
-      delete tempItem.itemMasterCd;
-    }
-          if (editingItem) {
-            if (selectedId) {
-              tempItem["itemMasterId"] = selectedId;
-            }
-      
-            await apiCall(
-              "POST",
-              "/master/updateItemMaster",
-              token,
-              tempItem
-            );
-          } else {
-            // Implement create logic here
-            await apiCall(
-              "POST",
-              "/master/saveItemMaster",
-              token,
-              tempItem
-            );
+      try {
+        setEditingItem(null);
+        const tempItem = {
+          ...values,
+          uomId: Number(values.uomId),
+          createUserId: userCd,
+          endDate: values.endDate.format("DD/MM/YYYY"),
+        };
+  
+        if (!tempItem.itemMasterCd) {
+          delete tempItem.itemMasterCd;
+        }
+        
+        if (editingItem) {
+          if (selectedId) {
+            tempItem["itemMasterId"] = selectedId;
           }
-    dispatch(fetchItemData())
-  };
+    
+          await apiCall(
+            "POST",
+            "/master/updateItemMaster",
+            token,
+            tempItem
+          );
+        } else {
+          // Implement create logic here
+          await apiCall(
+            "POST",
+            "/master/saveItemMaster",
+            token,
+            tempItem
+          );
+        }
+        dispatch(fetchItemData());
+        setVisible(false); // Close the modal after successful submission
+      } catch (error) {
+        console.error("Error submitting form:", error);
+        // You can add notification or alert here to inform the user about the error
+      }
+    };
 
   if(!itemData || !vendorData || !locationData || !locatorData || !uomData || !vendorObj || !uomObj){
     return <Loader />
@@ -314,10 +320,10 @@ const ItemsPage = () => {
               <h3 style={{fontWeight: "400"}}>{itemDepVar.disciplineDesc}</h3>
             </div>
             <br />
-            <div style={{display: "flex", gap: "0.5rem"}}>
+            {/* <div style={{display: "flex", gap: "0.5rem"}}>
               <h3 style={{fontWeight: "700"}}>UOM: </h3>
               <h3 style={{fontWeight: "400"}}>{itemDepVar.uomDesc}</h3>
-            </div>
+            </div> */}
             <div style={{display: "flex", gap: "0.5rem"}}>
               <h3 style={{fontWeight: "700"}}>Usage Category: </h3>
               <h3 style={{fontWeight: "400"}}>{itemDepVar.usageCategoryDesc}</h3>
